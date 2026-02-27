@@ -1,0 +1,51 @@
+.DS_Store
+**/.DS_Store
+
+# Node / JS
+node_modules/
+.npm/
+.pnpm-store/
+.yarn/
+.next/
+dist/
+build/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+**/__pycache__/
+**/.venv/
+**/venv/
+**/.env
+**/.env.*
+!**/.env.example
+
+# Docker
+
+# Rust
+/target/
+
+# Logs
+*.log
+celerybeat-schedule
+*.bak
+*.tmp
+
+# IDE
+.vscode/
+.idea/
+.qoder/
+
+# OS
+Thumbs.db
+stitch_assets/
+
+# Keys/certs
+*.pem
+*.key
+compass-key.pem

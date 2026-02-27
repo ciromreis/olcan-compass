@@ -1,0 +1,222 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Merriweather+Sans:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────────────────────────────────
+   MMXD BASE LAYER
+   Metamodern Experience Design System
+   ───────────────────────────────────── */
+
+@layer base {
+  :root {
+    /* Void Palette */
+    --void-primary: #001338;
+    --void-light: #001A4D;
+    --void-lighter: #002266;
+
+    /* Ignis Accent */
+    --ignis-100: #FF6B35;
+    --ignis-200: #FF8C42;
+    --ignis-300: #FFAD5A;
+
+    /* Neutral Scale */
+    --neutral-800: #0A0D1A;
+    --neutral-700: #1A1F33;
+    --neutral-600: #2A3347;
+    --neutral-500: #3D4A66;
+    --neutral-400: #556080;
+    --neutral-300: #707DB2;
+    --neutral-200: #9AA5CC;
+    --neutral-100: #C4CCE6;
+
+    /* Semantic */
+    --success: #4CAF50;
+    --warning: #FFC107;
+    --error: #F44336;
+    --mirror: #9C27B0;
+
+    /* Typography */
+    font-family: 'Source Sans 3', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    font-weight: 400;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-width: 320px;
+    min-height: 100vh;
+    background-color: var(--void-primary);
+    color: var(--neutral-100);
+  }
+
+  #root {
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  /* Heading font */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Merriweather Sans', sans-serif;
+    color: #ffffff;
+  }
+
+  /* Selection */
+  ::selection {
+    background-color: rgba(255, 107, 53, 0.3);
+    color: #ffffff;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--neutral-800);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--neutral-500);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--neutral-400);
+  }
+
+  /* Focus ring */
+  *:focus-visible {
+    outline: 2px solid var(--ignis-100);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Respect prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Link defaults */
+  a {
+    color: var(--ignis-200);
+    text-decoration: none;
+    transition: color 150ms ease;
+  }
+
+  a:hover {
+    color: var(--ignis-100);
+  }
+}
+
+/* ─────────────────────────────────────
+   MMXD COMPONENT LAYER
+   ───────────────────────────────────── */
+
+@layer components {
+  /* Glass morphism card */
+  .glass-card {
+    @apply bg-neutral-700/60 backdrop-blur-md border border-neutral-600/50 rounded-xl;
+  }
+
+  /* Ignis accent border */
+  .border-ignis-accent {
+    border-left: 3px solid var(--ignis-100);
+  }
+
+  /* Text gradient */
+  .text-gradient-ignis {
+    background: linear-gradient(135deg, var(--ignis-100), var(--ignis-300));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Shimmer effect for loading */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--neutral-700) 25%,
+      var(--neutral-600) 50%,
+      var(--neutral-700) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+}
+
+/* ─────────────────────────────────────
+   MMXD UTILITY LAYER
+   ───────────────────────────────────── */
+
+@layer utilities {
+  /* Safe area for mobile */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-inset-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 0.5rem);
+  }
+
+  /* Responsive touch targets */
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Screen reader only */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .focus\:not-sr-only:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: inherit;
+    margin: inherit;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+}

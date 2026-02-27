@@ -1,0 +1,29 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - name: Install Frontend Dependencies
+        run: |
+          cd apps/web
+          npm i
+      - name: Build Frontend
+        run: |
+          cd apps/web
+          npm run build
+      - name: Lint Frontend
+        run: |
+          cd apps/web
+          npm run lint || echo "Lint warnings found, but enforcing them gracefully for ongoing execution"

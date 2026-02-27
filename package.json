@@ -1,0 +1,14 @@
+{
+  "name": "olcan-compass",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "install:web": "npm --prefix apps/web install",
+    "dev:web": "npm --prefix apps/web run dev -- --host 0.0.0.0 --port 3000",
+    "lint:web": "npm --prefix apps/web run lint",
+    "build:web": "npm --prefix apps/web run build",
+    "health:api": "curl -sS http://localhost:8000/api/health",
+    "smoke:auth": "node ./scripts/smoke/auth.js",
+    "seed:user": "node ./scripts/seed/user.js"
+  }
+}
