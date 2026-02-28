@@ -84,7 +84,7 @@ export function NarrativesDashboard() {
           <h1 className="font-heading text-h1 text-white">
             Narrativas
           </h1>
-          <p className="text-body text-neutral-300 mt-1">
+          <p className="text-body text-slate mt-1">
             Crie e refine suas histórias para aplicações
           </p>
         </div>
@@ -118,14 +118,14 @@ export function NarrativesDashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
             >
-              <Card className="h-full hover:border-lumina/40 transition-colors cursor-pointer group">
+              <Card className="h-full hover:border-cyan/30 transition-colors cursor-pointer group">
                 <div
                   className="p-6 h-full flex flex-col"
                   onClick={() => navigate(`/narratives/${narrative.id}`)}
                 >
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-lumina/10 text-lumina group-hover:bg-lumina/20 transition-colors">
+                    <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary-blue/10 text-cyan group-hover:bg-primary-blue/20 transition-colors">
                       <FileText className="w-6 h-6" />
                     </div>
                     <Badge variant="default">
@@ -135,25 +135,25 @@ export function NarrativesDashboard() {
 
                   {/* Content */}
                   <div className="flex-1">
-                    <h3 className="font-heading text-h4 text-white mb-2 group-hover:text-lumina transition-colors line-clamp-2">
+                    <h3 className="font-heading text-h4 text-white mb-2 group-hover:text-cyan transition-colors line-clamp-2">
                       {narrative.title}
                     </h3>
-                    <p className="text-body-sm text-neutral-400 mb-4">
+                    <p className="text-body-sm text-slate mb-4">
                       {narrative.version_count || 0} versões
                       {typeof narrative.latest_overall_score === 'number' ? ` • Score ${Math.round(narrative.latest_overall_score)}/100` : ''}
                     </p>
                   </div>
 
                   {/* Footer */}
-                  <div className="flex items-center justify-between pt-4 border-t border-neutral-600/30">
-                    <div className="flex items-center gap-2 text-body-sm text-neutral-400">
+                  <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                    <div className="flex items-center gap-2 text-body-sm text-slate">
                       <Clock className="w-4 h-4" />
                       {new Date(narrative.updated_at).toLocaleDateString('pt-BR', {
                         day: 'numeric',
                         month: 'short',
                       })}
                     </div>
-                    <FileEdit className="w-5 h-5 text-lumina group-hover:translate-x-1 transition-transform" />
+                    <FileEdit className="w-5 h-5 text-cyan group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
               </Card>
@@ -178,7 +178,7 @@ export function NarrativesDashboard() {
           />
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-neutral-200">
+            <label className="block text-sm font-medium text-silver">
               Tipo de Narrativa
             </label>
             <Select

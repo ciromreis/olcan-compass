@@ -46,7 +46,7 @@ export function VerifyEmail() {
 
   return (
     <div className="min-h-screen bg-gradient-void flex items-center justify-center p-4">
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-lumina/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-primary-blue/10 rounded-full blur-[120px] pointer-events-none" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -57,18 +57,18 @@ export function VerifyEmail() {
         {status === 'loading' && (
           <>
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-lumina-200 to-lumina-300 shadow-glow mb-4">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-blue to-cyan shadow-glow mb-4">
                 <Mail className="w-7 h-7 text-white" />
               </div>
               <h1 className="font-heading text-h2 text-white">
                 Verificando email
               </h1>
-              <p className="text-body text-neutral-300 mt-2">
+              <p className="text-body text-slate mt-2">
                 Aguarde enquanto confirmamos seu email
               </p>
             </div>
 
-            <div className="bg-neutral-700/50 backdrop-blur-lg border border-neutral-600/40 rounded-2xl p-12 shadow-card">
+            <div className="liquid-glass rounded-2xl p-12 shadow-card">
               <div className="flex justify-center">
                 <LoadingSpinner size="lg" />
               </div>
@@ -85,13 +85,13 @@ export function VerifyEmail() {
               <h1 className="font-heading text-h2 text-white">
                 Email verificado
               </h1>
-              <p className="text-body text-neutral-300 mt-2">
+              <p className="text-body text-slate mt-2">
                 Sua conta foi ativada com sucesso
               </p>
             </div>
 
-            <div className="bg-neutral-700/50 backdrop-blur-lg border border-neutral-600/40 rounded-2xl p-6 shadow-card text-center">
-              <p className="text-body text-neutral-200 mb-4">
+            <div className="liquid-glass rounded-2xl p-6 shadow-card text-center">
+              <p className="text-body text-silver mb-4">
                 Você será redirecionado para a página de login em alguns segundos...
               </p>
               <Button
@@ -113,12 +113,12 @@ export function VerifyEmail() {
               <h1 className="font-heading text-h2 text-white">
                 Erro na verificação
               </h1>
-              <p className="text-body text-neutral-300 mt-2">
+              <p className="text-body text-slate mt-2">
                 Não foi possível verificar seu email
               </p>
             </div>
 
-            <div className="bg-neutral-700/50 backdrop-blur-lg border border-neutral-600/40 rounded-2xl p-6 shadow-card">
+            <div className="liquid-glass rounded-2xl p-6 shadow-card">
               <p className="text-body text-error mb-6">
                 {errorMessage}
               </p>
@@ -141,7 +141,7 @@ export function VerifyEmail() {
           </>
         )}
 
-        <p className="text-center text-caption text-neutral-500 mt-6">
+        <p className="text-center text-caption text-slate-500 mt-6">
           © {new Date().getFullYear()} Olcan · Mobilidade Internacional
         </p>
       </motion.div>

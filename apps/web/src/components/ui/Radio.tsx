@@ -98,16 +98,16 @@ export const Radio: React.FC<RadioGroupProps> = ({
               onBlur={() => setFocusedIndex(-1)}
               className={cn(
                 'flex items-center justify-center w-5 h-5 rounded-full border-2 transition-all mt-0.5',
-                'focus:outline-none focus:ring-2 focus:ring-lumina-500 focus:ring-offset-2',
+                'focus:outline-none focus:ring-2 focus:ring-cyan/50 focus:ring-offset-2',
                 isChecked
-                  ? 'border-lumina-600 bg-white'
+                  ? 'border-cyan bg-void-primary'
                   : 'border-neutral-400 bg-white',
                 error && !isChecked && 'border-semantic-error',
-                !isDisabled && !isChecked && 'hover:border-lumina-500'
+                !isDisabled && !isChecked && 'hover:border-cyan/50'
               )}
             >
               {isChecked && (
-                <div className="w-2.5 h-2.5 rounded-full bg-lumina-600" />
+                <div className="w-2.5 h-2.5 rounded-full bg-cyan" />
               )}
             </div>
             <div className="flex-1">

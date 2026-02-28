@@ -88,7 +88,7 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(
           {/* Mobile Menu Toggle */}
           <button
             onClick={onMobileMenuToggle}
-            className="md:hidden p-2 rounded-lg hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-lumina-300"
+            className="md:hidden p-2 rounded-lg hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-cyan/50"
             aria-label={mobileMenuOpen ? 'Fechar menu' : 'Abrir menu'}
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -109,7 +109,7 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(
               {/* Notifications */}
               <button
                 onClick={onNotificationsClick}
-                className="relative p-2 rounded-lg hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-lumina-300"
+                className="relative p-2 rounded-lg hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-cyan/50"
                 aria-label="Notificações"
               >
                 <Bell size={20} className="text-lux-200" />
@@ -125,7 +125,7 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={handleUserMenuClick}
-                    className="flex items-center gap-2 p-1 rounded-lg hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-lumina-300"
+                    className="flex items-center gap-2 p-1 rounded-lg hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-cyan/50"
                     aria-label="Menu do usuário"
                     aria-expanded={userMenuOpen}
                   >

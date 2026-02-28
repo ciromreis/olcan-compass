@@ -27,7 +27,7 @@ const sizeStyles = {
 }
 
 const colorStyles = {
-    lumina: 'bg-gradient-to-r from-lumina-200 to-lumina-300',
+    lumina: 'bg-gradient-to-r from-primary-blue to-cyan',
     lux: 'bg-gradient-to-r from-lux-200 to-lux-300',
     success: 'bg-success',
     warning: 'bg-warning',
@@ -125,7 +125,7 @@ function CircularProgress({
     const offset = circumference - (Math.min(Math.max(value, 0), 100) / 100) * circumference
 
     const strokeColors = {
-        lumina: 'stroke-lumina-200',
+        lumina: 'stroke-cyan',
         lux: 'stroke-lux-300',
         success: 'stroke-success',
         warning: 'stroke-warning',

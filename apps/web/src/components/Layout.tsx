@@ -38,7 +38,7 @@ const NAV_ITEMS = [
 ]
 
 /**
- * MMXD Layout — Void dark sidebar with Lux/Lumina accents.
+ * Liquid Glass Layout — Deep Navy sidebar with Cyan/Primary Blue accents.
  * Implements the Operating Map navigation pattern from the PRD.
  * Responsive: Desktop sidebar, mobile bottom tab bar + hamburger menu.
  */
@@ -60,18 +60,18 @@ export function Layout() {
   return (
     <div className="flex h-screen bg-void">
       {/* ── Desktop Sidebar (hidden on mobile) ── */}
-      <aside className="hidden md:flex w-64 flex-shrink-0 bg-neutral-800/80 backdrop-blur-lg border-r border-neutral-700/50 flex-col">
+      <aside className="hidden md:flex w-64 flex-shrink-0 bg-abyss/80 backdrop-blur-xl border-r border-white/10 flex-col">
         {/* Brand */}
-        <div className="p-5 border-b border-neutral-700/40">
+        <div className="p-5 border-b border-white/10">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-lumina-200 to-lumina-300 flex items-center justify-center shadow-glow-sm group-hover:shadow-glow transition-shadow duration-normal">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary-blue to-cyan flex items-center justify-center shadow-glow-sm group-hover:shadow-cyan-glow transition-shadow duration-normal">
               <Compass className="w-5 h-5 text-white" />
             </div>
             <div>
               <span className="font-heading text-lg font-bold text-white tracking-tight">
                 Compass
               </span>
-              <span className="block text-caption text-neutral-400 -mt-0.5">
+              <span className="block text-caption text-slate -mt-0.5">
                 Olcan Mobility OS
               </span>
             </div>
@@ -92,15 +92,15 @@ export function Layout() {
                   transition-all duration-fast
                   group
                   ${isActive
-                    ? 'bg-lumina/10 text-lumina border-l-[3px] border-lumina ml-0'
-                    : 'text-neutral-300 hover:text-white hover:bg-neutral-700/50'
+                    ? 'bg-primary-blue/10 text-cyan border-l-[3px] border-cyan ml-0'
+                    : 'text-slate hover:text-white hover:bg-white/5'
                   }
                 `}
               >
-                <Icon className={`w-[18px] h-[18px] ${isActive ? 'text-lumina' : 'text-neutral-400 group-hover:text-neutral-200'}`} />
+                <Icon className={`w-[18px] h-[18px] ${isActive ? 'text-cyan' : 'text-slate group-hover:text-silver'}`} />
                 <span className="flex-1">{label}</span>
                 {isActive && (
-                  <ChevronRight className="w-4 h-4 text-lumina/60" />
+                  <ChevronRight className="w-4 h-4 text-cyan/60" />
                 )}
               </Link>
             )
@@ -108,22 +108,22 @@ export function Layout() {
         </nav>
 
         {/* User Section */}
-        <div className="p-3 border-t border-neutral-700/40">
+        <div className="p-3 border-t border-white/10">
           <div className="flex items-center gap-3 px-3 py-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-neutral-500 to-neutral-600 flex items-center justify-center text-caption font-bold text-white">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-blue to-cyan flex items-center justify-center text-caption font-bold text-white">
               {user?.full_name?.[0]?.toUpperCase() || 'U'}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-body-sm font-medium text-white truncate">
                 {user?.full_name || 'Usuário'}
               </p>
-              <p className="text-caption text-neutral-400 truncate">
+              <p className="text-caption text-slate truncate">
                 {user?.email || ''}
               </p>
             </div>
             <button
               onClick={() => logoutMutation.mutate()}
-              className="p-1.5 rounded-md text-neutral-400 hover:text-error hover:bg-error/10 transition-colors duration-fast"
+              className="p-1.5 rounded-md text-slate hover:text-error hover:bg-error/10 transition-colors duration-fast"
               title="Sair"
             >
               <LogOut className="w-4 h-4" />
@@ -133,21 +133,21 @@ export function Layout() {
       </aside>
 
       {/* ── Main Content ── */}
-      <main id="main-content" className="flex-1 overflow-auto pb-24 md:pb-0" tabIndex={-1}>
+      <main id="main-content" className="flex-1 overflow-auto pb-24 md:pb-0 bg-gradient-void" tabIndex={-1}>
         <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 relative">
           {/* Subtle grain overlay for Liquid Glass (mobile-first) */}
           <div className="pointer-events-none absolute inset-0 opacity-[0.04] noise-overlay" />
           {/* Mobile Header with Hamburger */}
-          <div className="md:hidden flex items-center justify-between mb-4 pb-4 border-b border-neutral-700">
+          <div className="md:hidden flex items-center justify-between mb-4 pb-4 border-b border-white/10">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="p-2 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-700 transition-colors"
+              className="p-2 rounded-lg text-slate hover:text-white hover:bg-white/5 transition-colors"
               aria-label="Abrir menu"
             >
               <Menu size={24} />
             </button>
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-lumina-200 to-lumina-300 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-blue to-cyan flex items-center justify-center">
                 <Compass className="w-4 h-4 text-white" />
               </div>
               <span className="font-heading text-lg font-bold text-white">Compass</span>
@@ -171,15 +171,15 @@ export function Layout() {
         title="Menu"
       >
         {/* User Info */}
-        <div className="flex items-center gap-3 p-3 mb-4 rounded-lg bg-neutral-800/50">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-neutral-500 to-neutral-600 flex items-center justify-center text-sm font-bold text-white">
+        <div className="flex items-center gap-3 p-3 mb-4 rounded-lg bg-void-primary/40 border border-white/10">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-blue to-cyan flex items-center justify-center text-sm font-bold text-white">
             {user?.full_name?.[0]?.toUpperCase() || 'U'}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-white truncate">
               {user?.full_name || 'Usuário'}
             </p>
-            <p className="text-xs text-neutral-400 truncate">
+            <p className="text-xs text-slate truncate">
               {user?.email || ''}
             </p>
           </div>
@@ -198,12 +198,12 @@ export function Layout() {
                   flex items-center gap-3 px-3 py-2.5 rounded-lg
                   text-sm font-medium transition-colors
                   ${isActive
-                    ? 'bg-lumina/10 text-lumina border-l-2 border-lumina'
-                    : 'text-neutral-300 hover:text-white hover:bg-neutral-700/50'
+                    ? 'bg-primary-blue/10 text-cyan border-l-2 border-cyan'
+                    : 'text-slate hover:text-white hover:bg-white/5'
                   }
                 `}
               >
-                <Icon className={`w-5 h-5 ${isActive ? 'text-lumina' : 'text-neutral-400'}`} />
+                <Icon className={`w-5 h-5 ${isActive ? 'text-cyan' : 'text-slate'}`} />
                 <span>{label}</span>
               </Link>
             )
@@ -211,7 +211,7 @@ export function Layout() {
         </nav>
 
         {/* Logout Button */}
-        <div className="mt-6 pt-6 border-t border-neutral-700">
+        <div className="mt-6 pt-6 border-t border-white/10">
           <button
             onClick={() => {
               logoutMutation.mutate()

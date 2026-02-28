@@ -48,7 +48,7 @@ export function NarrativeEditorPage() {
           <h1 className="font-heading text-h2 text-white truncate">
             {narrative?.title || 'Narrativa'}
           </h1>
-          <p className="text-body-sm text-neutral-300 mt-1">
+          <p className="text-body-sm text-slate mt-1">
             Forja de ativos: escreva bruto, refine com precisão.
           </p>
         </div>

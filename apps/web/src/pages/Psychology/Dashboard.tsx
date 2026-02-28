@@ -14,7 +14,7 @@ import { useAuthStore } from '@/store/auth'
 
 /**
  * Psychology Dashboard — displays current profile and assessment history.
- * MMXD design with Void background and Lumina accents.
+ * Liquid Glass design with Deep Navy background and Cyan accents.
  */
 export function PsychologyDashboard() {
   const navigate = useNavigate()
@@ -54,7 +54,7 @@ export function PsychologyDashboard() {
               />
             )}
           </div>
-          <p className="text-body text-neutral-300 mt-1">
+          <p className="text-body text-slate mt-1">
             Compreenda suas dimensões psicológicas para uma jornada personalizada
           </p>
         </div>
@@ -127,17 +127,17 @@ export function PsychologyDashboard() {
                   {assessmentHistory.slice(0, 5).map((assessment: any, index: number) => (
                     <div
                       key={assessment.id}
-                      className="flex items-center justify-between p-4 rounded-lg bg-neutral-700/30 border border-neutral-600/20 hover:border-neutral-500/40 transition-colors"
+                      className="flex items-center justify-between p-4 rounded-lg bg-void-primary/30 border border-white/10 hover:border-cyan/20 transition-colors"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-lumina/10 text-lumina">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary-blue/10 text-cyan">
                           <span className="text-body-sm font-medium">#{assessmentHistory.length - index}</span>
                         </div>
                         <div>
                           <p className="text-body text-white">
                             Avaliação Big Five
                           </p>
-                          <p className="text-body-sm text-neutral-400">
+                          <p className="text-body-sm text-slate">
                             {new Date(assessment.completed_at).toLocaleDateString('pt-BR', {
                               day: 'numeric',
                               month: 'long',
@@ -169,22 +169,22 @@ export function PsychologyDashboard() {
                 Insights do Perfil
               </h2>
               <div className="space-y-3">
-                <div className="p-4 rounded-lg bg-lumina/5 border border-lumina/20">
-                  <p className="text-body text-neutral-200">
-                    <strong className="text-lumina">Modo Recomendado:</strong>{' '}
+                <div className="p-4 rounded-lg bg-cyan/5 border border-cyan/20">
+                  <p className="text-body text-silver">
+                    <strong className="text-cyan">Modo Recomendado:</strong>{' '}
                     {(profile.anxiety_score ?? 0) > 60 ? 'The Forge' : 'The Map'}
                   </p>
-                  <p className="text-body-sm text-neutral-400 mt-1">
+                  <p className="text-body-sm text-slate mt-1">
                     {(profile.anxiety_score ?? 0) > 60
                       ? 'Interface minimalista para reduzir sobrecarga cognitiva'
                       : 'Visualização completa de dados para máxima informação'}
                   </p>
                 </div>
-                <div className="p-4 rounded-lg bg-neutral-700/30 border border-neutral-600/20">
-                  <p className="text-body text-neutral-200">
+                <div className="p-4 rounded-lg bg-void-primary/30 border border-white/10">
+                  <p className="text-body text-silver">
                     <strong>Pontos Fortes:</strong> Alta abertura para experiências e conscienciosidade
                   </p>
-                  <p className="text-body-sm text-neutral-400 mt-1">
+                  <p className="text-body-sm text-slate mt-1">
                     Você está bem preparado para explorar novas oportunidades de mobilidade
                   </p>
                 </div>

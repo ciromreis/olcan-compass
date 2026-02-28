@@ -15,10 +15,10 @@ export function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <Shield className="w-8 h-8 text-lumina" />
+        <Shield className="w-8 h-8 text-cyan" />
         <div>
           <h1 className="font-heading text-h1 text-white">Painel Administrativo</h1>
-          <p className="text-body text-neutral-300 mt-1">
+          <p className="text-body text-slate mt-1">
             Métricas e gerenciamento do sistema
           </p>
         </div>
@@ -68,10 +68,10 @@ export function AdminDashboard() {
               ].map((item, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between p-3 rounded-lg bg-neutral-700/30"
+                  className="flex items-center justify-between p-3 rounded-lg bg-void-primary/30 border border-white/10"
                 >
                   <span className="text-body-sm text-white">{item.action}</span>
-                  <span className="text-caption text-neutral-400">{item.time}</span>
+                  <span className="text-caption text-slate">{item.time}</span>
                 </div>
               ))}
             </div>
@@ -83,25 +83,25 @@ export function AdminDashboard() {
             <h2 className="font-heading text-h3 text-white mb-4">Status do Sistema</h2>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-body text-neutral-300">API Status</span>
+                <span className="text-body text-slate">API Status</span>
                 <span className="px-3 py-1 rounded-full bg-success/20 text-success text-body-sm">
                   Operacional
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-body text-neutral-300">Database</span>
+                <span className="text-body text-slate">Database</span>
                 <span className="px-3 py-1 rounded-full bg-success/20 text-success text-body-sm">
                   Operacional
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-body text-neutral-300">Storage</span>
+                <span className="text-body text-slate">Storage</span>
                 <span className="px-3 py-1 rounded-full bg-success/20 text-success text-body-sm">
                   Operacional
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-body text-neutral-300">AI Services</span>
+                <span className="text-body text-slate">AI Services</span>
                 <span className="px-3 py-1 rounded-full bg-warning/20 text-warning text-body-sm">
                   Limitado
                 </span>

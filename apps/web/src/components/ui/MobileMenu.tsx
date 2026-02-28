@@ -81,7 +81,7 @@ export const MobileMenu = forwardRef<HTMLDivElement, MobileMenuProps>(
               className={cn(
                 'ml-auto p-2 rounded-lg',
                 'text-neutral-400 hover:text-white hover:bg-neutral-700',
-                'focus:outline-none focus:ring-2 focus:ring-lumina-300',
+                'focus:outline-none focus:ring-2 focus:ring-cyan/50',
                 'transition-colors'
               )}
               aria-

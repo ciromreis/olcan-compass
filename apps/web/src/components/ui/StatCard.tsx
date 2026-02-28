@@ -70,8 +70,8 @@ export const StatCard: React.FC<StatCardProps> = ({
         </div>
 
         {Icon && (
-          <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-lumina-100">
-            <Icon className="w-6 h-6 text-lumina-600" />
+          <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary-blue/10">
+            <Icon className="w-6 h-6 text-cyan" />
           </div>
         )}
       </div>

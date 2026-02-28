@@ -100,11 +100,11 @@ export const Simulator: React.FC = () => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white border border-neutral-200 rounded-lg shadow-lg p-3">
-          <p className="text-sm font-semibold text-neutral-900 mb-2">
+        <div className="liquid-glass border border-white/10 rounded-lg shadow-lg p-3">
+          <p className="text-sm font-semibold text-white mb-2">
             {data.title}
           </p>
-          <div className="space-y-1 text-xs text-neutral-600">
+          <div className="space-y-1 text-xs text-slate">
             <p>Competitividade: {data.y}%</p>
             <p>Recursos Necessários: {data.x}%</p>
           </div>
@@ -128,7 +128,7 @@ export const Simulator: React.FC = () => {
             variant="ghost"
             size="sm"
             onClick={() => navigate('/applications/opportunities')}
-            className="mb-2 text-neutral-400 hover:text-white"
+            className="mb-2 text-slate hover:text-white"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Voltar para Oportunidades</span>
@@ -136,7 +136,7 @@ export const Simulator: React.FC = () => {
           <h1 className="text-2xl font-bold text-white">
             Simulador de Cenários
           </h1>
-          <p className="text-neutral-300 mt-2">
+          <p className="text-slate mt-2">
             Explore oportunidades otimizadas baseadas em suas restrições e objetivos
           </p>
         </div>
@@ -147,8 +147,8 @@ export const Simulator: React.FC = () => {
         <div className="lg:col-span-1 space-y-4">
           <Card className="p-6">
             <div className="flex items-center gap-2 mb-6">
-              <Sliders className="w-5 h-5 text-lumina-600" />
-              <h2 className="text-lg font-semibold text-neutral-900">
+              <Sliders className="w-5 h-5 text-cyan" />
+              <h2 className="text-lg font-semibold text-white">
                 Suas Restrições
               </h2>
             </div>
@@ -157,11 +157,11 @@ export const Simulator: React.FC = () => {
               {/* Budget Slider */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                  <label className="text-sm font-medium text-slate flex items-center gap-2">
                     <DollarSign className="w-4 h-4" />
                     Orçamento Máximo
                   </label>
-                  <span className="text-sm font-semibold text-lumina-600">
+                  <span className="text-sm font-semibold text-cyan">
                     {formatCurrency(constraints.budget_max)}
                   </span>
                 </div>
@@ -172,9 +172,9 @@ export const Simulator: React.FC = () => {
                   step="5000"
                   value={constraints.budget_max}
                   onChange={(e) => updateConstraint('budget_max', Number(e.target.value))}
-                  className="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-lumina-600"
+                  className="w-full h-2 bg-void-primary/30 rounded-lg appearance-none cursor-pointer accent-cyan"
                 />
-                <div className="flex justify-between text-xs text-neutral-500">
+                <div className="flex justify-between text-xs text-slate-500">
                   <span>R$ 10k</span>
                   <span>R$ 200k</span>
                 </div>
@@ -183,11 +183,11 @@ export const Simulator: React.FC = () => {
               {/* Time Slider */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                  <label className="text-sm font-medium text-slate flex items-center gap-2">
                     <Clock className="w-4 h-4" />
                     Tempo Disponível
                   </label>
-                  <span className="text-sm font-semibold text-lumina-600">
+                  <span className="text-sm font-semibold text-cyan">
                     {constraints.time_available_months} meses
                   </span>
                 </div>
@@ -198,9 +198,9 @@ export const Simulator: React.FC = () => {
                   step="1"
                   value={constraints.time_available_months}
                   onChange={(e) => updateConstraint('time_available_months', Number(e.target.value))}
-                  className="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-lumina-600"
+                  className="w-full h-2 bg-void-primary/30 rounded-lg appearance-none cursor-pointer accent-cyan"
                 />
-                <div className="flex justify-between text-xs text-neutral-500">
+                <div className="flex justify-between text-xs text-slate-500">
                   <span>3 meses</span>
                   <span>36 meses</span>
                 </div>
@@ -209,11 +209,11 @@ export const Simulator: React.FC = () => {
               {/* Skill Level Slider */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                  <label className="text-sm font-medium text-slate flex items-center gap-2">
                     <TrendingUp className="w-4 h-4" />
                     Nível de Habilidade
                   </label>
-                  <span className="text-sm font-semibold text-lumina-600">
+                  <span className="text-sm font-semibold text-cyan">
                     {constraints.skill_level}%
                   </span>
                 </div>
@@ -224,9 +224,9 @@ export const Simulator: React.FC = () => {
                   step="5"
                   value={constraints.skill_level}
                   onChange={(e) => updateConstraint('skill_level', Number(e.target.value))}
-                  className="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-lumina-600"
+                  className="w-full h-2 bg-void-primary/30 rounded-lg appearance-none cursor-pointer accent-cyan"
                 />
-                <div className="flex justify-between text-xs text-neutral-500">
+                <div className="flex justify-between text-xs text-slate-500">
                   <span>Iniciante</span>
                   <span>Avançado</span>
                 </div>
@@ -234,7 +234,7 @@ export const Simulator: React.FC = () => {
 
               {/* Locations Multi-Select */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                <label className="text-sm font-medium text-slate flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
                   Localizações Alvo
                 </label>
@@ -246,8 +246,8 @@ export const Simulator: React.FC = () => {
                       className={cn(
                         'px-3 py-1.5 text-xs font-medium rounded-full border transition-all',
                         constraints.target_locations?.includes(location)
-                          ? 'bg-lumina-100 text-lumina-700 border-lumina-300'
-                          : 'bg-white text-neutral-600 border-neutral-300 hover:border-lumina-300'
+                          ? 'bg-primary-blue/10 text-cyan border-cyan/30'
+                          : 'bg-void-primary/20 text-slate border-white/10 hover:border-cyan/30'
                       )}
                     >
                       {location}
@@ -258,7 +258,7 @@ export const Simulator: React.FC = () => {
 
               {/* Industries Multi-Select */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                <label className="text-sm font-medium text-slate flex items-center gap-2">
                   <Briefcase className="w-4 h-4" />
                   Indústrias Preferidas
                 </label>
@@ -270,8 +270,8 @@ export const Simulator: React.FC = () => {
                       className={cn(
                         'px-3 py-1.5 text-xs font-medium rounded-full border transition-all',
                         constraints.preferred_industries?.includes(industry)
-                          ? 'bg-lumina-100 text-lumina-700 border-lumina-300'
-                          : 'bg-white text-neutral-600 border-neutral-300 hover:border-lumina-300'
+                          ? 'bg-primary-blue/10 text-cyan border-cyan/30'
+                          : 'bg-void-primary/20 text-slate border-white/10 hover:border-cyan/30'
                       )}
                     >
                       {industry}
@@ -299,10 +299,10 @@ export const Simulator: React.FC = () => {
           <Card className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-neutral-900">
+                <h3 className="text-lg font-semibold text-white">
                   Fronteira Viável
                 </h3>
-                <p className="text-sm text-neutral-600 mt-1">
+                <p className="text-sm text-slate mt-1">
                   {isCalculating
                     ? 'Calculando oportunidades ótimas...'
                     : `${paretoCount} oportunidades Pareto-ótimas de ${totalOpportunitiesAnalyzed} analisadas`}
@@ -323,8 +323,8 @@ export const Simulator: React.FC = () => {
               {isCalculating ? (
                 <div className="h-[500px] flex items-center justify-center">
                   <div className="text-center space-y-3">
-                    <div className="animate-spin w-12 h-12 border-4 border-lumina-200 border-t-lumina-600 rounded-full mx-auto" />
-                    <p className="text-sm text-neutral-600">
+                    <div className="animate-spin w-12 h-12 border-4 border-cyan/20 border-t-cyan rounded-full mx-auto" />
+                    <p className="text-sm text-slate">
                       Calculando fronteira viável...
                     </p>
                   </div>
@@ -369,14 +369,14 @@ export const Simulator: React.FC = () => {
                         content={() => (
                           <div className="flex items-center justify-center gap-4 mb-4">
                             <div className="flex items-center gap-2">
-                              <div className="w-3 h-3 rounded-full bg-lumina-600" />
-                              <span className="text-xs text-neutral-600">
+                              <div className="w-3 h-3 rounded-full bg-cyan" />
+                              <span className="text-xs text-slate">
                                 Pareto-Ótimas
                               </span>
                             </div>
                             <div className="flex items-center gap-2">
                               <div className="w-3 h-3 rounded-full bg-neutral-400" />
-                              <span className="text-xs text-neutral-600">
+                              <span className="text-xs text-slate">
                                 Outras Oportunidades
                               </span>
                             </div>
@@ -397,14 +397,14 @@ export const Simulator: React.FC = () => {
                   </ResponsiveContainer>
 
                   {/* Explanation */}
-                  <div className="p-4 bg-lumina-50 border border-lumina-200 rounded-lg">
+                  <div className="p-4 bg-primary-blue/5 border border-cyan/20 rounded-lg">
                     <div className="flex items-start gap-3">
-                      <Info className="w-5 h-5 text-lumina-600 mt-0.5 flex-shrink-0" />
+                      <Info className="w-5 h-5 text-cyan mt-0.5 flex-shrink-0" />
                       <div className="space-y-2">
-                        <p className="text-sm font-medium text-neutral-900">
+                        <p className="text-sm font-medium text-white">
                           Estas oportunidades oferecem o melhor equilíbrio entre competitividade e recursos necessários
                         </p>
-                        <p className="text-xs text-neutral-600 leading-relaxed">
+                        <p className="text-xs text-slate leading-relaxed">
                           Oportunidades Pareto-ótimas (em azul) são aquelas onde nenhuma outra opção oferece
                           simultaneamente maior competitividade e menores requisitos de recursos. Focar nestas
                           oportunidades maximiza suas chances de sucesso.
@@ -416,8 +416,8 @@ export const Simulator: React.FC = () => {
               ) : (
                 <div className="h-[500px] flex items-center justify-center">
                   <div className="text-center space-y-3">
-                    <Sparkles className="w-12 h-12 text-neutral-400 mx-auto" />
-                    <p className="text-sm text-neutral-600">
+                    <Sparkles className="w-12 h-12 text-slate mx-auto" />
+                    <p className="text-sm text-slate">
                       Ajuste suas restrições para ver oportunidades viáveis
                     </p>
                   </div>
@@ -429,7 +429,7 @@ export const Simulator: React.FC = () => {
           {/* Pareto-Optimal Opportunities List */}
           {paretoOptimal.length > 0 && (
             <Card className="p-6">
-              <h3 className="text-lg font-semibold text-neutral-900 mb-4">
+              <h3 className="text-lg font-semibold text-white mb-4">
                 Oportunidades Recomendadas
               </h3>
               <div className="space-y-3">
@@ -439,14 +439,14 @@ export const Simulator: React.FC = () => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="p-4 bg-white border border-neutral-200 rounded-lg hover:border-lumina-300 hover:shadow-md transition-all cursor-pointer"
+                    className="p-4 liquid-glass border border-white/10 rounded-lg hover:border-cyan/30 hover:shadow-md transition-all cursor-pointer"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
-                        <h4 className="text-sm font-semibold text-neutral-900">
+                        <h4 className="text-sm font-semibold text-white">
                           {opp.title}
                         </h4>
-                        <div className="flex items-center gap-4 mt-2 text-xs text-neutral-600">
+                        <div className="flex items-center gap-4 mt-2 text-xs text-slate">
                           <span>Competitividade: {opp.competitiveness_score}%</span>
                           <span>•</span>
                           <span>Recursos: {opp.resource_requirements_score}%</span>

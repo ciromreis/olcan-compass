@@ -237,7 +237,7 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({
               {provider.services.length > 3 && (
                 <button
                   onClick={() => onViewProfile?.(provider.id)}
-                  className="text-sm text-lumina-200 hover:text-lumina-100 font-medium"
+                  className="text-sm text-cyan hover:text-cyan-400 font-medium"
                 >
                   Ver todos os {provider.services.length} serviços
                 </button>

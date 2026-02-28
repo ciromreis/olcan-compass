@@ -139,7 +139,7 @@ export function Assessment() {
   return (
     <div className="min-h-screen bg-gradient-void flex items-center justify-center p-4 md:p-8">
       {/* Background glow effect */}
-      <div className="fixed top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-lumina/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="fixed top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-primary-blue/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="relative w-full max-w-2xl mx-auto py-8">
         <AnimatePresence mode="wait">

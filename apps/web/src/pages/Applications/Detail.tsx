@@ -72,7 +72,7 @@ export function ApplicationDetail() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading text-h1 text-white">{application.title || application.opportunity_name}</h1>
-          <p className="text-body text-neutral-300 mt-1">{application.institution}</p>
+          <p className="text-body text-slate mt-1">{application.institution}</p>
         </div>
         <Badge variant={statusColors[application.status as keyof typeof statusColors]}>
           {application.status}
@@ -86,19 +86,19 @@ export function ApplicationDetail() {
               <h2 className="font-heading text-h3 text-white mb-4">Detalhes da Aplicação</h2>
               <div className="space-y-4">
                 <div>
-                  <p className="text-body-sm text-neutral-400 mb-1">Descrição</p>
+                  <p className="text-body-sm text-slate mb-1">Descrição</p>
                   <p className="text-body text-white">{application.description || 'Sem descrição disponível.'}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-body-sm text-neutral-400 mb-1">Prazo</p>
+                    <p className="text-body-sm text-slate mb-1">Prazo</p>
                     <div className="flex items-center gap-2 text-body text-white">
                       <Calendar className="w-4 h-4" />
                       {deadlineLabel}
                     </div>
                   </div>
                   <div>
-                    <p className="text-body-sm text-neutral-400 mb-1">Match Score</p>
+                    <p className="text-body-sm text-slate mb-1">Match Score</p>
                     <p className="text-body text-white font-medium">{application.match_score ?? '-'}{application.match_score !== undefined ? '%' : ''}</p>
                   </div>
                 </div>
@@ -111,18 +111,18 @@ export function ApplicationDetail() {
               <h2 className="font-heading text-h3 text-white mb-4">Documentos Necessários</h2>
               <div className="space-y-4">
                 {requiredDocuments.length === 0 ? (
-                  <p className="text-body-sm text-neutral-400">Nenhum documento obrigatório registrado.</p>
+                  <p className="text-body-sm text-slate">Nenhum documento obrigatório registrado.</p>
                 ) : requiredDocuments.map((doc: { id: string; name: string; type: string; uploaded: boolean }) => (
                   <div
                     key={doc.id}
-                    className="p-4 rounded-lg bg-neutral-700/30 border border-neutral-600/20"
+                    className="p-4 rounded-lg bg-void-primary/30 border border-white/10"
                   >
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <FileText className="w-5 h-5 text-lumina" />
+                        <FileText className="w-5 h-5 text-cyan" />
                         <div>
                           <p className="text-body text-white">{doc.name}</p>
-                          <p className="text-body-sm text-neutral-400">{doc.type}</p>
+                          <p className="text-body-sm text-slate">{doc.type}</p>
                         </div>
                       </div>
                       {doc.uploaded ? (

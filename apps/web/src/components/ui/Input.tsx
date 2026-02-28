@@ -60,12 +60,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                         required={required}
                         className={cn(
                             'w-full px-4 py-2.5 rounded-lg',
-                            'bg-neutral-700/50 border border-neutral-500/40',
-                            'text-body text-white placeholder:text-neutral-400',
+                            'bg-void-primary/40 border border-white/10',
+                            'text-body text-silver placeholder:text-slate',
                             'font-body',
                             'transition-all duration-fast',
-                            'focus:outline-none focus:border-lumina/70 focus:ring-1 focus:ring-lumina/30',
-                            'hover:border-lux-300/60',
+                            'focus:outline-none focus:border-cyan/50 focus:ring-1 focus:ring-cyan/20',
+                            'hover:border-white/20',
                             'disabled:opacity-50 disabled:cursor-not-allowed',
                             error && 'border-error/60 focus:border-error focus:ring-error/30',
                             success && 'border-success/60 focus:border-success focus:ring-success/30',
@@ -150,12 +150,12 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
                     required={required}
                     className={cn(
                         'w-full px-4 py-2.5 rounded-lg resize-y min-h-[100px]',
-                        'bg-neutral-700/50 border border-neutral-500/40',
-                        'text-body text-white placeholder:text-neutral-400',
+                        'bg-void-primary/40 border border-white/10',
+                        'text-body text-silver placeholder:text-slate',
                         'font-body',
                         'transition-all duration-fast',
-                        'focus:outline-none focus:border-lumina/70 focus:ring-1 focus:ring-lumina/30',
-                        'hover:border-lux-300/60',
+                        'focus:outline-none focus:border-cyan/50 focus:ring-1 focus:ring-cyan/20',
+                        'hover:border-white/20',
                         'disabled:opacity-50 disabled:cursor-not-allowed',
                         error && 'border-error/60 focus:border-error focus:ring-error/30',
                         success && 'border-success/60 focus:border-success focus:ring-success/30',

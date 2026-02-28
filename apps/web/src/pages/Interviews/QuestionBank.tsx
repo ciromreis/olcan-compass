@@ -61,7 +61,7 @@ export function QuestionBank() {
     <div className="space-y-6">
       <div>
         <h1 className="font-heading text-h1 text-white">Banco de Perguntas</h1>
-        <p className="text-body text-neutral-300 mt-1">
+        <p className="text-body text-slate mt-1">
           Explore e pratique perguntas de entrevista
         </p>
       </div>
@@ -116,7 +116,7 @@ export function QuestionBank() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
             >
-              <Card className="liquid-glass hover:border-lumina/40 transition-colors">
+              <Card className="liquid-glass hover:border-cyan/30 transition-colors">
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">

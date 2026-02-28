@@ -41,7 +41,7 @@ export function MySprints() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading text-h2 text-white">Sprints</h1>
-          <p className="text-body text-neutral-300 mt-1">
+          <p className="text-body text-slate mt-1">
             Acompanhe seu progresso de preparação
           </p>
         </div>
@@ -54,14 +54,14 @@ export function MySprints() {
         <Card className="liquid-glass" noPadding>
           <div className="p-6">
             <div className="flex items-center gap-3 mb-4">
-              <TrendingUp className="w-6 h-6 text-lumina" />
+              <TrendingUp className="w-6 h-6 text-cyan" />
               <h2 className="font-heading text-h3 text-white">Análise de Gaps</h2>
             </div>
-            <p className="text-body text-neutral-300 mb-4">{gapAnalysis.summary}</p>
+            <p className="text-body text-slate mb-4">{gapAnalysis.summary}</p>
             <div className="space-y-2">
               {gapAnalysis.recommendations?.map((rec: string, i: number) => (
-                <div key={i} className="flex items-start gap-2 text-body-sm text-neutral-400">
-                  <span className="text-lumina">•</span>
+                <div key={i} className="flex items-start gap-2 text-body-sm text-slate">
+                  <span className="text-cyan">•</span>
                   <span>{rec}</span>
                 </div>
               ))}
@@ -81,11 +81,11 @@ export function MySprints() {
               {urgentTasks.map((t) => (
                 <div
                   key={t.id}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-neutral-800/30 p-4"
+                  className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-void-primary/30 p-4"
                 >
                   <div className="min-w-0">
                     <p className="text-body-sm font-semibold text-white truncate">{t.title}</p>
-                    <p className="text-caption text-neutral-400 mt-0.5">
+                    <p className="text-caption text-slate mt-0.5">
                       {t.estimated_minutes ? `${t.estimated_minutes} min` : '—'}
                     </p>
                   </div>
@@ -128,7 +128,7 @@ export function MySprints() {
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h3 className="font-heading text-h3 text-white mb-1">{sprint.name}</h3>
-                      <p className="text-body-sm text-neutral-400">
+                      <p className="text-body-sm text-slate">
                         {sprint.completed_tasks} de {sprint.total_tasks} tarefas completas
                       </p>
                     </div>

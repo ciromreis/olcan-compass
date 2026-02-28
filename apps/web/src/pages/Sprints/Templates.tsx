@@ -38,7 +38,7 @@ export function SprintTemplates() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="font-heading text-h2 text-white">Templates</h1>
-        <p className="text-body text-neutral-300 mt-1">
+        <p className="text-body text-slate mt-1">
           Sprints estruturados para preparação de mobilidade
         </p>
         </div>
@@ -66,16 +66,16 @@ export function SprintTemplates() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
             >
-              <Card className="h-full liquid-glass hover:border-lumina/30 transition-colors" noPadding>
+              <Card className="h-full liquid-glass hover:border-cyan/30 transition-colors" noPadding>
                 <div className="p-6 h-full flex flex-col">
-                  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-lumina/10 text-lumina mb-4">
+                  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary-blue/10 text-cyan mb-4">
                     <Zap className="w-6 h-6" />
                   </div>
                   <h3 className="font-heading text-h4 text-white mb-2">{template.name}</h3>
-                  <p className="text-body-sm text-neutral-400 mb-4 flex-1">
+                  <p className="text-body-sm text-slate mb-4 flex-1">
                     {template.description}
                   </p>
-                  <div className="flex items-center justify-between text-body-sm text-neutral-400 mb-4">
+                  <div className="flex items-center justify-between text-body-sm text-slate mb-4">
                     <div className="flex items-center gap-1">
                       <Target className="w-4 h-4" />
                       {template.task_count} tarefas

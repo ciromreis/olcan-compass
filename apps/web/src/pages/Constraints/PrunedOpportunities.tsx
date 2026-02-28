@@ -44,10 +44,10 @@ export function PrunedOpportunities() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Filter className="w-6 h-6 text-lumina-500" />
+          <Filter className="w-6 h-6 text-cyan" />
           <div>
             <h1 className="font-heading text-h1 text-white">Oportunidades Filtradas</h1>
-            <p className="text-body text-neutral-300 mt-1">
+            <p className="text-body text-slate mt-1">
               Baseado nas suas restrições pessoais
             </p>
           </div>
@@ -61,11 +61,11 @@ export function PrunedOpportunities() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-lumina-100 rounded-lg">
-              <Filter className="w-5 h-5 text-lumina-600" />
+            <div className="p-2 bg-primary-blue/10 rounded-lg">
+              <Filter className="w-5 h-5 text-cyan-600" />
             </div>
             <div>
-              <p className="text-sm text-neutral-400">Total de Oportunidades</p>
+              <p className="text-sm text-slate">Total de Oportunidades</p>
               <p className="text-xl font-bold text-white">{total_opportunities}</p>
             </div>
           </div>
@@ -77,7 +77,7 @@ export function PrunedOpportunities() {
               <Eye className="w-5 h-5 text-success-600" />
             </div>
             <div>
-              <p className="text-sm text-neutral-400">Visíveis</p>
+              <p className="text-sm text-slate">Visíveis</p>
               <p className="text-xl font-bold text-white">{shown_opportunities}</p>
             </div>
           </div>
@@ -89,7 +89,7 @@ export function PrunedOpportunities() {
               <EyeOff className="w-5 h-5 text-warning-600" />
             </div>
             <div>
-              <p className="text-sm text-neutral-400">Ocultas</p>
+              <p className="text-sm text-slate">Ocultas</p>
               <p className="text-xl font-bold text-white">{hidden_opportunities}</p>
             </div>
           </div>
@@ -117,11 +117,11 @@ export function PrunedOpportunities() {
       {opportunities.length === 0 && (
         <Card>
           <div className="text-center py-8">
-            <Filter className="w-12 h-12 text-neutral-400 mx-auto mb-4" />
+            <Filter className="w-12 h-12 text-slate mx-auto mb-4" />
             <h3 className="text-lg font-medium text-white mb-2">
               Nenhuma oportunidade encontrada
             </h3>
-            <p className="text-neutral-400">
+            <p className="text-slate">
               Ajuste suas restrições para ver mais oportunidades.
             </p>
           </div>
@@ -143,7 +143,7 @@ function PrunedOpportunityCard({ opportunity }: PrunedOpportunityCardProps) {
     <Card className={`p-6 transition-all duration-200 ${
       isPruned 
         ? 'bg-neutral-800/50 border-neutral-700 opacity-60' 
-        : 'bg-neutral-800 border-lumina-500 hover:border-lumina-400'
+        : 'bg-neutral-800 border-cyan/30 hover:border-cyan/50'
     }`}>
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
@@ -165,7 +165,7 @@ function PrunedOpportunityCard({ opportunity }: PrunedOpportunityCardProps) {
             )}
           </div>
           
-          <div className="flex items-center gap-4 text-sm text-neutral-400">
+          <div className="flex items-center gap-4 text-sm text-slate">
             {opportunity.organization_name && (
               <span>{opportunity.organization_name}</span>
             )}
@@ -180,12 +180,12 @@ function PrunedOpportunityCard({ opportunity }: PrunedOpportunityCardProps) {
         <div className="flex items-center gap-3">
           <div className="text-right">
             <div className="flex items-center gap-1">
-              <TrendingUp className="w-4 h-4 text-lumina-500" />
+              <TrendingUp className="w-4 h-4 text-cyan" />
               <span className="text-sm font-medium text-white">
                 {opportunity.overall_score.toFixed(1)}
               </span>
             </div>
-            <p className="text-xs text-neutral-400">Score</p>
+            <p className="text-xs text-slate">Score</p>
           </div>
           
           <div className="text-right">
@@ -198,7 +198,7 @@ function PrunedOpportunityCard({ opportunity }: PrunedOpportunityCardProps) {
                 {opportunity.constraint_score.toFixed(1)}
               </span>
             </div>
-            <p className="text-xs text-neutral-400">Restrições</p>
+            <p className="text-xs text-slate">Restrições</p>
           </div>
         </div>
       </div>
@@ -220,7 +220,7 @@ function PrunedOpportunityCard({ opportunity }: PrunedOpportunityCardProps) {
             <h4 className="font-medium text-white mb-1">
               {explanation.title}
             </h4>
-            <p className="text-sm text-neutral-300 mb-2">
+            <p className="text-sm text-slate mb-2">
               {explanation.detail}
             </p>
             
@@ -238,7 +238,7 @@ function PrunedOpportunityCard({ opportunity }: PrunedOpportunityCardProps) {
                     >
                       {violation.type}
                     </Badge>
-                    <span className="text-neutral-400">
+                    <span className="text-slate">
                       {Object.entries(violation.details)
                         .map(([key, value]) => `${key}: ${value}`)
                         .join(', ')}

@@ -37,7 +37,7 @@ const variantStyles: Record<BadgeVariant, string> = {
     mirror:
         'bg-mirror/10 text-mirror border-mirror/30',
     lumina:
-        'bg-lumina-200/10 text-lumina-200 border-lumina-200/30',
+        'bg-primary-blue/10 text-cyan border-cyan/30',
 }
 
 const sizeStyles: Record<BadgeSize, string> = {
@@ -77,7 +77,7 @@ function Badge({
                         variant === 'warning' && 'bg-warning',
                         variant === 'error' && 'bg-error',
                         variant === 'mirror' && 'bg-mirror',
-                        variant === 'lumina' && 'bg-lumina-200'
+                        variant === 'lumina' && 'bg-cyan'
                     )}
                     aria-hidden="true"
                 />

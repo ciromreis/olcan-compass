@@ -76,7 +76,7 @@ export function Messages() {
     <div className="space-y-6">
       <div>
         <h1 className="font-heading text-h1 text-white">Mensagens</h1>
-        <p className="text-body text-neutral-300 mt-1">
+        <p className="text-body text-slate mt-1">
           Converse com provedores de serviços
         </p>
       </div>
@@ -97,7 +97,7 @@ export function Messages() {
             <div className="p-4">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="font-heading text-h4 text-white">Conversas</h2>
-                <div className="text-caption text-neutral-400">
+                <div className="text-caption text-slate">
                   {conversations.length} ativa{conversations.length === 1 ? '' : 's'}
                 </div>
               </div>
@@ -113,7 +113,7 @@ export function Messages() {
                       className={[
                         'w-full text-left p-3 rounded-xl border transition-colors',
                         isActive
-                          ? 'bg-lumina/10 border-lumina/30'
+                          ? 'bg-primary-blue/10 border-cyan/30'
                           : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20',
                       ].join(' ')}
                     >
@@ -123,7 +123,7 @@ export function Messages() {
                           <p className="text-body-sm text-white font-medium truncate">
                             {conv.provider_name}
                           </p>
-                          <p className="text-caption text-neutral-400 truncate">
+                          <p className="text-caption text-slate truncate">
                             {conv.last_message || '—'}
                           </p>
                         </div>
@@ -150,7 +150,7 @@ export function Messages() {
                       <p className="text-body text-white font-medium truncate">
                         {selectedConv.provider_name}
                       </p>
-                      <p className="text-caption text-neutral-400 truncate">
+                      <p className="text-caption text-slate truncate">
                         {selectedConv.last_message || 'Conversa aberta'}
                       </p>
                     </div>
@@ -172,12 +172,12 @@ export function Messages() {
                             className={[
                               'max-w-[80%] p-3 rounded-2xl border',
                               msg.is_from_user
-                                ? 'bg-lumina/20 border-lumina/30 text-white'
-                                : 'bg-white/5 border-white/10 text-neutral-200',
+                                ? 'bg-primary-blue/20 border-cyan/30 text-white'
+                                : 'bg-white/5 border-white/10 text-silver',
                             ].join(' ')}
                           >
                             <p className="text-body-sm whitespace-pre-wrap">{msg.content}</p>
-                            <p className="text-caption text-neutral-400 mt-1">
+                            <p className="text-caption text-slate mt-1">
                               {msg.created_at
                                 ? new Date(msg.created_at).toLocaleTimeString('pt-BR', {
                                     hour: '2-digit',

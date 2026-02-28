@@ -85,10 +85,10 @@ export function ConstraintsSettings() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <Settings className="w-6 h-6 text-lumina-500" />
+        <Settings className="w-6 h-6 text-cyan" />
         <div>
           <h1 className="font-heading text-h1 text-white">Configurar Restrições</h1>
-          <p className="text-body text-neutral-300 mt-1">
+          <p className="text-body text-slate mt-1">
             Defina suas preferências para filtrar oportunidades de forma inteligente
           </p>
         </div>
@@ -99,7 +99,7 @@ export function ConstraintsSettings() {
           {/* Financial Constraints */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-4">
-              <DollarSign className="w-5 h-5 text-lumina-500" />
+              <DollarSign className="w-5 h-5 text-cyan" />
               <h2 className="text-lg font-semibold text-white">Restrições Financeiras</h2>
             </div>
             
@@ -138,7 +138,7 @@ export function ConstraintsSettings() {
           {/* Location Constraints */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-4">
-              <Globe className="w-5 h-5 text-lumina-500" />
+              <Globe className="w-5 h-5 text-cyan" />
               <h2 className="text-lg font-semibold text-white">Preferências de Localização</h2>
             </div>
             
@@ -150,7 +150,7 @@ export function ConstraintsSettings() {
                   onChange={(e) => handleInputChange('target_countries', e.target.value)}
                   placeholder="Ex: US, UK, CA, PT"
                 />
-                <p className="text-xs text-neutral-400 mt-1">
+                <p className="text-xs text-slate mt-1">
                   Separe por vírgula os códigos dos países
                 </p>
               </div>
@@ -161,7 +161,7 @@ export function ConstraintsSettings() {
                   onChange={(e) => handleInputChange('excluded_countries', e.target.value)}
                   placeholder="Ex: RU, FR"
                 />
-                <p className="text-xs text-neutral-400 mt-1">
+                <p className="text-xs text-slate mt-1">
                   Países que você não considera
                 </p>
               </div>
@@ -180,7 +180,7 @@ export function ConstraintsSettings() {
           {/* Professional Constraints */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-4">
-              <Briefcase className="w-5 h-5 text-lumina-500" />
+              <Briefcase className="w-5 h-5 text-cyan" />
               <h2 className="text-lg font-semibold text-white">Perfil Profissional</h2>
             </div>
             
@@ -197,7 +197,7 @@ export function ConstraintsSettings() {
                     { value: 'phd', label: 'Doutorado' },
                   ]}
                 />
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-sm font-medium text-slate mb-2">
                   Nível de Educação
                 </label>
               </div>
@@ -216,7 +216,7 @@ export function ConstraintsSettings() {
           {/* Commitment & Risk */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-4">
-              <BookOpen className="w-5 h-5 text-lumina-500" />
+              <BookOpen className="w-5 h-5 text-cyan" />
               <h2 className="text-lg font-semibold text-white">Compromisso e Risco</h2>
             </div>
             
@@ -231,7 +231,7 @@ export function ConstraintsSettings() {
                     { value: 'flexible', label: 'Flexível' },
                   ]}
                 />
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-sm font-medium text-slate mb-2">
                   Nível de Compromisso
                 </label>
               </div>
@@ -245,7 +245,7 @@ export function ConstraintsSettings() {
                     { value: 'aggressive', label: 'Agressivo' },
                   ]}
                 />
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-sm font-medium text-slate mb-2">
                   Tolerância ao Risco
                 </label>
               </div>
@@ -260,7 +260,7 @@ export function ConstraintsSettings() {
                 <Badge variant={profile.is_active ? 'success' : 'warning'}>
                   {profile.is_active ? 'Ativo' : 'Inativo'}
                 </Badge>
-                <span className="text-xs text-neutral-400">
+                <span className="text-xs text-slate">
                   Última atualização: {new Date(profile.last_updated_at).toLocaleDateString('pt-BR')}
                 </span>
               </div>
