@@ -132,7 +132,6 @@ export const Sidebar = forwardRef<HTMLElement, SidebarProps>(
           collapsed ? 'w-16' : 'w-64',
           className
         )}
-        aria-
         {...props}
       >
         {header && (

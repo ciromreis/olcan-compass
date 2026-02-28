@@ -32,17 +32,20 @@ export const BottomTabBar = forwardRef<HTMLElement, BottomTabBarProps>(
         ref={ref}
         className={cn(
           'fixed bottom-0 left-0 right-0 z-50',
-          'bg-void-primary/95 backdrop-blur-lg',
-          'border-t border-neutral-700',
+          'bg-void-primary/55 backdrop-blur-2xl',
+          'border-t border-white/10',
           'safe-area-inset-bottom',
           className
         )}
-        aria-
         {...props}
       >
-        <div className="flex items-center justify-around px-2 py-1">
+        <div className="mx-auto max-w-md px-2 py-2">
+          <div className="flex items-center justify-around rounded-2xl border border-white/10 bg-neutral-800/30 px-2 py-1 shadow-card">
           {items.map((item) => {
-            const isActive = location.pathname === item.href
+            const isActive =
+              item.href === '/'
+                ? location.pathname === '/'
+                : location.pathname === item.href || location.pathname.startsWith(`${item.href}/`)
             return (
               <Link
                 key={item.href}
@@ -53,7 +56,7 @@ export const BottomTabBar = forwardRef<HTMLElement, BottomTabBarProps>(
                   'rounded-lg transition-colors',
                   'focus:outline-none focus:ring-2 focus:ring-lumina-300',
                   isActive && 'text-lumina-200',
-                  !isActive && 'text-neutral-400 hover:text-lux-200'
+                  !isActive && 'text-neutral-400 hover:text-neutral-200'
                 )}
                 aria-current={isActive ? 'page' : undefined}
               >
@@ -68,9 +71,17 @@ export const BottomTabBar = forwardRef<HTMLElement, BottomTabBarProps>(
                 <span className="text-[10px] font-medium mt-0.5 truncate max-w-[60px]">
                   {item.label}
                 </span>
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    'mt-1 h-0.5 w-4 rounded-full transition-colors',
+                    isActive ? 'bg-lumina-300' : 'bg-transparent'
+                  )}
+                />
               </Link>
             )
           })}
+          </div>
         </div>
       </nav>
     )

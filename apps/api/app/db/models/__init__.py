@@ -98,6 +98,13 @@ from app.db.models.economics import (
     WidgetEventType,
 )
 
+from app.db.models.constraints import (
+    UserConstraintProfile,
+    OpportunityPruningLog,
+    ConstraintFeedback,
+    PruningReason,
+)
+
 __all__ = [
     "User",
     "UserRole",
@@ -174,4 +181,8 @@ __all__ = [
     "CredentialType",
     "EscrowStatus",
     "WidgetEventType",
+    "UserConstraintProfile",
+    "OpportunityPruningLog",
+    "ConstraintFeedback",
+    "PruningReason",
 ]

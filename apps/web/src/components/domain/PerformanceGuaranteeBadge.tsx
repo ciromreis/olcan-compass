@@ -43,9 +43,9 @@ export const PerformanceGuaranteeBadge: React.FC<PerformanceGuaranteeBadgeProps>
 
   // Get success rate color
   const getSuccessRateColor = (rate?: number): string => {
-    if (!rate) return 'text-neutral-600';
-    if (rate >= 90) return 'text-semantic-success';
-    if (rate >= 75) return 'text-lumina-600';
+    if (!rate) return 'text-neutral-300';
+    if (rate >= 90) return 'text-success';
+    if (rate >= 75) return 'text-lumina-300';
     return 'text-warning';
   };
 
@@ -91,10 +91,10 @@ export const PerformanceGuaranteeBadge: React.FC<PerformanceGuaranteeBadgeProps>
               className={cn(
                 'h-2 rounded-full transition-all',
                 successRate >= 90
-                  ? 'bg-semantic-success'
+                  ? 'bg-success'
                   : successRate >= 75
-                  ? 'bg-lumina-600'
-                  : 'bg-warning'
+                    ? 'bg-lumina'
+                    : 'bg-warning'
               )}
               style={{ width: `${Math.min(successRate, 100)}%` }}
             />
@@ -104,7 +104,7 @@ export const PerformanceGuaranteeBadge: React.FC<PerformanceGuaranteeBadgeProps>
 
       <div className="pt-2 border-t border-neutral-600 space-y-2">
         <div className="flex items-start gap-2">
-          <TrendingUp className="w-3.5 h-3.5 text-semantic-success mt-0.5 flex-shrink-0" />
+          <TrendingUp className="w-3.5 h-3.5 text-success mt-0.5 flex-shrink-0" />
           <p className="text-xs text-lux-200">
             Melhoria mínima de 10 pontos no score de prontidão
           </p>

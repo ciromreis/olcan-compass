@@ -138,6 +138,7 @@ export function ResetPassword() {
 
             <div className="relative">
               <Input
+                label="Nova Senha"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

@@ -15,7 +15,7 @@ type ApplicationSummary = Application
 
 export function MyApplications() {
   const navigate = useNavigate()
-  const { applications, isLoading, error } = useApplications()
+  const { applications, updateApplication, isLoading, error } = useApplications()
   const { mode, toggleMode } = useUIMode()
 
   if (isLoading) {
@@ -59,7 +59,7 @@ export function MyApplications() {
       </div>
 
       {!applications || applications.length === 0 ? (
-        <Card>
+        <Card className="liquid-glass">
           <EmptyState
             icon={<Briefcase className="w-12 h-12" />}
             title="Nenhuma aplicação criada"
@@ -76,7 +76,7 @@ export function MyApplications() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
             >
-              <Card>
+              <Card className="liquid-glass">
                 <div className="p-8">
                   <div className="flex items-center gap-2 mb-6">
                     <Flame className="w-5 h-5 text-lumina" />
@@ -84,7 +84,13 @@ export function MyApplications() {
                       Modo Forge — Próxima Tarefa
                     </span>
                   </div>
-                    <ApplicationCard application={nextTask} />
+                    <ApplicationCard
+                      application={nextTask}
+                      onViewDetails={(applicationId) => navigate(`/applications/detail/${applicationId}`)}
+                      onUpdateStatus={(applicationId, status) =>
+                        updateApplication({ applicationId, status })
+                      }
+                    />
                     <div className="mt-6 flex gap-3">
                       <Button onClick={() => navigate(`/applications/detail/${nextTask.id}`)}>
                         Continuar Aplicação
@@ -116,7 +122,13 @@ export function MyApplications() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
                   >
-                    <ApplicationCard application={app} />
+                    <ApplicationCard
+                      application={app}
+                      onViewDetails={(applicationId) => navigate(`/applications/detail/${applicationId}`)}
+                      onUpdateStatus={(applicationId, status) =>
+                        updateApplication({ applicationId, status })
+                      }
+                    />
                   </motion.div>
                 ))}
               </div>

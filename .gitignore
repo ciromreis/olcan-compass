@@ -41,6 +41,10 @@ celerybeat-schedule
 .idea/
 .qoder/
 
+# Local large exports / tooling caches
+archive/
+antigravity/
+
 # OS
 Thumbs.db
 stitch_assets/

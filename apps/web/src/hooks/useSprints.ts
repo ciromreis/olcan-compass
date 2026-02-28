@@ -1,6 +1,36 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 
+type RawReadinessAssessment = {
+  id: string;
+  user_id: string;
+  route_id?: string | null;
+  overall_readiness: number;
+  dimension_scores?: Record<string, number>;
+  notes?: string | null;
+  created_at: string;
+};
+
+type RawUrgentTask = {
+  id: string;
+  sprint_id: string;
+  title: string;
+  status?: string;
+  due_date?: string | null;
+  estimated_minutes?: number | null;
+};
+
+type RawReadinessOverview = {
+  latest_assessment?: RawReadinessAssessment | null;
+  open_gaps?: number;
+  critical_gaps?: number;
+  resolved_gaps?: number;
+  active_sprints?: number;
+  sprints_completed_this_month?: number;
+  recommended_next_sprints?: unknown[];
+  urgent_tasks?: RawUrgentTask[];
+};
+
 type RawSprintTemplate = {
   id: string;
   name: string;
@@ -60,6 +90,31 @@ const normalizeSprint = (sprint: RawSprint) => ({
     dependencies: (task.prerequisite_task_ids || []).map((id: string) => String(id)),
     notes: task.user_notes || task.completion_notes,
     estimated_duration: task.estimated_minutes,
+  })),
+});
+
+const normalizeReadinessOverview = (raw: RawReadinessOverview) => ({
+  latest_assessment: raw.latest_assessment
+    ? {
+        ...raw.latest_assessment,
+        id: String(raw.latest_assessment.id),
+        user_id: String(raw.latest_assessment.user_id),
+        route_id: raw.latest_assessment.route_id ? String(raw.latest_assessment.route_id) : null,
+      }
+    : null,
+  open_gaps: raw.open_gaps ?? 0,
+  critical_gaps: raw.critical_gaps ?? 0,
+  resolved_gaps: raw.resolved_gaps ?? 0,
+  active_sprints: raw.active_sprints ?? 0,
+  sprints_completed_this_month: raw.sprints_completed_this_month ?? 0,
+  recommended_next_sprints: raw.recommended_next_sprints ?? [],
+  urgent_tasks: (raw.urgent_tasks ?? []).map((t) => ({
+    id: String(t.id),
+    sprint_id: String(t.sprint_id),
+    title: t.title,
+    status: t.status,
+    due_date: t.due_date ?? null,
+    estimated_minutes: t.estimated_minutes ?? null,
   })),
 });
 
@@ -170,11 +225,22 @@ export const useGapAnalysis = () => {
   });
 };
 
+export const useReadinessOverview = () => {
+  return useQuery({
+    queryKey: ['sprints', 'readiness', 'overview'],
+    queryFn: async () => {
+      const response = await api.get('/sprints/readiness/overview');
+      return normalizeReadinessOverview(response.data);
+    },
+  });
+};
+
 // Aggregate hook for convenience
 export const useSprints = () => {
   const templatesQuery = useSprintTemplates();
   const sprintsQuery = useUserSprints();
   const gapAnalysisQuery = useGapAnalysis();
+  const readinessOverviewQuery = useReadinessOverview();
   const createSprint = useCreateSprint();
   const updateTask = useUpdateTask();
 
@@ -182,10 +248,20 @@ export const useSprints = () => {
     templates: templatesQuery.data,
     sprints: sprintsQuery.data,
     gapAnalysis: gapAnalysisQuery.data,
+    readinessOverview: readinessOverviewQuery.data,
     isLoading:
-      templatesQuery.isLoading || sprintsQuery.isLoading || gapAnalysisQuery.isLoading,
-    error: templatesQuery.error || sprintsQuery.error || gapAnalysisQuery.error,
+      templatesQuery.isLoading ||
+      sprintsQuery.isLoading ||
+      gapAnalysisQuery.isLoading ||
+      readinessOverviewQuery.isLoading,
+    error:
+      templatesQuery.error ||
+      sprintsQuery.error ||
+      gapAnalysisQuery.error ||
+      readinessOverviewQuery.error,
     createSprint: createSprint.mutate,
+    updateTask: (args: { sprintId: string; taskId: string; completed?: boolean; notes?: string }) =>
+      updateTask.mutate(args),
     completeTask: (sprintId: string, taskId: string) =>
       updateTask.mutate({ sprintId, taskId, completed: true }),
     getSprint: useSprint,

@@ -11,10 +11,12 @@ import { Select } from '@/components/ui/Select'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Alert } from '@/components/ui/Alert'
+import { useNavigate } from 'react-router-dom'
 
 type ProviderItem = Provider
 
 export function MarketplaceBrowse() {
+  const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState('')
   const [serviceFilter, setServiceFilter] = useState('all')
   const [ratingFilter, setRatingFilter] = useState('all')
@@ -36,6 +38,11 @@ export function MarketplaceBrowse() {
     return <Alert variant="error">Erro ao carregar marketplace. Tente novamente.</Alert>
   }
 
+  const filteredProviders =
+    providers?.filter((p: ProviderItem) =>
+      p.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
+    ) ?? []
+
   return (
     <div className="space-y-6">
       <div>
@@ -45,7 +52,7 @@ export function MarketplaceBrowse() {
         </p>
       </div>
 
-      <Card>
+      <Card className="liquid-glass">
         <div className="p-4 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Input
@@ -56,7 +63,7 @@ export function MarketplaceBrowse() {
             />
             <Select
               value={serviceFilter}
-              onChange={(value) => setServiceFilter(Array.isArray(value) ? value[0] : value)}
+              onChange={(value) => setServiceFilter(Array.isArray(value) ? value[0] || 'all' : value || 'all')}
               options={[
                 { value: 'all', label: 'Todos os serviços' },
                 { value: 'visa_consulting', label: 'Consultoria de Visto' },
@@ -66,7 +73,7 @@ export function MarketplaceBrowse() {
             />
             <Select
               value={ratingFilter}
-              onChange={(value) => setRatingFilter(Array.isArray(value) ? value[0] : value)}
+              onChange={(value) => setRatingFilter(Array.isArray(value) ? value[0] || 'all' : value || 'all')}
               options={[
                 { value: 'all', label: 'Todas as avaliações' },
                 { value: '4', label: '4+ estrelas' },
@@ -77,8 +84,8 @@ export function MarketplaceBrowse() {
         </div>
       </Card>
 
-      {!providers || providers.length === 0 ? (
-        <Card>
+      {!filteredProviders || filteredProviders.length === 0 ? (
+        <Card className="liquid-glass">
           <EmptyState
             icon={<Store className="w-12 h-12" />}
             title="Nenhum provedor encontrado"
@@ -87,14 +94,18 @@ export function MarketplaceBrowse() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {providers.map((provider: ProviderItem, index: number) => (
+          {filteredProviders.map((provider: ProviderItem, index: number) => (
             <motion.div
               key={provider.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
             >
-              <ProviderCard provider={provider} />
+              <ProviderCard
+                provider={provider}
+                onViewProfile={(providerId) => navigate(`/marketplace/provider/${providerId}`)}
+                onBookService={(providerId) => navigate(`/marketplace/provider/${providerId}`)}
+              />
             </motion.div>
           ))}
         </div>

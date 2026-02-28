@@ -133,7 +133,7 @@ export function Assessment() {
 
   // ── Continue to dashboard after results ──
   const handleContinue = useCallback(() => {
-    navigate('/')
+    navigate('/routes/templates')
   }, [navigate])
 
   return (

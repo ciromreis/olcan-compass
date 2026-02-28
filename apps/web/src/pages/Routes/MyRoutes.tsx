@@ -11,6 +11,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Alert } from '@/components/ui/Alert'
 import { useNavigate } from 'react-router-dom'
 import type { Route, RouteMilestone } from '@/store/route'
+import { Progress } from '@/components/ui/Progress'
 
 /**
  * My Routes page — displays user routes with Map/Forge mode support.
@@ -20,7 +21,7 @@ import type { Route, RouteMilestone } from '@/store/route'
 export function MyRoutes() {
   const navigate = useNavigate()
   const { routes, updateMilestone, isLoading, error } = useRoutes()
-  const { mode, toggleMode } = useUIMode()
+  const { mode, setMode } = useUIMode()
 
   if (isLoading) {
     return (
@@ -41,46 +42,72 @@ export function MyRoutes() {
   const hasRoutes = routes && routes.length > 0
   const activeRoute = routes?.find((r: Route) => r.status === 'active')
   const activeMilestone = activeRoute?.milestones?.find((m: RouteMilestone) => !m.completed)
+  const otherRoutes = (routes || []).filter((r: Route) => r.id !== activeRoute?.id)
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="font-heading text-h1 text-white">
-            Minhas Rotas
-          </h1>
+          <h1 className="font-heading text-h2 text-white">Rotas</h1>
           <p className="text-body text-neutral-300 mt-1">
-            Acompanhe seu progresso na jornada de mobilidade
+            Execução com visibilidade. Progresso com intenção.
           </p>
+          <div className="mt-4 inline-flex items-center gap-1 rounded-full border border-white/10 bg-neutral-800/20 p-1">
+            <button
+              type="button"
+              onClick={() => setMode('map')}
+              className={[
+                'inline-flex items-center gap-2 rounded-full px-3 py-1 text-body-sm transition-colors',
+                mode === 'map'
+                  ? 'bg-lumina/10 text-lumina-200'
+                  : 'text-neutral-300 hover:text-neutral-100',
+              ].join(' ')}
+            >
+              <MapIcon className="w-4 h-4" />
+              Mapa
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode('forge')}
+              className={[
+                'inline-flex items-center gap-2 rounded-full px-3 py-1 text-body-sm transition-colors',
+                mode === 'forge'
+                  ? 'bg-lumina/10 text-lumina-200'
+                  : 'text-neutral-300 hover:text-neutral-100',
+              ].join(' ')}
+            >
+              <Flame className="w-4 h-4" />
+              Forja
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          {/* Mode Toggle */}
-          <Button
-            variant="ghost"
-            onClick={toggleMode}
-            icon={mode === 'map' ? <Flame className="w-4 h-4" /> : <MapIcon className="w-4 h-4" />} iconPosition="left"
-          >
-            {mode === 'map' ? 'Modo Forge' : 'Modo Map'}
+        <div className="flex items-center gap-2">
+          <Button variant="secondary" size="sm" onClick={() => navigate('/routes/templates')}>
+            Explorar templates
           </Button>
           <Button
+            size="sm"
             onClick={() => navigate('/routes/templates')}
-            icon={<Plus className="w-4 h-4" />} iconPosition="left"
+            icon={<Plus className="w-4 h-4" />}
+            iconPosition="left"
           >
-            Nova Rota
+            Criar
           </Button>
         </div>
       </div>
 
       {!hasRoutes ? (
         /* Empty State */
-        <Card>
+        <Card className="liquid-glass" noPadding>
+          <div className="p-6">
           <EmptyState
             icon={<MapIcon className="w-12 h-12" />}
             title="Nenhuma rota criada"
             description="Comece sua jornada escolhendo um template de rota estruturado para seu destino."
             onAction={() => navigate('/routes/templates')}
           />
+          </div>
         </Card>
       ) : (
         <AnimatePresence mode="wait">
@@ -94,7 +121,7 @@ export function MyRoutes() {
               transition={{ duration: 0.3 }}
             >
               {activeMilestone && activeRoute ? (
-                <Card>
+                <Card className="liquid-glass" noPadding>
                   <div className="p-8">
                     {/* Mode Indicator */}
                     <div className="flex items-center gap-2 mb-6">
@@ -120,11 +147,11 @@ export function MyRoutes() {
 
                     {/* Milestone Details */}
                     <div className="grid grid-cols-3 gap-4 mb-6">
-                      <div className="p-4 rounded-lg bg-neutral-700/30 border border-neutral-600/20">
+                      <div className="p-4 rounded-2xl bg-neutral-800/30 border border-white/10">
                         <p className="text-body-sm text-neutral-400 mb-1">Status</p>
                         <Badge variant="warning">Em Progresso</Badge>
                       </div>
-                      <div className="p-4 rounded-lg bg-neutral-700/30 border border-neutral-600/20">
+                      <div className="p-4 rounded-2xl bg-neutral-800/30 border border-white/10">
                         <p className="text-body-sm text-neutral-400 mb-1">Prazo</p>
                         <p className="text-body text-white">
                           {activeMilestone.target_date
@@ -132,7 +159,7 @@ export function MyRoutes() {
                             : 'Não definido'}
                         </p>
                       </div>
-                      <div className="p-4 rounded-lg bg-neutral-700/30 border border-neutral-600/20">
+                      <div className="p-4 rounded-2xl bg-neutral-800/30 border border-white/10">
                         <p className="text-body-sm text-neutral-400 mb-1">Ordem</p>
                         <p className="text-body text-white">
                           Marco {activeMilestone.order_index + 1}
@@ -149,7 +176,7 @@ export function MyRoutes() {
                       </Button>
                       <Button
                         variant="ghost"
-                        onClick={toggleMode}
+                        onClick={() => setMode('map')}
                       >
                         Ver Todas as Rotas
                       </Button>
@@ -157,13 +184,15 @@ export function MyRoutes() {
                   </div>
                 </Card>
               ) : (
-                <Card>
+                <Card className="liquid-glass" noPadding>
+                  <div className="p-6">
                   <EmptyState
                     icon={<Target className="w-12 h-12" />}
                     title="Nenhum marco ativo"
                     description="Você não tem marcos em progresso no momento."
-                    onAction={toggleMode}
+                    onAction={() => setMode('map')}
                   />
+                  </div>
                 </Card>
               )}
             </motion.div>
@@ -177,56 +206,84 @@ export function MyRoutes() {
               transition={{ duration: 0.3 }}
               className="space-y-6"
             >
-              {/* Mode Indicator */}
-              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-lumina/5 border border-lumina/20 w-fit">
-                <MapIcon className="w-4 h-4 text-lumina" />
-                <span className="text-body-sm text-lumina font-medium">
-                  Modo Map — Visão Completa
-                </span>
-              </div>
-
-              {routes.map((route: Route, index: number) => (
-                <motion.div
-                  key={route.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
-                >
-                  <Card>
-                    <div className="p-6">
-                      {/* Route Header */}
-                      <div className="flex items-start justify-between mb-6">
-                        <div>
-                          <h3 className="font-heading text-h3 text-white mb-1">
-                            {route.name}
-                          </h3>
-                          <p className="text-body-sm text-neutral-400">
-                            {route.name}
-                          </p>
-                        </div>
-                        <Badge
-                          variant={
-                            route.status === 'completed'
-                              ? 'success'
-                              : route.status === 'active'
-                              ? 'warning'
-                              : 'default'
-                          }
-                        >
-                          {route.status === 'completed'
-                            ? 'Completa'
-                            : route.status === 'active'
-                            ? 'Ativa'
-                            : 'Planejada'}
-                        </Badge>
-                      </div>
-
-                      {/* Timeline */}
-                      <RouteTimeline route={route} />
+              {/* Active Route Card */}
+              <Card className="liquid-glass" noPadding>
+                <div className="p-6">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="text-body-sm text-neutral-400">Rota ativa</p>
+                      <h2 className="font-heading text-h3 text-white truncate">
+                        {activeRoute?.name || 'Nenhuma rota ativa'}
+                      </h2>
+                      {activeMilestone && (
+                        <p className="text-body-sm text-neutral-300 mt-1">
+                          Próximo passo: <span className="text-neutral-100 font-medium">{activeMilestone.title}</span>
+                        </p>
+                      )}
                     </div>
-                  </Card>
-                </motion.div>
-              ))}
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => navigate(activeRoute ? '/routes' : '/routes/templates')}
+                      >
+                        {activeRoute ? 'Retomar' : 'Explorar'}
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="mt-5">
+                    <Progress value={activeRoute?.progress_percentage || 0} showLabel />
+                  </div>
+                </div>
+              </Card>
+
+              {activeRoute && (
+                <Card className="liquid-glass" noPadding>
+                  <div className="p-6">
+                    <h3 className="font-heading text-h3 text-white mb-4">Linha do tempo</h3>
+                    <RouteTimeline route={activeRoute} />
+                  </div>
+                </Card>
+              )}
+
+              {otherRoutes.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="font-heading text-h3 text-white">Outras rotas</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {otherRoutes.map((route: Route, index: number) => (
+                      <motion.div
+                        key={route.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.05 }}
+                      >
+                        <Card className="liquid-glass" noPadding>
+                          <div className="p-5">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0">
+                                <p className="text-body font-semibold text-white truncate">{route.name}</p>
+                                <p className="text-body-sm text-neutral-400 mt-0.5">
+                                  {route.status === 'completed'
+                                    ? 'Completa'
+                                    : route.status === 'active'
+                                      ? 'Ativa'
+                                      : 'Planejada'}
+                                </p>
+                              </div>
+                              <Badge variant={route.status === 'completed' ? 'success' : route.status === 'active' ? 'warning' : 'default'} className="font-mono">
+                                {Math.round(route.progress_percentage || 0)}%
+                              </Badge>
+                            </div>
+                            <div className="mt-4">
+                              <Progress value={route.progress_percentage || 0} />
+                            </div>
+                          </div>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

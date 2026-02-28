@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { MapPin, Calendar, Star } from 'lucide-react'
 import { useMarketplace } from '@/hooks/useMarketplace'
 import { Button } from '@/components/ui/Button'
@@ -36,6 +36,7 @@ type ProviderData = {
 }
 
 export function ProviderProfile() {
+  const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
   const { getProvider, bookService } = useMarketplace()
 
@@ -56,7 +57,7 @@ export function ProviderProfile() {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="liquid-glass">
         <div className="p-6">
           <div className="flex items-start gap-6">
             <Avatar src={provider.avatar}  size="xl" />
@@ -80,7 +81,7 @@ export function ProviderProfile() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <Card>
+          <Card className="liquid-glass">
             <div className="p-6">
               <h2 className="font-heading text-h3 text-white mb-4">Serviços</h2>
               <div className="space-y-4">
@@ -105,7 +106,7 @@ export function ProviderProfile() {
             </div>
           </Card>
 
-          <Card>
+          <Card className="liquid-glass">
             <div className="p-6">
               <h2 className="font-heading text-h3 text-white mb-4">Avaliações</h2>
               <div className="space-y-4">
@@ -136,7 +137,7 @@ export function ProviderProfile() {
         </div>
 
         <div>
-          <Card>
+          <Card className="liquid-glass">
             <div className="p-6">
               <h2 className="font-heading text-h3 text-white mb-4">Disponibilidade</h2>
               <div className="space-y-3">
@@ -145,7 +146,11 @@ export function ProviderProfile() {
                   <span>Próximos horários disponíveis</span>
                 </div>
                 <Button fullWidth>Ver Agenda</Button>
-                <Button fullWidth variant="secondary">
+                <Button
+                  fullWidth
+                  variant="secondary"
+                  onClick={() => navigate('/marketplace/messages')}
+                >
                   Enviar Mensagem
                 </Button>
               </div>

@@ -87,6 +87,9 @@ export type { TooltipProps } from './Tooltip'
 export { LoadingSpinner, Skeleton } from './LoadingSpinner'
 export type { LoadingSpinnerProps, SkeletonProps } from './LoadingSpinner'
 
+export { MaterialSymbol } from './MaterialSymbol'
+export type { MaterialSymbolProps } from './MaterialSymbol'
+
 export { EmptyState } from './EmptyState'
 export type { EmptyStateProps } from './EmptyState'
 
@@ -147,4 +150,3 @@ export type {
   ResponsiveProps,
   ThemeProps,
 } from './types'
-

@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/Card'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Alert } from '@/components/ui/Alert'
+import { useNavigate } from 'react-router-dom'
 
 type SprintTemplateItem = {
   id: string
@@ -17,6 +18,7 @@ type SprintTemplateItem = {
 
 
 export function SprintTemplates() {
+  const navigate = useNavigate()
   const { templates, createSprint, isLoading, error } = useSprints()
 
   if (isLoading) {
@@ -33,20 +35,27 @@ export function SprintTemplates() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-heading text-h1 text-white">Templates de Sprints</h1>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-heading text-h2 text-white">Templates</h1>
         <p className="text-body text-neutral-300 mt-1">
           Sprints estruturados para preparação de mobilidade
         </p>
+        </div>
+        <Button variant="secondary" size="sm" onClick={() => navigate('/sprints')}>
+          Meus sprints
+        </Button>
       </div>
 
       {!templates || templates.length === 0 ? (
-        <Card>
+        <Card className="liquid-glass" noPadding>
+          <div className="p-6">
           <EmptyState
             icon={<Zap className="w-12 h-12" />}
             title="Nenhum template disponível"
             description="Não há templates de sprints disponíveis no momento."
           />
+          </div>
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -57,7 +66,7 @@ export function SprintTemplates() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
             >
-              <Card className="h-full hover:border-lumina/40 transition-colors">
+              <Card className="h-full liquid-glass hover:border-lumina/30 transition-colors" noPadding>
                 <div className="p-6 h-full flex flex-col">
                   <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-lumina/10 text-lumina mb-4">
                     <Zap className="w-6 h-6" />
@@ -78,7 +87,12 @@ export function SprintTemplates() {
                   </div>
                   <Button
                     fullWidth
-                    onClick={() => createSprint({ template_id: template.id })}
+                    onClick={() =>
+                      createSprint(
+                        { template_id: template.id },
+                        { onSuccess: (data: any) => data?.id && navigate(`/sprints/${data.id}`) }
+                      )
+                    }
                   >
                     Iniciar Sprint
                   </Button>

@@ -8,17 +8,19 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Alert } from '@/components/ui/Alert'
 import { useNavigate } from 'react-router-dom'
+import { MaterialSymbol } from '@/components/ui/MaterialSymbol'
 
 type SprintItem = {
   id: string
   name: string
   total_tasks: number
   completed_tasks: number
+  status?: string
 }
 
 export function MySprints() {
   const navigate = useNavigate()
-  const { sprints, gapAnalysis, isLoading, error } = useSprints()
+  const { sprints, gapAnalysis, readinessOverview, isLoading, error } = useSprints()
 
   if (isLoading) {
     return (
@@ -32,11 +34,13 @@ export function MySprints() {
     return <Alert variant="error">Erro ao carregar sprints. Tente novamente.</Alert>
   }
 
+  const urgentTasks = readinessOverview?.urgent_tasks?.slice(0, 3) ?? []
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-h1 text-white">Meus Sprints</h1>
+          <h1 className="font-heading text-h2 text-white">Sprints</h1>
           <p className="text-body text-neutral-300 mt-1">
             Acompanhe seu progresso de preparação
           </p>
@@ -47,7 +51,7 @@ export function MySprints() {
       </div>
 
       {gapAnalysis && (
-        <Card>
+        <Card className="liquid-glass" noPadding>
           <div className="p-6">
             <div className="flex items-center gap-3 mb-4">
               <TrendingUp className="w-6 h-6 text-lumina" />
@@ -66,14 +70,49 @@ export function MySprints() {
         </Card>
       )}
 
+      {urgentTasks.length > 0 && (
+        <Card className="liquid-glass" noPadding>
+          <div className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <MaterialSymbol name="warning" size={20} className="text-warning" />
+              <h2 className="font-heading text-h3 text-white">Tarefas de hoje</h2>
+            </div>
+            <div className="space-y-2">
+              {urgentTasks.map((t) => (
+                <div
+                  key={t.id}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-neutral-800/30 p-4"
+                >
+                  <div className="min-w-0">
+                    <p className="text-body-sm font-semibold text-white truncate">{t.title}</p>
+                    <p className="text-caption text-neutral-400 mt-0.5">
+                      {t.estimated_minutes ? `${t.estimated_minutes} min` : '—'}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => navigate(`/sprints/${t.sprint_id}`)}
+                  >
+                    Abrir
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Card>
+      )}
+
       {!sprints || sprints.length === 0 ? (
-        <Card>
+        <Card className="liquid-glass" noPadding>
+          <div className="p-6">
           <EmptyState
             icon={<Zap className="w-12 h-12" />}
             title="Nenhum sprint ativo"
             description="Inicie um sprint para estruturar sua preparação."
             onAction={() => navigate('/sprints/templates')}
           />
+          </div>
         </Card>
       ) : (
         <div className="space-y-6">
@@ -84,7 +123,7 @@ export function MySprints() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
             >
-              <Card>
+              <Card className="liquid-glass" noPadding>
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div>

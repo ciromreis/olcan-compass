@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Map, Clock, Target, ChevronRight } from 'lucide-react'
+import { Map, Clock, Target, ChevronRight, Search, SlidersHorizontal } from 'lucide-react'
 import { useRoutes } from '@/hooks/useRoutes'
 import { TemporalRouteRecommendations } from '@/components/domain/TemporalRouteRecommendations'
 import { Button } from '@/components/ui/Button'
@@ -12,6 +12,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Alert } from '@/components/ui/Alert'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/auth'
+import { Input } from '@/components/ui/Input'
 
 interface RouteTemplate {
   id: string
@@ -32,6 +33,8 @@ export function RouteTemplates() {
   const { templates, createRouteFromTemplateAsync, isLoading, error } = useRoutes()
   const [selectedTemplate, setSelectedTemplate] = useState<RouteTemplate | null>(null)
   const [isCreating, setIsCreating] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [category, setCategory] = useState<'all' | 'bolsas' | 'trabalho' | 'pesquisa' | 'visto' | 'intercambio'>('all')
 
   const handleCreateRoute = async () => {
     if (!selectedTemplate) return
@@ -76,17 +79,89 @@ export function RouteTemplates() {
     advanced: 'Avançado',
   }
 
+  const filteredTemplates = (templates || []).filter((t: RouteTemplate) => {
+    const matchesSearch =
+      !searchTerm.trim() ||
+      t.name.toLowerCase().includes(searchTerm.trim().toLowerCase()) ||
+      t.description.toLowerCase().includes(searchTerm.trim().toLowerCase())
+
+    const lower = `${t.name} ${t.description} ${t.destination_country}`.toLowerCase()
+    const matchesCategory =
+      category === 'all'
+        ? true
+        : category === 'bolsas'
+          ? lower.includes('scholar') || lower.includes('bolsa')
+          : category === 'trabalho'
+            ? lower.includes('job') || lower.includes('trabalho')
+            : category === 'pesquisa'
+              ? lower.includes('research') || lower.includes('pesquisa')
+              : category === 'visto'
+                ? lower.includes('visa') || lower.includes('visto')
+                : lower.includes('exchange') || lower.includes('intercâmbio') || lower.includes('intercambio')
+
+    return matchesSearch && matchesCategory
+  })
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="font-heading text-h1 text-white">
-          Templates de Rotas
-        </h1>
-        <p className="text-body text-neutral-300 mt-1">
-          Escolha um caminho estruturado para sua jornada de mobilidade internacional
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-heading text-h2 text-white">Templates</h1>
+          <p className="text-body text-neutral-300 mt-1">
+            Escolha um caminho estruturado para sua jornada.
+          </p>
+        </div>
+        <Button variant="secondary" size="sm" onClick={() => navigate('/routes')}>
+          Minhas rotas
+        </Button>
       </div>
+
+      {/* Search + Filters */}
+      <Card className="liquid-glass" noPadding>
+        <div className="p-4 space-y-3">
+          <div className="flex items-center gap-3">
+            <Input
+              placeholder="Buscar rota..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              leftIcon={<Search className="w-4 h-4" />}
+            />
+            <button
+              type="button"
+              className="touch-target inline-flex items-center justify-center rounded-xl border border-white/10 bg-neutral-800/30 px-3 text-neutral-200 hover:bg-neutral-800/40 transition-colors"
+              aria-label="Filtros"
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            {[
+              { id: 'all', label: 'Todos' },
+              { id: 'bolsas', label: 'Bolsas' },
+              { id: 'trabalho', label: 'Trabalho' },
+              { id: 'pesquisa', label: 'Pesquisa' },
+              { id: 'visto', label: 'Visto' },
+              { id: 'intercambio', label: 'Intercâmbio' },
+            ].map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => setCategory(c.id as any)}
+                className={[
+                  'whitespace-nowrap rounded-full px-3 py-1 text-body-sm border transition-colors',
+                  category === (c.id as any)
+                    ? 'bg-lumina/10 border-lumina/30 text-lumina-200'
+                    : 'bg-neutral-800/20 border-white/10 text-neutral-300 hover:bg-neutral-800/30',
+                ].join(' ')}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </Card>
 
       {/* Temporal Route Recommendations */}
       {user && (
@@ -102,23 +177,25 @@ export function RouteTemplates() {
       )}
 
       {!templates || templates.length === 0 ? (
-        <Card>
+        <Card className="liquid-glass" noPadding>
+          <div className="p-6">
           <EmptyState
             icon={<Map className="w-12 h-12" />}
             title="Nenhum template disponível"
             description="Não há templates de rotas disponíveis no momento."
           />
+          </div>
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {templates.map((template: RouteTemplate, index: number) => (
+          {filteredTemplates.map((template: RouteTemplate, index: number) => (
             <motion.div
               key={template.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
             >
-              <Card className="h-full hover:border-lumina/40 transition-colors cursor-pointer group">
+              <Card className="h-full liquid-glass hover:border-lumina/30 transition-colors cursor-pointer group" noPadding>
                 <div
                   className="p-6 h-full flex flex-col"
                   onClick={() => setSelectedTemplate(template)}

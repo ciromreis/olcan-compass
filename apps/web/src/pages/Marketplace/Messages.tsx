@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { MessageSquare, Send } from 'lucide-react'
 import { useMarketplace } from '@/hooks/useMarketplace'
 import { Button } from '@/components/ui/Button'
@@ -30,7 +30,25 @@ export function Messages() {
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null)
   const [messageText, setMessageText] = useState('')
 
-  const conversationMessagesQuery = getConversation(selectedConversation ?? '')
+  const conversationId = selectedConversation ?? ''
+  const conversationMessagesQuery = getConversation(conversationId)
+  const scrollAnchorRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (!selectedConversation && conversations && conversations.length > 0) {
+      setSelectedConversation(conversations[0]?.id ?? null)
+    }
+  }, [conversations, selectedConversation])
+
+  const selectedConv = useMemo(
+    () => conversations?.find((c: ConversationItem) => c.id === selectedConversation),
+    [conversations, selectedConversation]
+  )
+
+  useEffect(() => {
+    if (conversationMessagesQuery.isFetching || conversationMessagesQuery.isLoading) return
+    scrollAnchorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+  }, [conversationMessagesQuery.isFetching, conversationMessagesQuery.isLoading, conversationMessagesQuery.data])
 
   if (isLoading) {
     return (
@@ -44,7 +62,15 @@ export function Messages() {
     return <Alert variant="error">Erro ao carregar mensagens. Tente novamente.</Alert>
   }
 
-  const selectedConv = conversations?.find((c: ConversationItem) => c.id === selectedConversation)
+  const handleSend = () => {
+    const trimmed = messageText.trim()
+    if (!trimmed || !selectedConversation) return
+
+    sendMessage(
+      { conversationId: selectedConversation, content: trimmed },
+      { onSuccess: () => setMessageText('') }
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -56,117 +82,137 @@ export function Messages() {
       </div>
 
       {!conversations || conversations.length === 0 ? (
-        <Card>
-          <EmptyState
-            icon={<MessageSquare className="w-12 h-12" />}
-            title="Nenhuma conversa"
-            description="Você ainda não iniciou nenhuma conversa."
-          />
+        <Card className="liquid-glass" noPadding>
+          <div className="p-8">
+            <EmptyState
+              icon={<MessageSquare className="w-12 h-12" />}
+              title="Nenhuma conversa"
+              description="Você ainda não iniciou nenhuma conversa."
+            />
+          </div>
         </Card>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-1">
+          <Card className="lg:col-span-1 liquid-glass" noPadding>
             <div className="p-4">
-              <h2 className="font-heading text-h4 text-white mb-4">Conversas</h2>
-              <div className="space-y-2">
-                {conversations.map((conv: ConversationItem) => (
-                  <div
-                    key={conv.id}
-                    onClick={() => setSelectedConversation(conv.id)}
-                    className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                      selectedConversation === conv.id
-                        ? 'bg-lumina/10 border border-lumina/30'
-                        : 'bg-neutral-700/30 hover:bg-neutral-700/50'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Avatar src={conv.provider_avatar}  size="sm" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-body-sm text-white font-medium truncate">
-                          {conv.provider_name}
-                        </p>
-                        <p className="text-caption text-neutral-400 truncate">
-                          {conv.last_message}
-                        </p>
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="font-heading text-h4 text-white">Conversas</h2>
+                <div className="text-caption text-neutral-400">
+                  {conversations.length} ativa{conversations.length === 1 ? '' : 's'}
+                </div>
+              </div>
+              <div className="mt-4 space-y-2">
+                {conversations.map((conv: ConversationItem) => {
+                  const isActive = selectedConversation === conv.id
+                  return (
+                    <button
+                      key={conv.id}
+                      type="button"
+                      onClick={() => setSelectedConversation(conv.id)}
+                      aria-selected={isActive}
+                      className={[
+                        'w-full text-left p-3 rounded-xl border transition-colors',
+                        isActive
+                          ? 'bg-lumina/10 border-lumina/30'
+                          : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20',
+                      ].join(' ')}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Avatar src={conv.provider_avatar} size="sm" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-body-sm text-white font-medium truncate">
+                            {conv.provider_name}
+                          </p>
+                          <p className="text-caption text-neutral-400 truncate">
+                            {conv.last_message || '—'}
+                          </p>
+                        </div>
+                        {(conv.unread_count ?? 0) > 0 && (
+                          <Badge variant="error" size="sm">
+                            {conv.unread_count ?? 0}
+                          </Badge>
+                        )}
                       </div>
-                      {(conv.unread_count ?? 0) > 0 && (
-                        <Badge variant="error" size="sm">
-                          {conv.unread_count ?? 0}
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                    </button>
+                  )
+                })}
               </div>
             </div>
           </Card>
 
-          <Card className="lg:col-span-2">
+          <Card className="lg:col-span-2 liquid-glass" noPadding>
             {selectedConv ? (
-              <div className="flex flex-col h-[600px]">
-                <div className="p-4 border-b border-neutral-600/30">
+              <div className="flex flex-col h-[70vh] min-h-[520px]">
+                <div className="p-4 border-b border-white/10">
                   <div className="flex items-center gap-3">
-                    <Avatar src={selectedConv.provider_avatar}  size="sm" />
-                    <p className="text-body text-white font-medium">{selectedConv.provider_name}</p>
+                    <Avatar src={selectedConv.provider_avatar} size="sm" />
+                    <div className="min-w-0">
+                      <p className="text-body text-white font-medium truncate">
+                        {selectedConv.provider_name}
+                      </p>
+                      <p className="text-caption text-neutral-400 truncate">
+                        {selectedConv.last_message || 'Conversa aberta'}
+                      </p>
+                    </div>
                   </div>
                 </div>
                 <div className="flex-1 p-4 overflow-y-auto">
-                  <div className="space-y-4">
-                    {(conversationMessagesQuery?.data ?? []).map((msg: ConversationMessage) => (
-                      <div
-                        key={msg.id}
-                        className={`flex ${msg.is_from_user ? 'justify-end' : 'justify-start'}`}
-                      >
+                  {conversationMessagesQuery.isLoading ? (
+                    <div className="flex items-center justify-center h-full">
+                      <LoadingSpinner />
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {(conversationMessagesQuery?.data ?? []).map((msg: ConversationMessage) => (
                         <div
-                          className={`max-w-[70%] p-3 rounded-lg ${
-                            msg.is_from_user
-                              ? 'bg-lumina text-white'
-                              : 'bg-neutral-700/50 text-neutral-200'
-                          }`}
+                          key={msg.id}
+                          className={`flex ${msg.is_from_user ? 'justify-end' : 'justify-start'}`}
                         >
-                          <p className="text-body-sm">{msg.content}</p>
-                          <p className="text-caption text-neutral-400 mt-1">
-                            {msg.created_at
-                              ? new Date(msg.created_at).toLocaleTimeString('pt-BR', {
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                })
-                              : '--:--'}
-                          </p>
+                          <div
+                            className={[
+                              'max-w-[80%] p-3 rounded-2xl border',
+                              msg.is_from_user
+                                ? 'bg-lumina/20 border-lumina/30 text-white'
+                                : 'bg-white/5 border-white/10 text-neutral-200',
+                            ].join(' ')}
+                          >
+                            <p className="text-body-sm whitespace-pre-wrap">{msg.content}</p>
+                            <p className="text-caption text-neutral-400 mt-1">
+                              {msg.created_at
+                                ? new Date(msg.created_at).toLocaleTimeString('pt-BR', {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  })
+                                : '--:--'}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                      <div ref={scrollAnchorRef} />
+                    </div>
+                  )}
                 </div>
-                <div className="p-4 border-t border-neutral-600/30">
+                <div className="p-4 border-t border-white/10">
                   <div className="flex items-center gap-3">
                     <Input
                       value={messageText}
                       onChange={(e) => setMessageText(e.target.value)}
-                      placeholder="Digite sua mensagem..."
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter' && messageText.trim()) {
-                          sendMessage({ conversationId: selectedConversation!, content: messageText })
-                          setMessageText('')
+                      placeholder="Digite sua mensagem…"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault()
+                          handleSend()
                         }
                       }}
                     />
-                    <Button
-                      onClick={() => {
-                        if (messageText.trim()) {
-                          sendMessage({ conversationId: selectedConversation!, content: messageText })
-                          setMessageText('')
-                        }
-                      }}
-                      disabled={!messageText.trim()}
-                    >
+                    <Button onClick={handleSend} disabled={!messageText.trim()}>
                       <Send className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-[600px]">
+              <div className="flex items-center justify-center h-[70vh] min-h-[520px]">
                 <EmptyState
                   icon={<MessageSquare className="w-12 h-12" />}
                   title="Selecione uma conversa"

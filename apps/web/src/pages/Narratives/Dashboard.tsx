@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Plus, Clock, FileEdit, FileText } from 'lucide-react'
-import { useNarratives, useCreateNarrative } from '@/hooks/useNarratives'
+import { useNarratives, useCreateNarrative, type NarrativeType } from '@/hooks/useNarratives'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Modal } from '@/components/ui/Modal'
-import { Input } from '@/components/ui/Input'
+import { Input, Textarea } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Badge } from '@/components/ui/Badge'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -20,25 +20,28 @@ export function NarrativesDashboard() {
   const navigate = useNavigate()
   const narrativesQuery = useNarratives()
   const createNarrativeMutation = useCreateNarrative()
-  const narratives = narrativesQuery.data
+  const narratives = narrativesQuery.data || []
   const isLoading = narrativesQuery.isLoading
   const error = narrativesQuery.error
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [newNarrativeTitle, setNewNarrativeTitle] = useState('')
-  const [newNarrativeType, setNewNarrativeType] = useState('personal_statement')
+  const [newNarrativeType, setNewNarrativeType] = useState<NarrativeType>('personal_statement')
+  const [newNarrativeContent, setNewNarrativeContent] = useState('')
   const [isCreating, setIsCreating] = useState(false)
 
   const handleCreate = async () => {
-    if (!newNarrativeTitle.trim()) return
+    if (!newNarrativeTitle.trim() || !newNarrativeContent.trim()) return
 
     setIsCreating(true)
     try {
       const narrative = await createNarrativeMutation.mutateAsync({
         title: newNarrativeTitle,
-        type: newNarrativeType,
+        narrative_type: newNarrativeType,
+        content: newNarrativeContent,
       })
       setIsCreateModalOpen(false)
       setNewNarrativeTitle('')
+      setNewNarrativeContent('')
       navigate(`/narratives/${narrative.id}`)
     } catch (err) {
       // Error handled by hook
@@ -64,10 +67,13 @@ export function NarrativesDashboard() {
   }
 
   const narrativeTypeLabels = {
-    personal_statement: 'Declaração Pessoal',
     motivation_letter: 'Carta de Motivação',
+    personal_statement: 'Declaração Pessoal',
+    cover_letter: 'Carta de Apresentação',
     research_proposal: 'Proposta de Pesquisa',
-    essay: 'Ensaio',
+    scholarship_essay: 'Ensaio de Bolsa',
+    cv_summary: 'Resumo de CV',
+    other: 'Outro',
   }
 
   return (
@@ -97,8 +103,9 @@ export function NarrativesDashboard() {
           <EmptyState
             icon={<FileText className="w-5 h-5" />}
             title="Nenhuma narrativa criada"
-            description="Comece a escrever sua história para aplicações acadêmicas e profissionais."
+            description="Comece escrevendo sua primeira narrativa para se destacar em suas aplicações."
             onAction={() => setIsCreateModalOpen(true)}
+            actionLabel="Criar Narrativa"
           />
         </Card>
       ) : (
@@ -122,7 +129,7 @@ export function NarrativesDashboard() {
                       <FileText className="w-6 h-6" />
                     </div>
                     <Badge variant="default">
-                      {narrativeTypeLabels[narrative.type as keyof typeof narrativeTypeLabels] || narrative.type}
+                      {narrativeTypeLabels[narrative.narrative_type as keyof typeof narrativeTypeLabels] || narrative.narrative_type}
                     </Badge>
                   </div>
 
@@ -132,7 +139,8 @@ export function NarrativesDashboard() {
                       {narrative.title}
                     </h3>
                     <p className="text-body-sm text-neutral-400 mb-4">
-                      {narrative.word_count || 0} palavras
+                      {narrative.version_count || 0} versões
+                      {typeof narrative.latest_overall_score === 'number' ? ` • Score ${Math.round(narrative.latest_overall_score)}/100` : ''}
                     </p>
                   </div>
 
@@ -162,29 +170,48 @@ export function NarrativesDashboard() {
       >
         <div className="space-y-4">
           <Input
-            
+            label="Título"
             value={newNarrativeTitle}
             onChange={(e) => setNewNarrativeTitle(e.target.value)}
             placeholder="Ex: Declaração Pessoal - MIT"
             autoFocus
           />
 
-          <Select
-            value={newNarrativeType}
-            onChange={(value) => setNewNarrativeType(Array.isArray(value) ? value[0] : value)}
-            options={[
-              { value: 'personal_statement', label: 'Declaração Pessoal' },
-              { value: 'motivation_letter', label: 'Carta de Motivação' },
-              { value: 'research_proposal', label: 'Proposta de Pesquisa' },
-              { value: 'essay', label: 'Ensaio' },
-            ]}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-neutral-200">
+              Tipo de Narrativa
+            </label>
+            <Select
+              value={newNarrativeType}
+              onChange={(value) => {
+                setNewNarrativeType((Array.isArray(value) ? value[0] : value) as NarrativeType)
+              }}
+              placeholder="Selecione um tipo..."
+              options={[
+                { value: 'motivation_letter', label: 'Carta de Motivação' },
+                { value: 'personal_statement', label: 'Declaração Pessoal' },
+                { value: 'cover_letter', label: 'Carta de Apresentação' },
+                { value: 'research_proposal', label: 'Proposta de Pesquisa' },
+                { value: 'scholarship_essay', label: 'Ensaio de Bolsa' },
+                { value: 'cv_summary', label: 'Resumo de CV' },
+                { value: 'other', label: 'Outro' },
+              ]}
+            />
+          </div>
+
+          <Textarea
+            label="Primeiro rascunho"
+            value={newNarrativeContent}
+            onChange={(e) => setNewNarrativeContent(e.target.value)}
+            placeholder="Escreva aqui sem se censurar. A forja serve para lapidar depois."
+            helperText="Dica: comece com 3 fatos + 1 motivação + 1 prova."
           />
 
           <div className="flex items-center gap-3 pt-4">
             <Button
               onClick={handleCreate}
               isLoading={isCreating}
-              disabled={!newNarrativeTitle.trim()}
+              disabled={!newNarrativeTitle.trim() || !newNarrativeContent.trim()}
               fullWidth
             >
               Criar Narrativa

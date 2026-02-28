@@ -36,6 +36,7 @@ const normalizeOpportunity = (item: RawOpportunity) => ({
   id: String(item.id),
   opportunity_id: String(item.id),
   opportunity_name: item.title,
+  description: item.description,
   opportunity_type: item.opportunity_type,
   institution: item.organization_name,
   location: item.location_country || item.organization_country,
@@ -171,13 +172,20 @@ export const useWatchlist = () => {
   return useQuery({
     queryKey: ['applications', 'watchlist'],
     queryFn: async () => {
-      const response = await api.get('/applications/watchlist');
-      return (response.data?.items ?? []).map((item: RawApplication) => ({
-        id: String(item.id),
-        opportunity_id: String(item.opportunity_id),
-        opportunity_name: item.opportunity?.title || 'Oportunidade',
-      }));
+      try {
+        const response = await api.get('/applications/watchlist');
+        return (response.data?.items ?? []).map((item: any) => ({
+          id: String(item.id),
+          opportunity_id: String(item.opportunity_id),
+          opportunity_name: item.opportunity?.title || 'Oportunidade',
+        }));
+      } catch (error) {
+        // If watchlist fails, return empty array instead of failing
+        console.warn('Watchlist endpoint failed, returning empty array:', error);
+        return [];
+      }
     },
+    retry: false,
   });
 };
 

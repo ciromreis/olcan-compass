@@ -51,6 +51,13 @@ const ProviderProfile = lazy(() => import('./pages/Marketplace/ProviderProfile')
 const MyBookings = lazy(() => import('./pages/Marketplace/MyBookings').then(m => ({ default: m.MyBookings })))
 const Messages = lazy(() => import('./pages/Marketplace/Messages').then(m => ({ default: m.Messages })))
 
+// Constraints
+const ConstraintsSettings = lazy(() => import('./pages/Constraints/Settings').then(m => ({ default: m.ConstraintsSettings })))
+const PrunedOpportunities = lazy(() => import('./pages/Constraints/PrunedOpportunities').then(m => ({ default: m.PrunedOpportunities })))
+
+// More
+const MoreHub = lazy(() => import('./pages/More').then(m => ({ default: m.MoreHub })))
+
 // Admin
 const AdminDashboard = lazy(() => import('./pages/Admin/Dashboard').then(m => ({ default: m.AdminDashboard })))
 const AdminUsers = lazy(() => import('./pages/Admin/Users').then(m => ({ default: m.AdminUsers })))
@@ -203,6 +210,13 @@ function App() {
             <Route path="/marketplace/provider/:id" element={<ProviderProfile />} />
             <Route path="/marketplace/bookings" element={<MyBookings />} />
             <Route path="/marketplace/messages" element={<Messages />} />
+
+            {/* Constraints */}
+            <Route path="/constraints" element={<ConstraintsSettings />} />
+            <Route path="/constraints/opportunities" element={<PrunedOpportunities />} />
+
+            {/* More */}
+            <Route path="/more" element={<MoreHub />} />
 
             {/* Admin */}
             <Route path="/admin" element={<AdminDashboard />} />

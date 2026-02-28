@@ -9,6 +9,7 @@ import {
   FolderOpen,
   Zap,
   Store,
+  Filter,
   Compass,
   LogOut,
   ChevronRight,
@@ -18,6 +19,7 @@ import { useAuthStore } from '../store/auth'
 import { useLogout } from '@/hooks/useAuth'
 import { BottomTabBar } from './ui/BottomTabBar'
 import { MobileMenu } from './ui/MobileMenu'
+import { MaterialSymbol } from './ui/MaterialSymbol'
 
 /**
  * Navigation items for the main sidebar.
@@ -32,6 +34,7 @@ const NAV_ITEMS = [
   { path: '/applications', label: 'Candidaturas', icon: FolderOpen },
   { path: '/sprints', label: 'Sprints', icon: Zap },
   { path: '/marketplace', label: 'Marketplace', icon: Store },
+  { path: '/constraints', label: 'Restrições', icon: Filter },
 ]
 
 /**
@@ -45,12 +48,14 @@ export function Layout() {
   const logoutMutation = useLogout()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
-  // Mobile tab bar items (primary navigation only)
-  const mobileTabItems = NAV_ITEMS.slice(0, 5).map(({ path, label, icon: Icon }) => ({
-    href: path,
-    label,
-    icon: <Icon size={20} />,
-  }))
+  // Mobile bottom nav follows Stitch/global-mobile IA: Home / Rotas / Prática / Candidaturas / Mais
+  const mobileTabItems = [
+    { href: '/', label: 'Home', icon: <MaterialSymbol name="home" size={22} /> },
+    { href: '/routes', label: 'Rotas', icon: <MaterialSymbol name="route" size={22} /> },
+    { href: '/interviews', label: 'Prática', icon: <MaterialSymbol name="psychology_alt" size={22} /> },
+    { href: '/applications', label: 'Candidaturas', icon: <MaterialSymbol name="work" size={22} /> },
+    { href: '/more', label: 'Mais', icon: <MaterialSymbol name="more_horiz" size={22} /> },
+  ]
 
   return (
     <div className="flex h-screen bg-void">
@@ -128,8 +133,10 @@ export function Layout() {
       </aside>
 
       {/* ── Main Content ── */}
-      <main id="main-content" className="flex-1 overflow-auto pb-16 md:pb-0" tabIndex={-1}>
-        <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+      <main id="main-content" className="flex-1 overflow-auto pb-24 md:pb-0" tabIndex={-1}>
+        <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 relative">
+          {/* Subtle grain overlay for Liquid Glass (mobile-first) */}
+          <div className="pointer-events-none absolute inset-0 opacity-[0.04] noise-overlay" />
           {/* Mobile Header with Hamburger */}
           <div className="md:hidden flex items-center justify-between mb-4 pb-4 border-b border-neutral-700">
             <button

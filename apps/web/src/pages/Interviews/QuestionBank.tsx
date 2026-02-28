@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/Badge'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Alert } from '@/components/ui/Alert'
+import { useNavigate } from 'react-router-dom'
+import { MaterialSymbol } from '@/components/ui/MaterialSymbol'
 
 type InterviewQuestionItem = {
   id: string
@@ -19,7 +21,8 @@ type InterviewQuestionItem = {
 }
 
 export function QuestionBank() {
-  const { questions, isLoading, error } = useInterviews()
+  const navigate = useNavigate()
+  const { questions, startSessionAsync, isLoading, error } = useInterviews()
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [difficultyFilter, setDifficultyFilter] = useState('all')
@@ -43,6 +46,17 @@ export function QuestionBank() {
     return matchesSearch && matchesCategory && matchesDifficulty
   })
 
+  const handlePractice = async (question: InterviewQuestionItem) => {
+    const session = await startSessionAsync({
+      session_type: 'mock',
+      estimated_duration_minutes: 20,
+      question_count: 1,
+      focus_types: question.category ? [question.category] : undefined,
+    })
+    const sessionId = (session as any)?.id
+    if (sessionId) navigate(`/interviews/session/${sessionId}`)
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -52,7 +66,7 @@ export function QuestionBank() {
         </p>
       </div>
 
-      <Card>
+      <Card className="liquid-glass">
         <div className="p-4 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Input
@@ -63,7 +77,7 @@ export function QuestionBank() {
             />
             <Select
               value={categoryFilter}
-              onChange={(value) => setCategoryFilter(value as string)}
+              onChange={(value) => setCategoryFilter(Array.isArray(value) ? value[0] || 'all' : value || 'all')}
               options={[
                 { value: 'all', label: 'Todas as categorias' },
                 { value: 'behavioral', label: 'Comportamental' },
@@ -73,7 +87,7 @@ export function QuestionBank() {
             />
             <Select
               value={difficultyFilter}
-              onChange={(value) => setDifficultyFilter(value as string)}
+              onChange={(value) => setDifficultyFilter(Array.isArray(value) ? value[0] || 'all' : value || 'all')}
               options={[
                 { value: 'all', label: 'Todas as dificuldades' },
                 { value: 'easy', label: 'Fácil' },
@@ -86,7 +100,7 @@ export function QuestionBank() {
       </Card>
 
       {!filteredQuestions || filteredQuestions.length === 0 ? (
-        <Card>
+        <Card className="liquid-glass">
           <EmptyState
             icon={<MessageSquare className="w-12 h-12" />}
             title="Nenhuma pergunta encontrada"
@@ -102,7 +116,7 @@ export function QuestionBank() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
             >
-              <Card className="hover:border-lumina/40 transition-colors">
+              <Card className="liquid-glass hover:border-lumina/40 transition-colors">
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
@@ -122,7 +136,14 @@ export function QuestionBank() {
                         </Badge>
                       </div>
                     </div>
-                    <Button size="sm">Praticar</Button>
+                    <Button
+                      size="sm"
+                      onClick={() => handlePractice(question)}
+                      icon={<MaterialSymbol name="play_arrow" size={18} />}
+                      iconPosition="left"
+                    >
+                      Praticar
+                    </Button>
                   </div>
                 </div>
               </Card>

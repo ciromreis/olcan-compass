@@ -108,18 +108,19 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
     return (
       <Card
         className={cn(
-          'p-4 hover:shadow-md transition-shadow cursor-pointer',
+          'p-4 hover:bg-neutral-700/60 transition-colors cursor-pointer',
           className
         )}
+        noPadding
         onClick={() => onViewDetails?.(application.id)}
       >
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-semibold text-neutral-900 truncate">
+            <h4 className="text-sm font-semibold text-white truncate">
               {application.opportunity_name}
             </h4>
             {application.institution && (
-              <p className="text-xs text-neutral-600 mt-1 truncate">
+              <p className="text-xs text-neutral-400 mt-1 truncate">
                 {application.institution}
               </p>
             )}
@@ -129,7 +130,7 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
           </Badge>
         </div>
         {application.deadline && (
-          <div className="flex items-center gap-2 mt-2 text-xs text-neutral-600">
+          <div className="flex items-center gap-2 mt-2 text-xs text-neutral-400">
             <Calendar className="w-3 h-3" />
             <span>{formatDeadline(application.deadline)}</span>
           </div>
@@ -139,18 +140,22 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
   }
 
   return (
-    <Card className={cn('p-6 hover:shadow-lg transition-shadow', className)}>
+    <Card 
+      className={cn('p-6 liquid-glass cursor-pointer', className)}
+      noPadding
+      onClick={() => onViewDetails?.(application.id)}
+    >
       <div className="space-y-4">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
             <div className="flex items-start gap-3 mb-2">
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-neutral-900">
+                <h3 className="text-lg font-semibold text-white">
                   {application.opportunity_name}
                 </h3>
                 {application.opportunity_type && (
-                  <p className="text-sm text-neutral-600 mt-1">
+                  <p className="text-sm text-neutral-300 mt-1">
                     {application.opportunity_type}
                   </p>
                 )}
@@ -174,14 +179,14 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
         {/* Details */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {application.institution && (
-            <div className="flex items-center gap-2 text-sm text-neutral-600">
-              <Building2 className="w-4 h-4 text-neutral-500" />
+            <div className="flex items-center gap-2 text-sm text-neutral-300">
+              <Building2 className="w-4 h-4 text-neutral-400" />
               <span>{application.institution}</span>
             </div>
           )}
           {application.location && (
-            <div className="flex items-center gap-2 text-sm text-neutral-600">
-              <MapPin className="w-4 h-4 text-neutral-500" />
+            <div className="flex items-center gap-2 text-sm text-neutral-300">
+              <MapPin className="w-4 h-4 text-neutral-400" />
               <span>{application.location}</span>
             </div>
           )}
@@ -193,28 +198,28 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
             className={cn(
               'flex items-center justify-between p-3 rounded-lg',
               deadlineUrgency === 'critical' &&
-                'bg-semantic-error/10 border border-semantic-error/30',
+                'bg-error/10 border border-error/30',
               deadlineUrgency === 'warning' &&
-                'bg-semantic-warning/10 border border-semantic-warning/30',
+                'bg-warning/10 border border-warning/30',
               deadlineUrgency === 'normal' &&
-                'bg-neutral-100 border border-neutral-200'
+                'bg-neutral-800/30 border border-white/10'
             )}
           >
             <div className="flex items-center gap-2">
               <Calendar
                 className={cn(
                   'w-4 h-4',
-                  deadlineUrgency === 'critical' && 'text-semantic-error',
-                  deadlineUrgency === 'warning' && 'text-semantic-warning',
-                  deadlineUrgency === 'normal' && 'text-neutral-600'
+                  deadlineUrgency === 'critical' && 'text-error',
+                  deadlineUrgency === 'warning' && 'text-warning',
+                  deadlineUrgency === 'normal' && 'text-neutral-300'
                 )}
               />
               <span
                 className={cn(
                   'text-sm font-medium',
-                  deadlineUrgency === 'critical' && 'text-semantic-error',
-                  deadlineUrgency === 'warning' && 'text-semantic-warning',
-                  deadlineUrgency === 'normal' && 'text-neutral-700'
+                  deadlineUrgency === 'critical' && 'text-error',
+                  deadlineUrgency === 'warning' && 'text-warning',
+                  deadlineUrgency === 'normal' && 'text-neutral-200'
                 )}
               >
                 {formatDeadline(application.deadline)}
@@ -230,11 +235,14 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
 
         {/* Actions */}
         {showActions && (
-          <div className="flex items-center gap-2 pt-4 border-t border-neutral-200">
+          <div className="flex items-center gap-2 pt-4 border-t border-white/10">
             <Button
               variant="primary"
               size="sm"
-              onClick={() => onViewDetails?.(application.id)}
+              onClick={(e) => {
+                e.stopPropagation()
+                onViewDetails?.(application.id)
+              }}
             >
               Ver Detalhes
               <ExternalLink className="w-4 h-4" />
@@ -243,7 +251,10 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={() => onUpdateStatus?.(application.id, 'submitted')}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onUpdateStatus?.(application.id, 'submitted')
+                }}
               >
                 Enviar Candidatura
               </Button>

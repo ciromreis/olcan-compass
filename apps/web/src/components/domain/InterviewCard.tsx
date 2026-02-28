@@ -122,17 +122,19 @@ export const InterviewCard: React.FC<InterviewCardProps> = ({
 
   if (!currentQuestion) {
     return (
-      <Card className={cn('p-6', className)}>
-        <p className="text-center text-neutral-600">
+      <Card className={cn('liquid-glass', className)} noPadding>
+        <div className="p-6">
+          <p className="text-center text-neutral-300">
           Nenhuma pergunta disponível
-        </p>
+          </p>
+        </div>
       </Card>
     );
   }
 
   return (
-    <Card className={cn('p-6', className)}>
-      <div className="space-y-6">
+    <Card className={cn('liquid-glass', className)} noPadding>
+      <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
@@ -171,10 +173,10 @@ export const InterviewCard: React.FC<InterviewCardProps> = ({
             <div className="flex flex-col items-end gap-2">
               <div
                 className={cn(
-                  'flex items-center gap-2 px-3 py-2 rounded-lg',
+                  'flex items-center gap-2 px-3 py-2 rounded-xl border',
                   timeRemaining <= 30 && isTimerRunning
-                    ? 'bg-semantic-error/10 text-semantic-error'
-                    : 'bg-neutral-100 text-neutral-700'
+                    ? 'bg-error/10 text-error border-error/20'
+                    : 'bg-white/5 text-neutral-200 border-white/10'
                 )}
               >
                 <Clock className="w-4 h-4" />
@@ -196,15 +198,15 @@ export const InterviewCard: React.FC<InterviewCardProps> = ({
         </div>
 
         {/* Question */}
-        <div className="bg-lumina-50 rounded-lg p-6">
-          <p className="text-lg text-neutral-900 leading-relaxed">
+        <div className="bg-lumina/10 border border-lumina/20 rounded-xl p-6">
+          <p className="text-lg text-neutral-100 leading-relaxed">
             {currentQuestion.question}
           </p>
         </div>
 
         {/* Response Area */}
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-neutral-700">
+          <label className="text-sm font-semibold text-neutral-200">
             Sua Resposta
           </label>
           <textarea
@@ -213,14 +215,14 @@ export const InterviewCard: React.FC<InterviewCardProps> = ({
             placeholder="Digite sua resposta aqui..."
             disabled={isCurrentSubmitted}
             className={cn(
-              'w-full min-h-[200px] p-4 rounded-lg border border-neutral-300',
-              'bg-white text-neutral-900 placeholder:text-neutral-500',
-              'focus:outline-none focus:ring-2 focus:ring-lumina-500 focus:border-lumina-500',
+              'w-full min-h-[200px] p-4 rounded-xl border border-white/10',
+              'bg-neutral-900/30 text-neutral-100 placeholder:text-neutral-500',
+              'focus:outline-none focus:ring-2 focus:ring-lumina-300 focus:border-lumina-300/40',
               'resize-y font-body text-base leading-relaxed',
               isCurrentSubmitted && 'opacity-50 cursor-not-allowed'
             )}
           />
-          <div className="flex items-center justify-between text-sm text-neutral-600">
+          <div className="flex items-center justify-between text-sm text-neutral-400">
             <span>{response.length} caracteres</span>
             <span>
               {response.trim().split(/\s+/).filter(Boolean).length} palavras
@@ -229,7 +231,7 @@ export const InterviewCard: React.FC<InterviewCardProps> = ({
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-4 border-t border-neutral-200">
+        <div className="flex items-center justify-between pt-4 border-t border-white/10">
           <Button
             variant="ghost"
             size="sm"
@@ -262,15 +264,15 @@ export const InterviewCard: React.FC<InterviewCardProps> = ({
 
         {/* Progress */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-xs text-neutral-600">
+          <div className="flex items-center justify-between text-xs text-neutral-400">
             <span>Progresso</span>
             <span>
               {submittedQuestions.size} / {questions.length} respondidas
             </span>
           </div>
-          <div className="w-full bg-neutral-200 rounded-full h-2">
+          <div className="w-full bg-white/10 rounded-full h-2">
             <div
-              className="bg-lumina-600 h-2 rounded-full transition-all"
+              className="bg-gradient-to-r from-lumina/70 to-lumina h-2 rounded-full transition-all"
               style={{
                 width: `${(submittedQuestions.size / questions.length) * 100}%`,
               }}

@@ -116,7 +116,7 @@ export function Register() {
             />
 
             <Input
-              
+              label="Email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}

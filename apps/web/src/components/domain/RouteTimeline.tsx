@@ -90,25 +90,25 @@ export const RouteTimeline: React.FC<RouteTimelineProps> = ({
       <div className="space-y-2">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h3 className="text-lg font-semibold text-neutral-900">
+            <h3 className="text-lg font-semibold text-white">
               {route.name}
             </h3>
             {route.description && (
-              <p className="text-sm text-neutral-600 mt-1">
+              <p className="text-sm text-neutral-300 mt-1">
                 {route.description}
               </p>
             )}
           </div>
-          <Badge variant="lumina">
+          <Badge variant="lumina" className="font-mono">
             {completedMilestones} /{' '}
             {route.milestones.length}
           </Badge>
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full bg-neutral-200 rounded-full h-2">
+        <div className="w-full bg-neutral-600/50 rounded-full h-2">
           <div
-            className="bg-lumina-600 h-2 rounded-full transition-all"
+            className="bg-gradient-to-r from-lumina-200 to-lumina-300 h-2 rounded-full transition-all"
             style={{ width: `${progressPercentage}%` }}
           />
         </div>
@@ -119,7 +119,7 @@ export const RouteTimeline: React.FC<RouteTimelineProps> = ({
 
       {/* Milestone Details (if selected) */}
       {selectedMilestoneId && (
-        <div className="border-t border-neutral-200 pt-6">
+        <div className="border-t border-white/10 pt-6">
           {sortedMilestones
             .filter((m) => m.id === selectedMilestoneId)
             .map((milestone) => {
@@ -133,11 +133,11 @@ export const RouteTimeline: React.FC<RouteTimelineProps> = ({
                 <div key={milestone.id} className="space-y-4">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <h4 className="text-base font-semibold text-neutral-900">
+                      <h4 className="text-base font-semibold text-white">
                         {milestone.title}
                       </h4>
                       {milestone.description && (
-                        <p className="text-sm text-neutral-600 mt-1">
+                        <p className="text-sm text-neutral-300 mt-1">
                           {milestone.description}
                         </p>
                       )}
@@ -161,7 +161,7 @@ export const RouteTimeline: React.FC<RouteTimelineProps> = ({
 
                   {/* Target Date */}
                   {milestone.target_date && (
-                    <div className="flex items-center gap-2 text-sm text-neutral-600">
+                    <div className="flex items-center gap-2 text-sm text-neutral-300">
                       <Calendar className="w-4 h-4" />
                       <span>
                         Data alvo:{' '}
@@ -180,7 +180,7 @@ export const RouteTimeline: React.FC<RouteTimelineProps> = ({
                   {/* Dependencies */}
                   {dependencyMilestones.length > 0 && (
                     <div className="space-y-2">
-                      <h5 className="text-sm font-semibold text-neutral-700">
+                      <h5 className="text-sm font-semibold text-neutral-200">
                         Dependências
                       </h5>
                       <ul className="space-y-1">
@@ -190,15 +190,15 @@ export const RouteTimeline: React.FC<RouteTimelineProps> = ({
                             className="flex items-center gap-2 text-sm"
                           >
                             {dep.completed ? (
-                              <CheckCircle2 className="w-4 h-4 text-semantic-success" />
+                              <CheckCircle2 className="w-4 h-4 text-success" />
                             ) : (
                               <Circle className="w-4 h-4 text-neutral-400" />
                             )}
                             <span
                               className={cn(
                                 dep.completed
-                                  ? 'text-neutral-600 line-through'
-                                  : 'text-neutral-900'
+                                  ? 'text-neutral-400 line-through'
+                                  : 'text-neutral-100'
                               )}
                             >
                               {dep.title}
@@ -230,7 +230,7 @@ export const RouteTimeline: React.FC<RouteTimelineProps> = ({
       {/* Interactive Milestone Selection */}
       {!selectedMilestoneId && onMilestoneSelect && (
         <div className="space-y-2">
-          <h4 className="text-sm font-semibold text-neutral-700">
+          <h4 className="text-sm font-semibold text-neutral-200">
             Marcos Disponíveis
           </h4>
           <div className="space-y-2">
@@ -240,14 +240,14 @@ export const RouteTimeline: React.FC<RouteTimelineProps> = ({
                 <button
                   key={milestone.id}
                   onClick={() => onMilestoneSelect(milestone)}
-                  className="w-full text-left px-4 py-3 bg-lumina-50 hover:bg-lumina-100 border border-lumina-200 rounded-lg transition-colors"
+                  className="w-full text-left px-4 py-3 bg-neutral-800/30 hover:bg-neutral-800/40 border border-white/10 rounded-xl transition-colors"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-neutral-900">
+                    <span className="text-sm font-medium text-white">
                       {milestone.title}
                     </span>
                     {milestone.target_date && (
-                      <span className="text-xs text-neutral-600">
+                      <span className="text-xs text-neutral-400">
                         {new Date(milestone.target_date).toLocaleDateString(
                           'pt-BR'
                         )}

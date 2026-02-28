@@ -65,13 +65,13 @@ export const SprintTaskCard: React.FC<SprintTaskCardProps> = ({
   return (
     <Card
       className={cn(
-        'p-4 transition-all',
-        task.completed && 'bg-neutral-50',
+        'liquid-glass transition-all',
         isLocked && 'opacity-60',
         className
       )}
+      noPadding
     >
-      <div className="space-y-3">
+      <div className="p-4 space-y-3">
         {/* Main Task Row */}
         <div className="flex items-start gap-3">
           {/* Checkbox */}
@@ -97,8 +97,8 @@ export const SprintTaskCard: React.FC<SprintTaskCardProps> = ({
                   className={cn(
                     'text-sm font-semibold',
                     task.completed
-                      ? 'text-neutral-600 line-through'
-                      : 'text-neutral-900'
+                      ? 'text-neutral-400 line-through'
+                      : 'text-white'
                   )}
                 >
                   {task.name}
@@ -107,7 +107,7 @@ export const SprintTaskCard: React.FC<SprintTaskCardProps> = ({
                   <p
                     className={cn(
                       'text-sm mt-1',
-                      task.completed ? 'text-neutral-500' : 'text-neutral-600'
+                      task.completed ? 'text-neutral-400' : 'text-neutral-300'
                     )}
                   >
                     {task.description}
@@ -143,7 +143,7 @@ export const SprintTaskCard: React.FC<SprintTaskCardProps> = ({
             !task.completed ? (
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="flex items-center gap-1 text-xs text-lumina-600 hover:text-lumina-700 mt-2"
+                className="flex items-center gap-1 text-xs text-lumina-200 hover:text-lumina-100 mt-2"
               >
                 {isExpanded ? (
                   <>
@@ -163,11 +163,11 @@ export const SprintTaskCard: React.FC<SprintTaskCardProps> = ({
 
         {/* Expanded Content */}
         {isExpanded && (
-          <div className="pl-8 space-y-3 pt-2 border-t border-neutral-200">
+          <div className="pl-8 space-y-3 pt-2 border-t border-white/10">
             {/* Dependencies */}
             {showDependencies && dependencyTasks.length > 0 && (
               <div className="space-y-2">
-                <h5 className="text-xs font-semibold text-neutral-700">
+                <h5 className="text-xs font-semibold text-neutral-200">
                   Dependências
                 </h5>
                 <ul className="space-y-1">
@@ -177,15 +177,15 @@ export const SprintTaskCard: React.FC<SprintTaskCardProps> = ({
                       className="flex items-center gap-2 text-sm"
                     >
                       {dep.completed ? (
-                        <CheckCircle2 className="w-4 h-4 text-semantic-success" />
+                        <CheckCircle2 className="w-4 h-4 text-success" />
                       ) : (
                         <Circle className="w-4 h-4 text-neutral-400" />
                       )}
                       <span
                         className={cn(
                           dep.completed
-                            ? 'text-neutral-600 line-through'
-                            : 'text-neutral-900'
+                            ? 'text-neutral-400 line-through'
+                            : 'text-neutral-100'
                         )}
                       >
                         {dep.name}
@@ -200,13 +200,13 @@ export const SprintTaskCard: React.FC<SprintTaskCardProps> = ({
             {!task.completed && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <h5 className="text-xs font-semibold text-neutral-700">
+                  <h5 className="text-xs font-semibold text-neutral-200">
                     Notas
                   </h5>
                   {!isEditingNotes && (
                     <button
                       onClick={() => setIsEditingNotes(true)}
-                      className="text-xs text-lumina-600 hover:text-lumina-700"
+                      className="text-xs text-lumina-200 hover:text-lumina-100"
                     >
                       {task.notes ? 'Editar' : 'Adicionar'}
                     </button>
@@ -220,9 +220,9 @@ export const SprintTaskCard: React.FC<SprintTaskCardProps> = ({
                       onChange={(e) => setNotes(e.target.value)}
                       placeholder="Adicione notas sobre esta tarefa..."
                       className={cn(
-                        'w-full min-h-[80px] p-2 rounded-lg border border-neutral-300',
-                        'bg-white text-neutral-900 placeholder:text-neutral-500',
-                        'focus:outline-none focus:ring-2 focus:ring-lumina-500 focus:border-lumina-500',
+                        'w-full min-h-[80px] p-3 rounded-xl border border-white/10',
+                        'bg-neutral-900/30 text-neutral-100 placeholder:text-neutral-500',
+                        'focus:outline-none focus:ring-2 focus:ring-lumina-300 focus:border-lumina-300/40',
                         'resize-y text-sm'
                       )}
                     />
@@ -244,7 +244,7 @@ export const SprintTaskCard: React.FC<SprintTaskCardProps> = ({
                     </div>
                   </div>
                 ) : task.notes ? (
-                  <p className="text-sm text-neutral-600 bg-neutral-50 p-2 rounded">
+                  <p className="text-sm text-neutral-300 bg-neutral-800/30 border border-white/10 p-3 rounded-xl">
                     {task.notes}
                   </p>
                 ) : (
@@ -258,8 +258,8 @@ export const SprintTaskCard: React.FC<SprintTaskCardProps> = ({
             {/* Completed Notes (read-only) */}
             {task.completed && task.notes && (
               <div className="space-y-2">
-                <h5 className="text-xs font-semibold text-neutral-700">Notas</h5>
-                <p className="text-sm text-neutral-600 bg-neutral-50 p-2 rounded">
+                <h5 className="text-xs font-semibold text-neutral-200">Notas</h5>
+                <p className="text-sm text-neutral-300 bg-neutral-900/30 border border-white/10 p-3 rounded-xl">
                   {task.notes}
                 </p>
               </div>

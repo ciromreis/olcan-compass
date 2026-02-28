@@ -16,7 +16,7 @@ type SprintDetailData = {
 
 export function SprintDetail() {
   const { id } = useParams<{ id: string }>()
-  const { getSprint } = useSprints()
+  const { getSprint, updateTask } = useSprints()
 
   const sprintQuery = getSprint(id ?? '')
   const sprint = sprintQuery?.data as SprintDetailData | undefined
@@ -40,11 +40,11 @@ export function SprintDetail() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-heading text-h1 text-white">{sprint.name}</h1>
+        <h1 className="font-heading text-h2 text-white">{sprint.name}</h1>
         <p className="text-body text-neutral-300 mt-1">{sprint.description}</p>
       </div>
 
-      <Card>
+      <Card className="liquid-glass" noPadding>
         <div className="p-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-body text-white">Progresso Geral</span>
@@ -68,6 +68,14 @@ export function SprintDetail() {
             <SprintTaskCard
               task={task}
               allTasks={sprint.tasks || []}
+              onToggleComplete={(taskId, completed) => {
+                if (!id) return
+                updateTask({ sprintId: id, taskId, completed })
+              }}
+              onUpdateNotes={(taskId, notes) => {
+                if (!id) return
+                updateTask({ sprintId: id, taskId, notes })
+              }}
             />
           </motion.div>
         ))}

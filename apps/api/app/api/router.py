@@ -7,14 +7,11 @@ from app.api.routes.psychology import router as psychology_router
 from app.api.routes.routes import router as routes_router
 from app.api.routes.narrative import router as narrative_router
 from app.api.routes.interview import router as interview_router
-
 from app.api.routes.application import router as application_router
-
 from app.api.routes.sprint import router as sprint_router
-
 from app.api.routes.ai import router as ai_router
-
 from app.api.routes.marketplace import router as marketplace_router
+from app.api.routes.constraints import router as constraints_router
 
 # Economics-driven intelligence routes
 from app.api.routes.credentials import router as credentials_router
@@ -37,6 +34,7 @@ def _mount_all_routes(router: APIRouter) -> None:
     router.include_router(sprint_router, tags=["Readiness Engine"])
     router.include_router(ai_router, tags=["AI Service Layer"])
     router.include_router(marketplace_router, tags=["Marketplace"])
+    router.include_router(constraints_router, tags=["User Constraints"])
 
     # Economics Intelligence
     router.include_router(credentials_router, tags=["Economics - Credentials"])

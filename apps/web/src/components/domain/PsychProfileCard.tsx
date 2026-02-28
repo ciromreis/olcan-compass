@@ -66,23 +66,23 @@ export const PsychProfileCard: React.FC<PsychProfileCardProps> = ({
   };
 
   const getTrendIcon = (trend: 'up' | 'down' | 'stable' | null) => {
-    if (trend === 'up') return <TrendingUp className="w-3 h-3 text-semantic-success" />;
-    if (trend === 'down') return <TrendingDown className="w-3 h-3 text-semantic-error" />;
+    if (trend === 'up') return <TrendingUp className="w-3 h-3 text-success" />;
+    if (trend === 'down') return <TrendingDown className="w-3 h-3 text-error" />;
     if (trend === 'stable') return <Minus className="w-3 h-3 text-neutral-500" />;
     return null;
   };
 
   return (
-    <Card className={cn('p-6', className)}>
-      <div className="space-y-6">
+    <Card className={cn('liquid-glass', className)} noPadding>
+      <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-neutral-900">
+            <h3 className="text-lg font-semibold text-white">
               Perfil Psicológico
             </h3>
             {profile.last_assessment_date && (
-              <p className="text-sm text-neutral-600 mt-1">
+              <p className="text-sm text-neutral-300 mt-1">
                 Última avaliação:{' '}
                 {new Date(profile.last_assessment_date).toLocaleDateString('pt-BR')}
               </p>
@@ -100,7 +100,7 @@ export const PsychProfileCard: React.FC<PsychProfileCardProps> = ({
         </div>
 
         {/* Radar Chart */}
-        <div className="bg-neutral-50 rounded-lg p-4">
+        <div className="bg-white/5 border border-white/10 rounded-xl p-4">
           <RadarChartComponent
             data={radarData}
             dataKeys={['score']}
@@ -111,7 +111,7 @@ export const PsychProfileCard: React.FC<PsychProfileCardProps> = ({
 
         {/* Dimension Scores */}
         <div className="space-y-3">
-          <h4 className="text-sm font-semibold text-neutral-700">
+          <h4 className="text-sm font-semibold text-neutral-200">
             Dimensões Detalhadas
           </h4>
           {(['openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism'] as const).map(
@@ -123,22 +123,22 @@ export const PsychProfileCard: React.FC<PsychProfileCardProps> = ({
                 <div key={dimension} className="space-y-1">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-neutral-900">
+                      <span className="text-sm font-medium text-neutral-100">
                         {getDimensionLabel(dimension)}
                       </span>
                       {getTrendIcon(trend)}
                     </div>
-                    <span className="text-sm font-semibold text-lumina-600">
+                    <span className="text-sm font-semibold text-lumina-200">
                       {score}
                     </span>
                   </div>
-                  <div className="w-full bg-neutral-200 rounded-full h-2">
+                  <div className="w-full bg-white/10 rounded-full h-2">
                     <div
-                      className="bg-lumina-600 h-2 rounded-full transition-all"
+                      className="bg-gradient-to-r from-lumina/70 to-lumina h-2 rounded-full transition-all"
                       style={{ width: `${score}%` }}
                     />
                   </div>
-                  <p className="text-xs text-neutral-600">
+                  <p className="text-xs text-neutral-400">
                     {getDimensionDescription(dimension)}
                   </p>
                 </div>
@@ -149,25 +149,25 @@ export const PsychProfileCard: React.FC<PsychProfileCardProps> = ({
 
         {/* Interpretation */}
         {showRecommendation && (
-          <div className="space-y-3 pt-4 border-t border-neutral-200">
+          <div className="space-y-3 pt-4 border-t border-white/10">
             <div>
-              <h4 className="text-sm font-semibold text-neutral-700 mb-2">
+              <h4 className="text-sm font-semibold text-neutral-200 mb-2">
                 Recomendação de Interface
               </h4>
-              <p className="text-sm text-neutral-600">
+              <p className="text-sm text-neutral-300">
                 {interpretation.modeReason}
               </p>
             </div>
 
             {interpretation.strengths.length > 0 && (
               <div>
-                <h4 className="text-sm font-semibold text-neutral-700 mb-2">
+                <h4 className="text-sm font-semibold text-neutral-200 mb-2">
                   Seus Pontos Fortes
                 </h4>
                 <ul className="space-y-1">
                   {interpretation.strengths.map((strength, idx) => (
-                    <li key={idx} className="text-sm text-neutral-600 flex items-start gap-2">
-                      <span className="text-semantic-success mt-0.5">•</span>
+                    <li key={idx} className="text-sm text-neutral-300 flex items-start gap-2">
+                      <span className="text-success mt-0.5">•</span>
                       {strength}
                     </li>
                   ))}
@@ -177,13 +177,13 @@ export const PsychProfileCard: React.FC<PsychProfileCardProps> = ({
 
             {interpretation.considerations.length > 0 && (
               <div>
-                <h4 className="text-sm font-semibold text-neutral-700 mb-2">
+                <h4 className="text-sm font-semibold text-neutral-200 mb-2">
                   Considerações
                 </h4>
                 <ul className="space-y-1">
                   {interpretation.considerations.map((consideration, idx) => (
-                    <li key={idx} className="text-sm text-neutral-600 flex items-start gap-2">
-                      <span className="text-lumina-600 mt-0.5">•</span>
+                    <li key={idx} className="text-sm text-neutral-300 flex items-start gap-2">
+                      <span className="text-lumina-200 mt-0.5">•</span>
                       {consideration}
                     </li>
                   ))}

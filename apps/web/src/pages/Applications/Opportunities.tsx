@@ -14,6 +14,8 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Alert } from '@/components/ui/Alert'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useNavigate } from 'react-router-dom'
+import { MaterialSymbol } from '@/components/ui/MaterialSymbol'
+import { formatDeadline, daysUntil } from '@/lib/utils'
 
 type OpportunityCardItem = Application & {
   opportunity_cost_daily?: number
@@ -32,10 +34,15 @@ export function Opportunities() {
     location: locationFilter !== 'all' ? locationFilter : undefined,
   })
 
+  const handleViewDetails = (opportunityId: string) => {
+    navigate(`/applications/opportunities/${opportunityId}`)
+  }
+
   const handleUpgrade = (tier: 'pro' | 'premium') => {
     // Navigate to pricing or upgrade page
     // TODO: Implement upgrade flow
-    console.log(`Upgrade to ${tier}`)
+    void tier
+    navigate('/more')
   }
 
   if (isLoading) {
@@ -50,24 +57,42 @@ export function Opportunities() {
     return <Alert variant="error">Erro ao carregar oportunidades. Tente novamente.</Alert>
   }
 
+  const urgentOpportunities: OpportunityCardItem[] =
+    ((opportunities || []) as OpportunityCardItem[])
+      .filter((o: OpportunityCardItem) => !!o.deadline)
+      .sort((a: OpportunityCardItem, b: OpportunityCardItem) => daysUntil(a.deadline!) - daysUntil(b.deadline!))
+      .slice(0, 2)
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="font-heading text-h1 text-white">Oportunidades</h1>
+          <h1 className="font-heading text-h2 text-white">Candidaturas</h1>
           <p className="text-body text-neutral-300 mt-1">
-            Explore programas acadêmicos e profissionais
+            Oportunidades para adicionar ao seu pipeline.
           </p>
         </div>
-        <Button
-          variant="secondary"
-          onClick={() => navigate('/applications/simulator')}
-        >
-          Simulador de Cenários
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="secondary"
+            onClick={() => navigate('/applications/my-applications')}
+            icon={<MaterialSymbol name="folder_open" size={18} />}
+            iconPosition="left"
+          >
+            Minhas
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => navigate('/applications/simulator')}
+            icon={<MaterialSymbol name="model_training" size={18} />}
+            iconPosition="left"
+          >
+            Simulador
+          </Button>
+        </div>
       </div>
 
-      <Card>
+      <Card className="liquid-glass">
         <div className="p-4 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Input
@@ -78,7 +103,7 @@ export function Opportunities() {
             />
             <Select
               value={typeFilter}
-              onChange={(value) => setTypeFilter(value as string)}
+              onChange={(value) => setTypeFilter(Array.isArray(value) ? value[0] || 'all' : value || 'all')}
               options={[
                 { value: 'all', label: 'Todos os tipos' },
                 { value: 'academic', label: 'Acadêmico' },
@@ -88,7 +113,7 @@ export function Opportunities() {
             />
             <Select
               value={locationFilter}
-              onChange={(value) => setLocationFilter(value as string)}
+              onChange={(value) => setLocationFilter(Array.isArray(value) ? value[0] || 'all' : value || 'all')}
               options={[
                 { value: 'all', label: 'Todas as localizações' },
                 { value: 'usa', label: 'Estados Unidos' },
@@ -99,6 +124,37 @@ export function Opportunities() {
           </div>
         </div>
       </Card>
+
+      {urgentOpportunities.length > 0 && (
+        <Card className="liquid-glass">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <MaterialSymbol name="warning" size={20} className="text-warning" />
+                <h2 className="font-heading text-h3 text-white">Riscos</h2>
+              </div>
+              <p className="text-body-sm text-neutral-300 mt-1">
+                Prazos mais próximos na sua lista atual.
+              </p>
+            </div>
+          </div>
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+            {urgentOpportunities.map((o) => (
+              <button
+                key={o.id}
+                onClick={() => handleViewDetails(o.id)}
+                className="text-left rounded-xl border border-white/10 bg-neutral-800/30 hover:bg-neutral-800/40 transition-colors p-4"
+              >
+                <p className="text-body font-semibold text-white">{o.opportunity_name}</p>
+                <p className="text-body-sm text-neutral-400 mt-1">{o.institution || '—'}</p>
+                <p className="text-body-sm text-neutral-200 mt-3 font-mono">
+                  {o.deadline ? formatDeadline(o.deadline) : 'Sem prazo'}
+                </p>
+              </button>
+            ))}
+          </div>
+        </Card>
+      )}
 
       {/* Growth Potential Widget - shown when momentum is low */}
       <GrowthPotentialWidget
@@ -111,7 +167,7 @@ export function Opportunities() {
       />
 
       {!opportunities || opportunities.length === 0 ? (
-        <Card>
+        <Card className="liquid-glass">
           <EmptyState
             icon={<Briefcase className="w-12 h-12" />}
             title="Nenhuma oportunidade encontrada"
@@ -129,6 +185,7 @@ export function Opportunities() {
             >
               <ApplicationCard
                 application={opportunity}
+                onViewDetails={handleViewDetails}
                 />
             </motion.div>
           ))}
