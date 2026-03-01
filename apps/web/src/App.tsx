@@ -5,7 +5,6 @@ import { api } from './lib/api'
 import { Layout } from './components/Layout'
 import { SkipLink } from './components/ui/SkipLink'
 import { LoadingSpinner } from './components/ui/LoadingSpinner'
-import { ErrorBoundary } from './components/ErrorBoundary'
 import { NotFound } from './pages/NotFound'
 
 // Eager load auth pages (small, needed immediately)
@@ -145,7 +144,7 @@ function App() {
   )
 
   return (
-    <ErrorBoundary>
+    <>
       <SkipLink href="#main-content">Pular para o conteúdo principal</SkipLink>
       <Suspense fallback={RouteLoadingFallback}>
         <Routes>
@@ -241,7 +240,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
-    </ErrorBoundary>
+    </>
   )
 }
 

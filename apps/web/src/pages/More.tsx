@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -23,9 +23,12 @@ type ProviderSummary = {
 }
 
 export function MoreHub() {
+  const location = useLocation()
   const navigate = useNavigate()
   const { sprints, readinessOverview, isLoading: isSprintsLoading } = useSprints()
   const { providers, isLoading: isMarketplaceLoading } = useMarketplace()
+
+  const focus = (location.state as any)?.focus
 
   const activeSprint = useMemo(() => {
     const list = (sprints || []) as SprintSummary[]
@@ -166,7 +169,7 @@ export function MoreHub() {
           </div>
         </Card>
 
-        <Card className="liquid-glass">
+        <Card className={focus === 'subscription' ? 'liquid-glass border border-cyan/30' : 'liquid-glass'}>
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-body-sm text-slate">Conta</p>

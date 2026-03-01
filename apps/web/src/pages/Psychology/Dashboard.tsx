@@ -150,7 +150,12 @@ export function PsychologyDashboard() {
                         variant="ghost"
                         size="sm"
                         onClick={() => {
-                          // TODO: View assessment details
+                          navigate('/psychology', {
+                            state: {
+                              focus: 'assessment-history',
+                              assessmentId: assessment.id,
+                            },
+                          })
                         }}
                       >
                         Ver Detalhes

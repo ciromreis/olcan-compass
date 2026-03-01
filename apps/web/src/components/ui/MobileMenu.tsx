@@ -67,12 +67,13 @@ export const MobileMenu = forwardRef<HTMLDivElement, MobileMenuProps>(
           role="dialog"
           aria-modal="true"
           aria-label={title || 'Menu'}
+          aria-labelledby={title ? 'mobile-menu-title' : undefined}
           {...props}
         >
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-neutral-700">
             {title && (
-              <h2 className="text-lg font-heading font-bold text-white">
+              <h2 id="mobile-menu-title" className="text-lg font-heading font-bold text-white">
                 {title}
               </h2>
             )}
@@ -84,7 +85,7 @@ export const MobileMenu = forwardRef<HTMLDivElement, MobileMenuProps>(
                 'focus:outline-none focus:ring-2 focus:ring-cyan/50',
                 'transition-colors'
               )}
-              aria-
+              aria-label="Fechar menu"
             >
               <X size={20} />
             </button>

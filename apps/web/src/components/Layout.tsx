@@ -125,6 +125,7 @@ export function Layout() {
               onClick={() => logoutMutation.mutate()}
               className="p-1.5 rounded-md text-slate hover:text-error hover:bg-error/10 transition-colors duration-fast"
               title="Sair"
+              aria-label="Sair"
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -217,6 +218,7 @@ export function Layout() {
               logoutMutation.mutate()
               setIsMobileMenuOpen(false)
             }}
+            aria-label="Sair"
             className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-sm font-medium text-error hover:bg-error/10 transition-colors"
           >
             <LogOut className="w-5 h-5" />

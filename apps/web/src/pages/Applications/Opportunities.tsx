@@ -39,10 +39,13 @@ export function Opportunities() {
   }
 
   const handleUpgrade = (tier: 'pro' | 'premium') => {
-    // Navigate to pricing or upgrade page
-    // TODO: Implement upgrade flow
-    void tier
-    navigate('/more')
+    navigate('/more', {
+      state: {
+        focus: 'subscription',
+        tier,
+        source: 'growth-potential-widget',
+      },
+    })
   }
 
   if (isLoading) {

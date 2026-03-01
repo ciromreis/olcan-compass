@@ -37,6 +37,7 @@ export const BottomTabBar = forwardRef<HTMLElement, BottomTabBarProps>(
           'safe-area-inset-bottom',
           className
         )}
+        aria-label="Navegação principal"
         {...props}
       >
         <div className="mx-auto max-w-md px-2 py-2">
