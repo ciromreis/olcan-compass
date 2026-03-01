@@ -197,13 +197,12 @@
     border: 1px solid rgba(0, 242, 255, 0.20);
     border-radius: 16px;
     box-shadow: var(--glass-shadow), 0 0 30px rgba(0, 242, 255, 0.08);
-    transition: border-color 250ms ease, box-shadow 250ms ease, transform 250ms ease;
+    transition: border-color 250ms ease, box-shadow 250ms ease;
   }
 
   .liquid-glass-elevated:hover {
     border-color: rgba(0, 242, 255, 0.35);
     box-shadow: var(--glass-shadow), 0 0 40px rgba(0, 242, 255, 0.12);
-    transform: translateY(-2px);
   }
 
   .noise-overlay {

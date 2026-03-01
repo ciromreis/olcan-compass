@@ -96,6 +96,7 @@ export default {
         'slide-in-right': 'slideInRight 300ms ease-out',
         'pulse-subtle': 'pulseSubtle 2s ease-in-out infinite',
         'glow-pulse': 'glowPulse 2s ease-in-out infinite',
+        'radar-pulse': 'radarPulse 2s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
