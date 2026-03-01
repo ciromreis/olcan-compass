@@ -71,6 +71,7 @@ function App() {
   const { isAuthenticated, setUser, setAuthenticated, setLoading, isLoading } = useAuthStore()
   const [hasPsychProfile, setHasPsychProfile] = useState<boolean | null>(null)
 
+  // On mount: validate stored token and fetch user profile
   useEffect(() => {
     const init = async () => {
       const token = localStorage.getItem('token')
@@ -86,14 +87,6 @@ function App() {
         const user = await api.getProfile()
         setUser(user)
         setAuthenticated(true)
-
-        // Check if user has completed psychological assessment
-        try {
-          await api.getPsychProfile()
-          setHasPsychProfile(true)
-        } catch {
-          setHasPsychProfile(false)
-        }
       } catch {
         localStorage.removeItem('token')
         localStorage.removeItem('refresh_token')
@@ -106,6 +99,26 @@ function App() {
     }
     init()
   }, [setUser, setAuthenticated, setLoading])
+
+  // After authentication is confirmed, check psych profile
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setHasPsychProfile(null)
+      return
+    }
+
+    let cancelled = false
+    const checkPsychProfile = async () => {
+      try {
+        await api.getPsychProfile()
+        if (!cancelled) setHasPsychProfile(true)
+      } catch {
+        if (!cancelled) setHasPsychProfile(false)
+      }
+    }
+    checkPsychProfile()
+    return () => { cancelled = true }
+  }, [isAuthenticated])
 
   // Show loading state while checking auth
   if (isLoading) {

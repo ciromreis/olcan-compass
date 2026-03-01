@@ -108,7 +108,7 @@ export function RouteTemplates() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="font-heading text-h2 text-white">Templates</h1>
-          <p className="text-body text-neutral-300 mt-1">
+          <p className="text-body text-slate mt-1">
             Escolha um caminho estruturado para sua jornada.
           </p>
         </div>
@@ -129,7 +129,7 @@ export function RouteTemplates() {
             />
             <button
               type="button"
-              className="touch-target inline-flex items-center justify-center rounded-xl border border-white/10 bg-neutral-800/30 px-3 text-neutral-200 hover:bg-neutral-800/40 transition-colors"
+              className="touch-target inline-flex items-center justify-center rounded-xl border border-white/10 bg-void-primary/30 px-3 text-silver hover:bg-void-primary/40 transition-colors"
               aria-label="Filtros"
             >
               <SlidersHorizontal className="w-4 h-4" />
@@ -152,8 +152,8 @@ export function RouteTemplates() {
                 className={[
                   'whitespace-nowrap rounded-full px-3 py-1 text-body-sm border transition-colors',
                   category === (c.id as any)
-                    ? 'bg-lumina/10 border-lumina/30 text-lumina-200'
-                    : 'bg-neutral-800/20 border-white/10 text-neutral-300 hover:bg-neutral-800/30',
+                    ? 'bg-primary-blue/10 border-cyan/30 text-cyan'
+                    : 'bg-void-primary/20 border-white/10 text-slate hover:bg-void-primary/30',
                 ].join(' ')}
               >
                 {c.label}
@@ -195,14 +195,14 @@ export function RouteTemplates() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
             >
-              <Card className="h-full liquid-glass hover:border-lumina/30 transition-colors cursor-pointer group" noPadding>
+              <Card className="h-full liquid-glass hover:border-cyan/30 transition-colors cursor-pointer group" noPadding>
                 <div
                   className="p-6 h-full flex flex-col"
                   onClick={() => setSelectedTemplate(template)}
                 >
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-lumina/10 text-lumina group-hover:bg-lumina/20 transition-colors">
+                    <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary-blue/10 text-cyan group-hover:bg-primary-blue/20 transition-colors">
                       <Map className="w-6 h-6" />
                     </div>
                     <Badge variant={difficultyColors[template.difficulty as keyof typeof difficultyColors]}>
@@ -212,23 +212,23 @@ export function RouteTemplates() {
 
                   {/* Content */}
                   <div className="flex-1">
-                    <h3 className="font-heading text-h4 text-white mb-2 group-hover:text-lumina transition-colors">
+                    <h3 className="font-heading text-h4 text-white mb-2 group-hover:text-cyan transition-colors">
                       {template.name}
                     </h3>
-                    <p className="text-body-sm text-neutral-400 mb-4 line-clamp-2">
+                    <p className="text-body-sm text-slate mb-4 line-clamp-2">
                       {template.description}
                     </p>
 
                     {/* Destination */}
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-700/50 text-body-sm text-neutral-300 mb-4">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-void-primary/40 border border-white/10 text-body-sm text-silver mb-4">
                       <Target className="w-4 h-4" />
                       {template.destination_country}
                     </div>
                   </div>
 
                   {/* Footer */}
-                  <div className="flex items-center justify-between pt-4 border-t border-neutral-600/30">
-                    <div className="flex items-center gap-4 text-body-sm text-neutral-400">
+                  <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                    <div className="flex items-center gap-4 text-body-sm text-slate">
                       <div className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
                         {template.estimated_duration_months} meses
@@ -237,7 +237,7 @@ export function RouteTemplates() {
                         {template.milestone_count} marcos
                       </div>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-lumina group-hover:translate-x-1 transition-transform" />
+                    <ChevronRight className="w-5 h-5 text-cyan group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
               </Card>
@@ -257,33 +257,33 @@ export function RouteTemplates() {
             {/* Description */}
             <div>
               <h3 className="font-heading text-h4 text-white mb-2">Sobre esta rota</h3>
-              <p className="text-body text-neutral-300">
+              <p className="text-body text-slate">
                 {selectedTemplate.description}
               </p>
             </div>
 
             {/* Details */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 rounded-lg bg-neutral-700/30 border border-neutral-600/20">
-                <p className="text-body-sm text-neutral-400 mb-1">Destino</p>
+              <div className="stat-panel">
+                <p className="text-body-sm text-slate mb-1">Destino</p>
                 <p className="text-body text-white font-medium">
                   {selectedTemplate.destination_country}
                 </p>
               </div>
-              <div className="p-4 rounded-lg bg-neutral-700/30 border border-neutral-600/20">
-                <p className="text-body-sm text-neutral-400 mb-1">Duração</p>
+              <div className="stat-panel">
+                <p className="text-body-sm text-slate mb-1">Duração</p>
                 <p className="text-body text-white font-medium">
                   {selectedTemplate.estimated_duration_months} meses
                 </p>
               </div>
-              <div className="p-4 rounded-lg bg-neutral-700/30 border border-neutral-600/20">
-                <p className="text-body-sm text-neutral-400 mb-1">Marcos</p>
+              <div className="stat-panel">
+                <p className="text-body-sm text-slate mb-1">Marcos</p>
                 <p className="text-body text-white font-medium">
                   {selectedTemplate.milestone_count} etapas
                 </p>
               </div>
-              <div className="p-4 rounded-lg bg-neutral-700/30 border border-neutral-600/20">
-                <p className="text-body-sm text-neutral-400 mb-1">Dificuldade</p>
+              <div className="stat-panel">
+                <p className="text-body-sm text-slate mb-1">Dificuldade</p>
                 <Badge variant={difficultyColors[selectedTemplate.difficulty]}>
                   {difficultyLabels[selectedTemplate.difficulty]}
                 </Badge>

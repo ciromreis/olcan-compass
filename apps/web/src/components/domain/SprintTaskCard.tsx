@@ -143,7 +143,7 @@ export const SprintTaskCard: React.FC<SprintTaskCardProps> = ({
             !task.completed ? (
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="flex items-center gap-1 text-xs text-lumina-200 hover:text-lumina-100 mt-2"
+                className="flex items-center gap-1 text-xs text-cyan hover:text-cyan-400 mt-2"
               >
                 {isExpanded ? (
                   <>
@@ -206,7 +206,7 @@ export const SprintTaskCard: React.FC<SprintTaskCardProps> = ({
                   {!isEditingNotes && (
                     <button
                       onClick={() => setIsEditingNotes(true)}
-                      className="text-xs text-lumina-200 hover:text-lumina-100"
+                      className="text-xs text-cyan hover:text-cyan-400"
                     >
                       {task.notes ? 'Editar' : 'Adicionar'}
                     </button>
@@ -222,7 +222,7 @@ export const SprintTaskCard: React.FC<SprintTaskCardProps> = ({
                       className={cn(
                         'w-full min-h-[80px] p-3 rounded-xl border border-white/10',
                         'bg-neutral-900/30 text-neutral-100 placeholder:text-neutral-500',
-                        'focus:outline-none focus:ring-2 focus:ring-lumina-300 focus:border-lumina-300/40',
+                        'focus:outline-none focus:ring-2 focus:ring-cyan/50 focus:border-cyan/30',
                         'resize-y text-sm'
                       )}
                     />

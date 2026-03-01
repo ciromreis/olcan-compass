@@ -34,7 +34,7 @@ export const LoadingSpinner = forwardRef<HTMLDivElement, LoadingSpinnerProps>(
         className={cn('flex items-center gap-2', centered && 'justify-center', className)}
         {...props}
       >
-        <Loader2 className={cn('animate-spin text-lumina-300', sizeClasses[size])} />
+        <Loader2 className={cn('animate-spin text-cyan', sizeClasses[size])} />
         {text && <span className="text-sm text-lux-300">{text}</span>}
       </div>
     )

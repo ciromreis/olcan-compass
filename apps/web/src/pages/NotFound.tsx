@@ -12,13 +12,13 @@ export function NotFound() {
     <div className="min-h-screen bg-void flex items-center justify-center p-4">
       <div className="max-w-md w-full text-center">
         <div className="mb-8">
-          <h1 className="text-[120px] font-heading font-bold text-lumina leading-none">
+          <h1 className="text-[120px] font-heading font-bold text-cyan leading-none">
             404
           </h1>
           <h2 className="text-h2 font-heading text-white mt-4 mb-2">
             Página não encontrada
           </h2>
-          <p className="text-body text-neutral-300">
+          <p className="text-body text-slate">
             A página que você está procurando não existe ou foi movida.
           </p>
         </div>

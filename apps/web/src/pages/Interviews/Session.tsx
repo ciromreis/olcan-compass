@@ -78,7 +78,7 @@ export function InterviewSession() {
               <CheckCircle className="w-8 h-8 text-success" />
             </div>
             <h1 className="font-heading text-h2 text-white mb-3">Sessão Completa</h1>
-            <p className="text-body text-neutral-300">Suas respostas foram enviadas para análise.</p>
+            <p className="text-body text-slate">Suas respostas foram enviadas para análise.</p>
           </div>
         </Card>
       </div>
@@ -90,11 +90,11 @@ export function InterviewSession() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading text-h1 text-white">Sessão de Entrevista</h1>
-          <p className="text-body text-neutral-300 mt-1">
+          <p className="text-body text-slate mt-1">
             Pergunta {(session.current_question_index || 0) + 1} de {session.total_questions || 1}
           </p>
         </div>
-        <div className="flex items-center gap-2 text-body text-neutral-300">
+        <div className="flex items-center gap-2 text-body text-slate">
           <Clock className="w-5 h-5" />
           <span>15:00</span>
         </div>

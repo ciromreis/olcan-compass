@@ -42,7 +42,7 @@ export function OpportunityDetail() {
         <div className="min-w-0">
           <button
             onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 text-body-sm text-neutral-300 hover:text-white"
+            className="inline-flex items-center gap-2 text-body-sm text-slate hover:text-white"
           >
             <MaterialSymbol name="arrow_back" size={18} />
             Voltar
@@ -50,7 +50,7 @@ export function OpportunityDetail() {
           <h1 className="font-heading text-h2 text-white mt-3 truncate">
             {opportunity.opportunity_name}
           </h1>
-          <p className="text-body text-neutral-300 mt-1">
+          <p className="text-body text-slate mt-1">
             {headerMeta.institution} • {headerMeta.location}
           </p>
         </div>
@@ -63,15 +63,15 @@ export function OpportunityDetail() {
       <Card className="liquid-glass">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-2">
-            <p className="text-body-sm text-neutral-400">Deadline</p>
+            <p className="text-body-sm text-slate">Deadline</p>
             <div className="flex items-center gap-2">
-              <MaterialSymbol name="event" size={18} className="text-lumina-200" />
+              <MaterialSymbol name="event" size={18} className="text-cyan" />
               <p className="text-body font-semibold text-white">
                 {opportunity.deadline ? formatDeadline(opportunity.deadline) : 'Sem prazo'}
               </p>
             </div>
             {opportunity.deadline && (
-              <p className="text-body-sm text-neutral-400">
+              <p className="text-body-sm text-slate">
                 {formatDateShort(opportunity.deadline)}
               </p>
             )}
@@ -96,10 +96,10 @@ export function OpportunityDetail() {
 
       <Card className="liquid-glass">
         <div className="flex items-center gap-2 mb-3">
-          <MaterialSymbol name="description" size={20} className="text-lumina-200" />
+          <MaterialSymbol name="description" size={20} className="text-cyan" />
           <h2 className="font-heading text-h3 text-white">Descrição</h2>
         </div>
-        <p className="text-body text-neutral-300 leading-relaxed whitespace-pre-wrap">
+        <p className="text-body text-slate leading-relaxed whitespace-pre-wrap">
           {opportunity.description || 'Sem descrição disponível.'}
         </p>
       </Card>

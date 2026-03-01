@@ -39,7 +39,7 @@ export function ForgotPassword() {
   if (result) {
     return (
       <div className="min-h-screen bg-gradient-void flex items-center justify-center p-4">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-lumina/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-primary-blue/10 rounded-full blur-[120px] pointer-events-none" />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -54,32 +54,32 @@ export function ForgotPassword() {
             <h1 className="font-heading text-h2 text-white">
               Solicitação recebida
             </h1>
-            <p className="text-body text-neutral-300 mt-2">
+            <p className="text-body text-slate mt-2">
               Se o email existir, você poderá redefinir sua senha
             </p>
           </div>
 
-          <div className="bg-neutral-700/50 backdrop-blur-lg border border-neutral-600/40 rounded-2xl p-6 shadow-card">
+          <div className="liquid-glass rounded-2xl p-6 shadow-card">
             {typeof result?.message === 'string' && (
-              <p className="text-body text-neutral-200 mb-4">
+              <p className="text-body text-silver mb-4">
                 {result.message}
               </p>
             )}
-            <p className="text-body text-neutral-200 mb-4">
+            <p className="text-body text-silver mb-4">
               Se a entrega de emails estiver habilitada, um link de redefinição será enviado para <strong>{email}</strong>.
             </p>
-            <p className="text-body-sm text-neutral-400 mb-6">
+            <p className="text-body-sm text-slate mb-6">
               O link expira em 1 hora. Se não receber o email, verifique sua pasta de spam.
             </p>
 
             {typeof result?.reset_url === 'string' && (
-              <div className="mb-6 rounded-xl border border-neutral-600/40 bg-neutral-800/40 p-4">
-                <p className="text-body-sm text-neutral-300 mb-2">
+              <div className="mb-6 rounded-xl border border-white/10 bg-void-primary/30 p-4">
+                <p className="text-body-sm text-slate mb-2">
                   Ambiente de desenvolvimento: copie e abra este link para redefinir sua senha.
                 </p>
                 <a
                   href={result.reset_url}
-                  className="text-body-sm text-lumina hover:text-lumina-100 break-all"
+                  className="text-body-sm text-cyan hover:text-cyan-400 break-all"
                 >
                   {result.reset_url}
                 </a>
@@ -100,7 +100,7 @@ export function ForgotPassword() {
 
   return (
     <div className="min-h-screen bg-gradient-void flex items-center justify-center p-4">
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-lumina/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-primary-blue/10 rounded-full blur-[120px] pointer-events-none" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -109,18 +109,18 @@ export function ForgotPassword() {
         className="relative w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-lumina-200 to-lumina-300 shadow-glow mb-4">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-blue to-cyan shadow-glow mb-4">
             <Compass className="w-7 h-7 text-white" />
           </div>
           <h1 className="font-heading text-h2 text-white">
             Esqueceu a senha?
           </h1>
-          <p className="text-body text-neutral-300 mt-2">
+          <p className="text-body text-slate mt-2">
             Enviaremos um link para redefinir sua senha
           </p>
         </div>
 
-        <div className="bg-neutral-700/50 backdrop-blur-lg border border-neutral-600/40 rounded-2xl p-6 shadow-card">
+        <div className="liquid-glass rounded-2xl p-6 shadow-card">
           <form onSubmit={handleSubmit} className="space-y-5">
             {resetMutation.isError && (
               <Alert variant="error">
@@ -152,10 +152,10 @@ export function ForgotPassword() {
             </Button>
           </form>
 
-          <div className="mt-5 pt-5 border-t border-neutral-600/30 text-center">
+          <div className="mt-5 pt-5 border-t border-white/10 text-center">
             <button
               onClick={() => navigate('/login')}
-              className="inline-flex items-center gap-2 text-body-sm text-neutral-400 hover:text-neutral-200 transition-colors"
+              className="inline-flex items-center gap-2 text-body-sm text-slate hover:text-silver transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               Voltar para login
@@ -163,7 +163,7 @@ export function ForgotPassword() {
           </div>
         </div>
 
-        <p className="text-center text-caption text-neutral-500 mt-6">
+        <p className="text-center text-caption text-slate-500 mt-6">
           © {new Date().getFullYear()} Olcan · Mobilidade Internacional
         </p>
       </motion.div>

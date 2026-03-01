@@ -124,7 +124,7 @@ export const Pagination = forwardRef<HTMLDivElement, PaginationProps>(
               disabled={disabled}
               className={cn(
                 'px-3 py-1 text-sm bg-neutral-800 border border-neutral-700 rounded-lg',
-                'text-lux-200 focus:outline-none focus:ring-2 focus:ring-lumina-300',
+                'text-lux-200 focus:outline-none focus:ring-2 focus:ring-cyan/50',
                 disabled && 'opacity-50 cursor-not-allowed'
               )}
             >
@@ -151,7 +151,7 @@ export const Pagination = forwardRef<HTMLDivElement, PaginationProps>(
               aria-
               className={cn(
                 'p-2 rounded-lg transition-colors',
-                'hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-lumina-300',
+                'hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-cyan/50',
                 (disabled || currentPage === 1) && 'opacity-50 cursor-not-allowed'
               )}
             >
@@ -166,7 +166,7 @@ export const Pagination = forwardRef<HTMLDivElement, PaginationProps>(
             aria-
             className={cn(
               'p-2 rounded-lg transition-colors',
-              'hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-lumina-300',
+              'hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-cyan/50',
               (disabled || currentPage === 1) && 'opacity-50 cursor-not-allowed'
             )}
           >
@@ -197,9 +197,9 @@ export const Pagination = forwardRef<HTMLDivElement, PaginationProps>(
                 aria-current={isActive ? 'page' : undefined}
                 className={cn(
                   'min-w-[36px] px-3 py-1 text-sm rounded-lg transition-colors',
-                  'focus:outline-none focus:ring-2 focus:ring-lumina-300',
+                  'focus:outline-none focus:ring-2 focus:ring-cyan/50',
                   isActive
-                    ? 'bg-lumina-300 text-void-primary font-medium'
+                    ? 'bg-cyan text-void-primary font-medium'
                     : 'text-lux-200 hover:bg-neutral-700',
                   disabled && 'opacity-50 cursor-not-allowed'
                 )}
@@ -216,7 +216,7 @@ export const Pagination = forwardRef<HTMLDivElement, PaginationProps>(
             aria-
             className={cn(
               'p-2 rounded-lg transition-colors',
-              'hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-lumina-300',
+              'hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-cyan/50',
               (disabled || currentPage === totalPages) && 'opacity-50 cursor-not-allowed'
             )}
           >
@@ -231,7 +231,7 @@ export const Pagination = forwardRef<HTMLDivElement, PaginationProps>(
               aria-
               className={cn(
                 'p-2 rounded-lg transition-colors',
-                'hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-lumina-300',
+                'hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-cyan/50',
                 (disabled || currentPage === totalPages) && 'opacity-50 cursor-not-allowed'
               )}
             >

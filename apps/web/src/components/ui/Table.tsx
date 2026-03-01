@@ -157,7 +157,7 @@ export function Table<T = any>({
                   className={cn(
                     'border-b border-neutral-200 transition-colors',
                     'hover:bg-neutral-50',
-                    isSelected && 'bg-lumina-50'
+                    isSelected && 'bg-primary-blue/5'
                   )}
                 >
                   {selectable && (

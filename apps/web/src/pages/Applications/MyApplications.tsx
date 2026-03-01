@@ -37,7 +37,7 @@ export function MyApplications() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading text-h1 text-white">Minhas Aplicações</h1>
-          <p className="text-body text-neutral-300 mt-1">
+          <p className="text-body text-slate mt-1">
             Gerencie suas candidaturas e prazos
           </p>
         </div>
@@ -79,8 +79,8 @@ export function MyApplications() {
               <Card className="liquid-glass">
                 <div className="p-8">
                   <div className="flex items-center gap-2 mb-6">
-                    <Flame className="w-5 h-5 text-lumina" />
-                    <span className="text-body-sm text-lumina font-medium">
+                    <Flame className="w-5 h-5 text-cyan" />
+                    <span className="text-body-sm text-cyan font-medium">
                       Modo Forge — Próxima Tarefa
                     </span>
                   </div>
@@ -110,9 +110,9 @@ export function MyApplications() {
               exit={{ opacity: 0 }}
               className="space-y-6"
             >
-              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-lumina/5 border border-lumina/20 w-fit">
-                <MapIcon className="w-4 h-4 text-lumina" />
-                <span className="text-body-sm text-lumina font-medium">Modo Map — Visão Completa</span>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-blue/10 border border-cyan/30 w-fit">
+                <MapIcon className="w-4 h-4 text-cyan" />
+                <span className="text-body-sm text-cyan font-medium">Modo Map — Visão Completa</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {applications.map((app: ApplicationSummary, index: number) => (

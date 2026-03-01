@@ -157,10 +157,10 @@ export const Select: React.FC<SelectProps> = ({
         className={cn(
           'flex items-center justify-between gap-2 px-3 py-2 rounded-lg border transition-colors cursor-pointer',
           'bg-neutral-50 border-neutral-300',
-          'hover:border-neutral-400 focus:outline-none focus:ring-2 focus:ring-lumina-500 focus:border-lumina-500',
+          'hover:border-neutral-400 focus:outline-none focus:ring-2 focus:ring-cyan/50 focus:border-cyan',
           error && 'border-semantic-error focus:ring-semantic-error',
           disabled && 'opacity-50 cursor-not-allowed hover:border-neutral-300',
-          isOpen && 'border-lumina-500 ring-2 ring-lumina-500'
+          isOpen && 'border-cyan ring-2 ring-cyan/50'
         )}
       >
         <div className="flex-1 flex flex-wrap gap-1 min-h-[24px]">
@@ -169,13 +169,13 @@ export const Select: React.FC<SelectProps> = ({
               selectedLabels.map((label, idx) => (
                 <span
                   key={`${selectedValues[idx]}-${idx}`}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-lumina-100 text-lumina-700 rounded text-sm"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary-blue/10 text-cyan rounded text-sm"
                 >
                   {label}
                   <button
                     type="button"
                     onClick={(e) => handleRemove(selectedValues[idx] as string, e)}
-                    className="hover:text-lumina-900"
+                    className="hover:text-white"
                     aria-label={`Remover ${label}`}
                   >
                     <X className="w-3 h-3" />
@@ -211,7 +211,7 @@ export const Select: React.FC<SelectProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Buscar..."
-                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lumina-500"
+                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan/50"
                 onClick={(e) => e.stopPropagation()}
               />
             </div>
@@ -231,14 +231,14 @@ export const Select: React.FC<SelectProps> = ({
                     onClick={() => !option.disabled && handleSelect(option.value)}
                     className={cn(
                       'flex items-center justify-between px-3 py-2 cursor-pointer transition-colors',
-                      'hover:bg-lumina-50',
-                      isSelected && 'bg-lumina-100 text-lumina-900',
-                      isFocused && 'bg-lumina-50',
+                      'hover:bg-primary-blue/5',
+                      isSelected && 'bg-primary-blue/10 text-primary-blue font-medium',
+                      isFocused && 'bg-primary-blue/5',
                       option.disabled && 'opacity-50 cursor-not-allowed hover:bg-transparent'
                     )}
                   >
                     <span>{option.label}</span>
-                    {isSelected && <Check className="w-4 h-4 text-lumina-600" />}
+                    {isSelected && <Check className="w-4 h-4 text-cyan" />}
                   </div>
                 );
               })

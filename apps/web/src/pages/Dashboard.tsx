@@ -49,8 +49,8 @@ function QuickAction({
         onClick={() => navigate(path)}
       >
         <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-lg bg-lumina/10 flex items-center justify-center flex-shrink-0 group-hover:bg-lumina/20 transition-colors">
-            <Icon className="w-5 h-5 text-lumina" />
+          <div className="w-10 h-10 rounded-lg bg-primary-blue/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary-blue/20 transition-colors">
+            <Icon className="w-5 h-5 text-cyan" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
@@ -58,14 +58,14 @@ function QuickAction({
                 {label}
               </h3>
               {count !== undefined && (
-                <span className="text-caption text-neutral-400 bg-neutral-600/50 px-2 py-0.5 rounded-full">
+                <span className="metric-badge">
                   {count}
                 </span>
               )}
             </div>
-            <p className="text-body-sm text-neutral-400 mt-0.5">{description}</p>
+            <p className="text-body-sm text-slate mt-0.5">{description}</p>
           </div>
-          <ArrowRight className="w-4 h-4 text-neutral-500 group-hover:text-lumina transition-colors mt-1" />
+          <ArrowRight className="w-4 h-4 text-slate group-hover:text-cyan transition-colors mt-1" />
         </div>
       </Card>
     </motion.div>
@@ -130,7 +130,7 @@ export function Dashboard() {
           <Typography variant="h2">
             {greeting}, {firstName}
           </Typography>
-          <Typography variant="body" className="mt-1 text-neutral-300">
+          <Typography variant="body" className="mt-1 text-slate">
             Seu painel de execução — sem ruído, só sinal.
           </Typography>
         </div>
@@ -150,10 +150,10 @@ export function Dashboard() {
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <MaterialSymbol name="monitor_heart" size={20} className="text-lumina-200" />
+              <MaterialSymbol name="monitor_heart" size={20} className="text-cyan" />
               <CardTitle className="text-lg">Seu estado hoje</CardTitle>
             </div>
-            <p className="text-body-sm text-neutral-300 mt-1">
+            <p className="text-body-sm text-slate mt-1">
               {chips?.insight || 'Carregando o seu perfil…'}
             </p>
           </div>
@@ -167,11 +167,11 @@ export function Dashboard() {
           ].map((item) => (
             <div
               key={item.label}
-              className="rounded-2xl border border-white/10 bg-neutral-800/30 p-3"
+              className="stat-panel"
             >
               <div className="flex items-center justify-between">
-                <p className="text-caption text-neutral-400">{item.label}</p>
-                <MaterialSymbol name={item.icon} size={18} className="text-lumina-200" />
+                <p className="text-caption text-slate">{item.label}</p>
+                <MaterialSymbol name={item.icon} size={18} className="text-cyan" />
               </div>
               <p className="mt-2 text-body font-semibold text-white font-mono">
                 {typeof item.value === 'number' ? `${item.value}/100` : '—'}
@@ -186,10 +186,10 @@ export function Dashboard() {
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <MaterialSymbol name="map" size={20} className="text-lumina-200" />
+              <MaterialSymbol name="map" size={20} className="text-cyan" />
               <CardTitle className="text-lg">Rota ativa</CardTitle>
             </div>
-            <p className="text-body-sm text-neutral-300 mt-1 truncate">
+            <p className="text-body-sm text-slate mt-1 truncate">
               {activeRoute ? activeRoute.name : 'Nenhuma rota ativa.'}
             </p>
           </div>
@@ -204,20 +204,20 @@ export function Dashboard() {
         </div>
 
         <div className="mt-5 space-y-3">
-          <div className="flex items-center justify-between text-body-sm text-neutral-400">
+          <div className="flex items-center justify-between text-body-sm text-slate">
             <span>Progresso</span>
             <span className="font-mono">{Math.round(activeRoute?.progress_percentage || 0)}%</span>
           </div>
           <Progress value={activeRoute?.progress_percentage || 0} />
 
           {nextMilestone && (
-            <div className="rounded-2xl border border-white/10 bg-neutral-800/20 p-4">
-              <p className="text-caption text-neutral-400">Próximo passo</p>
+            <div className="stat-panel">
+              <p className="text-caption text-slate">Próximo passo</p>
               <p className="text-body font-semibold text-white mt-1">
                 {nextMilestone.title}
               </p>
               {nextMilestone.description && (
-                <p className="text-body-sm text-neutral-300 mt-1 line-clamp-2">
+                <p className="text-body-sm text-slate mt-1 line-clamp-2">
                   {nextMilestone.description}
                 </p>
               )}
@@ -231,10 +231,10 @@ export function Dashboard() {
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <MaterialSymbol name="radar" size={20} className="text-lumina-200" />
+              <MaterialSymbol name="radar" size={20} className="text-cyan" />
               <CardTitle className="text-lg">Readiness</CardTitle>
             </div>
-            <p className="text-body-sm text-neutral-300 mt-1">
+            <p className="text-body-sm text-slate mt-1">
               Visão rápida: gaps, urgências e tendência.
             </p>
           </div>
@@ -244,30 +244,30 @@ export function Dashboard() {
         </div>
 
         <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-4 items-stretch">
-          <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-neutral-800/20 p-4">
+          <div className="flex items-center gap-4 stat-panel">
             <CircularProgress value={typeof readinessScore === 'number' ? readinessScore : 0} size={64} color="lumina" />
             <div>
-              <p className="text-caption text-neutral-400">Score</p>
+              <p className="text-caption text-slate">Score</p>
               <p className="text-body font-semibold text-white font-mono">
                 {typeof readinessScore === 'number' ? `${Math.round(readinessScore)}/100` : '—'}
               </p>
             </div>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-neutral-800/20 p-4">
-            <p className="text-caption text-neutral-400">Gaps abertos</p>
+          <div className="stat-panel">
+            <p className="text-caption text-slate">Gaps abertos</p>
             <p className="mt-2 text-body font-semibold text-white font-mono">
               {sprints.readinessOverview?.open_gaps ?? '—'}
             </p>
-            <p className="text-body-sm text-neutral-300 mt-1">
+            <p className="text-body-sm text-slate mt-1">
               Críticos: {sprints.readinessOverview?.critical_gaps ?? '—'}
             </p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-neutral-800/20 p-4">
-            <p className="text-caption text-neutral-400">Tarefas urgentes</p>
+          <div className="stat-panel">
+            <p className="text-caption text-slate">Tarefas urgentes</p>
             <p className="mt-2 text-body font-semibold text-white font-mono">
               {sprints.readinessOverview?.urgent_tasks?.length ?? '—'}
             </p>
-            <p className="text-body-sm text-neutral-300 mt-1">
+            <p className="text-body-sm text-slate mt-1">
               Sprints ativas: {sprints.readinessOverview?.active_sprints ?? '—'}
             </p>
           </div>
@@ -283,7 +283,7 @@ export function Dashboard() {
             </div>
             <div className="flex-1">
               <p className="text-body font-semibold text-white">Próximo prazo</p>
-              <p className="text-body-sm text-neutral-300 mt-0.5">
+              <p className="text-body-sm text-slate mt-0.5">
                 {nextDeadline.opportunity_name} • {nextDeadline.institution || '—'} •{' '}
                 {nextDeadline.deadline ? formatDeadline(nextDeadline.deadline) : '—'}
               </p>
@@ -298,16 +298,16 @@ export function Dashboard() {
 
       {/* ── Next Atomic Action ── */}
       <Card variant="elevated" className="liquid-glass relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-full bg-gradient-to-l from-lumina/10 to-transparent pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-full bg-gradient-to-l from-cyan/10 to-transparent pointer-events-none" />
         <div className="flex items-center gap-4 relative z-10">
-          <div className="w-12 h-12 rounded-2xl bg-lumina/10 border border-white/10 flex items-center justify-center">
-            <MaterialSymbol name="magic_button" size={22} className="text-lumina-200" />
+          <div className="w-12 h-12 rounded-2xl bg-cyan/10 border border-cyan/20 flex items-center justify-center">
+            <MaterialSymbol name="magic_button" size={22} className="text-cyan" />
           </div>
           <div className="flex-1">
             <Typography variant="body" className="font-semibold text-white">
               Próxima ação
             </Typography>
-            <Typography variant="body-sm" className="text-neutral-300 mt-0.5">
+            <Typography variant="body-sm" className="text-slate mt-0.5">
               {activeRoute ? 'Retome a rota e feche o próximo marco.' : 'Escolha um template para iniciar sua rota.'}
             </Typography>
           </div>

@@ -9,7 +9,7 @@ import { Input } from '../components/ui/Input'
 import { Alert } from '../components/ui/Alert'
 
 /**
- * MMXD Register page — mirrors Login styling.
+ * Liquid Glass Register page — Deep Navy with Cyan accent glow.
  * First step of the funnel before psych onboarding.
  */
 export function Register() {
@@ -69,31 +69,33 @@ export function Register() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-void flex items-center justify-center p-4">
-      {/* Background glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-lumina/5 rounded-full blur-[120px] pointer-events-none" />
+    <div className="min-h-screen bg-gradient-void flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Ambient glow effects */}
+      <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-primary-blue/10 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-[10%] left-[15%] w-[300px] h-[300px] bg-cyan/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="fixed inset-0 pointer-events-none opacity-[0.03] noise-overlay" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="relative w-full max-w-md"
+        className="relative w-full max-w-md z-10"
       >
         {/* Brand Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-lumina-200 to-lumina-300 shadow-glow mb-4">
-            <Compass className="w-7 h-7 text-white" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-blue to-cyan shadow-cyan-glow mb-5">
+            <Compass className="w-8 h-8 text-white" />
           </div>
           <h1 className="font-heading text-h2 text-white">
             Crie sua conta
           </h1>
-          <p className="text-body text-neutral-300 mt-2">
+          <p className="text-body text-slate mt-2">
             Comece seu plano de mobilidade internacional
           </p>
         </div>
 
         {/* Register Card */}
-        <div className="bg-neutral-700/50 backdrop-blur-lg border border-neutral-600/40 rounded-2xl p-6 shadow-card">
+        <div className="liquid-glass p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             {(validationError || registerMutation.isError) && (
               <Alert variant="error">
@@ -140,7 +142,7 @@ export function Register() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-3 text-neutral-400 hover:text-neutral-200 transition-colors"
+                className="absolute right-3 top-3 text-slate hover:text-silver transition-colors cursor-pointer"
                 tabIndex={-1}
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -168,12 +170,12 @@ export function Register() {
             </Button>
           </form>
 
-          <div className="mt-5 pt-5 border-t border-neutral-600/30 text-center">
-            <p className="text-body-sm text-neutral-400">
+          <div className="mt-5 pt-5 border-t border-white/10 text-center">
+            <p className="text-body-sm text-slate">
               Já tem uma conta?{' '}
               <button
                 onClick={() => navigate('/login')}
-                className="text-lumina hover:text-lumina-100 font-medium transition-colors"
+                className="text-primary-blue hover:text-cyan font-medium transition-colors cursor-pointer"
               >
                 Entrar
               </button>
@@ -182,7 +184,7 @@ export function Register() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-caption text-neutral-500 mt-6">
+        <p className="text-center text-caption text-slate-500 mt-6">
           © {new Date().getFullYear()} Olcan · Mobilidade Internacional
         </p>
       </motion.div>

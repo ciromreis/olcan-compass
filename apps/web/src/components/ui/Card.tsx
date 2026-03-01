@@ -27,13 +27,13 @@ interface CardProps extends Omit<HTMLMotionProps<"div">, "ref"> {
 
 const variantStyles: Record<CardVariant, string> = {
     default:
-        'bg-neutral-700/50 backdrop-blur-md border border-neutral-600/40 rounded-xl',
+        'glass-card',
     elevated:
-        'bg-neutral-700/60 backdrop-blur-lg border border-neutral-500/30 rounded-xl shadow-glass hover:shadow-glass-hover bg-noise',
+        'liquid-glass-elevated',
     bordered:
-        'bg-neutral-700/50 backdrop-blur-md border border-neutral-600/40 rounded-xl border-l-[3px] border-l-lumina-200',
+        'glass-card border-l-[3px] border-l-cyan',
     score:
-        'bg-neutral-700/40 backdrop-blur-sm border border-neutral-600/30 rounded-lg',
+        'bg-void-primary/30 backdrop-blur-sm border border-white/10 rounded-xl',
 }
 
 /**

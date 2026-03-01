@@ -113,7 +113,7 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
         {dismissible && (
           <button
             onClick={onDismiss}
-            className="flex-shrink-0 p-1 rounded hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-lumina-300"
+            className="flex-shrink-0 p-1 rounded hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-cyan/50"
             aria-label="Fechar alerta"
           >
             <X size={16} className="text-lux-300" />

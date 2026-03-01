@@ -50,18 +50,18 @@ export function MyRoutes() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="font-heading text-h2 text-white">Rotas</h1>
-          <p className="text-body text-neutral-300 mt-1">
+          <p className="text-body text-slate mt-1">
             Execução com visibilidade. Progresso com intenção.
           </p>
-          <div className="mt-4 inline-flex items-center gap-1 rounded-full border border-white/10 bg-neutral-800/20 p-1">
+          <div className="mt-4 inline-flex items-center gap-1 rounded-full border border-white/10 bg-void-primary/30 p-1">
             <button
               type="button"
               onClick={() => setMode('map')}
               className={[
                 'inline-flex items-center gap-2 rounded-full px-3 py-1 text-body-sm transition-colors',
                 mode === 'map'
-                  ? 'bg-lumina/10 text-lumina-200'
-                  : 'text-neutral-300 hover:text-neutral-100',
+                  ? 'bg-primary-blue/10 text-cyan'
+                  : 'text-slate hover:text-silver',
               ].join(' ')}
             >
               <MapIcon className="w-4 h-4" />
@@ -73,8 +73,8 @@ export function MyRoutes() {
               className={[
                 'inline-flex items-center gap-2 rounded-full px-3 py-1 text-body-sm transition-colors',
                 mode === 'forge'
-                  ? 'bg-lumina/10 text-lumina-200'
-                  : 'text-neutral-300 hover:text-neutral-100',
+                  ? 'bg-primary-blue/10 text-cyan'
+                  : 'text-slate hover:text-silver',
               ].join(' ')}
             >
               <Flame className="w-4 h-4" />
@@ -125,42 +125,42 @@ export function MyRoutes() {
                   <div className="p-8">
                     {/* Mode Indicator */}
                     <div className="flex items-center gap-2 mb-6">
-                      <Flame className="w-5 h-5 text-lumina" />
-                      <span className="text-body-sm text-lumina font-medium">
+                      <Flame className="w-5 h-5 text-cyan" />
+                      <span className="text-body-sm text-cyan font-medium">
                         Modo Forge — Foco Total
                       </span>
                     </div>
 
                     {/* Route Context */}
                     <div className="mb-6">
-                      <div className="flex items-center gap-2 text-body-sm text-neutral-400 mb-2">
+                      <div className="flex items-center gap-2 text-body-sm text-slate mb-2">
                         <Target className="w-4 h-4" />
                         {activeRoute.name}
                       </div>
                       <h2 className="font-heading text-h2 text-white mb-2">
                         {activeMilestone.title}
                       </h2>
-                      <p className="text-body text-neutral-300">
+                      <p className="text-body text-slate">
                         {activeMilestone.description}
                       </p>
                     </div>
 
                     {/* Milestone Details */}
                     <div className="grid grid-cols-3 gap-4 mb-6">
-                      <div className="p-4 rounded-2xl bg-neutral-800/30 border border-white/10">
-                        <p className="text-body-sm text-neutral-400 mb-1">Status</p>
+                      <div className="stat-panel">
+                        <p className="text-body-sm text-slate mb-1">Status</p>
                         <Badge variant="warning">Em Progresso</Badge>
                       </div>
-                      <div className="p-4 rounded-2xl bg-neutral-800/30 border border-white/10">
-                        <p className="text-body-sm text-neutral-400 mb-1">Prazo</p>
+                      <div className="stat-panel">
+                        <p className="text-body-sm text-slate mb-1">Prazo</p>
                         <p className="text-body text-white">
                           {activeMilestone.target_date
                             ? new Date(activeMilestone.target_date).toLocaleDateString('pt-BR')
                             : 'Não definido'}
                         </p>
                       </div>
-                      <div className="p-4 rounded-2xl bg-neutral-800/30 border border-white/10">
-                        <p className="text-body-sm text-neutral-400 mb-1">Ordem</p>
+                      <div className="stat-panel">
+                        <p className="text-body-sm text-slate mb-1">Ordem</p>
                         <p className="text-body text-white">
                           Marco {activeMilestone.order_index + 1}
                         </p>
@@ -211,13 +211,13 @@ export function MyRoutes() {
                 <div className="p-6">
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
-                      <p className="text-body-sm text-neutral-400">Rota ativa</p>
+                      <p className="text-body-sm text-slate">Rota ativa</p>
                       <h2 className="font-heading text-h3 text-white truncate">
                         {activeRoute?.name || 'Nenhuma rota ativa'}
                       </h2>
                       {activeMilestone && (
-                        <p className="text-body-sm text-neutral-300 mt-1">
-                          Próximo passo: <span className="text-neutral-100 font-medium">{activeMilestone.title}</span>
+                        <p className="text-body-sm text-slate mt-1">
+                          Próximo passo: <span className="text-silver font-medium">{activeMilestone.title}</span>
                         </p>
                       )}
                     </div>
@@ -262,7 +262,7 @@ export function MyRoutes() {
                             <div className="flex items-start justify-between gap-3">
                               <div className="min-w-0">
                                 <p className="text-body font-semibold text-white truncate">{route.name}</p>
-                                <p className="text-body-sm text-neutral-400 mt-0.5">
+                                <p className="text-body-sm text-slate mt-0.5">
                                   {route.status === 'completed'
                                     ? 'Completa'
                                     : route.status === 'active'

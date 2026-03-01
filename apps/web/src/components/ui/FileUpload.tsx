@@ -195,8 +195,8 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         className={cn(
           'relative border-2 border-dashed rounded-lg p-6 transition-colors cursor-pointer',
           'flex flex-col items-center justify-center gap-2',
-          isDragging && !disabled && 'border-lumina-500 bg-lumina-50',
-          !isDragging && !disabled && 'border-neutral-300 hover:border-lumina-400',
+          isDragging && !disabled && 'border-cyan/50 bg-primary-blue/10',
+          !isDragging && !disabled && 'border-white/10 hover:border-cyan/30',
           disabled && 'opacity-50 cursor-not-allowed border-neutral-200',
           error && 'border-semantic-error'
         )}
@@ -204,12 +204,12 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         <Upload
           className={cn(
             'w-10 h-10',
-            isDragging ? 'text-lumina-600' : 'text-neutral-400'
+            isDragging ? 'text-cyan' : 'text-slate'
           )}
         />
         <div className="text-center">
           <p className="text-sm text-neutral-700">
-            <span className="font-semibold text-lumina-600">Clique para enviar</span>{' '}
+            <span className="font-semibold text-cyan">Clique para enviar</span>{' '}
             ou arraste arquivos aqui
           </p>
           <p className="text-xs text-neutral-500 mt-1">
@@ -255,7 +255,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                 {fileWithProgress.status === 'uploading' && (
                   <div className="mt-1 w-full bg-neutral-200 rounded-full h-1.5">
                     <div
-                      className="bg-lumina-600 h-1.5 rounded-full transition-all"
+                      className="bg-cyan h-1.5 rounded-full transition-all"
                       style={{ width: `${fileWithProgress.progress}%` }}
                     />
                   </div>

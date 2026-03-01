@@ -39,7 +39,7 @@ export function MoreHub() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="font-heading text-h2 text-white">Mais</h1>
-          <p className="text-body text-neutral-300 mt-1">
+          <p className="text-body text-slate mt-1">
             Sprints, marketplace e ajustes finos do seu sistema.
           </p>
         </div>
@@ -53,13 +53,13 @@ export function MoreHub() {
       {/* Sprint highlight */}
       <Card variant="elevated" className="liquid-glass">
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-lumina/10 flex items-center justify-center border border-white/10">
-            <MaterialSymbol name="bolt" size={24} className="text-lumina-200" />
+          <div className="w-12 h-12 rounded-2xl bg-primary-blue/10 flex items-center justify-center border border-white/10">
+            <MaterialSymbol name="bolt" size={24} className="text-cyan" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-body-sm text-neutral-400">Sprint ativa</p>
+                <p className="text-body-sm text-slate">Sprint ativa</p>
                 <h2 className="font-heading text-h3 text-white truncate">
                   {activeSprint?.name || (isSprintsLoading ? 'Carregando…' : 'Nenhuma sprint ativa')}
                 </h2>
@@ -75,14 +75,14 @@ export function MoreHub() {
             </div>
 
             {activeSprint?.description && (
-              <p className="text-body-sm text-neutral-300 mt-2 line-clamp-2">
+              <p className="text-body-sm text-slate mt-2 line-clamp-2">
                 {activeSprint.description}
               </p>
             )}
 
             {readinessOverview?.urgent_tasks?.length ? (
               <div className="mt-4 grid grid-cols-1 gap-2">
-                <div className="flex items-center gap-2 text-body-sm text-neutral-200">
+                <div className="flex items-center gap-2 text-body-sm text-silver">
                   <MaterialSymbol name="warning" size={18} className="text-warning" />
                   <span>
                     {readinessOverview.urgent_tasks.length} tarefa(s) urgente(s) identificada(s)
@@ -99,10 +99,10 @@ export function MoreHub() {
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <MaterialSymbol name="storefront" size={20} className="text-lumina-200" />
+              <MaterialSymbol name="storefront" size={20} className="text-cyan" />
               <h2 className="font-heading text-h3 text-white">Marketplace</h2>
             </div>
-            <p className="text-body-sm text-neutral-300 mt-1">
+            <p className="text-body-sm text-slate mt-1">
               Encontre especialistas para remover fricção da sua rota.
             </p>
           </div>
@@ -120,12 +120,12 @@ export function MoreHub() {
             <button
               key={p.id}
               onClick={() => navigate(`/marketplace/provider/${p.id}`)}
-              className="text-left rounded-xl border border-white/10 bg-neutral-800/30 hover:bg-neutral-800/40 transition-colors p-4"
+              className="text-left rounded-xl border border-white/10 bg-void-primary/30 hover:bg-void-primary/40 transition-colors p-4"
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
                   <p className="text-body font-semibold text-white truncate">{p.name}</p>
-                  <p className="text-body-sm text-neutral-400 truncate">
+                  <p className="text-body-sm text-slate truncate">
                     {p.location || 'Global'}
                   </p>
                 </div>
@@ -139,7 +139,7 @@ export function MoreHub() {
           ))}
 
           {!providers?.length && !isMarketplaceLoading && (
-            <div className="rounded-xl border border-white/10 bg-neutral-800/20 p-4 text-body-sm text-neutral-300">
+            <div className="rounded-xl border border-white/10 bg-void-primary/20 p-4 text-body-sm text-slate">
               Nenhum provedor disponível agora.
             </div>
           )}
@@ -151,13 +151,13 @@ export function MoreHub() {
         <Card className="liquid-glass">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-body-sm text-neutral-400">Atalhos</p>
+              <p className="text-body-sm text-slate">Atalhos</p>
               <p className="text-body font-semibold text-white mt-0.5">Mensagens</p>
-              <p className="text-body-sm text-neutral-300 mt-1">
+              <p className="text-body-sm text-slate mt-1">
                 Conversas com especialistas.
               </p>
             </div>
-            <MaterialSymbol name="forum" size={22} className="text-lumina-200" />
+            <MaterialSymbol name="forum" size={22} className="text-cyan" />
           </div>
           <div className="mt-4">
             <Button variant="secondary" size="sm" onClick={() => navigate('/marketplace/messages')}>
@@ -169,13 +169,13 @@ export function MoreHub() {
         <Card className="liquid-glass">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-body-sm text-neutral-400">Conta</p>
+              <p className="text-body-sm text-slate">Conta</p>
               <p className="text-body font-semibold text-white mt-0.5">Assinatura</p>
-              <p className="text-body-sm text-neutral-300 mt-1">
+              <p className="text-body-sm text-slate mt-1">
                 Ajuste seu plano quando for a hora certa.
               </p>
             </div>
-            <MaterialSymbol name="workspace_premium" size={22} className="text-lumina-200" />
+            <MaterialSymbol name="workspace_premium" size={22} className="text-cyan" />
           </div>
           <div className="mt-4">
             <Button variant="secondary" size="sm" onClick={() => navigate('/applications')}>
@@ -187,15 +187,15 @@ export function MoreHub() {
         <Card className="liquid-glass">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-body-sm text-neutral-400">Sistema</p>
+              <p className="text-body-sm text-slate">Sistema</p>
               <p className="text-body font-semibold text-white mt-0.5">Última sincronização</p>
-              <p className="text-body-sm text-neutral-300 mt-1">
+              <p className="text-body-sm text-slate mt-1">
                 {readinessOverview?.latest_assessment?.created_at
                   ? formatDateShort(readinessOverview.latest_assessment.created_at)
                   : '—'}
               </p>
             </div>
-            <MaterialSymbol name="sync" size={22} className="text-lumina-200" />
+            <MaterialSymbol name="sync" size={22} className="text-cyan" />
           </div>
           <div className="mt-4">
             <Button variant="secondary" size="sm" onClick={() => navigate('/psychology')}>
