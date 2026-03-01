@@ -351,8 +351,8 @@ Frontend: http://localhost:3000
 
 ### Core Documentation
 - **PRD**: `docs/main/PRD.md` (13,151 lines - comprehensive)
-- **Handoff**: `HANDOFF.md` (what was built, how to run)
-- **Status**: `STATUS.md` (this file)
+- **Handoff**: `docs/operations/HANDOFF.md` (what was built, how to run)
+- **Status**: `docs/operations/STATUS.md` (this file)
 - **Implementation Plan**: `docs/planning/implementation-plan.md` (frontend roadmap)
 
 ### New Documentation (2026-02-24)
@@ -700,7 +700,7 @@ Frontend: http://localhost:3000
 ## 📚 Documentation
 
 - **PRD**: `docs/main/PRD.md` (13,151 lines - comprehensive)
-- **Handoff**: `HANDOFF.md` (what was built, how to run)
+- **Handoff**: `docs/operations/HANDOFF.md` (what was built, how to run)
 - **This file**: Current status and next steps
 
 ## 🚀 Recommended Next Action
@@ -730,14 +730,14 @@ The economics intelligence layer is complete and ready for deployment. Follow th
 Key files to read:
 - `docs/deployment/economics-features-deployment.md` (deployment guide)
 - `.kiro/specs/economics-driven-intelligence/` (complete spec)
-- `HANDOFF.md` (economics features section)
+- `docs/operations/HANDOFF.md` (economics features section)
 
 **Option B: Design System Foundation**
 After economics deployment, start Phase 1 (Design System Foundation). The backend is solid. The frontend needs a complete redesign following the MMXD philosophy from the PRD.
 
 Key files to read:
 - `docs/main/PRD.md` (sections on MMXD, UI patterns, design system)
-- `HANDOFF.md` (what's built)
+- `docs/operations/HANDOFF.md` (what's built)
 - This file (current status)
 
 Then implement design tokens → core components → view modes → real pages.

@@ -329,7 +329,7 @@ npm run smoke:auth
 - **Missing**: Alchemical palette, typography system, The Map/Forge/Mirror modes, MMXD patterns
 - **Status**: ⚠️ Needs complete redesign following PRD specifications
 
-See `STATUS.md` for detailed current state and next priorities.
+See `docs/operations/STATUS.md` for detailed current state and next priorities.
 
 ## Next development steps (suggested)
 

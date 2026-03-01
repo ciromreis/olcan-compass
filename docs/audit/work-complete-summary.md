@@ -251,10 +251,10 @@ Organized everything for deployment:
 5. **Next Step**: Hire a DevOps engineer to complete Phase 1
 
 ### For Next Developer
-1. **Start Here**: Read [INDEX.md](INDEX.md) for navigation
-2. **Understand State**: Read [ASSESSMENT_COMPLETE.md](ASSESSMENT_COMPLETE.md)
-3. **See Gaps**: Read [DEPLOYMENT_READINESS.md](DEPLOYMENT_READINESS.md)
-4. **Plan Work**: Read [PROJECT_ORGANIZATION.md](PROJECT_ORGANIZATION.md)
+1. **Start Here**: Read [docs/INDEX.md](../INDEX.md) for navigation
+2. **Understand State**: Read [assessment-complete.md](assessment-complete.md)
+3. **See Gaps**: Read [deployment-readiness.md](../operations/deployment-readiness.md)
+4. **Plan Work**: Read [project-organization.md](../planning/project-organization.md)
 5. **Get Coding**: Follow Phase 1 tasks in DEPLOYMENT_READINESS.md
 
 ### For Management
@@ -286,10 +286,10 @@ Organized everything for deployment:
 4. Budget 3-4 weeks for production readiness
 
 ### If You're a Developer
-1. Read [INDEX.md](INDEX.md) for navigation
-2. Read [AGENTS.md](AGENTS.md) for development guide
-3. Start with Phase 1 tasks in [DEPLOYMENT_READINESS.md](DEPLOYMENT_READINESS.md)
-4. Follow the work streams in [PROJECT_ORGANIZATION.md](PROJECT_ORGANIZATION.md)
+1. Read [docs/INDEX.md](../INDEX.md) for navigation
+2. Read [AGENTS.md](../../AGENTS.md) for development guide
+3. Start with Phase 1 tasks in [deployment-readiness.md](../operations/deployment-readiness.md)
+4. Follow the work streams in [project-organization.md](../planning/project-organization.md)
 
 ### If You're DevOps/SRE
 1. Read [DEPLOYMENT_READINESS.md](DEPLOYMENT_READINESS.md) for requirements

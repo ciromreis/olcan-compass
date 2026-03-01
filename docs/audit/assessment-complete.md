@@ -84,12 +84,12 @@ Used the context-gatherer subagent to efficiently explore the entire codebase an
 
 **New Documentation Files**:
 1. `CODEBASE_ASSESSMENT_2026-02-24.md` - Detailed assessment report
-2. `INTEGRATION_CHECKLIST.md` - Pre-deployment verification checklist
-3. `BUGS_FIXED_SUMMARY.md` - All fixes documented with code examples
+2. `docs/operations/integration-checklist.md` - Pre-deployment verification checklist
+3. `docs/audit/bugs-fixed-summary.md` - All fixes documented with code examples
 4. `ASSESSMENT_COMPLETE.md` - This file (executive summary)
 
 **Updated Files**:
-1. `STATUS.md` - Updated with bug fixes and current status
+1. `docs/operations/STATUS.md` - Updated with bug fixes and current status
 
 ---
 
@@ -212,19 +212,19 @@ Follow the comprehensive checklist in `INTEGRATION_CHECKLIST.md` for:
 ## Key Files to Read
 
 ### For Deployment
-1. `INTEGRATION_CHECKLIST.md` - Complete deployment checklist
+1. `docs/operations/integration-checklist.md` - Complete deployment checklist
 2. `docs/deployment/economics-features-deployment.md` - Economics deployment guide
-3. `BUGS_FIXED_SUMMARY.md` - All fixes documented
+3. `docs/audit/bugs-fixed-summary.md` - All fixes documented
 
 ### For Development
-1. `STATUS.md` - Current status and priorities
-2. `IMPLEMENTATION_PLAN.md` - Frontend roadmap
+1. `docs/operations/STATUS.md` - Current status and priorities
+2. `docs/planning/implementation-plan.md` - Frontend roadmap
 3. `AGENTS.md` - Development guide
 4. `docs/main/PRD.md` - Product requirements
 
 ### For Understanding
-1. `CODEBASE_ASSESSMENT_2026-02-24.md` - Comprehensive assessment
-2. `HANDOFF.md` - What's built and how to run
+1. `docs/audit/codebase-assessment-2026-02-24.md` - Comprehensive assessment
+2. `docs/operations/HANDOFF.md` - What's built and how to run
 3. `README.md` - Project overview
 
 ---

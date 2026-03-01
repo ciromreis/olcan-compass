@@ -53,11 +53,12 @@ curl http://localhost:8000/api/health-economics
 ## 📁 Key Files
 
 ### Documentation
-- `ASSESSMENT_COMPLETE.md` - Executive summary (start here)
-- `CODEBASE_ASSESSMENT_2026-02-24.md` - Detailed assessment
-- `BUGS_FIXED_SUMMARY.md` - All fixes documented
-- `INTEGRATION_CHECKLIST.md` - Deployment checklist
-- `STATUS.md` - Current status and next steps
+- `docs/INDEX.md` - Documentation index (start here)
+- `docs/audit/assessment-complete.md` - Executive summary
+- `docs/audit/codebase-assessment-2026-02-24.md` - Detailed assessment
+- `docs/audit/bugs-fixed-summary.md` - All fixes documented
+- `docs/operations/integration-checklist.md` - Deployment checklist
+- `docs/operations/STATUS.md` - Current status and next steps
 
 ### Code
 - `apps/api/app/api/router.py` - All API routes (19 total)

@@ -143,6 +143,6 @@ docker compose run --rm api alembic revision -m "description" --autogenerate
 
 - **PRD (source of truth)**: `docs/main/PRD.md`
 - **Screen topology**: `docs/main/screen-structure.md`
-- **Handoff / what's built**: `HANDOFF.md`
-- **Current status & next steps**: `STATUS.md`
+- **Handoff / what's built**: `docs/operations/HANDOFF.md`
+- **Current status & next steps**: `docs/operations/STATUS.md`
 - **Frontend implementation plan**: `docs/planning/implementation-plan.md`

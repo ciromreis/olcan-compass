@@ -209,7 +209,7 @@ Start executing tasks from `.kiro/specs/economics-driven-intelligence/tasks.md`:
 
 ### Option B: Frontend Design System
 Implement MMXD design tokens and component library:
-- See `STATUS.md` Phase 1 for details
+- See `docs/operations/STATUS.md` Phase 1 for details
 - Required before building real user-facing pages
 - Currently frontend is minimal scaffold
 

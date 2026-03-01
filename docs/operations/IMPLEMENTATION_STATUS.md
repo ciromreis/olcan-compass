@@ -125,8 +125,7 @@ olcan-compass/
 │   └── web/          # React frontend
 ├── docs/             # Documentation
 ├── docker-compose.yml # Development setup
-├── ECONOMIC_CLOSURE_README.md # Implementation details
-└── STATUS.md         # This file
+└── docs/operations/STATUS.md   # Current status
 ```
 
 ### Quality Assurance

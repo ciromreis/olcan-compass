@@ -10,27 +10,27 @@
 ### Root Level Documentation
 
 #### For Immediate Use
-1. **QUICK_REFERENCE.md** - Start here for quick commands
-2. **ASSESSMENT_COMPLETE.md** - Executive summary of current state
-3. **STATUS.md** - Detailed current status and next steps
+1. **docs/INDEX.md** - Start here for navigation
+2. **docs/operations/quick-reference.md** - Quick commands
+3. **docs/operations/STATUS.md** - Detailed current status and next steps
 
 #### For Understanding the Codebase
 4. **AGENTS.md** - Development guide (how to work with this repo)
 5. **README.md** - Project overview
-6. **HANDOFF.md** - What's built and how to run it
+6. **docs/operations/HANDOFF.md** - What's built and how to run it
 
 #### For Deployment
-7. **DEPLOYMENT_READINESS.md** - What's missing before production
-8. **INTEGRATION_CHECKLIST.md** - Pre-deployment verification
+7. **docs/operations/deployment-readiness.md** - What's missing before production
+8. **docs/operations/integration-checklist.md** - Pre-deployment verification
 9. **METACOGNITIVE_ASSESSMENT.md** - Honest assessment of limitations
 
 #### For Bug Tracking
-10. **BUGS_FIXED_SUMMARY.md** - All bugs fixed today
-11. **CODEBASE_ASSESSMENT_2026-02-24.md** - Comprehensive bug analysis
+10. **docs/audit/bugs-fixed-summary.md** - All bugs fixed
+11. **docs/audit/codebase-assessment-2026-02-24.md** - Comprehensive bug analysis
 
 #### For Planning
-12. **IMPLEMENTATION_PLAN.md** - Frontend roadmap
-13. **NEXT_STEPS.md** - Prioritized next actions
+12. **docs/planning/implementation-plan.md** - Frontend roadmap
+13. **docs/planning/next-steps.md** - Prioritized next actions
 
 #### Historical Reference
 14. **SESSION_SUMMARY_2026-02-24.md** - Previous session work

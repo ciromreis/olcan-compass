@@ -51,7 +51,7 @@ Use this as the primary navigation for repository documentation.
 
 ## Root-Level Runtime Docs
 
-- `AGENTS.md`
-- `HANDOFF.md`
-- `STATUS.md`
 - `README.md`
+- `AGENTS.md`
+- `docs/operations/HANDOFF.md`
+- `docs/operations/STATUS.md`

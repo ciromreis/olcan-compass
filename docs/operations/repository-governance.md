@@ -17,7 +17,7 @@ This file defines the repository organization rules used to keep the codebase au
 
 ## File Placement Rules
 
-- Keep root minimal: `README.md`, `INDEX.md`, `AGENTS.md`, `HANDOFF.md`, `STATUS.md`.
+- Keep root minimal: `README.md`, `AGENTS.md`.
 - Do not place ephemeral notes in root.
 - Keep executable scripts close to the owning app (`apps/api/scripts/...`) when app-specific.
 - Keep Markdown in `docs/` unless it is one of the root runtime docs.
@@ -31,6 +31,6 @@ This file defines the repository organization rules used to keep the codebase au
 ## Audit Workflow
 
 1. Start from `docs/INDEX.md`.
-2. Validate runtime docs (`HANDOFF.md`, `STATUS.md`) are current.
+2. Validate runtime docs (`docs/operations/HANDOFF.md`, `docs/operations/STATUS.md`) are current.
 3. Review `docs/operations/integration-checklist.md` before deploy decisions.
 4. Review `docs/audit/*` for historical context and risk notes.
