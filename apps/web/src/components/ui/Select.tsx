@@ -232,7 +232,7 @@ export const Select: React.FC<SelectProps> = ({
                     className={cn(
                       'flex items-center justify-between px-3 py-2 cursor-pointer transition-colors',
                       'hover:bg-primary-blue/5',
-                      isSelected && 'bg-primary-blue/10 text-white',
+                      isSelected && 'bg-primary-blue/10 text-primary-blue font-medium',
                       isFocused && 'bg-primary-blue/5',
                       option.disabled && 'opacity-50 cursor-not-allowed hover:bg-transparent'
                     )}
