@@ -14,9 +14,6 @@ async def validate_environment() -> None:
     if not has_database_url and not has_postgres_parts:
         errors.append("Missing database configuration: set DATABASE_URL or POSTGRES_USER/POSTGRES_PASSWORD/POSTGRES_DB")
 
-    if not (os.getenv("REDIS_URL") or settings.redis_url):
-        errors.append("Missing required env var: REDIS_URL")
-
     if not (os.getenv("JWT_SECRET_KEY") or settings.jwt_secret_key):
         errors.append("Missing required env var: JWT_SECRET_KEY")
 
