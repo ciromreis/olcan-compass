@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: olcan-compass-api
+    env: docker
+    rootDir: apps/api
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: ENV
+        value: production
+      - key: API_PREFIX
+        value: /api
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: CORS_ALLOW_ORIGINS
+        value: https://olcan-compass-web.netlify.app
