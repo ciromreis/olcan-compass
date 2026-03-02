@@ -53,3 +53,6 @@ stitch_assets/
 *.pem
 *.key
 compass-key.pem
+
+# Local Netlify folder
+.netlify

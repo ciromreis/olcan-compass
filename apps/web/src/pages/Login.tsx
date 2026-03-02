@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Compass, Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import { useLogin } from '../hooks/useAuth'
+import { useAuthStore } from '../store/auth'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { Alert } from '../components/ui/Alert'
@@ -14,6 +15,7 @@ import { Alert } from '../components/ui/Alert'
 export function Login() {
   const navigate = useNavigate()
   const loginMutation = useLogin()
+  const { loginDemo } = useAuthStore()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -123,6 +125,19 @@ export function Login() {
               size="lg"
             >
               Entrar
+            </Button>
+
+            <Button
+              type="button"
+              variant="secondary"
+              fullWidth
+              size="lg"
+              onClick={() => {
+                loginDemo()
+                navigate('/')
+              }}
+            >
+              Entrar em modo demo
             </Button>
           </form>
 

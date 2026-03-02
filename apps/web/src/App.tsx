@@ -67,7 +67,7 @@ const ContentManagement = lazy(() => import('./pages/Admin/ContentManagement').t
  * Handles auth initialization, psych profile check, and full route structure.
  */
 function App() {
-  const { isAuthenticated, setUser, setAuthenticated, setLoading, isLoading } = useAuthStore()
+  const { isAuthenticated, isDemo, setUser, setAuthenticated, setLoading, isLoading } = useAuthStore()
   const [hasPsychProfile, setHasPsychProfile] = useState<boolean | null>(null)
 
   // On mount: validate stored token and fetch user profile
@@ -78,6 +78,13 @@ function App() {
         setUser(null)
         setAuthenticated(false)
         setHasPsychProfile(null)
+        setLoading(false)
+        return
+      }
+
+      if (token === 'demo') {
+        setAuthenticated(true)
+        setHasPsychProfile(true)
         setLoading(false)
         return
       }
@@ -106,6 +113,11 @@ function App() {
       return
     }
 
+    if (isDemo) {
+      setHasPsychProfile(true)
+      return
+    }
+
     let cancelled = false
     const checkPsychProfile = async () => {
       try {
@@ -117,7 +129,7 @@ function App() {
     }
     checkPsychProfile()
     return () => { cancelled = true }
-  }, [isAuthenticated])
+  }, [isAuthenticated, isDemo])
 
   // Show loading state while checking auth
   if (isLoading) {

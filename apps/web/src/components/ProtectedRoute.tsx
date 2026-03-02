@@ -20,7 +20,7 @@ export function ProtectedRoute({
   requireAuth = true,
   requirePsychProfile = false,
 }: ProtectedRouteProps) {
-  const { isAuthenticated } = useAuthStore()
+  const { isAuthenticated, isDemo } = useAuthStore()
   const [hasPsychProfile, setHasPsychProfile] = useState<boolean | null>(null)
 
   if (requireAuth && !isAuthenticated) {
@@ -35,6 +35,11 @@ export function ProtectedRoute({
 
     if (!isAuthenticated) {
       setHasPsychProfile(null)
+      return
+    }
+
+    if (isDemo) {
+      setHasPsychProfile(true)
       return
     }
 
@@ -54,7 +59,7 @@ export function ProtectedRoute({
     return () => {
       cancelled = true
     }
-  }, [isAuthenticated, requirePsychProfile])
+  }, [isAuthenticated, isDemo, requirePsychProfile])
 
   if (requirePsychProfile && hasPsychProfile === null) {
     return (
