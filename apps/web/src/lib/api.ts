@@ -40,6 +40,35 @@ class ApiClient {
         }
 
         const requestUrl = originalRequest?.url ?? ''
+        const token = localStorage.getItem('token')
+
+        // Demo mode interception
+        if (token === 'demo') {
+          console.warn('Demo Mode: Intercepting failed request', requestUrl)
+
+          if (requestUrl.includes('/routes/templates')) {
+            return Promise.resolve({
+              data: {
+                templates: [
+                  { id: '1', name_pt: 'Rota Starter', description_pt: 'Rota de teste inicial.', route_type: 'global', estimated_duration_months: 3, competitiveness_level: 'low' }
+                ], total: 1
+              }
+            })
+          }
+          if (requestUrl.includes('/routes')) {
+            return Promise.resolve({ data: { routes: [], route: null, milestones: [], total: 0 } })
+          }
+          if (requestUrl.includes('/sprints/readiness') || requestUrl.includes('/sprints')) {
+            return Promise.resolve({ data: {} })
+          }
+          if (requestUrl.includes('/applications')) {
+            return Promise.resolve({ data: [] })
+          }
+
+          // Default empty successful response for demo
+          return Promise.resolve({ data: {} })
+        }
+
         const isAuthRequest =
           requestUrl.includes('/auth/login') ||
           requestUrl.includes('/auth/register') ||
@@ -66,7 +95,7 @@ class ApiClient {
 
           const refreshToken = localStorage.getItem('refresh_token')
 
-          if (!refreshToken) {
+          if (!refreshToken || refreshToken === 'demo') {
             this.handleLogout()
             return Promise.reject(error)
           }
