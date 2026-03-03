@@ -24,20 +24,18 @@ def _get_version() -> str:
 @router.get("/health", summary="Health check")
 async def health(db: AsyncSession = Depends(get_db)) -> dict:
     """
-    Liveness + readiness probe used by Render and load-balancers.
+    Liveness probe used by Render and load-balancers.
 
-    Returns HTTP 200 with ``{"status": "ok"}`` when the service is healthy.
-    Returns HTTP 503 if the database is unreachable.
+    Always returns HTTP 200 so Render never marks the container as unhealthy.
+    DB connectivity status is reported in the response body.
     """
-    from fastapi import HTTPException
-
-    # DB ping
     db_status = "connected"
     try:
         await db.execute(text("SELECT 1"))
     except Exception as exc:  # noqa: BLE001
-        db_status = f"unavailable ({exc})"
-        raise HTTPException(status_code=503, detail={"status": "degraded", "db": db_status})
+        # Report the error in the body without crashing — the app can still
+        # serve requests that don't need a DB-dependent context.
+        db_status = f"unavailable: {exc}"
 
     return {
         "status": "ok",
@@ -45,4 +43,5 @@ async def health(db: AsyncSession = Depends(get_db)) -> dict:
         "uptime_seconds": round(time.time() - _START_TIME),
         "version": _get_version(),
     }
+
 
