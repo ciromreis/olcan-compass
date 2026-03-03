@@ -3,38 +3,59 @@ Redis Caching Layer - Performance Optimization
 
 Este módulo fornece funções para cache de dados usando Redis,
 melhorando a performance de consultas frequentes.
+
+Graceful degradation: all cache operations silently return None/no-op
+when Redis is unavailable (e.g. Render free tier without Redis).
 """
 
 import json
+import logging
 import uuid
 from typing import Optional, Any, Union
-from datetime import timedelta
 
-import redis.asyncio as redis
+try:
+    import redis.asyncio as redis
+    _REDIS_AVAILABLE = True
+except ImportError:  # pragma: no cover
+    _REDIS_AVAILABLE = False
+
 from app.core.config import get_settings
 
+logger = logging.getLogger(__name__)
 settings = get_settings()
 
-# Cliente Redis global
-_redis_client: Optional[redis.Redis] = None
+# Global Redis client — None when Redis is unconfigured or unreachable
+_redis_client: Optional[Any] = None
+_redis_disabled: bool = False  # set True after first failed connection attempt
 
 
-async def get_redis_client() -> redis.Redis:
+async def get_redis_client() -> Optional[Any]:
     """
-    Obtém ou cria o cliente Redis.
-    
-    Returns:
-        Cliente Redis assíncrono
+    Returns a Redis client, or None if Redis is unavailable.
+
+    Never raises — callers must handle a None return gracefully.
     """
-    global _redis_client
-    
+    global _redis_client, _redis_disabled
+
+    if not _REDIS_AVAILABLE or _redis_disabled:
+        return None
+
     if _redis_client is None:
-        _redis_client = redis.from_url(
-            settings.redis_url,
-            encoding="utf-8",
-            decode_responses=True
-        )
-    
+        try:
+            _redis_client = redis.from_url(
+                settings.redis_url,
+                encoding="utf-8",
+                decode_responses=True,
+                socket_connect_timeout=2,
+                socket_timeout=2,
+            )
+            # Verify the connection is actually live
+            await _redis_client.ping()
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("Redis unavailable — caching disabled. Reason: %s", exc)
+            _redis_client = None
+            _redis_disabled = True
+
     return _redis_client
 
 
@@ -76,20 +97,20 @@ async def cache_user_credentials(
 ) -> None:
     """
     Armazena credenciais do usuário em cache.
-    
+
     Args:
         user_id: UUID do usuário
         credentials_data: Dados das credenciais (serializável em JSON)
         ttl: Tempo de vida em segundos (padrão: 1 hora)
     """
     client = await get_redis_client()
+    if client is None:
+        return
     key = _credential_cache_key(user_id)
-    
-    await client.setex(
-        key,
-        ttl,
-        json.dumps(credentials_data, default=str)
-    )
+    try:
+        await client.setex(key, ttl, json.dumps(credentials_data, default=str))
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("Cache write failed for %s: %s", key, exc)
 
 
 async def get_cached_credentials(
@@ -97,32 +118,41 @@ async def get_cached_credentials(
 ) -> Optional[Any]:
     """
     Obtém credenciais do usuário do cache.
-    
+
     Args:
         user_id: UUID do usuário
-        
+
     Returns:
         Dados das credenciais ou None se não estiver em cache
     """
     client = await get_redis_client()
+    if client is None:
+        return None
     key = _credential_cache_key(user_id)
-    
-    data = await client.get(key)
-    if data:
-        return json.loads(data)
+    try:
+        data = await client.get(key)
+        if data:
+            return json.loads(data)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("Cache read failed for %s: %s", key, exc)
     return None
 
 
 async def invalidate_credentials_cache(user_id: Union[str, uuid.UUID]) -> None:
     """
     Invalida cache de credenciais do usuário.
-    
+
     Args:
         user_id: UUID do usuário
     """
     client = await get_redis_client()
+    if client is None:
+        return
     key = _credential_cache_key(user_id)
-    await client.delete(key)
+    try:
+        await client.delete(key)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("Cache delete failed for %s: %s", key, exc)
 
 
 # Temporal Preference Cache
@@ -133,16 +163,20 @@ async def cache_temporal_preference(
 ) -> None:
     """
     Armazena preferência temporal do usuário em cache.
-    
+
     Args:
         user_id: UUID do usuário
         temporal_preference: Score de preferência temporal (0-100)
         ttl: Tempo de vida em segundos (padrão: 2 horas)
     """
     client = await get_redis_client()
+    if client is None:
+        return
     key = _temporal_preference_cache_key(user_id)
-    
-    await client.setex(key, ttl, str(temporal_preference))
+    try:
+        await client.setex(key, ttl, str(temporal_preference))
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("Cache write failed for %s: %s", key, exc)
 
 
 async def get_cached_temporal_preference(
@@ -150,32 +184,41 @@ async def get_cached_temporal_preference(
 ) -> Optional[int]:
     """
     Obtém preferência temporal do usuário do cache.
-    
+
     Args:
         user_id: UUID do usuário
-        
+
     Returns:
         Score de preferência temporal ou None se não estiver em cache
     """
     client = await get_redis_client()
+    if client is None:
+        return None
     key = _temporal_preference_cache_key(user_id)
-    
-    data = await client.get(key)
-    if data:
-        return int(data)
+    try:
+        data = await client.get(key)
+        if data:
+            return int(data)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("Cache read failed for %s: %s", key, exc)
     return None
 
 
 async def invalidate_temporal_preference_cache(user_id: Union[str, uuid.UUID]) -> None:
     """
     Invalida cache de preferência temporal do usuário.
-    
+
     Args:
         user_id: UUID do usuário
     """
     client = await get_redis_client()
+    if client is None:
+        return
     key = _temporal_preference_cache_key(user_id)
-    await client.delete(key)
+    try:
+        await client.delete(key)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("Cache delete failed for %s: %s", key, exc)
 
 
 # Momentum Score Cache
@@ -186,16 +229,20 @@ async def cache_momentum_score(
 ) -> None:
     """
     Armazena score de momentum do usuário em cache.
-    
+
     Args:
         user_id: UUID do usuário
         momentum_score: Score de momentum
         ttl: Tempo de vida em segundos (padrão: 30 minutos)
     """
     client = await get_redis_client()
+    if client is None:
+        return
     key = _momentum_cache_key(user_id)
-    
-    await client.setex(key, ttl, str(momentum_score))
+    try:
+        await client.setex(key, ttl, str(momentum_score))
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("Cache write failed for %s: %s", key, exc)
 
 
 async def get_cached_momentum_score(
@@ -203,32 +250,41 @@ async def get_cached_momentum_score(
 ) -> Optional[int]:
     """
     Obtém score de momentum do usuário do cache.
-    
+
     Args:
         user_id: UUID do usuário
-        
+
     Returns:
         Score de momentum ou None se não estiver em cache
     """
     client = await get_redis_client()
+    if client is None:
+        return None
     key = _momentum_cache_key(user_id)
-    
-    data = await client.get(key)
-    if data:
-        return int(data)
+    try:
+        data = await client.get(key)
+        if data:
+            return int(data)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("Cache read failed for %s: %s", key, exc)
     return None
 
 
 async def invalidate_momentum_cache(user_id: Union[str, uuid.UUID]) -> None:
     """
     Invalida cache de momentum do usuário.
-    
+
     Args:
         user_id: UUID do usuário
     """
     client = await get_redis_client()
+    if client is None:
+        return
     key = _momentum_cache_key(user_id)
-    await client.delete(key)
+    try:
+        await client.delete(key)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("Cache delete failed for %s: %s", key, exc)
 
 
 # Feasible Frontier Cache
@@ -240,7 +296,7 @@ async def cache_feasible_frontier(
 ) -> None:
     """
     Armazena fronteira viável em cache.
-    
+
     Args:
         user_id: UUID do usuário
         constraints_hash: Hash das constraints para identificação única
@@ -248,13 +304,13 @@ async def cache_feasible_frontier(
         ttl: Tempo de vida em segundos (padrão: 24 horas)
     """
     client = await get_redis_client()
+    if client is None:
+        return
     key = _frontier_cache_key(user_id, constraints_hash)
-    
-    await client.setex(
-        key,
-        ttl,
-        json.dumps(frontier_data, default=str)
-    )
+    try:
+        await client.setex(key, ttl, json.dumps(frontier_data, default=str))
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("Cache write failed for %s: %s", key, exc)
 
 
 async def get_cached_feasible_frontier(
@@ -263,20 +319,24 @@ async def get_cached_feasible_frontier(
 ) -> Optional[Any]:
     """
     Obtém fronteira viável do cache.
-    
+
     Args:
         user_id: UUID do usuário
         constraints_hash: Hash das constraints
-        
+
     Returns:
         Dados da fronteira ou None se não estiver em cache
     """
     client = await get_redis_client()
+    if client is None:
+        return None
     key = _frontier_cache_key(user_id, constraints_hash)
-    
-    data = await client.get(key)
-    if data:
-        return json.loads(data)
+    try:
+        data = await client.get(key)
+        if data:
+            return json.loads(data)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("Cache read failed for %s: %s", key, exc)
     return None
 
 
@@ -286,23 +346,25 @@ async def invalidate_frontier_cache(
 ) -> None:
     """
     Invalida cache de fronteira viável do usuário.
-    
+
     Args:
         user_id: UUID do usuário
         constraints_hash: Hash específico ou None para invalidar todos
     """
     client = await get_redis_client()
-    
-    if constraints_hash:
-        # Invalidar cache específico
-        key = _frontier_cache_key(user_id, constraints_hash)
-        await client.delete(key)
-    else:
-        # Invalidar todos os caches de fronteira do usuário
-        pattern = f"frontier:user:{user_id}:*"
-        keys = await client.keys(pattern)
-        if keys:
-            await client.delete(*keys)
+    if client is None:
+        return
+    try:
+        if constraints_hash:
+            key = _frontier_cache_key(user_id, constraints_hash)
+            await client.delete(key)
+        else:
+            pattern = f"frontier:user:{user_id}:*"
+            keys = await client.keys(pattern)
+            if keys:
+                await client.delete(*keys)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("Cache invalidation failed for user %s: %s", user_id, exc)
 
 
 # Generic Cache Helpers
@@ -313,60 +375,78 @@ async def cache_set(
 ) -> None:
     """
     Armazena valor genérico em cache.
-    
+
     Args:
         key: Chave do cache
         value: Valor a armazenar (serializável em JSON)
         ttl: Tempo de vida em segundos (opcional)
     """
     client = await get_redis_client()
-    
+    if client is None:
+        return
     serialized = json.dumps(value, default=str)
-    
-    if ttl:
-        await client.setex(key, ttl, serialized)
-    else:
-        await client.set(key, serialized)
+    try:
+        if ttl:
+            await client.setex(key, ttl, serialized)
+        else:
+            await client.set(key, serialized)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("Cache set failed for %s: %s", key, exc)
 
 
 async def cache_get(key: str) -> Optional[Any]:
     """
     Obtém valor genérico do cache.
-    
+
     Args:
         key: Chave do cache
-        
+
     Returns:
         Valor armazenado ou None se não existir
     """
     client = await get_redis_client()
-    
-    data = await client.get(key)
-    if data:
-        return json.loads(data)
+    if client is None:
+        return None
+    try:
+        data = await client.get(key)
+        if data:
+            return json.loads(data)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("Cache get failed for %s: %s", key, exc)
     return None
 
 
 async def cache_delete(key: str) -> None:
     """
     Remove valor do cache.
-    
+
     Args:
         key: Chave do cache
     """
     client = await get_redis_client()
-    await client.delete(key)
+    if client is None:
+        return
+    try:
+        await client.delete(key)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("Cache delete failed for %s: %s", key, exc)
 
 
 async def cache_exists(key: str) -> bool:
     """
     Verifica se chave existe no cache.
-    
+
     Args:
         key: Chave do cache
-        
+
     Returns:
         True se existir, False caso contrário
     """
     client = await get_redis_client()
-    return await client.exists(key) > 0
+    if client is None:
+        return False
+    try:
+        return await client.exists(key) > 0
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("Cache exists failed for %s: %s", key, exc)
+        return False
