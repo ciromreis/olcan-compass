@@ -16,14 +16,16 @@ import os
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await validate_environment()
-    # Seed psych questions if table is empty
+    # Seed psych questions and route templates if tables are empty
     try:
         from app.db.session import get_sessionmaker
         from app.db.seed_questions import seed_psych_questions
+        from app.db.seed_routes import seed_route_templates
         async with get_sessionmaker()() as db:
             await seed_psych_questions(db)
+            await seed_route_templates(db)
     except Exception as e:
-        print(f"[seed] Warning: could not seed psych questions: {e}")
+        print(f"[seed] Warning: could not seed data: {e}")
     yield
 
 
