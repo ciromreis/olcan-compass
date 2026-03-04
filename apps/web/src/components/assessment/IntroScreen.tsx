@@ -5,6 +5,7 @@ import { Button } from '../ui/Button'
 interface IntroScreenProps {
   onBegin: () => void
   isLoading: boolean
+  error?: string | null
 }
 
 /**
@@ -12,7 +13,7 @@ interface IntroScreenProps {
  * PRD: "Set tone + reduce fear."
  * Must convey safety, no wrong answers, and personalization value.
  */
-export function IntroScreen({ onBegin, isLoading }: IntroScreenProps) {
+export function IntroScreen({ onBegin, isLoading, error }: IntroScreenProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -77,6 +78,17 @@ export function IntroScreen({ onBegin, isLoading }: IntroScreenProps) {
           <span className="text-body-sm text-neutral-200">100% confidencial</span>
         </div>
       </motion.div>
+
+      {/* Error message */}
+      {error && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="mb-4 px-4 py-3 rounded-lg bg-red-500/20 border border-red-500/40 text-red-200 text-body-sm text-center"
+        >
+          {error}
+        </motion.div>
+      )}
 
       {/* CTA */}
       <motion.div

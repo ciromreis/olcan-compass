@@ -27,6 +27,7 @@ export function Assessment() {
     currentQuestion,
     answers,
     isSubmitting,
+    error,
     profile,
     startSession,
     setCurrentQuestion,
@@ -148,6 +149,7 @@ export function Assessment() {
               key="intro"
               onBegin={handleBegin}
               isLoading={isSubmitting}
+              error={error}
             />
           )}
 
