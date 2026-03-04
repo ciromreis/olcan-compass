@@ -62,7 +62,81 @@ class ApiClient {
             return Promise.resolve({ data: {} })
           }
           if (requestUrl.includes('/applications')) {
+            return Promise.resolve({ data: { items: [], total: 0 } })
+          }
+          if (requestUrl.includes('/marketplace/providers')) {
+            return Promise.resolve({ data: { items: [], total: 0 } })
+          }
+          if (requestUrl.includes('/marketplace/bookings')) {
+            return Promise.resolve({ data: { items: [], total: 0 } })
+          }
+          if (requestUrl.includes('/marketplace/conversations')) {
             return Promise.resolve({ data: [] })
+          }
+          if (requestUrl.includes('/marketplace')) {
+            return Promise.resolve({ data: { items: [], total: 0 } })
+          }
+          if (requestUrl.includes('/constraints/profile')) {
+            return Promise.resolve({
+              data: {
+                id: 'demo-constraint',
+                user_id: 'demo-user',
+                budget_max: null,
+                time_available_months: null,
+                weekly_bandwidth_hours: null,
+                languages: [],
+                target_countries: [],
+                excluded_countries: [],
+                citizenship_countries: [],
+                commitment_level: 'medium',
+                risk_tolerance: 'medium',
+                is_active: true,
+                last_updated_at: new Date().toISOString(),
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              }
+            })
+          }
+          if (requestUrl.includes('/constraints/prune-opportunities')) {
+            return Promise.resolve({
+              data: {
+                opportunities: [],
+                total_opportunities: 0,
+                shown_opportunities: 0,
+                hidden_opportunities: 0,
+                pruning_version: 'demo',
+              }
+            })
+          }
+          if (requestUrl.includes('/constraints/pruning-history')) {
+            return Promise.resolve({ data: { items: [], total: 0 } })
+          }
+          if (requestUrl.includes('/constraints')) {
+            return Promise.resolve({ data: {} })
+          }
+          if (requestUrl.includes('/interviews')) {
+            return Promise.resolve({ data: { items: [], total: 0 } })
+          }
+          if (requestUrl.includes('/narratives')) {
+            return Promise.resolve({ data: { items: [], total: 0 } })
+          }
+          if (requestUrl.includes('/psych')) {
+            return Promise.resolve({ data: {} })
+          }
+          if (requestUrl.includes('/credentials')) {
+            return Promise.resolve({ data: { items: [], total: 0 } })
+          }
+          if (requestUrl.includes('/escrow')) {
+            return Promise.resolve({ data: {} })
+          }
+          if (requestUrl.includes('/scenarios')) {
+            return Promise.resolve({ data: {} })
+          }
+          if (requestUrl.includes('/temporal-matching')) {
+            return Promise.resolve({ data: {} })
+          }
+          if (requestUrl.includes('/opportunity-cost')) {
+            return Promise.resolve({ data: {} })
           }
 
           // Default empty successful response for demo
