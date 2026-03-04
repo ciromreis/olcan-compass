@@ -319,11 +319,16 @@ async def get_pruning_history(
     }
 
 
+class PruningFeedbackRequest(BaseModel):
+    """Request model for pruning feedback"""
+    pruning_log_id: UUID
+    feedback_type: str  # correct_pruning, incorrect_pruning, show_anyway
+    feedback_detail: Optional[str] = None
+
+
 @router.post("/feedback")
 async def submit_pruning_feedback(
-    pruning_log_id: UUID,
-    feedback_type: str,  # correct_pruning, incorrect_pruning, show_anyway
-    feedback_detail: Optional[str] = None,
+    request: PruningFeedbackRequest,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
@@ -332,7 +337,7 @@ async def submit_pruning_feedback(
     result = await db.execute(
         select(OpportunityPruningLog).where(
             and_(
-                OpportunityPruningLog.id == pruning_log_id,
+                OpportunityPruningLog.id == request.pruning_log_id,
                 OpportunityPruningLog.user_id == current_user.id
             )
         )
@@ -347,6 +352,6 @@ async def submit_pruning_feedback(
     
     # Create feedback (would need to implement ConstraintFeedback model)
     # For now, just log it
-    print(f"Feedback received: {feedback_type} for log {pruning_log_id}")
+    print(f"Feedback received: {request.feedback_type} for log {request.pruning_log_id}")
     
-    return {"status": "feedback_received", "feedback_type": feedback_type}
+    return {"status": "feedback_received", "feedback_type": request.feedback_type}

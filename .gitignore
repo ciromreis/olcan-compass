@@ -56,3 +56,7 @@ compass-key.pem
 
 # Local Netlify folder
 .netlify
+
+# MCP/secrets
+.mcp.json
+*.mcp.json
