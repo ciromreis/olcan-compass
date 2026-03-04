@@ -226,14 +226,16 @@ async def submit_answer(
             detail="Questão não encontrada"
         )
     
-    # Compute score (simplified - actual implementation would be more complex)
+    # Compute score: normalize from 1-5 Likert scale to 0-100 range
     computed_score = None
     if request.answer_value and question.options:
         for opt in question.options:
             if opt.get("value") == request.answer_value:
-                computed_score = opt.get("score", 0.0) * question.weight
+                raw_score = opt.get("score", 3.0)
                 if question.reverse_scored:
-                    computed_score = 100.0 - computed_score
+                    raw_score = 6.0 - raw_score  # Flip on 1-5 scale
+                # Normalize to 0-100: (raw - 1) / 4 * 100
+                computed_score = ((raw_score - 1.0) / 4.0) * 100.0 * question.weight
                 break
     
     # Save answer
@@ -273,6 +275,13 @@ async def _compute_and_save_profile(session: PsychAssessmentSession, user_id: UU
     )
     answers = result.scalars().all()
     
+    # Batch-load all questions referenced by answers (avoid N+1)
+    question_ids = [a.question_id for a in answers]
+    result = await db.execute(
+        select(PsychQuestion).where(PsychQuestion.id.in_(question_ids))
+    )
+    questions_by_id = {q.id: q for q in result.scalars().all()}
+    
     # Group by category and compute scores
     scores = {
         "confidence": [],
@@ -288,10 +297,7 @@ async def _compute_and_save_profile(session: PsychAssessmentSession, user_id: UU
     }
     
     for answer in answers:
-        result = await db.execute(
-            select(PsychQuestion).where(PsychQuestion.id == answer.question_id)
-        )
-        question = result.scalar_one_or_none()
+        question = questions_by_id.get(answer.question_id)
         if question and answer.computed_score is not None:
             scores[question.category.value].append(answer.computed_score)
     

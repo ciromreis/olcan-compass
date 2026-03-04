@@ -1,5 +1,4 @@
 import { useCallback, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import { useOnboardingStore } from '../store/onboarding'
 import { api } from '../lib/api'
@@ -18,7 +17,6 @@ import { ResultsScreen } from '../components/assessment/ResultsScreen'
  * On completion, shows a 2.5s transition before fetching and displaying results.
  */
 export function Assessment() {
-  const navigate = useNavigate()
   const {
     phase,
     sessionId,
@@ -133,9 +131,10 @@ export function Assessment() {
   }, [goBack])
 
   // ── Continue to dashboard after results ──
+  // Force full page reload so App re-checks hasPsychProfile from the API
   const handleContinue = useCallback(() => {
-    navigate('/routes/templates')
-  }, [navigate])
+    window.location.href = '/'
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-void flex items-center justify-center p-4 md:p-8">
@@ -155,7 +154,7 @@ export function Assessment() {
 
           {phase === 'questions' && currentQuestion && (
             <QuestionScreen
-              key={`question-${currentIndex}`}
+              key="questions"
               question={currentQuestion}
               currentIndex={currentIndex}
               totalQuestions={totalQuestions}
