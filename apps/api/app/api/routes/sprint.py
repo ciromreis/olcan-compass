@@ -545,49 +545,50 @@ async def complete_task(
     await db.commit()
     await db.refresh(task)
     
-    # === ECONOMICS INTEGRATION ===
-    # Trigger momentum check and widget display
-    from app.tasks.opportunity_cost import check_momentum_and_trigger_widget_task
-    check_momentum_and_trigger_widget_task.delay(str(current_user.id))
+    # === ECONOMICS INTEGRATION (graceful — skipped when Redis/Celery unavailable) ===
+    try:
+        from app.tasks.opportunity_cost import check_momentum_and_trigger_widget_task
+        check_momentum_and_trigger_widget_task.delay(str(current_user.id))
+    except Exception:
+        pass  # Celery/Redis not available in free-tier deploy
     
-    # Check if readiness crosses 80 threshold for credential generation
-    # Get latest readiness assessment
-    assessment_result = await db.execute(
-        select(ReadinessAssessment)
-        .where(ReadinessAssessment.user_id == current_user.id)
-        .order_by(desc(ReadinessAssessment.created_at))
-        .limit(1)
-    )
-    latest_assessment = assessment_result.scalar_one_or_none()
-    
-    if latest_assessment and latest_assessment.overall_readiness >= 80:
-        # Check if we already have a recent credential
-        from app.db.models.economics import VerificationCredential
-        recent_cred_result = await db.execute(
-            select(VerificationCredential)
-            .where(
-                VerificationCredential.user_id == current_user.id,
-                VerificationCredential.credential_type == "readiness",
-                VerificationCredential.is_active == True
-            )
-            .order_by(desc(VerificationCredential.issued_at))
+    try:
+        assessment_result = await db.execute(
+            select(ReadinessAssessment)
+            .where(ReadinessAssessment.user_id == current_user.id)
+            .order_by(desc(ReadinessAssessment.created_at))
             .limit(1)
         )
-        recent_credential = recent_cred_result.scalar_one_or_none()
+        latest_assessment = assessment_result.scalar_one_or_none()
         
-        # Only generate if no recent credential or score improved significantly
-        should_generate = (
-            not recent_credential or
-            latest_assessment.overall_readiness > recent_credential.score_value + 5
-        )
-        
-        if should_generate:
-            from app.tasks.credentials import generate_credential_task
-            generate_credential_task.delay(
-                str(current_user.id),
-                "readiness",
-                int(latest_assessment.overall_readiness)
+        if latest_assessment and latest_assessment.overall_readiness >= 80:
+            from app.db.models.economics import VerificationCredential
+            recent_cred_result = await db.execute(
+                select(VerificationCredential)
+                .where(
+                    VerificationCredential.user_id == current_user.id,
+                    VerificationCredential.credential_type == "readiness",
+                    VerificationCredential.is_active == True
+                )
+                .order_by(desc(VerificationCredential.issued_at))
+                .limit(1)
             )
+            recent_credential = recent_cred_result.scalar_one_or_none()
+            
+            should_generate = (
+                not recent_credential or
+                latest_assessment.overall_readiness > recent_credential.score_value + 5
+            )
+            
+            if should_generate:
+                from app.tasks.credentials import generate_credential_task
+                generate_credential_task.delay(
+                    str(current_user.id),
+                    "readiness",
+                    int(latest_assessment.overall_readiness)
+                )
+    except Exception:
+        pass  # Celery/Redis not available in free-tier deploy
     
     return task
 

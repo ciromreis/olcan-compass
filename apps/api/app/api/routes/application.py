@@ -111,8 +111,12 @@ async def list_opportunities(
     
     # === ECONOMICS INTEGRATION: Opportunity Cost & Competitiveness ===
     # Check user momentum for growth widget display
-    from app.services.opportunity_cost import should_show_widget
-    show_growth_widget = await should_show_widget(current_user.id, db)
+    show_growth_widget = False
+    try:
+        from app.services.opportunity_cost import should_show_widget
+        show_growth_widget = await should_show_widget(current_user.id, db)
+    except Exception:
+        pass  # Economics service may fail; default to not showing widget
     
     # Enrich opportunities with economics data
     enriched_items = []

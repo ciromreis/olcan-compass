@@ -541,15 +541,18 @@ async def create_booking(
     )
     
     if is_performance_bound:
-        from app.tasks.escrow import create_escrow_task
-        create_escrow_task.delay(
-            str(booking.id),
-            float(price_agreed * Decimal("0.30")),  # 30% held in escrow
-            {
-                "type": "readiness_improvement",
-                "min_improvement": 10
-            }
-        )
+        try:
+            from app.tasks.escrow import create_escrow_task
+            create_escrow_task.delay(
+                str(booking.id),
+                float(price_agreed * Decimal("0.30")),  # 30% held in escrow
+                {
+                    "type": "readiness_improvement",
+                    "min_improvement": 10
+                }
+            )
+        except Exception:
+            pass  # Celery/Redis not available in free-tier deploy
     
     return {
         "booking_id": str(booking.id),
@@ -693,8 +696,11 @@ async def update_booking(
         
         # === ECONOMICS INTEGRATION: Escrow Resolution ===
         # Trigger escrow resolution task when booking is completed
-        from app.tasks.escrow import resolve_escrow_task
-        resolve_escrow_task.delay(str(booking.id))
+        try:
+            from app.tasks.escrow import resolve_escrow_task
+            resolve_escrow_task.delay(str(booking.id))
+        except Exception:
+            pass  # Celery/Redis not available in free-tier deploy
         
     else:
         raise HTTPException(status_code=400, detail="Invalid status transition")

@@ -354,22 +354,25 @@ async def _compute_and_save_profile(session: PsychAssessmentSession, user_id: UU
     # Store snapshot in session
     session.scores_snapshot = avg_scores
     
-    # === ECONOMICS INTEGRATION ===
-    # Calculate new readiness score
+    # === ECONOMICS INTEGRATION (graceful — skipped when Redis/Celery unavailable) ===
     new_readiness = (profile.confidence_index + profile.discipline_score) / 2
     
-    # Trigger temporal matching recalculation
-    from app.tasks.temporal_matching import recalculate_temporal_matches_task
-    recalculate_temporal_matches_task.delay(str(user_id))
+    try:
+        from app.tasks.temporal_matching import recalculate_temporal_matches_task
+        recalculate_temporal_matches_task.delay(str(user_id))
+    except Exception:
+        pass  # Celery/Redis not available in free-tier deploy
     
-    # Trigger credential generation if readiness crosses 80 threshold
-    if previous_readiness < 80 and new_readiness >= 80:
-        from app.tasks.credentials import generate_credential_task
-        generate_credential_task.delay(
-            str(user_id),
-            "readiness",
-            int(new_readiness)
-        )
+    try:
+        if previous_readiness < 80 and new_readiness >= 80:
+            from app.tasks.credentials import generate_credential_task
+            generate_credential_task.delay(
+                str(user_id),
+                "readiness",
+                int(new_readiness)
+            )
+    except Exception:
+        pass  # Celery/Redis not available in free-tier deploy
 
 
 def _determine_mobility_state(scores: dict) -> str:
