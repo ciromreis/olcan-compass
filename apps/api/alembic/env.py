@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 from logging.config import fileConfig
 
 from alembic import context
@@ -17,8 +18,20 @@ if config.config_file_name is not None:
 
 
 def _sync_database_url(url: str) -> str:
-    # Alembic uses a sync engine. Our runtime URL is asyncpg.
-    return url.replace("postgresql+asyncpg://", "postgresql+psycopg://")
+    """Convert asyncpg URL to psycopg and deduplicate query params."""
+    url = url.replace("postgresql+asyncpg://", "postgresql+psycopg://")
+    # Strip channel_binding (psycopg3 doesn't support it from Neon URLs)
+    url = re.sub(r"[?&]channel_binding=[^&]*", "", url)
+    # Deduplicate sslmode — keep only the first occurrence
+    sslmode_matches = re.findall(r"[?&](sslmode=[^&]+)", url)
+    if len(sslmode_matches) > 1:
+        # Remove all but the first sslmode param
+        for extra in sslmode_matches[1:]:
+            url = url.replace("&" + extra, "").replace("?" + extra, "")
+    # Clean up query string artifacts
+    url = re.sub(r"\?&", "?", url)
+    url = url.rstrip("?&")
+    return url
 
 
 def get_url() -> str:
