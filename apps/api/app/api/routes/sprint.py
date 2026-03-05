@@ -148,20 +148,48 @@ async def create_sprint(
         status=SprintStatus.PLANNED if not request.start_date else SprintStatus.ACTIVE,
     )
     
-    # If template provided, copy default tasks
+    db.add(sprint)
+    await db.flush()
+    
+    # If template provided, create tasks from default_tasks
+    tasks = []
     if request.template_id:
         template_result = await db.execute(
             select(SprintTemplate).where(SprintTemplate.id == request.template_id)
         )
         template = template_result.scalar_one_or_none()
-        if template and template.default_tasks:
+        if template:
             sprint.estimated_effort_hours = template.estimated_effort_hours
+            for i, task_def in enumerate(template.default_tasks or []):
+                priority_str = (task_def.get("priority") or "medium").lower()
+                priority_map = {
+                    "low": SprintTaskPriority.LOW,
+                    "medium": SprintTaskPriority.MEDIUM,
+                    "high": SprintTaskPriority.HIGH,
+                    "critical": SprintTaskPriority.CRITICAL,
+                }
+                task = SprintTask(
+                    sprint_id=sprint.id,
+                    title=task_def.get("title", f"Tarefa {i+1}"),
+                    description=task_def.get("description"),
+                    task_type=task_def.get("task_type", "action"),
+                    category=task_def.get("category", request.gap_category),
+                    priority=priority_map.get(priority_str, SprintTaskPriority.MEDIUM),
+                    estimated_minutes=task_def.get("estimated_minutes"),
+                    display_order=i,
+                )
+                db.add(task)
+                tasks.append(task)
+            sprint.total_tasks = len(tasks)
     
-    db.add(sprint)
     await db.commit()
     await db.refresh(sprint)
     
-    return sprint
+    # Build response with tasks to avoid lazy loading
+    from app.schemas.sprint import SprintTaskResponse
+    response = UserSprintDetailResponse.model_validate(sprint)
+    response.tasks = [SprintTaskResponse.model_validate(t) for t in tasks]
+    return response
 
 
 @router.post("/{sprint_id}/start", response_model=UserSprintDetailResponse)

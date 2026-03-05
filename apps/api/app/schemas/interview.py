@@ -247,6 +247,7 @@ class InterviewProgressStats(BaseModel):
 
 class InterviewQuestionSelectResponse(BaseModel):
     """Selected questions for a session"""
+    id: UUID  # same as session_id, needed by frontend
     session_id: UUID
     questions: List[InterviewQuestionResponse]
     total_questions: int

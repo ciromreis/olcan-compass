@@ -321,6 +321,266 @@ async def list_applications(
     )
 
 
+# === WATCHLIST === (must be before /{application_id} routes)
+
+@router.post("/watchlist", response_model=WatchlistItem, status_code=status.HTTP_201_CREATED)
+async def add_to_watchlist(
+    request: WatchlistAddRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Add opportunity to watchlist"""
+    # Check if already in watchlist
+    existing = await db.execute(
+        select(OpportunityWatchlist).where(
+            OpportunityWatchlist.user_id == current_user.id,
+            OpportunityWatchlist.opportunity_id == request.opportunity_id
+        )
+    )
+    if existing.scalar_one_or_none():
+        raise HTTPException(status_code=400, detail="Already in watchlist")
+    
+    watchlist_item = OpportunityWatchlist(
+        user_id=current_user.id,
+        opportunity_id=request.opportunity_id,
+        reminder_date=request.reminder_date,
+        notes=request.notes
+    )
+    db.add(watchlist_item)
+    await db.commit()
+    await db.refresh(watchlist_item)
+    
+    return watchlist_item
+
+
+@router.get("/watchlist", response_model=WatchlistListResponse)
+async def get_watchlist(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get user's watchlist"""
+    result = await db.execute(
+        select(OpportunityWatchlist)
+        .where(OpportunityWatchlist.user_id == current_user.id)
+        .order_by(desc(OpportunityWatchlist.created_at))
+    )
+    items = result.scalars().all()
+    
+    # Load opportunity data
+    watchlist_items = []
+    for item in items:
+        wl_item = WatchlistItem.model_validate(item)
+        
+        opp_result = await db.execute(
+            select(Opportunity).where(Opportunity.id == item.opportunity_id)
+        )
+        opp = opp_result.scalar_one_or_none()
+        if opp:
+            wl_item.opportunity = OpportunityListItem.model_validate(opp)
+        
+        watchlist_items.append(wl_item)
+    
+    return WatchlistListResponse(
+        items=watchlist_items,
+        total=len(watchlist_items)
+    )
+
+
+@router.delete("/watchlist/{watchlist_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def remove_from_watchlist(
+    watchlist_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Remove from watchlist"""
+    result = await db.execute(
+        select(OpportunityWatchlist).where(
+            OpportunityWatchlist.id == watchlist_id,
+            OpportunityWatchlist.user_id == current_user.id
+        )
+    )
+    item = result.scalar_one_or_none()
+    
+    if not item:
+        raise HTTPException(status_code=404, detail="Watchlist item not found")
+    
+    await db.delete(item)
+    await db.commit()
+    
+    return None
+
+
+# === MATCHES === (must be before /{application_id} routes)
+
+@router.get("/matches", response_model=OpportunityMatchListResponse)
+async def get_matches(
+    limit: int = Query(10, ge=1, le=50),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get AI-generated opportunity matches for the user"""
+    result = await db.execute(
+        select(OpportunityMatch)
+        .where(
+            OpportunityMatch.user_id == current_user.id,
+            OpportunityMatch.is_dismissed == False
+        )
+        .order_by(desc(OpportunityMatch.match_score))
+        .limit(limit)
+    )
+    matches = result.scalars().all()
+    
+    # Load opportunity data
+    match_items = []
+    for match in matches:
+        match_response = OpportunityMatchResponse.model_validate(match)
+        
+        opp_result = await db.execute(
+            select(Opportunity).where(Opportunity.id == match.opportunity_id)
+        )
+        opp = opp_result.scalar_one_or_none()
+        if opp:
+            match_response.opportunity = OpportunityListItem.model_validate(opp)
+        
+        match_items.append(match_response)
+    
+    return OpportunityMatchListResponse(
+        items=match_items,
+        total=len(match_items)
+    )
+
+
+@router.post("/matches/{match_id}/feedback", response_model=OpportunityMatchResponse)
+async def record_match_feedback(
+    match_id: UUID,
+    request: MatchFeedbackRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Record user feedback on a match"""
+    result = await db.execute(
+        select(OpportunityMatch).where(
+            OpportunityMatch.id == match_id,
+            OpportunityMatch.user_id == current_user.id
+        )
+    )
+    match = result.scalar_one_or_none()
+    
+    if not match:
+        raise HTTPException(status_code=404, detail="Match not found")
+    
+    match.user_feedback = request.user_feedback
+    match.feedback_at = datetime.now(timezone.utc)
+    
+    await db.commit()
+    await db.refresh(match)
+    
+    return match
+
+
+@router.post("/matches/{match_id}/dismiss", response_model=OpportunityMatchResponse)
+async def dismiss_match(
+    match_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Dismiss a match"""
+    result = await db.execute(
+        select(OpportunityMatch).where(
+            OpportunityMatch.id == match_id,
+            OpportunityMatch.user_id == current_user.id
+        )
+    )
+    match = result.scalar_one_or_none()
+    
+    if not match:
+        raise HTTPException(status_code=404, detail="Match not found")
+    
+    match.is_dismissed = True
+    
+    await db.commit()
+    await db.refresh(match)
+    
+    return match
+
+
+# === DASHBOARD STATS === (must be before /{application_id} routes)
+
+@router.get("/stats/dashboard", response_model=ApplicationStats)
+async def get_dashboard_stats(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    
+    # Count by status
+    status_counts = {}
+    for status in ApplicationStatus:
+        count_result = await db.execute(
+            select(func.count()).where(
+                UserApplication.user_id == current_user.id,
+                UserApplication.status == status
+            )
+        )
+        status_counts[status.value] = count_result.scalar()
+    
+    total = sum(status_counts.values())
+    
+    # Upcoming deadlines (next 14 days)
+    upcoming_result = await db.execute(
+        select(UserApplication)
+        .join(Opportunity, UserApplication.opportunity_id == Opportunity.id)
+        .where(
+            UserApplication.user_id == current_user.id,
+            UserApplication.status.in_([ApplicationStatus.IN_PROGRESS, ApplicationStatus.PLANNED]),
+            Opportunity.application_deadline >= datetime.now(timezone.utc),
+            Opportunity.application_deadline <= datetime.now(timezone.utc) + timedelta(days=14)
+        )
+        .order_by(Opportunity.application_deadline)
+        .limit(5)
+    )
+    upcoming = upcoming_result.scalars().all()
+    
+    # Recent activity
+    recent_result = await db.execute(
+        select(UserApplication)
+        .where(UserApplication.user_id == current_user.id)
+        .order_by(desc(UserApplication.updated_at))
+        .limit(5)
+    )
+    recent = recent_result.scalars().all()
+    
+    # Average completion
+    avg_result = await db.execute(
+        select(func.avg(UserApplication.completion_percentage))
+        .where(UserApplication.user_id == current_user.id)
+    )
+    avg_completion = avg_result.scalar() or 0
+    
+    # Load opportunity data for upcoming and recent
+    async def load_opps(apps):
+        items = []
+        for app in apps:
+            item = UserApplicationListItem.model_validate(app)
+            opp_result = await db.execute(
+                select(Opportunity).where(Opportunity.id == app.opportunity_id)
+            )
+            opp = opp_result.scalar_one_or_none()
+            if opp:
+                item.opportunity = OpportunityListItem.model_validate(opp)
+            items.append(item)
+        return items
+    
+    return ApplicationStats(
+        total_applications=total,
+        by_status=status_counts,
+        upcoming_deadlines=await load_opps(upcoming),
+        recent_activity=await load_opps(recent),
+        completion_average=round(avg_completion, 1)
+    )
+
+
+# === USER APPLICATION DETAIL (parameterized routes last) ===
+
 @router.get("/{application_id}", response_model=UserApplicationDetailResponse)
 async def get_application(
     application_id: UUID,
@@ -596,260 +856,3 @@ async def update_document(
     
     return document
 
-
-# === WATCHLIST ===
-
-@router.post("/watchlist", response_model=WatchlistItem, status_code=status.HTTP_201_CREATED)
-async def add_to_watchlist(
-    request: WatchlistAddRequest,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
-    """Add opportunity to watchlist"""
-    # Check if already in watchlist
-    existing = await db.execute(
-        select(OpportunityWatchlist).where(
-            OpportunityWatchlist.user_id == current_user.id,
-            OpportunityWatchlist.opportunity_id == request.opportunity_id
-        )
-    )
-    if existing.scalar_one_or_none():
-        raise HTTPException(status_code=400, detail="Already in watchlist")
-    
-    watchlist_item = OpportunityWatchlist(
-        user_id=current_user.id,
-        opportunity_id=request.opportunity_id,
-        reminder_date=request.reminder_date,
-        notes=request.notes
-    )
-    db.add(watchlist_item)
-    await db.commit()
-    await db.refresh(watchlist_item)
-    
-    return watchlist_item
-
-
-@router.get("/watchlist", response_model=WatchlistListResponse)
-async def get_watchlist(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
-    """Get user's watchlist"""
-    result = await db.execute(
-        select(OpportunityWatchlist)
-        .where(OpportunityWatchlist.user_id == current_user.id)
-        .order_by(desc(OpportunityWatchlist.created_at))
-    )
-    items = result.scalars().all()
-    
-    # Load opportunity data
-    watchlist_items = []
-    for item in items:
-        wl_item = WatchlistItem.model_validate(item)
-        
-        opp_result = await db.execute(
-            select(Opportunity).where(Opportunity.id == item.opportunity_id)
-        )
-        opp = opp_result.scalar_one_or_none()
-        if opp:
-            wl_item.opportunity = OpportunityListItem.model_validate(opp)
-        
-        watchlist_items.append(wl_item)
-    
-    return WatchlistListResponse(
-        items=watchlist_items,
-        total=len(watchlist_items)
-    )
-
-
-@router.delete("/watchlist/{watchlist_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def remove_from_watchlist(
-    watchlist_id: UUID,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
-    """Remove from watchlist"""
-    result = await db.execute(
-        select(OpportunityWatchlist).where(
-            OpportunityWatchlist.id == watchlist_id,
-            OpportunityWatchlist.user_id == current_user.id
-        )
-    )
-    item = result.scalar_one_or_none()
-    
-    if not item:
-        raise HTTPException(status_code=404, detail="Watchlist item not found")
-    
-    await db.delete(item)
-    await db.commit()
-    
-    return None
-
-
-# === MATCHES ===
-
-@router.get("/matches", response_model=OpportunityMatchListResponse)
-async def get_matches(
-    limit: int = Query(10, ge=1, le=50),
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
-    """Get AI-generated opportunity matches for the user"""
-    result = await db.execute(
-        select(OpportunityMatch)
-        .where(
-            OpportunityMatch.user_id == current_user.id,
-            OpportunityMatch.is_dismissed == False
-        )
-        .order_by(desc(OpportunityMatch.match_score))
-        .limit(limit)
-    )
-    matches = result.scalars().all()
-    
-    # Load opportunity data
-    match_items = []
-    for match in matches:
-        match_response = OpportunityMatchResponse.model_validate(match)
-        
-        opp_result = await db.execute(
-            select(Opportunity).where(Opportunity.id == match.opportunity_id)
-        )
-        opp = opp_result.scalar_one_or_none()
-        if opp:
-            match_response.opportunity = OpportunityListItem.model_validate(opp)
-        
-        match_items.append(match_response)
-    
-    return OpportunityMatchListResponse(
-        items=match_items,
-        total=len(match_items)
-    )
-
-
-@router.post("/matches/{match_id}/feedback", response_model=OpportunityMatchResponse)
-async def record_match_feedback(
-    match_id: UUID,
-    request: MatchFeedbackRequest,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
-    """Record user feedback on a match"""
-    result = await db.execute(
-        select(OpportunityMatch).where(
-            OpportunityMatch.id == match_id,
-            OpportunityMatch.user_id == current_user.id
-        )
-    )
-    match = result.scalar_one_or_none()
-    
-    if not match:
-        raise HTTPException(status_code=404, detail="Match not found")
-    
-    match.user_feedback = request.user_feedback
-    match.feedback_at = datetime.now(timezone.utc)
-    
-    await db.commit()
-    await db.refresh(match)
-    
-    return match
-
-
-@router.post("/matches/{match_id}/dismiss", response_model=OpportunityMatchResponse)
-async def dismiss_match(
-    match_id: UUID,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
-    """Dismiss a match"""
-    result = await db.execute(
-        select(OpportunityMatch).where(
-            OpportunityMatch.id == match_id,
-            OpportunityMatch.user_id == current_user.id
-        )
-    )
-    match = result.scalar_one_or_none()
-    
-    if not match:
-        raise HTTPException(status_code=404, detail="Match not found")
-    
-    match.is_dismissed = True
-    
-    await db.commit()
-    await db.refresh(match)
-    
-    return match
-
-
-# === DASHBOARD STATS ===
-
-@router.get("/stats/dashboard", response_model=ApplicationStats)
-async def get_dashboard_stats(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
-    
-    # Count by status
-    status_counts = {}
-    for status in ApplicationStatus:
-        count_result = await db.execute(
-            select(func.count()).where(
-                UserApplication.user_id == current_user.id,
-                UserApplication.status == status
-            )
-        )
-        status_counts[status.value] = count_result.scalar()
-    
-    total = sum(status_counts.values())
-    
-    # Upcoming deadlines (next 14 days)
-    upcoming_result = await db.execute(
-        select(UserApplication)
-        .join(Opportunity, UserApplication.opportunity_id == Opportunity.id)
-        .where(
-            UserApplication.user_id == current_user.id,
-            UserApplication.status.in_([ApplicationStatus.IN_PROGRESS, ApplicationStatus.PLANNED]),
-            Opportunity.application_deadline >= datetime.now(timezone.utc),
-            Opportunity.application_deadline <= datetime.now(timezone.utc) + timedelta(days=14)
-        )
-        .order_by(Opportunity.application_deadline)
-        .limit(5)
-    )
-    upcoming = upcoming_result.scalars().all()
-    
-    # Recent activity
-    recent_result = await db.execute(
-        select(UserApplication)
-        .where(UserApplication.user_id == current_user.id)
-        .order_by(desc(UserApplication.updated_at))
-        .limit(5)
-    )
-    recent = recent_result.scalars().all()
-    
-    # Average completion
-    avg_result = await db.execute(
-        select(func.avg(UserApplication.completion_percentage))
-        .where(UserApplication.user_id == current_user.id)
-    )
-    avg_completion = avg_result.scalar() or 0
-    
-    # Load opportunity data for upcoming and recent
-    async def load_opps(apps):
-        items = []
-        for app in apps:
-            item = UserApplicationListItem.model_validate(app)
-            opp_result = await db.execute(
-                select(Opportunity).where(Opportunity.id == app.opportunity_id)
-            )
-            opp = opp_result.scalar_one_or_none()
-            if opp:
-                item.opportunity = OpportunityListItem.model_validate(opp)
-            items.append(item)
-        return items
-    
-    return ApplicationStats(
-        total_applications=total,
-        by_status=status_counts,
-        upcoming_deadlines=await load_opps(upcoming),
-        recent_activity=await load_opps(recent),
-        completion_average=round(avg_completion, 1)
-    )

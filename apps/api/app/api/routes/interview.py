@@ -230,6 +230,7 @@ async def start_session(
     await db.commit()
     
     return InterviewQuestionSelectResponse(
+        id=session.id,
         session_id=session.id,
         questions=[InterviewQuestionResponse.model_validate(q) for q in selected_questions],
         total_questions=len(selected_questions),

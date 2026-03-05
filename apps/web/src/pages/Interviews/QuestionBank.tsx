@@ -80,9 +80,14 @@ export function QuestionBank() {
               onChange={(value) => setCategoryFilter(Array.isArray(value) ? value[0] || 'all' : value || 'all')}
               options={[
                 { value: 'all', label: 'Todas as categorias' },
-                { value: 'behavioral', label: 'Comportamental' },
+                { value: 'motivation', label: 'Motivação' },
+                { value: 'background', label: 'Trajetória' },
+                { value: 'challenge', label: 'Desafios' },
+                { value: 'goals', label: 'Objetivos' },
+                { value: 'cultural_fit', label: 'Fit Cultural' },
                 { value: 'technical', label: 'Técnica' },
-                { value: 'situational', label: 'Situacional' },
+                { value: 'scenario', label: 'Cenário' },
+                { value: 'question_for_panel', label: 'Perguntas ao Painel' },
               ]}
             />
             <Select

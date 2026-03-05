@@ -73,8 +73,15 @@ async def create_narrative(
     
     await db.commit()
     await db.refresh(narrative)
+    await db.refresh(version)
     
-    return narrative
+    # Build response manually to avoid lazy-loading relationships in async context
+    response = NarrativeDetailResponse.model_validate(narrative)
+    response.current_version = NarrativeVersionResponse.model_validate(version)
+    response.versions = [NarrativeVersionResponse.model_validate(version)]
+    response.analyses = []
+    
+    return response
 
 
 @router.get("", response_model=NarrativeListResponse)

@@ -109,9 +109,13 @@ export function Opportunities() {
               onChange={(value) => setTypeFilter(Array.isArray(value) ? value[0] || 'all' : value || 'all')}
               options={[
                 { value: 'all', label: 'Todos os tipos' },
-                { value: 'academic', label: 'Acadêmico' },
-                { value: 'professional', label: 'Profissional' },
-                { value: 'scholarship', label: 'Bolsa' },
+                { value: 'scholarship', label: 'Bolsa de Estudos' },
+                { value: 'job', label: 'Emprego' },
+                { value: 'research_position', label: 'Pesquisa' },
+                { value: 'exchange_program', label: 'Intercâmbio' },
+                { value: 'grant', label: 'Grant / Auxílio' },
+                { value: 'fellowship', label: 'Fellowship' },
+                { value: 'internship', label: 'Estágio' },
               ]}
             />
             <Select
@@ -119,9 +123,13 @@ export function Opportunities() {
               onChange={(value) => setLocationFilter(Array.isArray(value) ? value[0] || 'all' : value || 'all')}
               options={[
                 { value: 'all', label: 'Todas as localizações' },
-                { value: 'usa', label: 'Estados Unidos' },
-                { value: 'uk', label: 'Reino Unido' },
-                { value: 'canada', label: 'Canadá' },
+                { value: 'Estados Unidos', label: 'Estados Unidos' },
+                { value: 'Reino Unido', label: 'Reino Unido' },
+                { value: 'Alemanha', label: 'Alemanha' },
+                { value: 'França', label: 'França' },
+                { value: 'Suíça', label: 'Suíça' },
+                { value: 'Portugal', label: 'Portugal' },
+                { value: 'Europa', label: 'Europa (Geral)' },
               ]}
             />
           </div>
