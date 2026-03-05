@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     api_prefix: str = "/api"
 
     # CORS
-    cors_allow_origins: str = "http://localhost:3000,http://localhost:3001"
+    cors_allow_origins: str = "http://localhost:3000,http://localhost:3001,https://olcan-compass-web.netlify.app,https://compass.olcan.com.br"
 
     # Database
     database_url: str = "postgresql+asyncpg://postgres:postgres@db:5432/compass"
