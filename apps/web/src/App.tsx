@@ -27,6 +27,7 @@ const PsychologyAssessment = lazy(() => import('./pages/Psychology/Assessment').
 // Routes
 const MyRoutes = lazy(() => import('./pages/Routes/MyRoutes').then(m => ({ default: m.MyRoutes })))
 const RouteTemplates = lazy(() => import('./pages/Routes/Templates').then(m => ({ default: m.RouteTemplates })))
+const RouteDetail = lazy(() => import('./pages/Routes/Detail').then(m => ({ default: m.RouteDetail })))
 
 // Narratives
 const NarrativesDashboard = lazy(() => import('./pages/Narratives/Dashboard').then(m => ({ default: m.NarrativesDashboard })))
@@ -212,6 +213,7 @@ function App() {
             {/* Route Planning */}
             <Route path="/routes" element={<MyRoutes />} />
             <Route path="/routes/templates" element={<RouteTemplates />} />
+            <Route path="/routes/:id" element={<RouteDetail />} />
 
             {/* Narratives */}
             <Route path="/narratives" element={<NarrativesDashboard />} />

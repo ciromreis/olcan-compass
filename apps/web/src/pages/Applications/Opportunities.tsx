@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Briefcase, Search } from 'lucide-react'
+import { Briefcase, Search, Plus } from 'lucide-react'
 import { useApplications } from '@/hooks/useApplications'
-import { ApplicationCard } from '@/components/domain/ApplicationCard'
+import { useCreateApplication } from '@/hooks/useApplications'
 import type { Application } from '@/components/domain/ApplicationCard'
 import { GrowthPotentialWidget } from '@/components/domain/GrowthPotentialWidget'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
+import { Badge } from '@/components/ui/Badge'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -17,8 +18,20 @@ import { useNavigate } from 'react-router-dom'
 import { MaterialSymbol } from '@/components/ui/MaterialSymbol'
 import { formatDeadline, daysUntil } from '@/lib/utils'
 
+const opportunityTypeLabels: Record<string, string> = {
+  scholarship: 'Bolsa de Estudos',
+  job: 'Emprego',
+  research_position: 'Pesquisa',
+  exchange_program: 'Intercâmbio',
+  grant: 'Grant / Auxílio',
+  fellowship: 'Fellowship',
+  internship: 'Estágio',
+}
+
 type OpportunityCardItem = Application & {
   opportunity_cost_daily?: number
+  opportunity_type?: string
+  description?: string
 }
 
 export function Opportunities() {
@@ -26,13 +39,27 @@ export function Opportunities() {
   const [searchTerm, setSearchTerm] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
   const [locationFilter, setLocationFilter] = useState('all')
+  const [applyingId, setApplyingId] = useState<string | null>(null)
   const debouncedSearch = useDebounce(searchTerm, 500)
+  const createApplication = useCreateApplication()
   
   const { opportunities, isLoading, error } = useApplications({
     search: debouncedSearch,
     type: typeFilter !== 'all' ? typeFilter : undefined,
     location: locationFilter !== 'all' ? locationFilter : undefined,
   })
+
+  const handleApply = async (opportunityId: string) => {
+    setApplyingId(opportunityId)
+    try {
+      const result = await createApplication.mutateAsync({ opportunity_id: opportunityId })
+      navigate(`/applications/detail/${result.id}`)
+    } catch (err) {
+      console.error('Failed to create application:', err)
+    } finally {
+      setApplyingId(null)
+    }
+  }
 
   const handleViewDetails = (opportunityId: string) => {
     navigate(`/applications/opportunities/${opportunityId}`)
@@ -194,10 +221,61 @@ export function Opportunities() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
             >
-              <ApplicationCard
-                application={opportunity}
-                onViewDetails={handleViewDetails}
-                />
+              <Card className="liquid-glass hover:border-cyan/30 transition-colors h-full" noPadding>
+                <div className="p-5 flex flex-col h-full">
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-body font-semibold text-white line-clamp-2">
+                        {opportunity.opportunity_name}
+                      </h3>
+                      {opportunity.institution && (
+                        <p className="text-body-sm text-slate mt-1 truncate">
+                          {opportunity.institution}
+                        </p>
+                      )}
+                    </div>
+                    {opportunity.opportunity_type && (
+                      <Badge variant="default" className="shrink-0">
+                        {opportunityTypeLabels[opportunity.opportunity_type] || opportunity.opportunity_type}
+                      </Badge>
+                    )}
+                  </div>
+
+                  {opportunity.description && (
+                    <p className="text-body-sm text-slate line-clamp-2 mb-3">
+                      {opportunity.description}
+                    </p>
+                  )}
+
+                  <div className="flex items-center gap-3 text-body-sm text-slate mb-3">
+                    {opportunity.location && (
+                      <span className="flex items-center gap-1">
+                        <MaterialSymbol name="location_on" size={14} />
+                        {opportunity.location}
+                      </span>
+                    )}
+                    {opportunity.deadline && (
+                      <span className="flex items-center gap-1">
+                        <MaterialSymbol name="schedule" size={14} />
+                        {formatDeadline(opportunity.deadline)}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="mt-auto pt-3 border-t border-white/10 flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      onClick={() => handleApply(opportunity.opportunity_id || opportunity.id)}
+                      isLoading={applyingId === (opportunity.opportunity_id || opportunity.id)}
+                      icon={<Plus className="w-4 h-4" />}
+                      iconPosition="left"
+                      fullWidth
+                    >
+                      Candidatar-se
+                    </Button>
+                  </div>
+                </div>
+              </Card>
             </motion.div>
           ))}
         </div>

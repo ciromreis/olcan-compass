@@ -128,6 +128,16 @@ class RouteMilestoneResponse(BaseModel):
     due_date: Optional[datetime]
     created_at: datetime
     updated_at: datetime
+    # Enriched from milestone template
+    name_pt: Optional[str] = None
+    name_en: Optional[str] = None
+    description_pt: Optional[str] = None
+    description_en: Optional[str] = None
+    category: Optional[str] = None
+    display_order: Optional[int] = None
+    estimated_days: Optional[int] = None
+    required_evidence: Optional[List[str]] = None
+    is_required: Optional[bool] = None
     
     model_config = {"from_attributes": True}
 

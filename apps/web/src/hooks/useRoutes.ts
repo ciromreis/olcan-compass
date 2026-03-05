@@ -22,6 +22,15 @@ type RawMilestone = {
   due_date?: string;
   status?: string;
   completed_at?: string;
+  name_pt?: string;
+  name_en?: string;
+  description_pt?: string;
+  description_en?: string;
+  category?: string;
+  display_order?: number;
+  estimated_days?: number;
+  required_evidence?: string[];
+  is_required?: boolean;
 };
 
 type RawRoute = {
@@ -61,12 +70,18 @@ const normalizeRoute = (route: RawRoute, milestones: RawMilestone[] = []): Route
   milestones: milestones.map((milestone: RawMilestone, index: number) => ({
     id: String(milestone.id),
     route_id: String(milestone.route_id),
-    title: `Marco ${index + 1}`,
-    description: milestone.user_notes || milestone.completion_notes || undefined,
+    title: milestone.name_pt || milestone.name_en || `Marco ${index + 1}`,
+    description: milestone.description_pt || milestone.description_en || milestone.user_notes || milestone.completion_notes || undefined,
     target_date: milestone.due_date || undefined,
     completed: milestone.status === 'completed',
     completed_at: milestone.completed_at || undefined,
-    order_index: index,
+    order_index: milestone.display_order ?? index,
+    category: milestone.category,
+    estimated_days: milestone.estimated_days,
+    required_evidence: milestone.required_evidence,
+    is_required: milestone.is_required,
+    user_notes: milestone.user_notes,
+    status: milestone.status,
   })),
   created_at: route.created_at,
   updated_at: route.updated_at,

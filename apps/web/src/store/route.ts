@@ -11,6 +11,12 @@ export interface RouteMilestone {
   completed_at?: string;
   order_index: number;
   dependencies?: string[];
+  category?: string;
+  estimated_days?: number;
+  required_evidence?: string[];
+  is_required?: boolean;
+  user_notes?: string;
+  status?: string;
 }
 
 export interface Route {

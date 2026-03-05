@@ -24,12 +24,14 @@ async def lifespan(app: FastAPI):
         from app.db.seed_interviews import seed_interview_questions
         from app.db.seed_sprints import seed_sprint_templates
         from app.db.seed_opportunities import seed_opportunities
+        from app.db.seed_marketplace import seed_marketplace
         async with get_sessionmaker()() as db:
             await seed_psych_questions(db)
             await seed_route_templates(db)
             await seed_interview_questions(db)
             await seed_sprint_templates(db)
             await seed_opportunities(db)
+            await seed_marketplace(db)
     except Exception as e:
         import traceback
         print(f"[seed] Warning: could not seed data: {e}")

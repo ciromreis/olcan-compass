@@ -222,6 +222,37 @@ async def get_route_detail(
     )
     milestones = result.scalars().all()
     
+    # Get milestone templates for enrichment
+    milestone_template_ids = [m.template_id for m in milestones if m.template_id]
+    milestone_templates_map = {}
+    if milestone_template_ids:
+        result = await db.execute(
+            select(RouteMilestoneTemplate)
+            .where(RouteMilestoneTemplate.id.in_(milestone_template_ids))
+        )
+        for mt in result.scalars().all():
+            milestone_templates_map[mt.id] = mt
+    
+    # Build enriched milestone responses
+    enriched_milestones = []
+    for m in milestones:
+        resp = RouteMilestoneResponse.model_validate(m)
+        mt = milestone_templates_map.get(m.template_id)
+        if mt:
+            resp.name_pt = mt.name_pt
+            resp.name_en = mt.name_en
+            resp.description_pt = mt.description_pt
+            resp.description_en = mt.description_en
+            resp.category = mt.category.value if hasattr(mt.category, 'value') else str(mt.category)
+            resp.display_order = mt.display_order
+            resp.estimated_days = mt.estimated_days
+            resp.required_evidence = mt.required_evidence or []
+            resp.is_required = mt.is_required
+        enriched_milestones.append(resp)
+    
+    # Sort by display_order
+    enriched_milestones.sort(key=lambda m: m.display_order or 0)
+    
     # Get template
     result = await db.execute(
         select(RouteTemplate).where(RouteTemplate.id == route.template_id)
@@ -230,7 +261,7 @@ async def get_route_detail(
     
     return RouteDetailResponse(
         route=RouteResponse.model_validate(route),
-        milestones=[RouteMilestoneResponse.model_validate(m) for m in milestones],
+        milestones=enriched_milestones,
         template=RouteTemplateResponse.model_validate(template)
     )
 

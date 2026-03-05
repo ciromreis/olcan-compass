@@ -224,9 +224,9 @@ export function MyRoutes() {
                     <div className="flex items-center gap-2">
                       <Button
                         size="sm"
-                        onClick={() => navigate(activeRoute ? '/routes' : '/routes/templates')}
+                        onClick={() => navigate(activeRoute ? `/routes/${activeRoute.id}` : '/routes/templates')}
                       >
-                        {activeRoute ? 'Retomar' : 'Explorar'}
+                        {activeRoute ? 'Ver Detalhes' : 'Explorar'}
                       </Button>
                     </div>
                   </div>
@@ -257,8 +257,8 @@ export function MyRoutes() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, delay: index * 0.05 }}
                       >
-                        <Card className="liquid-glass" noPadding>
-                          <div className="p-5">
+                        <Card className="liquid-glass hover:border-cyan/30 transition-colors cursor-pointer" noPadding>
+                          <div className="p-5" onClick={() => navigate(`/routes/${route.id}`)}>
                             <div className="flex items-start justify-between gap-3">
                               <div className="min-w-0">
                                 <p className="text-body font-semibold text-white truncate">{route.name}</p>

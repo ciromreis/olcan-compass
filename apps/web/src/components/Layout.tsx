@@ -9,7 +9,7 @@ import {
   FolderOpen,
   Zap,
   Store,
-  Filter,
+  UserCog,
   Compass,
   LogOut,
   ChevronRight,
@@ -27,14 +27,14 @@ import { MaterialSymbol } from './ui/MaterialSymbol'
  */
 const NAV_ITEMS = [
   { path: '/', label: 'Painel', icon: LayoutDashboard },
-  { path: '/psychology', label: 'Perfil', icon: Brain },
+  { path: '/psychology', label: 'Perfil Psicológico', icon: Brain },
+  { path: '/constraints', label: 'Perfil de Mobilidade', icon: UserCog },
   { path: '/routes', label: 'Rotas', icon: Map },
   { path: '/narratives', label: 'Narrativas', icon: BookOpen },
   { path: '/interviews', label: 'Entrevistas', icon: MessageSquare },
   { path: '/applications', label: 'Candidaturas', icon: FolderOpen },
   { path: '/sprints', label: 'Sprints', icon: Zap },
   { path: '/marketplace', label: 'Marketplace', icon: Store },
-  { path: '/constraints', label: 'Restrições', icon: Filter },
 ]
 
 /**
