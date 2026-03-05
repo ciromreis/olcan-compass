@@ -15,4 +15,4 @@ services:
       - key: JWT_SECRET_KEY
         sync: false
       - key: CORS_ALLOW_ORIGINS
-        value: https://olcan-compass-web.netlify.app
+        value: https://olcan-compass-web.netlify.app,https://compass.olcan.com.br
