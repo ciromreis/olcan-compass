@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 
@@ -195,6 +195,7 @@ async def get_next_question(
 @router.post("/assessment/answer")
 async def submit_answer(
     request: SubmitAnswerRequest,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
@@ -256,7 +257,7 @@ async def submit_answer(
     if session.current_question_index >= session.total_questions:
         session.status = "completed"
         session.completed_at = datetime.now(timezone.utc)
-        await _compute_and_save_profile(session, current_user.id, db)
+        await _compute_and_save_profile(session, current_user.id, db, background_tasks)
     
     await db.commit()
     
@@ -267,7 +268,7 @@ async def submit_answer(
     }
 
 
-async def _compute_and_save_profile(session: PsychAssessmentSession, user_id: UUID, db: AsyncSession):
+async def _compute_and_save_profile(session: PsychAssessmentSession, user_id: UUID, db: AsyncSession, background_tasks: BackgroundTasks):
     """Compute scores and save profile after completion"""
     # Get all answers for this session
     result = await db.execute(
@@ -363,22 +364,24 @@ async def _compute_and_save_profile(session: PsychAssessmentSession, user_id: UU
     # === ECONOMICS INTEGRATION (graceful — skipped when Redis/Celery unavailable) ===
     new_readiness = (profile.confidence_index + profile.discipline_score) / 2
     
-    try:
-        from app.tasks.temporal_matching import recalculate_temporal_matches_task
-        recalculate_temporal_matches_task.delay(str(user_id))
-    except Exception:
-        pass  # Celery/Redis not available in free-tier deploy
-    
-    try:
-        if previous_readiness < 80 and new_readiness >= 80:
-            from app.tasks.credentials import generate_credential_task
-            generate_credential_task.delay(
-                str(user_id),
-                "readiness",
-                int(new_readiness)
-            )
-    except Exception:
-        pass  # Celery/Redis not available in free-tier deploy
+    def dispatch_economics_tasks(user_id_str: str, p_readiness: float, n_readiness: float):
+        try:
+            from app.tasks.temporal_matching import recalculate_temporal_matches_task
+            recalculate_temporal_matches_task.delay(user_id_str)
+        except Exception as e:
+            print(f"Failed to dispatch temporal_matching: {e}")
+            pass  # Celery/Redis not available
+        
+        try:
+            if p_readiness < 80 and n_readiness >= 80:
+                from app.tasks.credentials import generate_credential_task
+                generate_credential_task.delay(user_id_str, "readiness", int(n_readiness))
+        except Exception as e:
+            print(f"Failed to dispatch credentials task: {e}")
+            pass  # Celery/Redis not available
+            
+    # Dispatch non-blocking BackgroundTask to communicate with Celery broker
+    background_tasks.add_task(dispatch_economics_tasks, str(user_id), previous_readiness, new_readiness)
 
 
 def _determine_mobility_state(scores: dict) -> str:

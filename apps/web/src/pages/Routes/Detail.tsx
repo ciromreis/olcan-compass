@@ -296,7 +296,7 @@ export function RouteDetail() {
                         <div className="flex items-center gap-3 pt-2">
                           <Button
                             size="sm"
-                            onClick={(e) => {
+                            onClick={(e: React.MouseEvent) => {
                               e.stopPropagation()
                               setShowCompleteModal(true)
                             }}
@@ -308,7 +308,7 @@ export function RouteDetail() {
                             <Button
                               size="sm"
                               variant="secondary"
-                              onClick={(e) => {
+                              onClick={(e: React.MouseEvent) => {
                                 e.stopPropagation()
                                 handleStartMilestone(milestone)
                               }}

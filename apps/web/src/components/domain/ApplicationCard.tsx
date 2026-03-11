@@ -239,7 +239,7 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
             <Button
               variant="primary"
               size="sm"
-              onClick={(e) => {
+              onClick={(e: React.MouseEvent) => {
                 e.stopPropagation()
                 onViewDetails?.(application.id)
               }}
@@ -251,7 +251,7 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent) => {
                   e.stopPropagation()
                   onUpdateStatus?.(application.id, 'submitted')
                 }}

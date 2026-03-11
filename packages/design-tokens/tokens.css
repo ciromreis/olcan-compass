@@ -1,0 +1,84 @@
+/* Olcan Compass V2 — Clinical Boutique Design Tokens */
+/* MMXD Premium Light Theme */
+
+:root {
+  /* Moss (Primary Action) */
+  --moss-50: #E8EDE9;
+  --moss-100: #C5D4C8;
+  --moss-200: #9FB9A4;
+  --moss-300: #799E80;
+  --moss-400: #5D8B65;
+  --moss-500: #2E4036;
+  --moss-600: #263630;
+  --moss-700: #1E2C28;
+  --moss-800: #162220;
+  --moss-900: #0E1818;
+
+  /* Clay (Accent / CTA / Urgency) */
+  --clay-50: #FFF0EB;
+  --clay-100: #FFD9CC;
+  --clay-200: #FFB8A0;
+  --clay-300: #FF9774;
+  --clay-400: #E86B40;
+  --clay-500: #CC5833;
+  --clay-600: #A64529;
+  --clay-700: #80341F;
+  --clay-800: #592315;
+  --clay-900: #33120B;
+
+  /* Cream (Background / Surface) */
+  --cream-50: #FEFDFB;
+  --cream-100: #FBF9F5;
+  --cream-200: #F7F5EF;
+  --cream-300: #F2F0E9;
+  --cream-400: #EDE9E0;
+  --cream-500: #E8E3D7;
+  --cream-600: #D4CFBE;
+  --cream-700: #B0AB9A;
+  --cream-800: #8C8776;
+  --cream-900: #686352;
+
+  /* Semantic surfaces */
+  --surface-bg: var(--cream-300);
+  --surface-card: #FFFFFF;
+  --surface-elevated: #FFFFFF;
+  --surface-overlay: rgba(26, 26, 26, 0.4);
+  --surface-glass: rgba(255, 255, 255, 0.7);
+
+  /* Text */
+  --text-primary: #1A1A1A;
+  --text-secondary: #686352;
+  --text-muted: #8C8776;
+  --text-inverse: #FFFFFF;
+  --text-accent: var(--moss-500);
+
+  /* Semantic */
+  --success: #3D8B5E;
+  --warning: #D4A026;
+  --error: #C4402A;
+  --info: #2E6B9E;
+
+  /* Typography */
+  --font-heading: 'Plus Jakarta Sans', sans-serif;
+  --font-emphasis: 'Cormorant Garamond', serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px rgba(26, 26, 26, 0.04), 0 1px 2px rgba(26, 26, 26, 0.06);
+  --shadow-card-hover: 0 4px 12px rgba(26, 26, 26, 0.08), 0 2px 4px rgba(26, 26, 26, 0.04);
+  --shadow-glass: 0 8px 32px rgba(26, 26, 26, 0.06);
+
+  /* Transitions */
+  --transition-fast: 150ms;
+  --transition-base: 200ms;
+  --transition-slow: 300ms;
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+}

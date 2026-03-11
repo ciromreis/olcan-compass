@@ -99,8 +99,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                     'transition-colors duration-fast',
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-void',
                     'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none',
-                    variantStyles[variant],
-                    sizeStyles[size],
+                    variantStyles[variant as ButtonVariant],
+                    sizeStyles[size as ButtonSize],
                     fullWidth && 'w-full',
                     className
                 )}
