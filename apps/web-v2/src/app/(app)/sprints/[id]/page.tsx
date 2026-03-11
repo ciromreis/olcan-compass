@@ -63,7 +63,7 @@ export default function SprintDetailPage() {
       <div className="max-w-4xl mx-auto text-center py-20">
         <Zap className="w-12 h-12 text-text-muted mx-auto mb-4" />
         <h2 className="font-heading text-h3 text-text-primary mb-2">Sprint não encontrado</h2>
-        <Link href="/sprints" className="text-moss-500 font-medium hover:underline">Voltar aos sprints</Link>
+        <Link href="/sprints" className="text-brand-500 font-medium hover:underline">Voltar aos sprints</Link>
       </div>
     );
   }
@@ -145,7 +145,7 @@ export default function SprintDetailPage() {
         ) : sprint.status === "paused" ? (
           <button
             onClick={handleResume}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-moss-500 text-white text-body-sm font-semibold hover:bg-moss-600 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-brand-500 text-white text-body-sm font-semibold hover:bg-brand-600 transition-colors"
           >
             <Play className="w-4 h-4" /> Retomar
           </button>
@@ -156,7 +156,7 @@ export default function SprintDetailPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="card-surface p-4 text-center">
           <p className="text-caption text-text-muted mb-1">Progresso</p>
-          <p className={`font-heading text-h2 ${progress === 100 ? "text-sage-500" : "text-moss-500"}`}>{progress}%</p>
+          <p className={`font-heading text-h2 ${progress === 100 ? "text-sage-500" : "text-brand-500"}`}>{progress}%</p>
           <Progress value={progress} variant="moss" size="sm" className="mt-2" />
         </div>
         <div className="card-surface p-4 text-center">
@@ -181,7 +181,7 @@ export default function SprintDetailPage() {
           <h3 className="font-heading text-h4 text-text-primary">Tarefas</h3>
           <button
             onClick={() => setShowAddTask(!showAddTask)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-body-sm font-medium text-moss-500 hover:bg-moss-50 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-body-sm font-medium text-brand-500 hover:bg-brand-50 transition-colors"
           >
             <Plus className="w-4 h-4" /> Adicionar
           </button>
@@ -197,7 +197,7 @@ export default function SprintDetailPage() {
               autoFocus
               className="flex-1"
             />
-            <button onClick={handleAddTask} className="px-4 py-2.5 rounded-lg bg-moss-500 text-white text-body-sm font-semibold hover:bg-moss-600 transition-colors">
+            <button onClick={handleAddTask} className="px-4 py-2.5 rounded-lg bg-brand-500 text-white text-body-sm font-semibold hover:bg-brand-600 transition-colors">
               Criar
             </button>
           </div>
@@ -212,7 +212,7 @@ export default function SprintDetailPage() {
                 key={task.id}
                 className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 group ${
                   task.done
-                    ? "bg-moss-50/50"
+                    ? "bg-brand-50/50"
                     : isOverdue
                     ? "bg-clay-50/50 border border-clay-200"
                     : "bg-cream-50 hover:bg-cream-100"
@@ -223,9 +223,9 @@ export default function SprintDetailPage() {
                   className="flex-shrink-0 transition-transform hover:scale-110"
                 >
                   {task.done ? (
-                    <CheckCircle className="w-5 h-5 text-moss-500" />
+                    <CheckCircle className="w-5 h-5 text-brand-500" />
                   ) : (
-                    <Circle className="w-5 h-5 text-cream-500 hover:text-moss-400 transition-colors" />
+                    <Circle className="w-5 h-5 text-cream-500 hover:text-brand-400 transition-colors" />
                   )}
                 </button>
                 <span className={`flex-1 text-body-sm transition-all duration-200 ${task.done ? "text-text-muted line-through" : "text-text-primary"}`}>
@@ -253,9 +253,9 @@ export default function SprintDetailPage() {
       </div>
 
       {/* Impact Card */}
-      <div className="card-surface p-6 border-l-4 border-moss-500">
+      <div className="card-surface p-6 border-l-4 border-brand-500">
         <div className="flex items-start gap-3">
-          <TrendingUp className="w-5 h-5 text-moss-500 mt-0.5 flex-shrink-0" />
+          <TrendingUp className="w-5 h-5 text-brand-500 mt-0.5 flex-shrink-0" />
           <div>
             <h4 className="font-heading font-semibold text-text-primary">Impacto Projetado</h4>
             <p className="text-body-sm text-text-secondary mt-1">

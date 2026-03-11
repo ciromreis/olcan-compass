@@ -42,7 +42,7 @@ export default function MessageThreadPage() {
           icon={MessageSquare}
           title="Conversa não encontrada"
           description="Esta conversa não está mais disponível."
-          action={<button onClick={() => router.push("/marketplace/messages")} className="px-4 py-2 rounded-lg bg-moss-500 text-white text-body-sm font-semibold hover:bg-moss-600 transition-colors">Voltar às mensagens</button>}
+          action={<button onClick={() => router.push("/marketplace/messages")} className="px-4 py-2 rounded-lg bg-brand-500 text-white text-body-sm font-semibold hover:bg-brand-600 transition-colors">Voltar às mensagens</button>}
         />
       </div>
     );
@@ -93,12 +93,12 @@ export default function MessageThreadPage() {
       <PageHeader backHref="/marketplace/messages" title={conversation.providerName} subtitle={provider ? provider.specialties.map((s) => CATEGORY_LABELS[s]).join(" · ") : "Conversa ativa"} />
 
       <div className="flex items-center gap-3 mb-4 pb-4 border-b border-cream-300">
-        <div className="w-10 h-10 rounded-full bg-moss-50 flex items-center justify-center flex-shrink-0 text-moss-500 font-heading font-bold text-body-sm">{conversation.providerName.split(" ").map((n) => n[0]).join("").slice(0, 2)}</div>
+        <div className="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center flex-shrink-0 text-brand-500 font-heading font-bold text-body-sm">{conversation.providerName.split(" ").map((n) => n[0]).join("").slice(0, 2)}</div>
         <div className="flex-1">
           <p className="font-heading font-semibold text-text-primary">{conversation.providerName}</p>
           <p className="text-caption text-text-muted">{provider ? provider.specialties.map((s) => CATEGORY_LABELS[s]).join(" · ") : "Profissional do marketplace"}</p>
         </div>
-        <div className="flex items-center gap-1 text-caption text-moss-500">
+        <div className="flex items-center gap-1 text-caption text-brand-500">
           <Shield className="w-3 h-3" /> Escrow ativo
         </div>
       </div>
@@ -109,9 +109,9 @@ export default function MessageThreadPage() {
           return (
             <div key={msg.id} className={`flex gap-3 ${isUser ? "justify-end" : ""}`}>
               {!isUser && (
-                <div className="w-8 h-8 rounded-full bg-moss-50 flex items-center justify-center flex-shrink-0 text-moss-500 font-bold text-caption">{conversation.providerName.split(" ").map((n) => n[0]).join("").slice(0, 2)}</div>
+                <div className="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center flex-shrink-0 text-brand-500 font-bold text-caption">{conversation.providerName.split(" ").map((n) => n[0]).join("").slice(0, 2)}</div>
               )}
-              <div className={`max-w-[75%] p-4 rounded-xl ${isUser ? "bg-moss-500 text-white" : "card-surface"}`}>
+              <div className={`max-w-[75%] p-4 rounded-xl ${isUser ? "bg-brand-500 text-white" : "card-surface"}`}>
                 {msg.content ? (
                   <p className={`text-body-sm ${isUser ? "text-white" : "text-text-primary"}`}>{msg.content}</p>
                 ) : null}
@@ -121,17 +121,17 @@ export default function MessageThreadPage() {
                       <div
                         key={attachment.id}
                         className={`flex items-center gap-2 rounded-lg px-3 py-2 text-caption ${
-                          isUser ? "bg-moss-600 text-moss-50" : "bg-cream-100 text-text-secondary"
+                          isUser ? "bg-brand-600 text-brand-50" : "bg-cream-100 text-text-secondary"
                         }`}
                       >
                         <FileText className="w-3.5 h-3.5 flex-shrink-0" />
                         <span className="truncate">{attachment.name}</span>
-                        <span className={`${isUser ? "text-moss-100" : "text-text-muted"}`}>{formatFileSize(attachment.size)}</span>
+                        <span className={`${isUser ? "text-brand-100" : "text-text-muted"}`}>{formatFileSize(attachment.size)}</span>
                       </div>
                     ))}
                   </div>
                 )}
-                <p className={`text-[10px] mt-1 ${isUser ? "text-moss-200" : "text-text-muted"}`}>{new Date(msg.timestamp).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</p>
+                <p className={`text-[10px] mt-1 ${isUser ? "text-brand-200" : "text-text-muted"}`}>{new Date(msg.timestamp).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</p>
               </div>
               {isUser && (
                 <div className="w-8 h-8 rounded-full bg-cream-200 flex items-center justify-center flex-shrink-0"><User className="w-4 h-4 text-text-muted" /></div>
@@ -166,7 +166,7 @@ export default function MessageThreadPage() {
           placeholder={attachments.length > 0 ? "Adicione contexto para acompanhar os anexos..." : "Escreva sua mensagem..."}
           className="flex-1"
         />
-        <button onClick={handleSend} className="px-4 py-3 rounded-xl bg-moss-500 text-white hover:bg-moss-600 transition-colors">
+        <button onClick={handleSend} className="px-4 py-3 rounded-xl bg-brand-500 text-white hover:bg-brand-600 transition-colors">
           <Send className="w-5 h-5" />
         </button>
       </div>

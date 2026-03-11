@@ -249,7 +249,7 @@ export default function DashboardPage() {
       <div className="flex items-end justify-between gap-4">
         <div>
           <h1 className="font-heading text-h2 text-text-primary">
-            {getGreeting()}, <span className="text-moss-500">{firstName}</span>
+            {getGreeting()}, <span className="text-brand-500">{firstName}</span>
           </h1>
           <p className="text-body text-text-secondary mt-1">
             Aqui está o panorama da sua jornada de mobilidade.
@@ -257,7 +257,7 @@ export default function DashboardPage() {
         </div>
         <Link
           href="/readiness"
-          className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-moss-50 text-moss-600 text-body-sm font-heading font-semibold hover:bg-moss-100 transition-colors"
+          className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-50 text-brand-600 text-body-sm font-heading font-semibold hover:bg-brand-100 transition-colors"
         >
           <Gauge className="w-4 h-4" />
           Ver Prontidão
@@ -265,15 +265,15 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1.4fr,1fr,1fr]">
-        <div className="card-surface p-6 border border-moss-200/70 bg-gradient-to-br from-white to-moss-50/40">
-          <div className="flex items-center gap-2 mb-3 text-moss-500">
+        <div className="card-surface p-6 border border-brand-200/70 bg-gradient-to-br from-white to-brand-50/40">
+          <div className="flex items-center gap-2 mb-3 text-brand-500">
             <Compass className="w-4 h-4" />
             <p className="text-caption font-heading font-semibold uppercase tracking-wider">Etapa da jornada</p>
           </div>
           <h2 className="font-heading text-h3 text-text-primary">{lifecycle.label}</h2>
           <p className="mt-2 text-body text-text-secondary max-w-2xl">{lifecycle.description}</p>
           <p className="mt-3 text-body-sm text-text-muted">{lifecycle.progressLabel}</p>
-          <Link href={lifecycle.href} className="mt-5 inline-flex items-center gap-2 text-body-sm font-semibold text-moss-600 hover:text-moss-700 transition-colors">
+          <Link href={lifecycle.href} className="mt-5 inline-flex items-center gap-2 text-body-sm font-semibold text-brand-600 hover:text-brand-700 transition-colors">
             {lifecycle.cta}
             <ArrowRight className="w-4 h-4" />
           </Link>
@@ -286,7 +286,7 @@ export default function DashboardPage() {
             <p className="text-body-sm font-heading font-semibold text-text-primary">{card.title}</p>
             <p className="mt-2 text-body-sm text-text-secondary">{card.description}</p>
             <p className="mt-3 text-caption text-text-muted">{card.meta}</p>
-            <span className="mt-4 inline-flex items-center gap-1 text-caption font-semibold text-moss-600">
+            <span className="mt-4 inline-flex items-center gap-1 text-caption font-semibold text-brand-600">
               {card.cta}
               <ArrowRight className="w-3.5 h-3.5" />
             </span>
@@ -295,12 +295,12 @@ export default function DashboardPage() {
       </div>
 
       {/* Next Domino — Primary Action Card */}
-      <div className="card-surface p-6 lg:p-8 border-l-4 border-moss-500 relative overflow-hidden noise-overlay">
+      <div className="card-surface p-6 lg:p-8 border-l-4 border-brand-500 relative overflow-hidden noise-overlay">
         <div className="flex flex-col sm:flex-row items-start justify-between gap-6 relative z-10">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="w-4 h-4 text-moss-400" />
-              <p className="text-caption font-heading font-semibold uppercase tracking-wider text-moss-400">
+              <Sparkles className="w-4 h-4 text-brand-400" />
+              <p className="text-caption font-heading font-semibold uppercase tracking-wider text-brand-400">
                 Próximo Dominó
               </p>
             </div>
@@ -313,7 +313,7 @@ export default function DashboardPage() {
           </div>
           <Link
             href={domino.href}
-            className="flex-shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors shadow-sm"
+            className="flex-shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors shadow-sm"
           >
             {domino.cta}
             <ArrowRight className="w-4 h-4" />
@@ -326,8 +326,8 @@ export default function DashboardPage() {
         {/* Certainty Score */}
         <div className="card-surface p-6 group hover:-translate-y-0.5 transition-transform">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-moss-50 flex items-center justify-center group-hover:bg-moss-100 transition-colors">
-              <Target className="w-5 h-5 text-moss-500" />
+            <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center group-hover:bg-brand-100 transition-colors">
+              <Target className="w-5 h-5 text-brand-500" />
             </div>
             <div>
               <p className="text-body-sm font-heading font-semibold text-text-secondary">
@@ -397,7 +397,7 @@ export default function DashboardPage() {
         <div className="lg:col-span-3 card-surface p-6">
           <div className="flex items-center justify-between mb-5">
             <h3 className="font-heading text-h4 text-text-primary">Próximos Passos</h3>
-            <Link href="/sprints" className="text-caption text-moss-500 hover:text-moss-600 font-medium transition-colors">
+            <Link href="/sprints" className="text-caption text-brand-500 hover:text-brand-600 font-medium transition-colors">
               Ver tudo →
             </Link>
           </div>
@@ -441,7 +441,7 @@ export default function DashboardPage() {
           <h3 className="font-heading text-h4 text-text-primary">Ações Rápidas</h3>
           <div className="space-y-3">
             {[
-              { icon: Route, label: "Explorar Rotas", href: "/routes", description: `${routes.length} rotas ativas`, color: "bg-moss-50 text-moss-500" },
+              { icon: Route, label: "Explorar Rotas", href: "/routes", description: `${routes.length} rotas ativas`, color: "bg-brand-50 text-brand-500" },
               { icon: FileEdit, label: "Forge", href: "/forge", description: `${forgeStats.total} docs · Score ${forgeStats.avgScore || "—"}`, color: "bg-sage-50 text-sage-500" },
               { icon: MessageSquare, label: "Simular Entrevista", href: "/interviews/new", description: `Score médio: ${interviewStats.avgScore || "—"}`, color: "bg-blue-50 text-blue-500" },
               { icon: Zap, label: "Sprints", href: "/sprints", description: `${pendingTasks} tarefas pendentes`, color: "bg-amber-50 text-amber-500" },

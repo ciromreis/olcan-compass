@@ -8,7 +8,7 @@ import { PageHeader, Skeleton, EmptyState } from "@/components/ui";
 
 const ESCROW_LABELS: Record<EscrowStatus, { label: string; color: string }> = {
   pending: { label: "Aguardando pagamento", color: "text-text-muted" },
-  held: { label: "Retido em escrow", color: "text-moss-500" },
+  held: { label: "Retido em escrow", color: "text-brand-500" },
   released: { label: "Liberado", color: "text-sage-500" },
   refunded: { label: "Reembolsado", color: "text-clay-400" },
 };
@@ -33,18 +33,18 @@ export default function EscrowDashboardPage() {
     <div className="max-w-4xl mx-auto space-y-6">
       <PageHeader backHref="/marketplace" title="Escrow" subtitle="Gerencie seus pagamentos com segurança" />
 
-      <div className="card-surface p-6 bg-gradient-to-r from-moss-50 to-cream-100">
+      <div className="card-surface p-6 bg-gradient-to-r from-brand-50 to-cream-100">
         <div className="flex items-center gap-3">
-          <Shield className="w-6 h-6 text-moss-500" />
+          <Shield className="w-6 h-6 text-brand-500" />
           <p className="text-body text-text-secondary">Todos os pagamentos são protegidos por escrow. O valor só é liberado ao profissional após sua aprovação.</p>
         </div>
       </div>
 
       <div className="grid md:grid-cols-3 gap-4">
         <div className="card-surface p-5 text-center">
-          <DollarSign className="w-5 h-5 text-moss-500 mx-auto mb-1" />
+          <DollarSign className="w-5 h-5 text-brand-500 mx-auto mb-1" />
           <p className="text-caption text-text-muted">Retido em Escrow</p>
-          <p className="font-heading text-h2 text-moss-500">R$ {totalHeld.toLocaleString("pt-BR")}</p>
+          <p className="font-heading text-h2 text-brand-500">R$ {totalHeld.toLocaleString("pt-BR")}</p>
         </div>
         <div className="card-surface p-5 text-center">
           <CheckCircle className="w-5 h-5 text-sage-500 mx-auto mb-1" />
@@ -68,7 +68,7 @@ export default function EscrowDashboardPage() {
               const st = ESCROW_LABELS[tx.escrow] ?? ESCROW_LABELS.pending;
               return (
                 <div key={tx.id} className="flex items-center gap-4 p-4 rounded-lg bg-cream-50">
-                  <div className="w-10 h-10 rounded-full bg-moss-50 flex items-center justify-center flex-shrink-0 text-moss-500 font-heading font-bold text-caption">
+                  <div className="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center flex-shrink-0 text-brand-500 font-heading font-bold text-caption">
                     {tx.providerName.split(" ").map((n) => n[0]).join("").slice(0, 2)}
                   </div>
                   <div className="flex-1 min-w-0">

@@ -23,7 +23,7 @@ export default function DocumentPreviewModal({
       <div className="relative bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[80vh] flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-cream-300">
           <div className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-moss-500" />
+            <FileText className="w-5 h-5 text-brand-500" />
             <h2 className="font-heading text-h4 text-text-primary">{title}</h2>
           </div>
           <div className="flex items-center gap-2">

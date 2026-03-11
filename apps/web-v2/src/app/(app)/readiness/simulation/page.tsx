@@ -20,16 +20,16 @@ export default function SimulationPage() {
 
       <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-6">
         <div className="card-surface p-6">
-          <h3 className="font-heading text-h4 text-text-primary mb-4 flex items-center gap-2"><Calculator className="w-5 h-5 text-moss-500" /> Variáveis</h3>
+          <h3 className="font-heading text-h4 text-text-primary mb-4 flex items-center gap-2"><Calculator className="w-5 h-5 text-brand-500" /> Variáveis</h3>
           <div className="space-y-5">
             <div>
               <label className="block text-body-sm font-medium text-text-primary mb-1.5">Economia mensal (BRL)</label>
-              <input type="range" min="500" max="10000" step="500" value={saving} onChange={(e) => setSaving(e.target.value)} className="w-full accent-moss-500" />
+              <input type="range" min="500" max="10000" step="500" value={saving} onChange={(e) => setSaving(e.target.value)} className="w-full accent-brand-500" />
               <div className="flex justify-between text-caption text-text-muted mt-1"><span>R$ 500</span><span className="font-bold text-text-primary">R$ {Number(saving).toLocaleString("pt-BR")}</span><span>R$ 10.000</span></div>
             </div>
             <div>
               <label className="block text-body-sm font-medium text-text-primary mb-1.5">Meses até embarque</label>
-              <input type="range" min="1" max="24" step="1" value={months} onChange={(e) => setMonths(e.target.value)} className="w-full accent-moss-500" />
+              <input type="range" min="1" max="24" step="1" value={months} onChange={(e) => setMonths(e.target.value)} className="w-full accent-brand-500" />
               <div className="flex justify-between text-caption text-text-muted mt-1"><span>1</span><span className="font-bold text-text-primary">{months} meses</span><span>24</span></div>
             </div>
             <div>
@@ -46,7 +46,7 @@ export default function SimulationPage() {
           <div className="grid grid-cols-3 gap-4 text-center mb-6">
             <div className="rounded-xl bg-cream-50 border border-cream-300 p-4">
               <p className="text-caption text-text-muted mb-1">Acumulado Projetado</p>
-              <p className="font-heading text-h2 text-moss-500">R$ {projected.toLocaleString("pt-BR")}</p>
+              <p className="font-heading text-h2 text-brand-500">R$ {projected.toLocaleString("pt-BR")}</p>
             </div>
             <div className="rounded-xl bg-cream-50 border border-cream-300 p-4">
               <p className="text-caption text-text-muted mb-1">Meta (6 meses no destino)</p>
@@ -54,7 +54,7 @@ export default function SimulationPage() {
             </div>
             <div className="rounded-xl bg-cream-50 border border-cream-300 p-4">
               <p className="text-caption text-text-muted mb-1">Cobertura</p>
-              <p className={`font-heading text-h2 ${coverage >= 100 ? "text-moss-500" : "text-clay-500"}`}>{coverage}%</p>
+              <p className={`font-heading text-h2 ${coverage >= 100 ? "text-brand-500" : "text-clay-500"}`}>{coverage}%</p>
             </div>
           </div>
           <Progress value={coverage} size="md" showLabel label="Cobertura da meta" variant={coverage >= 100 ? "moss" : "clay"} />
@@ -64,12 +64,12 @@ export default function SimulationPage() {
 
           <div className="mt-5 grid grid-cols-2 gap-3">
             <div className="rounded-xl bg-cream-50 border border-cream-300 p-4">
-              <div className="flex items-center gap-2 mb-1"><Wallet className="w-4 h-4 text-moss-500" /><span className="text-caption text-text-muted">Meta alvo</span></div>
+              <div className="flex items-center gap-2 mb-1"><Wallet className="w-4 h-4 text-brand-500" /><span className="text-caption text-text-muted">Meta alvo</span></div>
               <p className="font-heading text-h4 text-text-primary">R$ {target.toLocaleString("pt-BR")}</p>
             </div>
             <div className="rounded-xl bg-cream-50 border border-cream-300 p-4">
-              <div className="flex items-center gap-2 mb-1"><TrendingUp className="w-4 h-4 text-moss-500" /><span className="text-caption text-text-muted">Folga / déficit</span></div>
-              <p className={`font-heading text-h4 ${projected >= target ? "text-moss-500" : "text-clay-500"}`}>R$ {Math.abs(projected - target).toLocaleString("pt-BR")}</p>
+              <div className="flex items-center gap-2 mb-1"><TrendingUp className="w-4 h-4 text-brand-500" /><span className="text-caption text-text-muted">Folga / déficit</span></div>
+              <p className={`font-heading text-h4 ${projected >= target ? "text-brand-500" : "text-clay-500"}`}>R$ {Math.abs(projected - target).toLocaleString("pt-BR")}</p>
             </div>
           </div>
         </div>

@@ -11,7 +11,7 @@ import { downloadFile } from "@/lib/file-export";
 
 const ESCROW_LABELS: Record<EscrowStatus, { label: string; color: string }> = {
   pending: { label: "Pendente", color: "text-text-muted" },
-  held: { label: "Retido", color: "text-moss-500" },
+  held: { label: "Retido", color: "text-brand-500" },
   released: { label: "Liberado", color: "text-sage-500" },
   refunded: { label: "Reembolsado", color: "text-clay-500" },
 };
@@ -42,7 +42,7 @@ export default function BookingDetailPage() {
   if (!booking) {
     return (
       <div className="max-w-3xl mx-auto">
-        <EmptyState icon={Briefcase} title="Contratação não encontrada" action={<button onClick={() => router.push("/marketplace/bookings")} className="px-4 py-2 rounded-lg bg-moss-500 text-white text-body-sm font-semibold hover:bg-moss-600 transition-colors">Voltar às Contratações</button>} />
+        <EmptyState icon={Briefcase} title="Contratação não encontrada" action={<button onClick={() => router.push("/marketplace/bookings")} className="px-4 py-2 rounded-lg bg-brand-500 text-white text-body-sm font-semibold hover:bg-brand-600 transition-colors">Voltar às Contratações</button>} />
       </div>
     );
   }
@@ -156,7 +156,7 @@ export default function BookingDetailPage() {
           <div className="absolute left-3 top-0 bottom-0 w-px bg-cream-400" />
           {steps.map((s) => (
             <div key={s.step} className="relative pb-5 last:pb-0">
-              <div className={`absolute left-[-21px] w-3 h-3 rounded-full ${s.done ? "bg-moss-500" : "bg-cream-400"}`} />
+              <div className={`absolute left-[-21px] w-3 h-3 rounded-full ${s.done ? "bg-brand-500" : "bg-cream-400"}`} />
               <div className="flex items-center justify-between">
                 <p className={`text-body-sm ${s.done ? "text-text-primary" : "text-text-muted"}`}>{s.step}</p>
                 <span className="text-caption text-text-muted">{s.date}</span>
@@ -173,7 +173,7 @@ export default function BookingDetailPage() {
             {sharedDeliverables.map((deliverable) => (
               <div key={deliverable.id} className="flex items-center justify-between rounded-lg bg-cream-50 p-4 gap-4">
                 <div className="flex items-center gap-3 min-w-0">
-                  <FileText className="w-5 h-5 text-moss-500 flex-shrink-0" />
+                  <FileText className="w-5 h-5 text-brand-500 flex-shrink-0" />
                   <div className="min-w-0">
                     <p className="text-body-sm font-medium text-text-primary truncate">{deliverable.name}</p>
                     <p className="text-caption text-text-muted">
@@ -208,7 +208,7 @@ export default function BookingDetailPage() {
           <button onClick={handleMessage} className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-cream-500 text-text-secondary font-medium hover:bg-cream-200 transition-colors">
             <MessageSquare className="w-4 h-4" /> Enviar Mensagem
           </button>
-          <button onClick={() => setCompleteOpen(true)} className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-moss-500 text-white font-heading font-semibold hover:bg-moss-600 transition-colors">
+          <button onClick={() => setCompleteOpen(true)} className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 transition-colors">
             <CheckCircle className="w-4 h-4" /> Aprovar e Liberar Escrow
           </button>
           <button onClick={() => setCancelOpen(true)} className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-clay-300 text-clay-500 font-medium hover:bg-clay-50 transition-colors">
@@ -233,7 +233,7 @@ export default function BookingDetailPage() {
               </button>
             ))}
           </div>
-          <button onClick={handleRate} disabled={selectedRating === 0} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-moss-500 text-white text-body-sm font-semibold hover:bg-moss-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          <button onClick={handleRate} disabled={selectedRating === 0} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-500 text-white text-body-sm font-semibold hover:bg-brand-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             Enviar Avaliação
           </button>
         </div>

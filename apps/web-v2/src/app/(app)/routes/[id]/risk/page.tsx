@@ -103,7 +103,7 @@ export default function RiskAnalysisPage() {
                 <p className="text-body-sm text-text-secondary mb-3">{risk.description}</p>
                 <div className="p-3 rounded-lg bg-cream-100">
                   <p className="text-body-sm text-text-primary flex items-start gap-2">
-                    <Shield className="w-4 h-4 text-moss-500 mt-0.5 flex-shrink-0" />
+                    <Shield className="w-4 h-4 text-brand-500 mt-0.5 flex-shrink-0" />
                     <span><strong>Mitigação:</strong> {risk.mitigation}</span>
                   </p>
                 </div>

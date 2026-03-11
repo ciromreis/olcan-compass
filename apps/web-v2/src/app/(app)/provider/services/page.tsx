@@ -25,17 +25,17 @@ export default function ProviderServicesPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <PageHeader backHref="/provider" title="Meus Serviços" subtitle={`${services.length} serviços cadastrados no Marketplace`} actions={
-        <Button className="flex items-center gap-1 bg-moss-500 text-white"><Plus className="w-4 h-4" /> Novo Serviço</Button>
+        <Button className="flex items-center gap-1 bg-brand-500 text-white"><Plus className="w-4 h-4" /> Novo Serviço</Button>
       }/>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {services.length > 0 ? services.map((s) => (
           <div key={s.id} className="card-surface p-5 flex flex-col group hover:-translate-y-1 transition-transform border border-cream-300">
             <div className="flex justify-between items-start mb-4">
-              <span className={`text-caption px-3 py-1 rounded-full font-medium ${s.status === 'active' ? 'bg-moss-50 text-moss-600' : 'bg-clay-50 text-clay-600'}`}>
+              <span className={`text-caption px-3 py-1 rounded-full font-medium ${s.status === 'active' ? 'bg-brand-50 text-brand-600' : 'bg-clay-50 text-clay-600'}`}>
                 {s.status === 'active' ? 'Ativo' : 'Pausado'}
               </span>
-              <button className="text-text-muted hover:text-moss-500 transition-colors p-1"><Settings className="w-5 h-5" /></button>
+              <button className="text-text-muted hover:text-brand-500 transition-colors p-1"><Settings className="w-5 h-5" /></button>
             </div>
             
             <h3 className="font-heading text-h4 text-text-primary mb-1">{s.title}</h3>
@@ -44,7 +44,7 @@ export default function ProviderServicesPage() {
             <div className="mt-auto space-y-2">
               <div className="flex items-center justify-between text-body-sm text-text-primary">
                 <span className="flex items-center gap-2"><DollarSign className="w-4 h-4 text-text-muted" /> Preço Base</span>
-                <span className="font-medium text-moss-600">R$ {s.price.toFixed(2)}</span>
+                <span className="font-medium text-brand-600">R$ {s.price.toFixed(2)}</span>
               </div>
               <div className="flex items-center justify-between text-body-sm text-text-primary">
                 <span className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-text-muted" /> Vendas Realizadas</span>

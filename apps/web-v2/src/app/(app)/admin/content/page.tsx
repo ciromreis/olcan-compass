@@ -57,10 +57,10 @@ export default function AdminContentPage() {
 
       <div className="card-surface p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-heading text-h4 text-text-primary flex items-center gap-2"><FileText className="w-5 h-5 text-moss-500" /> Templates do Forge</h3>
+          <h3 className="font-heading text-h4 text-text-primary flex items-center gap-2"><FileText className="w-5 h-5 text-brand-500" /> Templates do Forge</h3>
           <button
             onClick={() => toast({ title: "Fluxo integrado", description: "Crie novos templates diretamente no Forge.", variant: "info" })}
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-moss-500 text-white text-caption font-medium hover:bg-moss-600 transition-colors"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-brand-500 text-white text-caption font-medium hover:bg-brand-600 transition-colors"
           >
             <Plus className="w-3 h-3" /> Novo
           </button>
@@ -83,7 +83,7 @@ export default function AdminContentPage() {
           <h3 className="font-heading text-h4 text-text-primary flex items-center gap-2"><MessageSquare className="w-5 h-5 text-clay-500" /> Banco de Perguntas</h3>
           <button
             onClick={() => toast({ title: "Fluxo integrado", description: "As categorias seguem o Interview Engine; ajuste via configuração de domínio.", variant: "info" })}
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-moss-500 text-white text-caption font-medium hover:bg-moss-600 transition-colors"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-brand-500 text-white text-caption font-medium hover:bg-brand-600 transition-colors"
           >
             <Plus className="w-3 h-3" /> Nova Categoria
           </button>

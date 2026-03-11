@@ -120,7 +120,7 @@ export default function ManageSubscriptionPage() {
             </div>
             <button
               onClick={() => setEditingPayment((current) => !current)}
-              className="inline-flex items-center gap-1 text-body-sm text-moss-500 font-medium hover:underline"
+              className="inline-flex items-center gap-1 text-body-sm text-brand-500 font-medium hover:underline"
             >
               <PencilLine className="w-4 h-4" /> {editingPayment ? "Fechar" : "Alterar"}
             </button>
@@ -153,7 +153,7 @@ export default function ManageSubscriptionPage() {
               </div>
               <div className="flex items-center gap-4">
                 <span className="text-body-sm font-medium text-text-primary">{formatMoney(inv.amount)}</span>
-                <span className={`text-caption font-medium ${inv.status === "paid" ? "text-moss-500" : inv.status === "pending" ? "text-amber-500" : "text-text-muted"}`}>
+                <span className={`text-caption font-medium ${inv.status === "paid" ? "text-brand-500" : inv.status === "pending" ? "text-amber-500" : "text-text-muted"}`}>
                   {inv.status === "paid" ? "Pago" : inv.status === "pending" ? "Pendente" : "Sem cobrança"}
                 </span>
                 <button
@@ -187,7 +187,7 @@ export default function ManageSubscriptionPage() {
                 variant: "success",
               });
             }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-moss-300 text-moss-500 text-body-sm font-medium hover:bg-moss-50 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-brand-300 text-brand-500 text-body-sm font-medium hover:bg-brand-50 transition-colors"
           >
             <RotateCcw className="w-4 h-4" /> Reativar assinatura
           </button>

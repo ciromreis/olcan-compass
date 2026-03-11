@@ -47,19 +47,19 @@ export function CommunityFeedFilters({
           className="flex-1"
         />
         <div className="flex flex-wrap gap-2">
-          <select value={typeFilter} onChange={(event) => onTypeFilterChange(event.target.value as FeedFilter)} className="rounded-lg border border-cream-500 bg-white px-4 py-2.5 text-body-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-moss-400">
+          <select value={typeFilter} onChange={(event) => onTypeFilterChange(event.target.value as FeedFilter)} className="rounded-lg border border-cream-500 bg-white px-4 py-2.5 text-body-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-400">
             <option value="all">Todos os tipos</option>
             {Object.entries(typeLabels).map(([value, label]) => (
               <option key={value} value={value}>{label}</option>
             ))}
           </select>
-          <select value={topicFilter} onChange={(event) => onTopicFilterChange(event.target.value as CommunityItemTopic | "all")} className="rounded-lg border border-cream-500 bg-white px-4 py-2.5 text-body-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-moss-400">
+          <select value={topicFilter} onChange={(event) => onTopicFilterChange(event.target.value as CommunityItemTopic | "all")} className="rounded-lg border border-cream-500 bg-white px-4 py-2.5 text-body-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-400">
             <option value="all">Todos os temas</option>
             {Object.entries(topicLabels).map(([value, label]) => (
               <option key={value} value={value}>{label}</option>
             ))}
           </select>
-          <select value={engineFilter} onChange={(event) => onEngineFilterChange(event.target.value as EngineFilter)} className="rounded-lg border border-cream-500 bg-white px-4 py-2.5 text-body-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-moss-400">
+          <select value={engineFilter} onChange={(event) => onEngineFilterChange(event.target.value as EngineFilter)} className="rounded-lg border border-cream-500 bg-white px-4 py-2.5 text-body-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-400">
             <option value="all">Todas as origens</option>
             {Object.entries(engineLabels).map(([value, label]) => (
               <option key={value} value={value}>{label}</option>

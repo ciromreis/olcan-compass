@@ -11,9 +11,9 @@ import { daysUntil } from "@/lib/format";
 
 const STATUS_MAP: Record<AppStatus, { label: string; color: string; icon: typeof CheckCircle }> = {
   draft: { label: "Rascunho", color: "text-text-muted", icon: Circle },
-  in_progress: { label: "Em andamento", color: "text-moss-500", icon: Clock },
+  in_progress: { label: "Em andamento", color: "text-brand-500", icon: Clock },
   submitted: { label: "Enviada", color: "text-sage-500", icon: Send },
-  accepted: { label: "Aceita", color: "text-moss-600", icon: CheckCircle },
+  accepted: { label: "Aceita", color: "text-brand-600", icon: CheckCircle },
   rejected: { label: "Rejeitada", color: "text-clay-500", icon: AlertTriangle },
   waitlisted: { label: "Lista de espera", color: "text-amber-500", icon: Clock },
 };
@@ -68,7 +68,7 @@ export default function ApplicationsListPage() {
           <h1 className="font-heading text-h2 text-text-primary">Candidaturas</h1>
           <p className="text-body text-text-secondary mt-1">Gerencie suas aplicações para programas, bolsas e vagas</p>
         </div>
-        <Link href="/applications/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors">
+        <Link href="/applications/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
           <Plus className="w-4 h-4" /> Nova Candidatura
         </Link>
       </div>
@@ -96,9 +96,9 @@ export default function ApplicationsListPage() {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <button onClick={() => setStatusFilter("all")} className={`px-3 py-1.5 rounded-full text-body-sm font-medium transition-colors ${statusFilter === "all" ? "bg-moss-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>Todos</button>
+        <button onClick={() => setStatusFilter("all")} className={`px-3 py-1.5 rounded-full text-body-sm font-medium transition-colors ${statusFilter === "all" ? "bg-brand-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>Todos</button>
         {(Object.entries(STATUS_MAP) as [AppStatus, (typeof STATUS_MAP)[AppStatus]][]).map(([status, config]) => (
-          <button key={status} onClick={() => setStatusFilter(status)} className={`px-3 py-1.5 rounded-full text-body-sm font-medium transition-colors ${statusFilter === status ? "bg-moss-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>{config.label}</button>
+          <button key={status} onClick={() => setStatusFilter(status)} className={`px-3 py-1.5 rounded-full text-body-sm font-medium transition-colors ${statusFilter === status ? "bg-brand-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>{config.label}</button>
         ))}
       </div>
 
@@ -114,8 +114,8 @@ export default function ApplicationsListPage() {
             return (
               <Link key={app.id} href={`/applications/${app.id}`} className={`card-surface p-6 group hover:-translate-y-0.5 transition-transform ${isUrgent ? "border-l-4 border-clay-400" : ""}`}>
                 <div className="flex flex-col md:flex-row md:items-center gap-4">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${isUrgent ? "bg-clay-50" : "bg-moss-50"}`}>
-                    <FileCheck className={`w-6 h-6 ${isUrgent ? "text-clay-500" : "text-moss-500"}`} />
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${isUrgent ? "bg-clay-50" : "bg-brand-50"}`}>
+                    <FileCheck className={`w-6 h-6 ${isUrgent ? "text-clay-500" : "text-brand-500"}`} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-heading text-h4 text-text-primary truncate">{app.program}</h3>
@@ -133,7 +133,7 @@ export default function ApplicationsListPage() {
                       <p className="text-body-sm font-bold text-text-primary">{readyDocs}/{app.documents.length} docs</p>
                       <p className="text-caption text-text-muted">Match: {app.match}%</p>
                     </div>
-                    <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-moss-500 transition-colors" />
+                    <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-brand-500 transition-colors" />
                   </div>
                 </div>
               </Link>

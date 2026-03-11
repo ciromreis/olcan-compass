@@ -21,8 +21,8 @@ function Stat({
   delta,
   deltaType = "neutral",
   icon: Icon,
-  iconColor = "text-moss-500",
-  iconBg = "bg-moss-50",
+  iconColor = "text-brand-500",
+  iconBg = "bg-brand-50",
   subtitle,
   className,
 }: StatProps) {

@@ -152,11 +152,11 @@ function SubscriptionCheckoutContent() {
 
           <div className="rounded-xl bg-cream-50 border border-cream-300 p-4 space-y-3">
             <div className="flex items-start gap-3 text-body-sm text-text-secondary">
-              <Shield className="w-4 h-4 mt-0.5 text-moss-500" />
+              <Shield className="w-4 h-4 mt-0.5 text-brand-500" />
               <span>{plan.id === "free" ? "Seu acesso será ajustado imediatamente após a confirmação." : "Dados protegidos por um fluxo seguro de checkout."}</span>
             </div>
             <div className="flex items-start gap-3 text-body-sm text-text-secondary">
-              <Lock className="w-4 h-4 mt-0.5 text-moss-500" />
+              <Lock className="w-4 h-4 mt-0.5 text-brand-500" />
               <span>Você pode ajustar ou cancelar sua assinatura depois em gerenciamento.</span>
             </div>
           </div>
@@ -173,24 +173,24 @@ function SubscriptionCheckoutContent() {
 
         <div className="card-surface p-6 space-y-4 h-fit">
           <h3 className="font-heading text-h4 text-text-primary">Resumo do pedido</h3>
-          <div className="rounded-xl bg-moss-50 p-4 border border-moss-100">
+          <div className="rounded-xl bg-brand-50 p-4 border border-brand-100">
             <p className="text-caption text-text-muted">Plano selecionado</p>
             <p className="font-heading text-h3 text-text-primary mt-1">{plan.name}</p>
-            <p className="font-heading text-h2 text-moss-500 mt-2">{plan.price}</p>
+            <p className="font-heading text-h2 text-brand-500 mt-2">{plan.price}</p>
             <p className="text-body-sm text-text-secondary mt-2">{plan.summary}</p>
           </div>
 
           <div className="space-y-3">
             <div className="flex items-start gap-2 text-body-sm text-text-secondary">
-              <CheckCircle className="w-4 h-4 mt-0.5 text-moss-500" />
+              <CheckCircle className="w-4 h-4 mt-0.5 text-brand-500" />
               <span>{plan.id === "free" ? "Sem renovação recorrente no plano Explorador." : "Renovação mensal com gestão posterior em um clique."}</span>
             </div>
             <div className="flex items-start gap-2 text-body-sm text-text-secondary">
-              <CheckCircle className="w-4 h-4 mt-0.5 text-moss-500" />
+              <CheckCircle className="w-4 h-4 mt-0.5 text-brand-500" />
               <span>{plan.id === "free" ? "Seu downgrade é registrado imediatamente no perfil." : "Upgrade imediato do acesso após confirmação."}</span>
             </div>
             <div className="flex items-start gap-2 text-body-sm text-text-secondary">
-              <CheckCircle className="w-4 h-4 mt-0.5 text-moss-500" />
+              <CheckCircle className="w-4 h-4 mt-0.5 text-brand-500" />
               <span>Histórico e cobrança visíveis na área de gerenciamento.</span>
             </div>
           </div>

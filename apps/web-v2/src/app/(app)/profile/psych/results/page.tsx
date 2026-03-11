@@ -119,7 +119,7 @@ export default function ResultsPage() {
     <div className="space-y-6">
       <div className="card-surface p-8 text-center noise-overlay relative overflow-hidden">
         <div className="relative z-10">
-          <p className="text-caption font-heading font-semibold tracking-widest uppercase text-moss-400 mb-4">Seu Score de Certeza</p>
+          <p className="text-caption font-heading font-semibold tracking-widest uppercase text-brand-400 mb-4">Seu Score de Certeza</p>
           <ProgressRing
             value={overallScore || 63}
             size={160}
@@ -127,7 +127,7 @@ export default function ResultsPage() {
             variant="auto"
             className="mx-auto mb-5"
           >
-            <span className={`font-heading text-display ${overallScore >= 65 ? "text-moss-500" : overallScore >= 40 ? "text-amber-500" : "text-clay-500"}`}>
+            <span className={`font-heading text-display ${overallScore >= 65 ? "text-brand-500" : overallScore >= 40 ? "text-amber-500" : "text-clay-500"}`}>
               <AnimatedScore target={overallScore || 63} />
             </span>
           </ProgressRing>
@@ -152,7 +152,7 @@ export default function ResultsPage() {
                   <span className="text-body-sm text-text-primary flex items-center gap-2">
                     <d.icon className="w-4 h-4 text-text-muted" /> {d.label}
                   </span>
-                  <span className={`text-body-sm font-bold ${d.score >= 65 ? "text-moss-500" : d.score >= 40 ? "text-amber-500" : "text-clay-500"}`}>
+                  <span className={`text-body-sm font-bold ${d.score >= 65 ? "text-brand-500" : d.score >= 40 ? "text-amber-500" : "text-clay-500"}`}>
                     {d.score || "—"}
                   </span>
                 </div>
@@ -183,7 +183,7 @@ export default function ResultsPage() {
             <ul className="space-y-2.5">
               {insights.map((insight, i) => (
                 <li key={i} className="flex items-start gap-2 text-body-sm text-text-secondary">
-                  <span className={`font-bold mt-0.5 flex-shrink-0 ${insight.type === "strength" ? "text-moss-500" : "text-clay-500"}`}>
+                  <span className={`font-bold mt-0.5 flex-shrink-0 ${insight.type === "strength" ? "text-brand-500" : "text-clay-500"}`}>
                     {insight.type === "strength" ? "+" : "!"}
                   </span>
                   {insight.text}
@@ -197,15 +197,15 @@ export default function ResultsPage() {
         </div>
       </div>
 
-      <div className="card-surface p-8 bg-gradient-to-r from-moss-50 to-cream-100 flex flex-col md:flex-row items-center gap-6">
-        <div className="w-14 h-14 rounded-xl bg-moss-100 flex items-center justify-center flex-shrink-0">
-          <RouteIcon className="w-7 h-7 text-moss-500" />
+      <div className="card-surface p-8 bg-gradient-to-r from-brand-50 to-cream-100 flex flex-col md:flex-row items-center gap-6">
+        <div className="w-14 h-14 rounded-xl bg-brand-100 flex items-center justify-center flex-shrink-0">
+          <RouteIcon className="w-7 h-7 text-brand-500" />
         </div>
         <div className="flex-1">
           <h3 className="font-heading text-h3 text-text-primary mb-1">Rota Recomendada</h3>
           <p className="text-body text-text-secondary">Com base no seu perfil, a rota de <strong>{recommendedRoute.label}</strong> tem a maior probabilidade de sucesso dentro do seu prazo e perfil psicológico. {recommendedRoute.description}</p>
         </div>
-        <Link href="/routes" className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors shadow-sm">
+        <Link href="/routes" className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors shadow-sm">
           Explorar Rotas <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
@@ -214,7 +214,7 @@ export default function ResultsPage() {
         <Link href="/profile/psych" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-cream-500 text-text-secondary font-medium hover:bg-cream-200 transition-colors text-body-sm">
           Refazer Diagnóstico
         </Link>
-        <Link href="/dashboard" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-moss-500 text-white font-heading font-semibold hover:bg-moss-600 transition-colors text-body-sm">
+        <Link href="/dashboard" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 transition-colors text-body-sm">
           Voltar ao Painel <ArrowRight className="w-4 h-4" />
         </Link>
       </div>

@@ -28,7 +28,7 @@ export default function SummaryPage() {
           <div className="text-center">
             <ProgressRing value={completionRate} size={136} strokeWidth={10} variant="auto" className="mx-auto mb-4" />
             <div className="flex items-center justify-center gap-2 text-body-sm font-medium text-text-primary">
-              <Brain className="w-4 h-4 text-moss-500" />
+              <Brain className="w-4 h-4 text-brand-500" />
               <span>Diagnóstico psicológico</span>
             </div>
           </div>
@@ -53,12 +53,12 @@ export default function SummaryPage() {
             const done = completedDimensions.includes(d.key);
             return (
               <div key={d.key} className={`flex items-center gap-3 p-3 rounded-lg ${done ? "bg-cream-100" : "bg-cream-50 opacity-60"}`}>
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${done ? "bg-moss-50" : "bg-cream-200"}`}>
-                  <d.icon className={`w-4 h-4 ${done ? "text-moss-500" : "text-text-muted"}`} />
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${done ? "bg-brand-50" : "bg-cream-200"}`}>
+                  <d.icon className={`w-4 h-4 ${done ? "text-brand-500" : "text-text-muted"}`} />
                 </div>
                 <span className="flex-1 text-body-sm font-medium text-text-primary">{d.label}</span>
                 {done ? (
-                  <span className="flex items-center gap-1 text-caption text-moss-500 font-medium">
+                  <span className="flex items-center gap-1 text-caption text-brand-500 font-medium">
                     <CheckCircle className="w-3.5 h-3.5" /> Completado
                   </span>
                 ) : (
@@ -76,7 +76,7 @@ export default function SummaryPage() {
         <Link href="/profile/psych/financial" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-cream-500 text-text-secondary font-medium text-body-sm hover:bg-cream-200 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Voltar
         </Link>
-        <Link href="/profile/psych/results" className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-heading font-semibold text-body-sm transition-colors ${allComplete ? "bg-moss-500 text-white hover:bg-moss-600" : "bg-cream-300 text-text-muted cursor-not-allowed"}`}>
+        <Link href="/profile/psych/results" className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-heading font-semibold text-body-sm transition-colors ${allComplete ? "bg-brand-500 text-white hover:bg-brand-600" : "bg-cream-300 text-text-muted cursor-not-allowed"}`}>
           Ver Resultados <ArrowRight className="w-4 h-4" />
         </Link>
       </div>

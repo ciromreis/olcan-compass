@@ -9,6 +9,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Olcan brand primary
+        brand: tokens.colors.brand,
+        navy: tokens.colors.navy,
+        silver: tokens.colors.silver,
+        // Legacy compatibility
         moss: tokens.colors.moss,
         clay: tokens.colors.clay,
         cream: tokens.colors.cream,
@@ -34,9 +39,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        heading: ["var(--font-heading)", "Plus Jakarta Sans", "sans-serif"],
-        emphasis: ["var(--font-emphasis)", "Cormorant Garamond", "serif"],
-        body: ["var(--font-body)", "Inter", "sans-serif"],
+        heading: ["var(--font-heading)", "Merriweather Sans", "sans-serif"],
+        emphasis: ["var(--font-emphasis)", "Source Sans 3", "sans-serif"],
+        body: ["var(--font-body)", "Source Sans 3", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
       },
       fontSize: {
@@ -111,6 +116,8 @@ const config: Config = {
         spring: tokens.transitions.spring,
       },
       backgroundImage: {
+        "gradient-brand": "linear-gradient(135deg, #001338 0%, #21264D 100%)",
+        "gradient-navy": "linear-gradient(135deg, #0A0D1A 0%, #2C335A 100%)",
         "gradient-moss": "linear-gradient(135deg, #2E4036 0%, #5D8B65 100%)",
         "gradient-clay": "linear-gradient(135deg, #CC5833 0%, #E86B40 100%)",
         "gradient-cream":

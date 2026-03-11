@@ -36,7 +36,7 @@ export default function AdminOrganizationsPage() {
       <div className="flex gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar organização por nome..." className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-transparent" />
+          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar organização por nome..." className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent" />
         </div>
       </div>
 
@@ -59,14 +59,14 @@ export default function AdminOrganizationsPage() {
               {filtered.map((o) => (
                 <tr key={o.id} className="border-b border-cream-200 hover:bg-cream-50 transition-colors">
                   <td className="py-3 px-4 font-medium text-text-primary flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-moss-500" />
+                    <Building2 className="w-4 h-4 text-brand-500" />
                     {o.name}
                   </td>
                   <td className="py-3 px-4 text-text-secondary">{o.type}</td>
                   <td className="py-3 px-4 text-center text-text-secondary">{o.members}</td>
                   <td className="py-3 px-4 text-text-muted">{formatDate(o.joined)}</td>
                   <td className="py-3 px-4">
-                    <span className={`text-caption font-medium ${o.status === "active" ? "text-moss-500" : "text-clay-500"}`}>
+                    <span className={`text-caption font-medium ${o.status === "active" ? "text-brand-500" : "text-clay-500"}`}>
                       {o.status === "active" ? "Ativa" : "Suspensa"}
                     </span>
                   </td>

@@ -52,12 +52,12 @@ export default function TimelinePage() {
           <div className="space-y-8">
             {timeline.map((period) => (
               <div key={period.month} className="relative pl-14">
-                <div className="absolute left-4 top-1 w-4 h-4 rounded-full bg-white border-2 border-moss-500 z-10" />
+                <div className="absolute left-4 top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-500 z-10" />
                 <h3 className="font-heading text-h4 text-text-primary mb-3">{period.month}</h3>
                 <div className="space-y-2">
                   {period.items.map((item) => (
                     <div key={item.id} className="flex items-center gap-2 p-2.5 rounded-lg bg-cream-50">
-                      {item.status === "completed" ? <CheckCircle className="w-4 h-4 text-moss-500 flex-shrink-0" /> : item.status === "in_progress" ? <Clock className="w-4 h-4 text-moss-400 flex-shrink-0" /> : <Circle className="w-4 h-4 text-cream-500 flex-shrink-0" />}
+                      {item.status === "completed" ? <CheckCircle className="w-4 h-4 text-brand-500 flex-shrink-0" /> : item.status === "in_progress" ? <Clock className="w-4 h-4 text-brand-400 flex-shrink-0" /> : <Circle className="w-4 h-4 text-cream-500 flex-shrink-0" />}
                       <span className={`text-body-sm ${item.status === "completed" ? "text-text-muted line-through" : "text-text-primary"}`}>{item.name}</span>
                     </div>
                   ))}

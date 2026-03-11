@@ -33,7 +33,7 @@ export default function ProviderAreaLayout({ children }: { children: React.React
           </p>
           <Link
             href="/dashboard"
-            className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-moss-500 text-white text-body-sm font-semibold hover:bg-moss-600 transition-colors"
+            className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-brand-500 text-white text-body-sm font-semibold hover:bg-brand-600 transition-colors"
           >
             Voltar ao painel
           </Link>

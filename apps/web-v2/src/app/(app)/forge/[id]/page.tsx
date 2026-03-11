@@ -116,7 +116,7 @@ export default function ForgeEditorPage() {
     return (
       <div className="max-w-4xl mx-auto py-12 text-center">
         <p className="text-body text-text-muted mb-4">Documento não encontrado.</p>
-        <Link href="/forge" className="text-moss-500 font-medium hover:underline">← Voltar ao Forge</Link>
+        <Link href="/forge" className="text-brand-500 font-medium hover:underline">← Voltar ao Forge</Link>
       </div>
     );
   }
@@ -180,7 +180,7 @@ export default function ForgeEditorPage() {
                 <span className="flex items-center gap-1 text-amber-500"><Loader2 className="w-3 h-3 animate-spin" /> Salvando...</span>
               )}
               {saveStatus === "saved" && (
-                <span className="flex items-center gap-1 text-moss-500"><CheckCircle className="w-3 h-3" /> Salvo</span>
+                <span className="flex items-center gap-1 text-brand-500"><CheckCircle className="w-3 h-3" /> Salvo</span>
               )}
               {saveStatus === "idle" && hasUnsavedChanges && (
                 <span className="text-amber-500">Alterações não salvas</span>
@@ -197,17 +197,17 @@ export default function ForgeEditorPage() {
             onClick={handleSaveVersion}
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-cream-500 text-text-secondary text-body-sm hover:bg-cream-200 transition-colors"
           >
-            <BookmarkPlus className="w-4 h-4 text-moss-500" /> Salvar Versão
+            <BookmarkPlus className="w-4 h-4 text-brand-500" /> Salvar Versão
           </button>
           <button
             onClick={() => router.push(`/forge/${docId}/analysis`)}
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-cream-500 text-text-secondary text-body-sm hover:bg-cream-200 transition-colors"
           >
-            <Sparkles className="w-4 h-4 text-moss-500" /> Analisar com IA
+            <Sparkles className="w-4 h-4 text-brand-500" /> Analisar com IA
           </button>
           <button
             onClick={handleSave}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-moss-500 text-white text-body-sm font-semibold hover:bg-moss-600 transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-500 text-white text-body-sm font-semibold hover:bg-brand-600 transition-colors"
           >
             <Save className="w-4 h-4" /> Salvar
           </button>
@@ -267,7 +267,7 @@ export default function ForgeEditorPage() {
                   key={btn.action}
                   onClick={() => handleToolbar(btn.action)}
                   title={btn.title}
-                  className={`p-1.5 rounded hover:bg-cream-200 transition-colors ${activeToolbar === btn.action ? "bg-cream-200 text-moss-500" : ""}`}
+                  className={`p-1.5 rounded hover:bg-cream-200 transition-colors ${activeToolbar === btn.action ? "bg-cream-200 text-brand-500" : ""}`}
                 >
                   <btn.icon className="w-4 h-4" />
                 </button>
@@ -281,7 +281,7 @@ export default function ForgeEditorPage() {
                   key={btn.action}
                   onClick={() => handleToolbar(btn.action)}
                   title={btn.title}
-                  className={`p-1.5 rounded hover:bg-cream-200 transition-colors ${activeToolbar === btn.action ? "bg-cream-200 text-moss-500" : ""}`}
+                  className={`p-1.5 rounded hover:bg-cream-200 transition-colors ${activeToolbar === btn.action ? "bg-cream-200 text-brand-500" : ""}`}
                 >
                   <btn.icon className="w-4 h-4" />
                 </button>
@@ -296,7 +296,7 @@ export default function ForgeEditorPage() {
                   key={btn.action}
                   onClick={() => handleToolbar(btn.action)}
                   title={btn.title}
-                  className={`p-1.5 rounded hover:bg-cream-200 transition-colors ${activeToolbar === btn.action ? "bg-cream-200 text-moss-500" : ""}`}
+                  className={`p-1.5 rounded hover:bg-cream-200 transition-colors ${activeToolbar === btn.action ? "bg-cream-200 text-brand-500" : ""}`}
                 >
                   <btn.icon className="w-4 h-4" />
                 </button>
@@ -340,7 +340,7 @@ export default function ForgeEditorPage() {
           <div className="card-surface p-4">
             <h4 className="font-heading text-body-sm font-semibold text-text-primary mb-3">Competitividade</h4>
             <div className="text-center mb-3">
-              <span className={`font-heading text-h2 ${(doc.competitivenessScore || 0) >= 65 ? "text-moss-500" : (doc.competitivenessScore || 0) >= 40 ? "text-amber-500" : "text-clay-500"}`}>
+              <span className={`font-heading text-h2 ${(doc.competitivenessScore || 0) >= 65 ? "text-brand-500" : (doc.competitivenessScore || 0) >= 40 ? "text-amber-500" : "text-clay-500"}`}>
                 {doc.competitivenessScore ?? "—"}
               </span>
               <span className="text-caption text-text-muted">/100</span>
@@ -358,7 +358,7 @@ export default function ForgeEditorPage() {
           {/* AI Suggestions */}
           <div className="card-surface p-4">
             <h4 className="font-heading text-body-sm font-semibold text-text-primary mb-3">
-              <Sparkles className="w-3.5 h-3.5 text-moss-500 inline mr-1" />
+              <Sparkles className="w-3.5 h-3.5 text-brand-500 inline mr-1" />
               Sugestões de IA
             </h4>
             <div className="space-y-2">
@@ -367,7 +367,7 @@ export default function ForgeEditorPage() {
                   key={i}
                   className="p-2.5 rounded-lg bg-cream-50 border border-cream-200 text-caption text-text-secondary flex items-start gap-2"
                 >
-                  <AlertCircle className={`w-3.5 h-3.5 flex-shrink-0 mt-0.5 ${suggestion.priority === "high" ? "text-amber-500" : "text-moss-400"}`} />
+                  <AlertCircle className={`w-3.5 h-3.5 flex-shrink-0 mt-0.5 ${suggestion.priority === "high" ? "text-amber-500" : "text-brand-400"}`} />
                   <span>{suggestion.text}</span>
                 </div>
               ))}

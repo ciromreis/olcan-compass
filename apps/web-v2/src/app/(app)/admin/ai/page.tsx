@@ -41,10 +41,10 @@ export default function AdminAIPage() {
       <PageHeader backHref="/admin" title="IA & Prompts" subtitle={`${activeCount} prompts ativos · ${totalCalls.toLocaleString("pt-BR")} chamadas`} />
 
       <div className="grid sm:grid-cols-4 gap-4">
-        <div className="card-surface p-5"><Zap className="w-5 h-5 text-moss-500 mb-2" /><p className="text-caption text-text-muted">Chamadas/mês</p><p className="font-heading text-h2 text-text-primary">{(totalCalls / 1000).toFixed(1)}k</p></div>
+        <div className="card-surface p-5"><Zap className="w-5 h-5 text-brand-500 mb-2" /><p className="text-caption text-text-muted">Chamadas/mês</p><p className="font-heading text-h2 text-text-primary">{(totalCalls / 1000).toFixed(1)}k</p></div>
         <div className="card-surface p-5"><DollarSign className="w-5 h-5 text-clay-500 mb-2" /><p className="text-caption text-text-muted">Custo/mês</p><p className="font-heading text-h2 text-clay-500">R$ {Math.round(totalCost).toLocaleString("pt-BR")}</p></div>
         <div className="card-surface p-5"><Clock className="w-5 h-5 text-text-muted mb-2" /><p className="text-caption text-text-muted">Latência</p><p className="font-heading text-h2 text-text-primary">{syntheticLatency}s</p></div>
-        <div className="card-surface p-5"><Activity className="w-5 h-5 text-moss-500 mb-2" /><p className="text-caption text-text-muted">Sucesso</p><p className="font-heading text-h2 text-moss-500">{successRate}%</p></div>
+        <div className="card-surface p-5"><Activity className="w-5 h-5 text-brand-500 mb-2" /><p className="text-caption text-text-muted">Sucesso</p><p className="font-heading text-h2 text-brand-500">{successRate}%</p></div>
       </div>
 
       <div className="card-surface p-6">
@@ -59,7 +59,7 @@ export default function AdminAIPage() {
                 variant: "success",
               });
             }}
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-moss-500 text-white text-caption font-medium"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-brand-500 text-white text-caption font-medium"
           >
             <Plus className="w-3 h-3" /> Registrar uso
           </button>
@@ -72,7 +72,7 @@ export default function AdminAIPage() {
                 <p className="text-caption text-text-muted">{p.model} · {p.calls.toLocaleString()} chamadas</p>
               </div>
               <span className="text-body-sm font-bold text-text-primary">R$ {Math.round(p.costBRL).toLocaleString("pt-BR")}</span>
-              <span className={`text-caption font-medium ${p.active ? "text-moss-500" : "text-text-muted"}`}>{p.active ? "Ativo" : "Inativo"}</span>
+              <span className={`text-caption font-medium ${p.active ? "text-brand-500" : "text-text-muted"}`}>{p.active ? "Ativo" : "Inativo"}</span>
               <button onClick={() => togglePromptActive(p.name, actorEmail)} className="p-1.5 rounded hover:bg-cream-200"><Edit className="w-4 h-4 text-text-muted" /></button>
             </div>
           ))}

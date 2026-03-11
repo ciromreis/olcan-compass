@@ -183,7 +183,7 @@ export default function CommunityPage() {
           <p className="text-caption text-text-muted">Itens no ecossistema</p>
         </div>
         <div className="card-surface p-5 text-center">
-          <p className="font-heading text-h2 text-moss-500">{stats.saved}</p>
+          <p className="font-heading text-h2 text-brand-500">{stats.saved}</p>
           <p className="text-caption text-text-muted">Salvos por você</p>
         </div>
         <div className="card-surface p-5 text-center">

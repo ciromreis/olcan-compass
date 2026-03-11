@@ -39,9 +39,9 @@ function useCountdown(targetDate: string) {
 
 const STATUS_CONFIG: Record<AppStatus, { label: string; color: string; bg: string }> = {
   draft: { label: "Rascunho", color: "text-text-muted", bg: "bg-cream-200" },
-  in_progress: { label: "Em andamento", color: "text-moss-500", bg: "bg-moss-50" },
+  in_progress: { label: "Em andamento", color: "text-brand-500", bg: "bg-brand-50" },
   submitted: { label: "Enviada", color: "text-sage-500", bg: "bg-sage-50" },
-  accepted: { label: "Aceita!", color: "text-moss-600", bg: "bg-moss-50" },
+  accepted: { label: "Aceita!", color: "text-brand-600", bg: "bg-brand-50" },
   rejected: { label: "Rejeitada", color: "text-clay-500", bg: "bg-clay-50" },
   waitlisted: { label: "Lista de espera", color: "text-amber-500", bg: "bg-amber-50" },
 };
@@ -88,7 +88,7 @@ export default function ApplicationDetailPage() {
       <div className="max-w-4xl mx-auto text-center py-20">
         <FileCheck className="w-12 h-12 text-text-muted mx-auto mb-4" />
         <h2 className="font-heading text-h3 text-text-primary mb-2">Candidatura não encontrada</h2>
-        <Link href="/applications" className="text-moss-500 font-medium hover:underline">Voltar às candidaturas</Link>
+        <Link href="/applications" className="text-brand-500 font-medium hover:underline">Voltar às candidaturas</Link>
       </div>
     );
   }
@@ -194,11 +194,11 @@ export default function ApplicationDetailPage() {
         </div>
         <div className="card-surface p-4 text-center">
           <p className="text-caption text-text-muted mb-1">Match Score</p>
-          <p className={`font-heading text-h3 ${app.match >= 75 ? "text-moss-500" : "text-amber-500"}`}>{app.match}%</p>
+          <p className={`font-heading text-h3 ${app.match >= 75 ? "text-brand-500" : "text-amber-500"}`}>{app.match}%</p>
         </div>
         <div className="card-surface p-4 text-center">
           <p className="text-caption text-text-muted mb-1">Probabilidade</p>
-          <p className={`font-heading text-h3 ${probabilityScore >= 60 ? "text-moss-500" : "text-amber-500"}`}>{probabilityScore}%</p>
+          <p className={`font-heading text-h3 ${probabilityScore >= 60 ? "text-brand-500" : "text-amber-500"}`}>{probabilityScore}%</p>
         </div>
       </div>
 
@@ -208,15 +208,15 @@ export default function ApplicationDetailPage() {
         <div className="space-y-3">
           {app.documents.map((doc) => (
             <div key={doc.id} className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
-              doc.status === "ready" ? "bg-moss-50/50" : doc.status === "in_progress" ? "bg-cream-100" : "bg-cream-50"
+              doc.status === "ready" ? "bg-brand-50/50" : doc.status === "in_progress" ? "bg-cream-100" : "bg-cream-50"
             }`}>
               <button onClick={() => handleToggleDocument(doc.id, doc.name)} className="flex-shrink-0 hover:scale-110 transition-transform">
                 {doc.status === "ready" ? (
-                  <CheckCircle className="w-5 h-5 text-moss-500" />
+                  <CheckCircle className="w-5 h-5 text-brand-500" />
                 ) : doc.status === "in_progress" ? (
-                  <Pencil className="w-5 h-5 text-moss-400" />
+                  <Pencil className="w-5 h-5 text-brand-400" />
                 ) : (
-                  <Circle className="w-5 h-5 text-cream-500 hover:text-moss-400 transition-colors" />
+                  <Circle className="w-5 h-5 text-cream-500 hover:text-brand-400 transition-colors" />
                 )}
               </button>
               <span className={`flex-1 text-body-sm ${doc.status === "ready" ? "text-text-primary" : "text-text-secondary"}`}>
@@ -224,13 +224,13 @@ export default function ApplicationDetailPage() {
               </span>
               <div className="flex items-center gap-2">
                 {doc.status === "in_progress" && (
-                  <span className="text-caption text-moss-400 font-medium">Em progresso</span>
+                  <span className="text-caption text-brand-400 font-medium">Em progresso</span>
                 )}
                 {doc.forgeLink && (
-                  <Link href={doc.forgeLink} className="text-caption text-moss-500 font-medium hover:underline">Forge</Link>
+                  <Link href={doc.forgeLink} className="text-caption text-brand-500 font-medium hover:underline">Forge</Link>
                 )}
                 {!doc.forgeLink && doc.status === "pending" && (
-                  <button onClick={() => handleMockUpload(doc.name)} className="text-caption text-moss-500 font-medium flex items-center gap-1 hover:underline">
+                  <button onClick={() => handleMockUpload(doc.name)} className="text-caption text-brand-500 font-medium flex items-center gap-1 hover:underline">
                     <Upload className="w-3 h-3" /> Upload
                   </button>
                 )}
@@ -252,7 +252,7 @@ export default function ApplicationDetailPage() {
               className="relative pb-6 last:pb-0 w-full text-left group block"
             >
               <div className={`absolute left-[-21px] w-3 h-3 rounded-full transition-colors ${
-                t.done ? "bg-moss-500" : "bg-cream-400 group-hover:bg-moss-300"
+                t.done ? "bg-brand-500" : "bg-cream-400 group-hover:bg-brand-300"
               }`} />
               <div className="flex items-center justify-between">
                 <p className={`text-body-sm transition-colors ${t.done ? "text-text-primary" : "text-text-muted group-hover:text-text-secondary"}`}>
@@ -288,7 +288,7 @@ export default function ApplicationDetailPage() {
             disabled={!submissionEligibility.eligible || submitting}
             className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-heading font-semibold transition-colors ${
               submissionEligibility.eligible
-                ? "bg-moss-500 text-white hover:bg-moss-600"
+                ? "bg-brand-500 text-white hover:bg-brand-600"
                 : "bg-cream-300 text-text-muted cursor-not-allowed"
             }`}
           >

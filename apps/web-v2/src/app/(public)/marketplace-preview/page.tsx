@@ -27,13 +27,13 @@ export default function MarketplacePreviewPage() {
             </div>
             <h3 className="font-heading text-h4 text-text-primary mb-1">{cat.title}</h3>
             <p className="text-body-sm text-text-secondary mb-3">{cat.description}</p>
-            <p className="text-caption text-moss-500 font-medium">{cat.count} profissionais disponíveis</p>
+            <p className="text-caption text-brand-500 font-medium">{cat.count} profissionais disponíveis</p>
           </div>
         ))}
       </div>
       <div className="flex flex-col sm:flex-row items-center justify-center gap-6 p-8 card-surface">
         <div className="flex items-center gap-3">
-          <Shield className="w-6 h-6 text-moss-500" />
+          <Shield className="w-6 h-6 text-brand-500" />
           <div>
             <p className="font-heading font-semibold text-text-primary">Pagamento com Escrow</p>
             <p className="text-body-sm text-text-secondary">Dinheiro só é liberado quando o serviço é entregue</p>

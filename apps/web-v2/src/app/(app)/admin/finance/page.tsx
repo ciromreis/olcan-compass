@@ -84,10 +84,10 @@ export default function AdminFinancePage() {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="card-surface p-5">
-          <DollarSign className="w-5 h-5 text-moss-500 mb-2" />
+          <DollarSign className="w-5 h-5 text-brand-500 mb-2" />
           <p className="text-caption text-text-muted">Receita Total</p>
-          <p className="font-heading text-h2 text-moss-500">R$ {totalRevenue.toLocaleString("pt-BR")}</p>
-          <p className="text-caption text-moss-500 mt-1"><TrendingUp className="w-3 h-3 inline" /> {bookings.length} contratações</p>
+          <p className="font-heading text-h2 text-brand-500">R$ {totalRevenue.toLocaleString("pt-BR")}</p>
+          <p className="text-caption text-brand-500 mt-1"><TrendingUp className="w-3 h-3 inline" /> {bookings.length} contratações</p>
         </div>
         <div className="card-surface p-5">
           <Shield className="w-5 h-5 text-clay-400 mb-2" />
@@ -124,7 +124,7 @@ export default function AdminFinancePage() {
               ];
               downloadCsv(rows, "admin-finance-transactions.csv");
             }}
-            className="inline-flex items-center gap-1 text-body-sm text-moss-500 font-medium hover:underline"
+            className="inline-flex items-center gap-1 text-body-sm text-brand-500 font-medium hover:underline"
           >
             <Download className="w-4 h-4" /> Exportar
           </button>
@@ -132,14 +132,14 @@ export default function AdminFinancePage() {
         <div className="space-y-3">
           {transactions.length > 0 ? transactions.map((tx, i) => (
             <div key={i} className="flex items-center gap-4 p-4 rounded-lg bg-cream-50">
-              <div className={`w-2 h-2 rounded-full flex-shrink-0 ${tx.status === "disputed" ? "bg-clay-500" : tx.status === "held" ? "bg-clay-300" : "bg-moss-500"}`} />
+              <div className={`w-2 h-2 rounded-full flex-shrink-0 ${tx.status === "disputed" ? "bg-clay-500" : tx.status === "held" ? "bg-clay-300" : "bg-brand-500"}`} />
               <div className="flex-1 min-w-0">
                 <p className="text-body-sm font-medium text-text-primary">{tx.user}</p>
                 <p className="text-caption text-text-muted">{formatDate(tx.date)}</p>
               </div>
               <div className="text-right flex-shrink-0">
                 <p className="font-heading font-bold text-text-primary">R$ {tx.amount}</p>
-                <p className={`text-caption font-medium ${tx.status === "disputed" ? "text-clay-500" : tx.status === "held" ? "text-clay-400" : "text-moss-500"}`}>
+                <p className={`text-caption font-medium ${tx.status === "disputed" ? "text-clay-500" : tx.status === "held" ? "text-clay-400" : "text-brand-500"}`}>
                   {tx.status === "paid" ? "Pago" : tx.status === "held" ? "Retido" : "Disputa"}
                 </p>
               </div>
@@ -172,7 +172,7 @@ export default function AdminFinancePage() {
                   </div>
                   <div className="text-right">
                     <p className="text-body-sm font-bold text-text-primary">R$ {request.amount.toLocaleString("pt-BR")}</p>
-                    <p className={`text-caption font-medium ${request.status === "approved" || request.status === "paid" ? "text-moss-500" : request.status === "rejected" ? "text-clay-500" : "text-text-muted"}`}>
+                    <p className={`text-caption font-medium ${request.status === "approved" || request.status === "paid" ? "text-brand-500" : request.status === "rejected" ? "text-clay-500" : "text-text-muted"}`}>
                       {request.status === "pending" ? "Pendente" : request.status === "approved" ? "Aprovado" : request.status === "paid" ? "Pago" : "Rejeitado"}
                     </p>
                   </div>
@@ -191,7 +191,7 @@ export default function AdminFinancePage() {
                               `Solicitação de ${request.providerName} aprovada.`
                             )
                           }
-                          className="px-3 py-1.5 rounded-lg bg-moss-500 text-white text-caption font-medium hover:bg-moss-600 transition-colors"
+                          className="px-3 py-1.5 rounded-lg bg-brand-500 text-white text-caption font-medium hover:bg-brand-600 transition-colors"
                         >
                           Aprovar
                         </button>
@@ -222,7 +222,7 @@ export default function AdminFinancePage() {
                             `Pagamento de ${request.providerName} marcado como concluído.`
                           )
                         }
-                        className="px-3 py-1.5 rounded-lg border border-moss-300 text-moss-600 text-caption font-medium hover:bg-moss-50 transition-colors"
+                        className="px-3 py-1.5 rounded-lg border border-brand-300 text-brand-600 text-caption font-medium hover:bg-brand-50 transition-colors"
                       >
                         Marcar como pago
                       </button>

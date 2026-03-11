@@ -57,7 +57,7 @@ export default function RoutesListPage() {
         title="Minhas Rotas"
         subtitle="Gerencie seus caminhos de mobilidade"
         actions={
-          <Link href="/routes/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors">
+          <Link href="/routes/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
             <Plus className="w-4 h-4" /> Nova Rota
           </Link>
         }
@@ -69,7 +69,7 @@ export default function RoutesListPage() {
           <p className="text-caption text-text-muted">Total</p>
         </div>
         <div className="card-surface p-5 text-center">
-          <p className="font-heading text-h2 text-moss-500">{summary.active}</p>
+          <p className="font-heading text-h2 text-brand-500">{summary.active}</p>
           <p className="text-caption text-text-muted">Em andamento</p>
         </div>
         <div className="card-surface p-5 text-center">
@@ -86,9 +86,9 @@ export default function RoutesListPage() {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <button onClick={() => setFilter("all")} className={`px-3 py-1.5 rounded-full text-body-sm font-medium transition-colors ${filter === "all" ? "bg-moss-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>Todas</button>
-        <button onClick={() => setFilter("active")} className={`px-3 py-1.5 rounded-full text-body-sm font-medium transition-colors ${filter === "active" ? "bg-moss-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>Em andamento</button>
-        <button onClick={() => setFilter("completed")} className={`px-3 py-1.5 rounded-full text-body-sm font-medium transition-colors ${filter === "completed" ? "bg-moss-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>Concluídas</button>
+        <button onClick={() => setFilter("all")} className={`px-3 py-1.5 rounded-full text-body-sm font-medium transition-colors ${filter === "all" ? "bg-brand-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>Todas</button>
+        <button onClick={() => setFilter("active")} className={`px-3 py-1.5 rounded-full text-body-sm font-medium transition-colors ${filter === "active" ? "bg-brand-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>Em andamento</button>
+        <button onClick={() => setFilter("completed")} className={`px-3 py-1.5 rounded-full text-body-sm font-medium transition-colors ${filter === "completed" ? "bg-brand-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>Concluídas</button>
       </div>
 
       {routes.length === 0 ? (
@@ -96,7 +96,7 @@ export default function RoutesListPage() {
           icon={Route}
           title="Nenhuma rota criada"
           description="Comece criando sua primeira rota de mobilidade."
-          action={<Link href="/routes/new" className="text-moss-500 font-medium hover:underline">Criar primeira rota →</Link>}
+          action={<Link href="/routes/new" className="text-brand-500 font-medium hover:underline">Criar primeira rota →</Link>}
         />
       ) : filteredRoutes.length === 0 ? (
         <EmptyState icon={Search} title="Nenhuma rota encontrada" description="Tente ajustar sua busca ou filtro atual." />
@@ -108,8 +108,8 @@ export default function RoutesListPage() {
             return (
               <Link key={route.id} href={`/routes/${route.id}`} className="card-surface p-6 group hover:-translate-y-0.5 transition-transform">
                 <div className="flex flex-col md:flex-row md:items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-moss-50 flex items-center justify-center flex-shrink-0">
-                    <Route className="w-6 h-6 text-moss-500" />
+                  <div className="w-12 h-12 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
+                    <Route className="w-6 h-6 text-brand-500" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
@@ -127,7 +127,7 @@ export default function RoutesListPage() {
                       <p className="font-heading font-bold text-text-primary">{progress}%</p>
                       <p className="text-caption text-text-muted">{completedCount}/{route.milestones.length} milestones</p>
                     </div>
-                    <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-moss-500 transition-colors" />
+                    <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-brand-500 transition-colors" />
                   </div>
                 </div>
                 <Progress value={progress} size="sm" variant={progress >= 100 ? "moss" : "clay"} className="mt-4" />

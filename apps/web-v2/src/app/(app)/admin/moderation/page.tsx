@@ -11,7 +11,7 @@ import { useAuthStore } from "@/stores/auth";
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
   open: { label: "Aberto", color: "text-clay-500" },
   investigating: { label: "Investigando", color: "text-clay-400" },
-  resolved: { label: "Resolvido", color: "text-moss-500" },
+  resolved: { label: "Resolvido", color: "text-brand-500" },
   dismissed: { label: "Descartado", color: "text-text-muted" },
 };
 
@@ -46,7 +46,7 @@ export default function AdminModerationPage() {
 
       <div className="flex flex-wrap gap-2">
         {TABS.map((t) => (
-          <button key={t.key} onClick={() => setTab(t.key)} className={`px-3 py-1.5 rounded-full text-body-sm font-medium transition-colors ${tab === t.key ? "bg-moss-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>{t.label}</button>
+          <button key={t.key} onClick={() => setTab(t.key)} className={`px-3 py-1.5 rounded-full text-body-sm font-medium transition-colors ${tab === t.key ? "bg-brand-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>{t.label}</button>
         ))}
       </div>
 
@@ -74,7 +74,7 @@ export default function AdminModerationPage() {
                 </div>
                 {report.status !== "resolved" && report.status !== "dismissed" && (
                   <div className="flex gap-2">
-                    <button onClick={() => setModerationStatus(report.id, "resolved", actorEmail)} className="px-3 py-1.5 rounded-lg bg-moss-500 text-white text-caption font-medium hover:bg-moss-600 transition-colors flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Resolver</button>
+                    <button onClick={() => setModerationStatus(report.id, "resolved", actorEmail)} className="px-3 py-1.5 rounded-lg bg-brand-500 text-white text-caption font-medium hover:bg-brand-600 transition-colors flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Resolver</button>
                     <button onClick={() => setModerationStatus(report.id, "investigating", actorEmail)} className="px-3 py-1.5 rounded-lg border border-cream-500 text-text-secondary text-caption font-medium hover:bg-cream-200 transition-colors flex items-center gap-1"><Flag className="w-3 h-3" /> Investigar</button>
                     <button onClick={() => setModerationStatus(report.id, "dismissed", actorEmail)} className="px-3 py-1.5 rounded-lg border border-cream-500 text-text-muted text-caption font-medium hover:bg-cream-200 transition-colors flex items-center gap-1"><X className="w-3 h-3" /> Descartar</button>
                   </div>

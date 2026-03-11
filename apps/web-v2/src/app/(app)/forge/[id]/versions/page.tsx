@@ -21,7 +21,7 @@ export default function VersionsPage() {
     return (
       <div className="max-w-4xl mx-auto py-12 text-center">
         <p className="text-body text-text-muted mb-4">Documento não encontrado.</p>
-        <Link href="/forge" className="text-moss-500 font-medium hover:underline">← Voltar</Link>
+        <Link href="/forge" className="text-brand-500 font-medium hover:underline">← Voltar</Link>
       </div>
     );
   }
@@ -75,7 +75,7 @@ export default function VersionsPage() {
         </div>
         <button
           onClick={() => setSaveVersionOpen(true)}
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-moss-500 text-white text-body-sm font-semibold hover:bg-moss-600 transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-brand-500 text-white text-body-sm font-semibold hover:bg-brand-600 transition-colors"
         >
           <BookmarkPlus className="w-4 h-4" /> Salvar Versão
         </button>
@@ -94,15 +94,15 @@ export default function VersionsPage() {
               const isCurrent = i === 0;
               return (
                 <div key={v.id} className="relative pl-14">
-                  <div className={`absolute left-4 top-2 w-4 h-4 rounded-full z-10 ${isCurrent ? "bg-moss-500" : "bg-cream-400"}`} />
-                  <div className={`card-surface p-5 ${isCurrent ? "ring-2 ring-moss-500" : ""}`}>
+                  <div className={`absolute left-4 top-2 w-4 h-4 rounded-full z-10 ${isCurrent ? "bg-brand-500" : "bg-cream-400"}`} />
+                  <div className={`card-surface p-5 ${isCurrent ? "ring-2 ring-brand-500" : ""}`}>
                     <div className="flex items-start justify-between mb-2">
                       <div>
                         <div className="flex items-center gap-2">
                           <h3 className="font-heading text-h4 text-text-primary">
                             {v.label || `Versão ${doc.versions.length - i}`}
                           </h3>
-                          {isCurrent && <span className="text-caption px-2 py-0.5 rounded-full bg-moss-50 text-moss-500 font-medium">Mais recente</span>}
+                          {isCurrent && <span className="text-caption px-2 py-0.5 rounded-full bg-brand-50 text-brand-500 font-medium">Mais recente</span>}
                         </div>
                         <p className="text-caption text-text-muted flex items-center gap-1 mt-0.5">
                           <Clock className="w-3 h-3" />{new Date(v.savedAt).toLocaleString("pt-BR")}

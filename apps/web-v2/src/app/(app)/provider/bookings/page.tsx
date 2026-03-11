@@ -8,7 +8,7 @@ import { Input, Modal, PageHeader, Skeleton, EmptyState, useToast } from "@/comp
 
 const STATUS_META: Record<BookingStatus, { label: string; color: string; icon: typeof CheckCircle }> = {
   pending: { label: "Aguardando", color: "text-text-muted", icon: Circle },
-  confirmed: { label: "Confirmado", color: "text-moss-500", icon: CheckCircle },
+  confirmed: { label: "Confirmado", color: "text-brand-500", icon: CheckCircle },
   completed: { label: "Concluído", color: "text-sage-500", icon: CheckCircle },
   cancelled: { label: "Cancelado", color: "text-clay-500", icon: AlertTriangle },
 };
@@ -100,7 +100,7 @@ export default function ProviderBookingsPage() {
 
       <div className="flex flex-wrap gap-2">
         {FILTERS.map((f) => (
-          <button key={f.key} onClick={() => setFilter(f.key)} className={`px-3 py-1.5 rounded-full text-body-sm font-medium transition-colors ${f.key === filter ? "bg-moss-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>{f.label}</button>
+          <button key={f.key} onClick={() => setFilter(f.key)} className={`px-3 py-1.5 rounded-full text-body-sm font-medium transition-colors ${f.key === filter ? "bg-brand-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>{f.label}</button>
         ))}
       </div>
 
@@ -129,7 +129,7 @@ export default function ProviderBookingsPage() {
                     <button onClick={() => {
                       updateBookingStatus(b.id, "confirmed");
                       toast({ title: "Agendamento confirmado", description: "O cliente já pode prosseguir com o atendimento.", variant: "success" });
-                    }} className="px-3 py-1.5 rounded-lg bg-moss-500 text-white text-caption font-medium hover:bg-moss-600 transition-colors">Confirmar</button>
+                    }} className="px-3 py-1.5 rounded-lg bg-brand-500 text-white text-caption font-medium hover:bg-brand-600 transition-colors">Confirmar</button>
                     <button onClick={() => {
                       updateBookingStatus(b.id, "cancelled");
                       toast({ title: "Agendamento recusado", description: "O status foi marcado como cancelado.", variant: "warning" });
@@ -167,13 +167,13 @@ export default function ProviderBookingsPage() {
               value={deliverableNote}
               onChange={(event) => setDeliverableNote(event.target.value)}
               rows={3}
-              className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-moss-400"
+              className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-400"
               placeholder="Ex.: versão final assinada."
             />
           </div>
           <div className="flex justify-end gap-3">
             <button onClick={() => setDeliverableOpen(false)} className="px-4 py-2 rounded-lg border border-cream-500 text-text-secondary hover:bg-cream-200 transition-colors">Cancelar</button>
-            <button onClick={handleShareDeliverable} className="px-4 py-2 rounded-lg bg-moss-500 text-white hover:bg-moss-600 transition-colors inline-flex items-center gap-2"><Upload className="w-4 h-4" /> Compartilhar</button>
+            <button onClick={handleShareDeliverable} className="px-4 py-2 rounded-lg bg-brand-500 text-white hover:bg-brand-600 transition-colors inline-flex items-center gap-2"><Upload className="w-4 h-4" /> Compartilhar</button>
           </div>
         </div>
       </Modal>

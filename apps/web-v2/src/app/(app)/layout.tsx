@@ -155,7 +155,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="w-8 h-8 rounded-lg bg-gradient-moss flex items-center justify-center">
               <span className="text-white font-heading font-bold text-body-sm">OC</span>
             </div>
-            <span className="font-heading text-h4 font-bold text-moss-500">Compass</span>
+            <span className="font-heading text-h4 font-bold text-brand-500">Compass</span>
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
@@ -185,14 +185,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       transition-all duration-fast group
                       ${
                         active
-                          ? "bg-moss-50 text-moss-600 font-semibold shadow-sm"
+                          ? "bg-brand-50 text-brand-600 font-semibold shadow-sm"
                           : "text-text-secondary hover:bg-cream-100 hover:text-text-primary"
                       }
                     `}
                   >
                     <item.icon
                       className={`w-[18px] h-[18px] flex-shrink-0 transition-colors ${
-                        active ? "text-moss-500" : "text-text-muted group-hover:text-text-secondary"
+                        active ? "text-brand-500" : "text-text-muted group-hover:text-text-secondary"
                       }`}
                     />
                     <div className="min-w-0 flex-1">
@@ -200,7 +200,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       {item.description && <p className="text-caption text-text-muted truncate">{item.description}</p>}
                     </div>
                     {active && (
-                      <div className="ml-auto w-1.5 h-1.5 rounded-full bg-moss-500" />
+                      <div className="ml-auto w-1.5 h-1.5 rounded-full bg-brand-500" />
                     )}
                   </Link>
                 );
@@ -223,7 +223,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   transition-colors duration-fast
                   ${
                     active
-                      ? "bg-moss-50 text-moss-600 font-semibold"
+                      ? "bg-brand-50 text-brand-600 font-semibold"
                       : "text-text-secondary hover:bg-cream-100 hover:text-text-primary"
                   }
                 `}
@@ -262,7 +262,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 {i === breadcrumbs.length - 1 ? (
                   <span className="font-medium text-text-primary truncate">{crumb.label}</span>
                 ) : (
-                  <Link href={crumb.href} className="hover:text-moss-500 transition-colors truncate">
+                  <Link href={crumb.href} className="hover:text-brand-500 transition-colors truncate">
                     {crumb.label}
                   </Link>
                 )}
@@ -271,7 +271,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </nav>
 
           {/* Mobile logo */}
-          <span className="lg:hidden font-heading text-body font-bold text-moss-500 flex-1">
+          <span className="lg:hidden font-heading text-body font-bold text-brand-500 flex-1">
             Compass
           </span>
 
@@ -373,9 +373,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[11px] font-medium transition-colors ${active ? "bg-moss-50 text-moss-600" : "text-text-muted hover:bg-cream-100 hover:text-text-primary"}`}
+                  className={`flex flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[11px] font-medium transition-colors ${active ? "bg-brand-50 text-brand-600" : "text-text-muted hover:bg-cream-100 hover:text-text-primary"}`}
                 >
-                  <item.icon className={`h-[18px] w-[18px] ${active ? "text-moss-500" : "text-text-muted"}`} />
+                  <item.icon className={`h-[18px] w-[18px] ${active ? "text-brand-500" : "text-text-muted"}`} />
                   <span className="truncate">{item.label}</span>
                 </Link>
               );

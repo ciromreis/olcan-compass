@@ -10,8 +10,8 @@ import { PageHeader, Skeleton, EmptyState } from "@/components/ui";
 import { daysUntil } from "@/lib/format";
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  completed: { label: "Concluído", color: "bg-moss-500" },
-  in_progress: { label: "Em progresso", color: "bg-moss-500" },
+  completed: { label: "Concluído", color: "bg-brand-500" },
+  in_progress: { label: "Em progresso", color: "bg-brand-500" },
   pending: { label: "Pendente", color: "bg-cream-400" },
   blocked: { label: "Bloqueado", color: "bg-clay-400" },
 };
@@ -77,7 +77,7 @@ export default function MilestoneDetailPage() {
         <h3 className="font-heading text-h4 text-text-primary mb-3">Recursos Vinculados</h3>
         <div className="space-y-2">
           <Link href="/forge" className="flex items-center gap-3 p-3 rounded-lg hover:bg-cream-100 transition-colors">
-            <FileText className="w-5 h-5 text-moss-500" />
+            <FileText className="w-5 h-5 text-brand-500" />
             <div className="flex-1"><p className="text-body-sm font-medium text-text-primary">Documentos no Forge</p><p className="text-caption text-text-muted">Acesse o Forge para editar documentos relacionados</p></div>
             <ArrowRight className="w-4 h-4 text-text-muted" />
           </Link>
@@ -105,7 +105,7 @@ export default function MilestoneDetailPage() {
 
       {milestone.status !== "completed" && (
         <div className="flex gap-3">
-          <button onClick={() => setMilestoneStatus(id, mid, "completed")} className="flex-1 px-4 py-3 rounded-lg bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors flex items-center justify-center gap-2">
+          <button onClick={() => setMilestoneStatus(id, mid, "completed")} className="flex-1 px-4 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors flex items-center justify-center gap-2">
             <CheckCircle className="w-4 h-4" /> Marcar como Concluído
           </button>
         </div>

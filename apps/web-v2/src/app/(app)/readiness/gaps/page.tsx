@@ -132,7 +132,7 @@ export default function GapsRankedPage() {
                     </div>
                     <p className="text-caption text-text-muted mb-2">{gap.dimension}</p>
                     <p className="text-body-sm text-text-secondary mb-3">{gap.detail}</p>
-                    <Link href={gap.link} className="inline-flex items-center gap-1.5 text-body-sm font-semibold text-moss-500 hover:text-moss-600 transition-colors">
+                    <Link href={gap.link} className="inline-flex items-center gap-1.5 text-body-sm font-semibold text-brand-500 hover:text-brand-600 transition-colors">
                       {gap.action === "Iniciar Sprint" ? <Zap className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}
                       {gap.action}
                     </Link>

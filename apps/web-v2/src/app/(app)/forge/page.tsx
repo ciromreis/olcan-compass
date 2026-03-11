@@ -70,20 +70,20 @@ export default function ForgeListPage() {
           <h1 className="font-heading text-h2 text-text-primary">The Forge</h1>
           <p className="text-body text-text-secondary mt-1">Crie, refine e analise seus documentos</p>
         </div>
-        <Link href="/forge/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors">
+        <Link href="/forge/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
           <Plus className="w-4 h-4" /> Novo Documento
         </Link>
       </div>
 
       <div className="grid sm:grid-cols-4 gap-4">
         <div className="card-surface p-4 text-center">
-          <FileText className="w-5 h-5 text-moss-500 mx-auto mb-1" />
+          <FileText className="w-5 h-5 text-brand-500 mx-auto mb-1" />
           <p className="font-heading text-h3 text-text-primary">{stats.total}</p>
           <p className="text-caption text-text-muted">Documentos</p>
         </div>
         <div className="card-surface p-4 text-center">
-          <Star className="w-5 h-5 text-moss-500 mx-auto mb-1" />
-          <p className={`font-heading text-h3 ${stats.avgScore >= 70 ? "text-moss-500" : "text-amber-500"}`}>{stats.avgScore || "—"}</p>
+          <Star className="w-5 h-5 text-brand-500 mx-auto mb-1" />
+          <p className={`font-heading text-h3 ${stats.avgScore >= 70 ? "text-brand-500" : "text-amber-500"}`}>{stats.avgScore || "—"}</p>
           <p className="text-caption text-text-muted">Score médio</p>
         </div>
         <div className="card-surface p-4 text-center">
@@ -106,7 +106,7 @@ export default function ForgeListPage() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Buscar documentos..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent"
           />
         </div>
         <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-cream-500 text-text-secondary text-body-sm font-medium bg-white">
@@ -123,11 +123,11 @@ export default function ForgeListPage() {
         {sorted.map((doc) => (
           <Link key={doc.id} href={`/forge/${doc.id}`} className="card-surface p-6 group hover:-translate-y-0.5 transition-transform">
             <div className="flex flex-col md:flex-row md:items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-moss-50 flex items-center justify-center flex-shrink-0">
-                <FileText className="w-6 h-6 text-moss-500" />
+              <div className="w-12 h-12 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
+                <FileText className="w-6 h-6 text-brand-500" />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-heading text-h4 text-text-primary truncate group-hover:text-moss-500 transition-colors">{doc.title}</h3>
+                <h3 className="font-heading text-h4 text-text-primary truncate group-hover:text-brand-500 transition-colors">{doc.title}</h3>
                 <div className="flex flex-wrap gap-3 mt-1 text-body-sm text-text-secondary">
                   <span className="px-2 py-0.5 rounded-full bg-cream-200 text-caption">{DOC_TYPE_LABELS[doc.type]}</span>
                   <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{formatDate(doc.updatedAt)}</span>
@@ -138,11 +138,11 @@ export default function ForgeListPage() {
               <div className="flex items-center gap-4 flex-shrink-0">
                 {doc.competitivenessScore !== null && (
                   <div className="text-right">
-                    <div className="flex items-center gap-1"><Star className={`w-4 h-4 ${doc.competitivenessScore >= 70 ? "text-moss-500" : "text-amber-500"}`} /><span className="font-heading font-bold text-text-primary">{doc.competitivenessScore}</span></div>
+                    <div className="flex items-center gap-1"><Star className={`w-4 h-4 ${doc.competitivenessScore >= 70 ? "text-brand-500" : "text-amber-500"}`} /><span className="font-heading font-bold text-text-primary">{doc.competitivenessScore}</span></div>
                     <p className="text-caption text-text-muted">Competitividade</p>
                   </div>
                 )}
-                <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-moss-500 transition-colors" />
+                <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-brand-500 transition-colors" />
               </div>
             </div>
           </Link>

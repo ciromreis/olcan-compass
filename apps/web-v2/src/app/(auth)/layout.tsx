@@ -5,7 +5,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-surface-bg flex flex-col">
       <header className="h-16 px-6 flex items-center">
-        <Link href="/" className="font-heading text-h4 font-bold text-moss-500">
+        <Link href="/" className="font-heading text-h4 font-bold text-brand-500">
           Olcan Compass
         </Link>
       </header>

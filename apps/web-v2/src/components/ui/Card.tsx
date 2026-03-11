@@ -12,7 +12,7 @@ const variantStyles = {
   elevated: "bg-white rounded-xl shadow-md",
   outlined: "bg-white rounded-xl border border-cream-400",
   glass: "glass-panel rounded-xl",
-  accent: "bg-gradient-to-br from-moss-500 to-moss-700 text-white rounded-xl shadow-md",
+  accent: "bg-gradient-to-br from-brand-500 to-brand-700 text-white rounded-xl shadow-md",
 };
 
 const paddingStyles = {

@@ -15,7 +15,7 @@ interface ProgressRingProps {
 }
 
 const variantColors: Record<string, string> = {
-  moss: "stroke-moss-500",
+  moss: "stroke-brand-500",
   clay: "stroke-clay-500",
   amber: "stroke-amber-500",
 };
@@ -47,7 +47,7 @@ function ProgressRing({
 
   const textColor =
     resolvedVariant === "moss"
-      ? "text-moss-500"
+      ? "text-brand-500"
       : resolvedVariant === "amber"
       ? "text-amber-500"
       : "text-clay-500";

@@ -14,7 +14,7 @@ export default function NotFound() {
           A rota que você tentou acessar não existe ou foi movida. Verifique o endereço ou volte ao início.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link href="/" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-moss-500 text-white font-heading font-semibold hover:bg-moss-600 transition-colors">
+          <Link href="/" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 transition-colors">
             <Home className="w-4 h-4" /> Ir para o Início
           </Link>
           <Link href="/dashboard" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-cream-500 text-text-secondary font-heading font-medium hover:bg-cream-200 transition-colors">

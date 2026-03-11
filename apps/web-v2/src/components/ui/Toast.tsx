@@ -35,14 +35,14 @@ const iconMap: Record<ToastVariant, typeof Info> = {
 };
 
 const variantStyles: Record<ToastVariant, string> = {
-  success: "border-moss-300 bg-moss-50",
+  success: "border-brand-300 bg-brand-50",
   error: "border-clay-300 bg-clay-50",
   warning: "border-amber-300 bg-amber-50",
   info: "border-sage-300 bg-sage-50",
 };
 
 const iconStyles: Record<ToastVariant, string> = {
-  success: "text-moss-500",
+  success: "text-brand-500",
   error: "text-clay-500",
   warning: "text-amber-500",
   info: "text-sage-500",

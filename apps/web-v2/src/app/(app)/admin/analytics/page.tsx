@@ -114,10 +114,10 @@ export default function AdminAnalyticsPage() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {analytics.metrics.map((m) => (
           <div key={m.label} className="card-surface p-5">
-            <m.icon className="w-5 h-5 text-moss-500 mb-2" />
+            <m.icon className="w-5 h-5 text-brand-500 mb-2" />
             <p className="text-caption text-text-muted">{m.label}</p>
             <p className="font-heading text-h2 text-text-primary">{m.value}</p>
-            <p className="text-caption text-moss-500 mt-1">{m.delta}</p>
+            <p className="text-caption text-brand-500 mt-1">{m.delta}</p>
           </div>
         ))}
       </div>
@@ -134,7 +134,7 @@ export default function AdminAnalyticsPage() {
                   <span className="text-body-sm text-text-muted">{f.count.toLocaleString("pt-BR")} ({f.pct}%)</span>
                 </div>
                 <div className="h-3 bg-cream-300 rounded-full overflow-hidden">
-                  <div className="h-full bg-moss-500 rounded-full transition-all" style={{ width: `${f.pct}%` }} />
+                  <div className="h-full bg-brand-500 rounded-full transition-all" style={{ width: `${f.pct}%` }} />
                 </div>
               </div>
             </div>
@@ -144,7 +144,7 @@ export default function AdminAnalyticsPage() {
 
       <div className="grid md:grid-cols-2 gap-4">
         <div className="card-surface p-6">
-          <h3 className="font-heading text-h4 text-text-primary mb-4 flex items-center gap-2"><Globe className="w-5 h-5 text-moss-500" /> Top Destinos</h3>
+          <h3 className="font-heading text-h4 text-text-primary mb-4 flex items-center gap-2"><Globe className="w-5 h-5 text-brand-500" /> Top Destinos</h3>
           <div className="space-y-2">
             {analytics.destinations.length === 0 && <p className="text-body-sm text-text-muted">Sem dados suficientes.</p>}
             {analytics.destinations.map((d) => (
@@ -198,7 +198,7 @@ export default function AdminAnalyticsPage() {
             </div>
             <div className="flex items-center justify-between rounded-lg bg-cream-50 px-3 py-2">
               <span className="text-body-sm text-text-secondary">Incidentes resolvidos</span>
-              <span className="text-body-sm font-bold text-moss-500">{incidentSummary.resolved}</span>
+              <span className="text-body-sm font-bold text-brand-500">{incidentSummary.resolved}</span>
             </div>
           </div>
           <p className="mt-3 text-caption text-text-muted">

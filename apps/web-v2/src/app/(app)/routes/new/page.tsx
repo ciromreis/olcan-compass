@@ -67,7 +67,7 @@ export default function NewRoutePage() {
 
       <div className="flex gap-2 mb-4">
         {[1, 2].map((s) => (
-          <div key={s} className={`h-1.5 flex-1 rounded-full ${s <= step ? "bg-moss-500" : "bg-cream-300"}`} />
+          <div key={s} className={`h-1.5 flex-1 rounded-full ${s <= step ? "bg-brand-500" : "bg-cream-300"}`} />
         ))}
       </div>
 
@@ -76,9 +76,9 @@ export default function NewRoutePage() {
           <h2 className="font-heading text-h3 text-text-primary">Tipo de Rota</h2>
           <div className="grid gap-3">
             {ROUTE_TYPES.map((type) => (
-              <button key={type.id} onClick={() => setSelected(type.id)} className={`card-surface p-5 flex items-center gap-4 text-left transition-all ${selected === type.id ? "ring-2 ring-moss-500 bg-moss-50/50" : "hover:-translate-y-0.5"}`}>
-                <div className={`w-11 h-11 rounded-lg flex items-center justify-center ${selected === type.id ? "bg-moss-100" : "bg-cream-200"}`}>
-                  <type.icon className={`w-5 h-5 ${selected === type.id ? "text-moss-500" : "text-text-muted"}`} />
+              <button key={type.id} onClick={() => setSelected(type.id)} className={`card-surface p-5 flex items-center gap-4 text-left transition-all ${selected === type.id ? "ring-2 ring-brand-500 bg-brand-50/50" : "hover:-translate-y-0.5"}`}>
+                <div className={`w-11 h-11 rounded-lg flex items-center justify-center ${selected === type.id ? "bg-brand-100" : "bg-cream-200"}`}>
+                  <type.icon className={`w-5 h-5 ${selected === type.id ? "text-brand-500" : "text-text-muted"}`} />
                 </div>
                 <div>
                   <p className="font-heading font-semibold text-text-primary">{type.label}</p>
@@ -88,7 +88,7 @@ export default function NewRoutePage() {
             ))}
           </div>
           <div className="flex justify-end">
-            <button onClick={() => setStep(2)} disabled={!selected} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 disabled:opacity-50 transition-colors">
+            <button onClick={() => setStep(2)} disabled={!selected} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 disabled:opacity-50 transition-colors">
               Próximo <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -102,7 +102,7 @@ export default function NewRoutePage() {
             <div className="card-surface p-6 space-y-4">
               <div>
                 <label className="block text-body-sm font-medium text-text-primary mb-1.5">País de destino</label>
-                <select value={config.country} onChange={(e) => { setConfig({ ...config, country: e.target.value }); setError(null); }} className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-transparent">
+                <select value={config.country} onChange={(e) => { setConfig({ ...config, country: e.target.value }); setError(null); }} className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent">
                   <option value="">Selecione o país</option>
                   {COUNTRY_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>{option.label}</option>
@@ -115,7 +115,7 @@ export default function NewRoutePage() {
               </div>
               <div>
                 <label className="block text-body-sm font-medium text-text-primary mb-1.5">Prazo desejado</label>
-                <select value={config.timeline} onChange={(e) => { setConfig({ ...config, timeline: e.target.value }); setError(null); }} className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-transparent">
+                <select value={config.timeline} onChange={(e) => { setConfig({ ...config, timeline: e.target.value }); setError(null); }} className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent">
                   <option value="">Selecione</option>
                   {TIMELINE_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>{option.label}</option>
@@ -128,7 +128,7 @@ export default function NewRoutePage() {
               <button onClick={() => setStep(1)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-cream-500 text-text-secondary font-medium text-body-sm hover:bg-cream-200 transition-colors">
                 <ArrowLeft className="w-4 h-4" /> Voltar
               </button>
-              <button onClick={handleCreate} disabled={!canCreate} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 disabled:opacity-50 transition-colors">
+              <button onClick={handleCreate} disabled={!canCreate} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 disabled:opacity-50 transition-colors">
                 Criar Rota <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -136,7 +136,7 @@ export default function NewRoutePage() {
 
           <div className="card-surface p-6 space-y-5">
             <div>
-              <div className="flex items-center gap-2 mb-2 text-moss-500">
+              <div className="flex items-center gap-2 mb-2 text-brand-500">
                 <Sparkles className="w-4 h-4" />
                 <p className="text-caption font-heading font-semibold uppercase tracking-wider">Prévia do plano</p>
               </div>
@@ -150,7 +150,7 @@ export default function NewRoutePage() {
             <div className="space-y-3">
               {previewMilestones.map((milestone, index) => (
                 <div key={`${milestone.group}-${milestone.name}`} className="flex items-start gap-3 rounded-lg bg-cream-50 px-4 py-3">
-                  <CheckCircle2 className={`w-4 h-4 mt-0.5 ${index === 0 ? "text-moss-500" : "text-cream-500"}`} />
+                  <CheckCircle2 className={`w-4 h-4 mt-0.5 ${index === 0 ? "text-brand-500" : "text-cream-500"}`} />
                   <div>
                     <p className="text-caption text-text-muted">{milestone.group}</p>
                     <p className="text-body-sm text-text-primary">{milestone.name}</p>

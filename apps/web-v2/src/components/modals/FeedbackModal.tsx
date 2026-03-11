@@ -53,12 +53,12 @@ export default function FeedbackModal({
           onChange={(e) => setComment(e.target.value)}
           placeholder="Compartilhe sua experiência (opcional)..."
           rows={3}
-          className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-transparent resize-none mb-4"
+          className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent resize-none mb-4"
         />
         <button
           onClick={handleSubmit}
           disabled={rating === 0}
-          className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Send className="w-4 h-4" /> Enviar Avaliação
         </button>

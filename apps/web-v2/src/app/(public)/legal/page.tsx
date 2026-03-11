@@ -11,17 +11,17 @@ export default function LegalPage() {
       </div>
       <div className="grid md:grid-cols-3 gap-6 mb-12">
         <a href="#termos" className="card-surface p-6 text-center group hover:-translate-y-1 transition-transform">
-          <FileText className="w-6 h-6 text-moss-500 mx-auto mb-3" />
+          <FileText className="w-6 h-6 text-brand-500 mx-auto mb-3" />
           <h3 className="font-heading text-h4 text-text-primary">Termos de Uso</h3>
           <p className="text-caption text-text-muted mt-1">Última atualização: Dez 2025</p>
         </a>
         <a href="#privacidade" className="card-surface p-6 text-center group hover:-translate-y-1 transition-transform">
-          <Shield className="w-6 h-6 text-moss-500 mx-auto mb-3" />
+          <Shield className="w-6 h-6 text-brand-500 mx-auto mb-3" />
           <h3 className="font-heading text-h4 text-text-primary">Privacidade</h3>
           <p className="text-caption text-text-muted mt-1">LGPD Compliant</p>
         </a>
         <a href="#escrow" className="card-surface p-6 text-center group hover:-translate-y-1 transition-transform">
-          <Scale className="w-6 h-6 text-moss-500 mx-auto mb-3" />
+          <Scale className="w-6 h-6 text-brand-500 mx-auto mb-3" />
           <h3 className="font-heading text-h4 text-text-primary">Política de Escrow</h3>
           <p className="text-caption text-text-muted mt-1">Marketplace e pagamentos</p>
         </a>

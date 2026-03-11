@@ -17,7 +17,7 @@ const sizeStyles = {
 };
 
 const barStyles = {
-  moss: "bg-moss-500",
+  moss: "bg-brand-500",
   clay: "bg-clay-500",
   gradient: "bg-gradient-moss",
 };

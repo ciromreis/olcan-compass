@@ -34,7 +34,7 @@ export default function ConfidenceBlockPage() {
           {QUESTIONS.map((q, qi) => (
             <div key={q.id} className="animate-fade-in" style={{ animationDelay: `${qi * 80}ms` }}>
               <p className="font-heading font-semibold text-text-primary mb-3">
-                <span className="text-moss-400 mr-2">{qi + 1}.</span>
+                <span className="text-brand-400 mr-2">{qi + 1}.</span>
                 {q.label}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -44,7 +44,7 @@ export default function ConfidenceBlockPage() {
                     onClick={() => setAnswer(DIMENSION, q.id, opt)}
                     className={`px-4 py-2 rounded-lg text-body-sm font-medium transition-all duration-fast ${
                       answers[q.id] === opt
-                        ? "bg-moss-500 text-white shadow-sm scale-[1.02]"
+                        ? "bg-brand-500 text-white shadow-sm scale-[1.02]"
                         : "border border-cream-500 text-text-secondary hover:bg-cream-200 hover:border-cream-600"
                     }`}
                   >

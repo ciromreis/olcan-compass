@@ -33,7 +33,7 @@ export default function MessagesListPage() {
           <p className="text-caption text-text-muted">Conversas</p>
         </div>
         <div className="card-surface p-4 text-center">
-          <p className="font-heading font-bold text-h3 text-moss-500">{totalUnread}</p>
+          <p className="font-heading font-bold text-h3 text-brand-500">{totalUnread}</p>
           <p className="text-caption text-text-muted">Não lidas</p>
         </div>
         <div className="card-surface p-4 text-center">
@@ -53,19 +53,19 @@ export default function MessagesListPage() {
               onClick={() => conv.unread > 0 && markConversationRead(conv.id)}
               className="card-surface p-4 flex items-center gap-4 group hover:bg-cream-100 transition-colors"
             >
-              <div className="w-12 h-12 rounded-full bg-moss-50 flex items-center justify-center flex-shrink-0 text-moss-500 font-heading font-bold">
+              <div className="w-12 h-12 rounded-full bg-brand-50 flex items-center justify-center flex-shrink-0 text-brand-500 font-heading font-bold">
                 {conv.providerName.split(" ").map((n) => n[0]).join("").slice(0, 2)}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <p className="font-heading font-semibold text-body-sm text-text-primary">{conv.providerName}</p>
-                  {conv.unread > 0 && <span className="w-5 h-5 rounded-full bg-moss-500 text-white text-[10px] flex items-center justify-center font-bold">{conv.unread}</span>}
+                  {conv.unread > 0 && <span className="w-5 h-5 rounded-full bg-brand-500 text-white text-[10px] flex items-center justify-center font-bold">{conv.unread}</span>}
                 </div>
                 <p className="text-caption text-text-muted truncate">{conv.lastMessage}</p>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
                 <span className="text-caption text-text-muted">{formatDate(conv.lastMessageAt)}</span>
-                <ChevronRight className="w-4 h-4 text-text-muted group-hover:text-moss-500 transition-colors" />
+                <ChevronRight className="w-4 h-4 text-text-muted group-hover:text-brand-500 transition-colors" />
               </div>
             </Link>
           ))}

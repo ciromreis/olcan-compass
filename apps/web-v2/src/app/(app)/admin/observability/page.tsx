@@ -15,7 +15,7 @@ type RowType = "error" | "vital";
 type FilterType = "all" | RowType;
 
 function getRatingColor(rating?: VitalRating): string {
-  if (rating === "good") return "text-moss-500";
+  if (rating === "good") return "text-brand-500";
   if (rating === "needs-improvement") return "text-sage-500";
   if (rating === "poor") return "text-clay-500";
   return "text-text-muted";
@@ -30,7 +30,7 @@ function getIncidentSeverityColor(severity: "low" | "medium" | "high"): string {
 function getIncidentStatusColor(status: "open" | "acknowledged" | "resolved"): string {
   if (status === "open") return "text-clay-500";
   if (status === "acknowledged") return "text-sage-500";
-  return "text-moss-500";
+  return "text-brand-500";
 }
 
 export default function AdminObservabilityPage() {
@@ -255,7 +255,7 @@ export default function AdminObservabilityPage() {
           <p className="font-heading text-h2 text-text-primary">{health.errorsLast24h}</p>
         </div>
         <div className="card-surface p-5">
-          <Gauge className="w-5 h-5 text-moss-500 mb-2" />
+          <Gauge className="w-5 h-5 text-brand-500 mb-2" />
           <p className="text-caption text-text-muted">Web Vitals (24h)</p>
           <p className="font-heading text-h2 text-text-primary">{health.vitalsLast24h}</p>
         </div>
@@ -347,13 +347,13 @@ export default function AdminObservabilityPage() {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Buscar por mensagem, rota ou tipo..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent"
             />
           </div>
           <select
             value={typeFilter}
             onChange={(event) => setTypeFilter(event.target.value as FilterType)}
-            className="rounded-lg border border-cream-500 bg-white px-3 py-2.5 text-body-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-moss-400"
+            className="rounded-lg border border-cream-500 bg-white px-3 py-2.5 text-body-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-400"
           >
             <option value="all">Todos os tipos</option>
             <option value="error">Erros</option>
@@ -362,7 +362,7 @@ export default function AdminObservabilityPage() {
           <select
             value={ratingFilter}
             onChange={(event) => setRatingFilter(event.target.value as "all" | VitalRating)}
-            className="rounded-lg border border-cream-500 bg-white px-3 py-2.5 text-body-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-moss-400"
+            className="rounded-lg border border-cream-500 bg-white px-3 py-2.5 text-body-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-400"
           >
             <option value="all">Todos os ratings</option>
             <option value="good">good</option>

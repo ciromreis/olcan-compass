@@ -72,11 +72,11 @@ export default function NewSprintPage() {
           <button
             key={tmpl.id}
             onClick={() => handleSelectTemplate(tmpl)}
-            className={`w-full card-surface p-4 flex items-center gap-4 text-left transition-all ${selected === tmpl.id ? "ring-2 ring-moss-500 bg-moss-50/50" : "hover:-translate-y-0.5"}`}
+            className={`w-full card-surface p-4 flex items-center gap-4 text-left transition-all ${selected === tmpl.id ? "ring-2 ring-brand-500 bg-brand-50/50" : "hover:-translate-y-0.5"}`}
           >
-            <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${selected === tmpl.id ? "bg-moss-100" : "bg-cream-200"}`}>
+            <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${selected === tmpl.id ? "bg-brand-100" : "bg-cream-200"}`}>
               {selected === tmpl.id
-                ? <CheckCircle2 className="w-5 h-5 text-moss-500" />
+                ? <CheckCircle2 className="w-5 h-5 text-brand-500" />
                 : <tmpl.icon className="w-5 h-5 text-text-muted" />}
             </div>
             <div className="flex-1 min-w-0">
@@ -98,7 +98,7 @@ export default function NewSprintPage() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-transparent"
+              className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent"
             />
           </div>
 
@@ -107,7 +107,7 @@ export default function NewSprintPage() {
             <select
               value={durationWeeks}
               onChange={(e) => setDurationWeeks(Number(e.target.value))}
-              className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-moss-400"
+              className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-400"
             >
               {DURATION_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -120,7 +120,7 @@ export default function NewSprintPage() {
             <select
               value={routeId}
               onChange={(e) => setRouteId(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-moss-400"
+              className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-400"
             >
               <option value="">Nenhuma rota vinculada</option>
               {routes.map((r) => (
@@ -133,7 +133,7 @@ export default function NewSprintPage() {
 
           <button
             onClick={handleCreate}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors"
           >
             <Zap className="w-4 h-4" /> Criar Sprint <ArrowRight className="w-4 h-4" />
           </button>

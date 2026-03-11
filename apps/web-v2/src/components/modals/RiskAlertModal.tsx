@@ -46,7 +46,7 @@ export default function RiskAlertModal({
             </div>
           ))}
         </div>
-        <Link href="/readiness" onClick={onClose} className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors">
+        <Link href="/readiness" onClick={onClose} className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
           Ver Plano de Ação <ArrowRight className="w-4 h-4" />
         </Link>
       </div>

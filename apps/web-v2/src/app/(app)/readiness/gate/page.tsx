@@ -110,15 +110,15 @@ export default function SubmissionGatePage() {
     <div className="max-w-3xl mx-auto space-y-6">
       <PageHeader backHref={appId ? `/applications/${appId}` : "/readiness"} title="Submission Gate" subtitle={app ? `Critérios mínimos para enviar: ${app.program}` : "Critérios mínimos para submeter sua candidatura"} />
 
-      <div className={`card-surface p-6 ${canSubmit ? "border-2 border-moss-500" : "border-2 border-clay-300"}`}>
+      <div className={`card-surface p-6 ${canSubmit ? "border-2 border-brand-500" : "border-2 border-clay-300"}`}>
         <div className="flex flex-col md:flex-row items-center gap-6">
           <div className="text-center">
             <ProgressRing value={completionRate} size={132} strokeWidth={10} variant={canSubmit ? "moss" : "clay"} className="mx-auto" />
             <p className="text-caption text-text-muted mt-2">{metCount} / {criteria.length} critérios</p>
           </div>
           <div className="flex-1 text-center md:text-left">
-            <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto md:mx-0 mb-4 ${canSubmit ? "bg-moss-50" : "bg-clay-50"}`}>
-              {canSubmit ? <ShieldCheck className="w-8 h-8 text-moss-500" /> : <Lock className="w-8 h-8 text-clay-400" />}
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto md:mx-0 mb-4 ${canSubmit ? "bg-brand-50" : "bg-clay-50"}`}>
+              {canSubmit ? <ShieldCheck className="w-8 h-8 text-brand-500" /> : <Lock className="w-8 h-8 text-clay-400" />}
             </div>
             <h2 className="font-heading text-h3 text-text-primary mb-2">
               {canSubmit ? "Gate Aberto — Você pode submeter!" : "Gate Fechado"}
@@ -133,11 +133,11 @@ export default function SubmissionGatePage() {
 
       <div className="grid md:grid-cols-3 gap-4">
         <div className="card-surface p-5 text-center">
-          <p className={`font-heading text-display ${totalScore >= 60 ? "text-moss-500" : "text-clay-500"}`}>{totalScore}</p>
+          <p className={`font-heading text-display ${totalScore >= 60 ? "text-brand-500" : "text-clay-500"}`}>{totalScore}</p>
           <p className="text-caption text-text-muted">Score de prontidão</p>
         </div>
         <div className="card-surface p-5 text-center">
-          <p className={`font-heading text-display ${remainingCount === 0 ? "text-moss-500" : "text-clay-500"}`}>{remainingCount}</p>
+          <p className={`font-heading text-display ${remainingCount === 0 ? "text-brand-500" : "text-clay-500"}`}>{remainingCount}</p>
           <p className="text-caption text-text-muted">Critérios restantes</p>
         </div>
         <div className="card-surface p-5">
@@ -150,12 +150,12 @@ export default function SubmissionGatePage() {
         <h3 className="font-heading text-h4 text-text-primary mb-4">Critérios</h3>
         <div className="space-y-3">
           {criteria.map((c) => (
-            <div key={c.label} className={`flex items-center gap-3 p-3 rounded-lg ${c.met ? "bg-moss-50/50" : "bg-cream-50"}`}>
-              {c.met ? <CheckCircle className="w-5 h-5 text-moss-500 flex-shrink-0" /> : <X className="w-5 h-5 text-clay-400 flex-shrink-0" />}
+            <div key={c.label} className={`flex items-center gap-3 p-3 rounded-lg ${c.met ? "bg-brand-50/50" : "bg-cream-50"}`}>
+              {c.met ? <CheckCircle className="w-5 h-5 text-brand-500 flex-shrink-0" /> : <X className="w-5 h-5 text-clay-400 flex-shrink-0" />}
               <div className="flex-1">
                 <p className={`text-body-sm font-medium ${c.met ? "text-text-primary" : "text-text-secondary"}`}>{c.label}</p>
               </div>
-              <span className={`text-caption font-medium ${c.met ? "text-moss-500" : "text-clay-500"}`}>{c.current}</span>
+              <span className={`text-caption font-medium ${c.met ? "text-brand-500" : "text-clay-500"}`}>{c.current}</span>
             </div>
           ))}
         </div>
@@ -165,7 +165,7 @@ export default function SubmissionGatePage() {
         <Link href="/readiness/gaps" className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-cream-500 text-text-secondary font-medium hover:bg-cream-200 transition-colors">
           <AlertTriangle className="w-4 h-4" /> Ver Gaps
         </Link>
-        <button onClick={handleGateSubmission} className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-moss-500 text-white font-heading font-semibold hover:bg-moss-600 transition-colors">
+        <button onClick={handleGateSubmission} className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 transition-colors">
           {canSubmit ? "Submeter Candidatura" : "Registrar Tentativa"} <ArrowRight className="w-4 h-4" />
         </button>
       </div>
@@ -179,7 +179,7 @@ export default function SubmissionGatePage() {
             {recentAttempts.map((attempt) => (
               <div key={attempt.id} className="rounded-lg bg-cream-50 p-3">
                 <div className="mb-1 flex items-center justify-between gap-3">
-                  <p className={`text-body-sm font-medium ${attempt.canSubmit ? "text-moss-500" : "text-clay-500"}`}>
+                  <p className={`text-body-sm font-medium ${attempt.canSubmit ? "text-brand-500" : "text-clay-500"}`}>
                     {attempt.canSubmit ? "Gate aprovado" : "Gate bloqueado"} · {attempt.metCount}/{attempt.criteriaCount}
                   </p>
                   <span className="text-caption text-text-muted">{formatDate(attempt.createdAt)}</span>

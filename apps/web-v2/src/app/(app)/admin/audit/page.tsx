@@ -93,13 +93,13 @@ export default function AdminAuditPage() {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Buscar por resumo, ação, alvo ou ator..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent"
           />
         </div>
         <select
           value={moduleFilter}
           onChange={(event) => setModuleFilter(event.target.value)}
-          className="px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-secondary text-body-sm font-medium focus:outline-none focus:ring-2 focus:ring-moss-400"
+          className="px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-secondary text-body-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-400"
         >
           <option value="all">Todos os módulos</option>
           {Object.entries(MODULE_LABELS).map(([key, label]) => (

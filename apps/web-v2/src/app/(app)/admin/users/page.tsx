@@ -10,7 +10,7 @@ import { useAuthStore } from "@/stores/auth";
 
 const ROLE_COLORS: Record<string, string> = {
   USER: "bg-cream-200 text-text-muted",
-  PROVIDER: "bg-moss-50 text-moss-500",
+  PROVIDER: "bg-brand-50 text-brand-500",
   SUPER_ADMIN: "bg-clay-50 text-clay-500",
   ORG_ADMIN: "bg-sage-50 text-sage-500",
 };
@@ -42,9 +42,9 @@ export default function AdminUsersPage() {
       <div className="flex gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar por nome ou e-mail..." className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-transparent" />
+          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar por nome ou e-mail..." className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent" />
         </div>
-        <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} className="px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-secondary text-body-sm font-medium focus:outline-none focus:ring-2 focus:ring-moss-400">
+        <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} className="px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-secondary text-body-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-400">
           <option value="all">Todos</option>
           <option value="USER">Usuário</option>
           <option value="PROVIDER">Provedor</option>
@@ -90,7 +90,7 @@ export default function AdminUsersPage() {
                   <td className="py-3 px-4 text-text-secondary">{u.plan}</td>
                   <td className="py-3 px-4 text-text-muted">{formatDate(u.joined)}</td>
                   <td className="py-3 px-4">
-                    <span className={`text-caption font-medium ${u.status === "active" ? "text-moss-500" : u.status === "blocked" ? "text-clay-500" : "text-text-muted"}`}>
+                    <span className={`text-caption font-medium ${u.status === "active" ? "text-brand-500" : u.status === "blocked" ? "text-clay-500" : "text-text-muted"}`}>
                       {u.status === "active" ? "Ativo" : u.status === "blocked" ? "Bloqueado" : "Inativo"}
                     </span>
                   </td>

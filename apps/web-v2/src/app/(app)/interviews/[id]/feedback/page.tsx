@@ -51,7 +51,7 @@ export default function FeedbackPage() {
   const { sessionId, session } = useSession();
 
   if (!session) {
-    return <EmptyState icon={MessageSquare} title="Sessão não encontrada" action={<Link href="/interviews" className="text-moss-500 font-medium hover:underline">← Voltar</Link>} />;
+    return <EmptyState icon={MessageSquare} title="Sessão não encontrada" action={<Link href="/interviews" className="text-brand-500 font-medium hover:underline">← Voltar</Link>} />;
   }
 
   const dimensions = computeDimensions(session);
@@ -65,12 +65,12 @@ export default function FeedbackPage() {
       <div className="grid md:grid-cols-2 gap-4">
         <div className="card-surface p-5">
           <h4 className="text-body-sm font-heading font-semibold text-text-primary mb-2 flex items-center gap-2">
-            <Star className="w-4 h-4 text-moss-500" /> Pontos fortes
+            <Star className="w-4 h-4 text-brand-500" /> Pontos fortes
           </h4>
           {strongest.map((d) => (
             <div key={d.label} className="flex items-center justify-between py-1.5">
               <span className="text-body-sm text-text-secondary">{d.label}</span>
-              <span className="font-heading font-bold text-moss-500">{d.score}</span>
+              <span className="font-heading font-bold text-brand-500">{d.score}</span>
             </div>
           ))}
         </div>
@@ -98,16 +98,16 @@ export default function FeedbackPage() {
               <div className={`h-full rounded-full ${scoreBarColor(d.score)}`} style={{ width: `${d.score}%` }} />
             </div>
             <div className="p-3 rounded-lg bg-cream-100 flex items-start gap-2">
-              <Lightbulb className="w-4 h-4 text-moss-500 mt-0.5 flex-shrink-0" />
+              <Lightbulb className="w-4 h-4 text-brand-500 mt-0.5 flex-shrink-0" />
               <p className="text-body-sm text-text-secondary">{d.tip}</p>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="card-surface p-6 bg-gradient-to-r from-moss-50 to-cream-100">
+      <div className="card-surface p-6 bg-gradient-to-r from-brand-50 to-cream-100">
         <h3 className="font-heading text-h4 text-text-primary mb-3 flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-moss-500" /> Plano de Melhoria
+          <TrendingUp className="w-5 h-5 text-brand-500" /> Plano de Melhoria
         </h3>
         <ol className="space-y-2 text-body-sm text-text-secondary list-decimal list-inside">
           {weakest.map((w) => (
@@ -122,7 +122,7 @@ export default function FeedbackPage() {
         <Link href="/interviews/new" className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-cream-500 text-text-secondary font-medium hover:bg-cream-200 transition-colors">
           Nova Sessão
         </Link>
-        <Link href={`/interviews/${sessionId}/session`} className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-moss-500 text-white font-heading font-semibold hover:bg-moss-600 transition-colors">
+        <Link href={`/interviews/${sessionId}/session`} className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 transition-colors">
           Repetir Sessão
         </Link>
       </div>

@@ -78,7 +78,7 @@ export default function BookingPage() {
         <h3 className="font-heading text-h4 text-text-primary mb-3">1. Escolha o serviço</h3>
         <div className="space-y-2">
           {services.map((svc) => (
-            <button key={svc.id} onClick={() => setSelectedService(svc.id)} className={`w-full p-4 rounded-lg flex items-center justify-between text-left transition-all ${selectedService === svc.id ? "ring-2 ring-moss-500 bg-moss-50/50" : "bg-cream-50 hover:bg-cream-100"}`}>
+            <button key={svc.id} onClick={() => setSelectedService(svc.id)} className={`w-full p-4 rounded-lg flex items-center justify-between text-left transition-all ${selectedService === svc.id ? "ring-2 ring-brand-500 bg-brand-50/50" : "bg-cream-50 hover:bg-cream-100"}`}>
               <div>
                 <p className="text-body-sm font-medium text-text-primary">{svc.title}</p>
                 <p className="text-caption text-text-muted flex items-center gap-1"><Clock className="w-3 h-3" />{svc.duration > 0 ? `${svc.duration} min` : "Pacote"}</p>
@@ -100,7 +100,7 @@ export default function BookingPage() {
               <label className="block text-body-sm font-medium text-text-primary mb-1.5">Horário disponível</label>
               <div className="grid grid-cols-3 gap-2">
                 {SLOTS.map((slot) => (
-                  <button key={slot} onClick={() => setSelectedSlot(slot)} className={`py-2.5 rounded-lg text-body-sm font-medium transition-all ${selectedSlot === slot ? "bg-moss-500 text-white" : "bg-cream-100 text-text-secondary hover:bg-cream-200"}`}>{slot}</button>
+                  <button key={slot} onClick={() => setSelectedSlot(slot)} className={`py-2.5 rounded-lg text-body-sm font-medium transition-all ${selectedSlot === slot ? "bg-brand-500 text-white" : "bg-cream-100 text-text-secondary hover:bg-cream-200"}`}>{slot}</button>
                 ))}
               </div>
             </div>
@@ -117,13 +117,13 @@ export default function BookingPage() {
           <div className="space-y-2 mb-4">
             <div className="flex justify-between text-body-sm"><span className="text-text-secondary">Serviço</span><span className="text-text-primary font-medium">{service?.title}</span></div>
             <div className="flex justify-between text-body-sm"><span className="text-text-secondary">Data</span><span className="text-text-primary font-medium">{new Date(selectedDate).toLocaleDateString("pt-BR")}{selectedSlot ? ` às ${selectedSlot}` : ""}</span></div>
-            <div className="flex justify-between text-body-sm border-t border-cream-300 pt-2"><span className="text-text-primary font-bold">Total</span><span className="font-heading font-bold text-moss-500">R$ {service?.price.toLocaleString("pt-BR")}</span></div>
+            <div className="flex justify-between text-body-sm border-t border-cream-300 pt-2"><span className="text-text-primary font-bold">Total</span><span className="font-heading font-bold text-brand-500">R$ {service?.price.toLocaleString("pt-BR")}</span></div>
           </div>
           <div className="p-3 rounded-lg bg-cream-100 flex items-start gap-2 mb-4">
-            <Shield className="w-4 h-4 text-moss-500 mt-0.5 flex-shrink-0" />
+            <Shield className="w-4 h-4 text-brand-500 mt-0.5 flex-shrink-0" />
             <p className="text-caption text-text-secondary">Pagamento via escrow — o valor só é liberado ao profissional após a entrega do serviço ou aprovação sua.</p>
           </div>
-          <button onClick={handleConfirm} className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-moss-500 text-white font-heading font-semibold hover:bg-moss-600 transition-colors">
+          <button onClick={handleConfirm} className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 transition-colors">
             <CreditCard className="w-4 h-4" /> Confirmar e Pagar
           </button>
         </div>

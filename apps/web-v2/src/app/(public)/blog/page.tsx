@@ -22,9 +22,9 @@ export default function BlogPage() {
         {POSTS.map((post) => (
           <article key={post.title} className="card-surface p-6 flex flex-col group hover:-translate-y-1 transition-transform cursor-pointer">
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-caption font-medium px-2 py-0.5 rounded-full bg-moss-50 text-moss-500">{post.tag}</span>
+              <span className="text-caption font-medium px-2 py-0.5 rounded-full bg-brand-50 text-brand-500">{post.tag}</span>
             </div>
-            <h3 className="font-heading text-h4 text-text-primary mb-2 group-hover:text-moss-500 transition-colors">{post.title}</h3>
+            <h3 className="font-heading text-h4 text-text-primary mb-2 group-hover:text-brand-500 transition-colors">{post.title}</h3>
             <p className="text-body-sm text-text-secondary flex-1 mb-4">{post.excerpt}</p>
             <div className="flex items-center gap-4 text-caption text-text-muted">
               <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{new Date(post.date).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>

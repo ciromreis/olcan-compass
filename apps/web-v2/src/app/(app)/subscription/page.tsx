@@ -72,28 +72,28 @@ export default function SubscriptionPage() {
         }
       />
 
-      <div className="card-surface p-6 flex items-center gap-4 bg-gradient-to-r from-moss-50 to-cream-100">
-        <Sparkles className="w-8 h-8 text-moss-500" />
+      <div className="card-surface p-6 flex items-center gap-4 bg-gradient-to-r from-brand-50 to-cream-100">
+        <Sparkles className="w-8 h-8 text-brand-500" />
         <div className="flex-1">
           <p className="text-caption text-text-muted">Plano Atual</p>
           <p className="font-heading text-h3 text-text-primary">{currentPlan.name}</p>
           <p className="text-body-sm text-text-secondary">{billingSummary}</p>
         </div>
-        <button onClick={() => setUpgradeOpen(true)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-moss-500 text-white text-body-sm font-semibold hover:bg-moss-600 transition-colors">
+        <button onClick={() => setUpgradeOpen(true)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-500 text-white text-body-sm font-semibold hover:bg-brand-600 transition-colors">
           <ArrowRight className="w-4 h-4" /> Alterar plano
         </button>
       </div>
 
       <div className="grid md:grid-cols-3 gap-4">
         {PLANS.map((plan) => (
-          <div key={plan.id} className={`card-surface p-6 ${plan.id === activePlanId ? "ring-2 ring-moss-500" : ""}`}>
-            {plan.id === activePlanId && <span className="text-caption px-2 py-0.5 rounded-full bg-moss-50 text-moss-500 font-medium mb-3 inline-block">Atual</span>}
+          <div key={plan.id} className={`card-surface p-6 ${plan.id === activePlanId ? "ring-2 ring-brand-500" : ""}`}>
+            {plan.id === activePlanId && <span className="text-caption px-2 py-0.5 rounded-full bg-brand-50 text-brand-500 font-medium mb-3 inline-block">Atual</span>}
             <h3 className="font-heading text-h3 text-text-primary">{plan.name}</h3>
-            <p className="font-heading text-h2 text-moss-500 my-2">{plan.price}</p>
+            <p className="font-heading text-h2 text-brand-500 my-2">{plan.price}</p>
             <ul className="space-y-2 mt-4">
               {plan.features.map((f) => (
                 <li key={f} className="text-body-sm text-text-secondary flex items-start gap-2">
-                  <CheckCircle className="w-4 h-4 text-moss-500 mt-0.5 flex-shrink-0" /> {f}
+                  <CheckCircle className="w-4 h-4 text-brand-500 mt-0.5 flex-shrink-0" /> {f}
                 </li>
               ))}
             </ul>
@@ -104,7 +104,7 @@ export default function SubscriptionPage() {
                   router.push(`/subscription/checkout?plan=${plan.id}`);
                 }}
 
-                className="mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-moss-500 text-moss-500 font-heading font-semibold text-body-sm hover:bg-moss-50 transition-colors"
+                className="mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-brand-500 text-brand-500 font-heading font-semibold text-body-sm hover:bg-brand-50 transition-colors"
               >
                 {plan.price === "Grátis" ? "Downgrade" : "Upgrade"} <ArrowRight className="w-4 h-4" />
               </button>

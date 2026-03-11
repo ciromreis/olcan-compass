@@ -67,7 +67,7 @@ export default function MarketplacePage() {
           <p className="text-caption text-text-muted">Contratações</p>
         </div>
         <div className="card-surface p-4 text-center">
-          <p className="font-heading font-bold text-h3 text-moss-500">{stats.completedBookings}</p>
+          <p className="font-heading font-bold text-h3 text-brand-500">{stats.completedBookings}</p>
           <p className="text-caption text-text-muted">Concluídas</p>
         </div>
         <div className="card-surface p-4 text-center">
@@ -94,7 +94,7 @@ export default function MarketplacePage() {
         <Link href="/marketplace/messages" className="relative inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-cream-500 text-text-secondary text-body-sm font-medium hover:bg-cream-200 transition-colors">
           <MessageSquare className="w-4 h-4" /> Mensagens
           {stats.unreadMessages > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-moss-500 text-white text-[10px] flex items-center justify-center font-bold">{stats.unreadMessages}</span>
+            <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-brand-500 text-white text-[10px] flex items-center justify-center font-bold">{stats.unreadMessages}</span>
           )}
         </Link>
       </div>
@@ -124,13 +124,13 @@ export default function MarketplacePage() {
             {filteredProviders.map((pro) => (
               <Link key={pro.id} href={`/marketplace/provider/${pro.id}`} className="card-surface p-5 group hover:-translate-y-0.5 transition-transform">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 rounded-full bg-moss-50 flex items-center justify-center flex-shrink-0 text-moss-500 font-heading font-bold">
+                  <div className="w-12 h-12 rounded-full bg-brand-50 flex items-center justify-center flex-shrink-0 text-brand-500 font-heading font-bold">
                     {pro.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
                   </div>
                   <div>
                     <div className="flex items-center gap-1">
                       <p className="font-heading font-semibold text-text-primary text-body-sm">{pro.name}</p>
-                      {pro.verified && <Shield className="w-3.5 h-3.5 text-moss-500" />}
+                      {pro.verified && <Shield className="w-3.5 h-3.5 text-brand-500" />}
                     </div>
                     <p className="text-caption text-text-muted">{pro.specialties.map((s) => CATEGORY_LABELS[s]).join(", ")}</p>
                   </div>

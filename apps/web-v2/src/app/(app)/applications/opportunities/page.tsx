@@ -87,7 +87,7 @@ export default function OpportunitiesPage() {
           <p className="text-caption text-text-muted">Resultados</p>
         </div>
         <div className="card-surface p-4 text-center">
-          <p className="font-heading text-h3 text-moss-500">{applications.length}</p>
+          <p className="font-heading text-h3 text-brand-500">{applications.length}</p>
           <p className="text-caption text-text-muted">Já na sua lista</p>
         </div>
         <div className="card-surface p-4 text-center">
@@ -111,7 +111,7 @@ export default function OpportunitiesPage() {
 
       <div className="flex flex-wrap gap-2">
         {(["Todos", "Mestrado", "Doutorado", "Bolsa", "Emprego"] as OppType[]).map((f) => (
-          <button key={f} onClick={() => setFilter(f)} className={`px-3 py-1.5 rounded-full text-body-sm font-medium transition-colors ${filter === f ? "bg-moss-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>{f}</button>
+          <button key={f} onClick={() => setFilter(f)} className={`px-3 py-1.5 rounded-full text-body-sm font-medium transition-colors ${filter === f ? "bg-brand-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>{f}</button>
         ))}
       </div>
 
@@ -125,8 +125,8 @@ export default function OpportunitiesPage() {
             return (
               <div key={opp.id} className="card-surface p-6 group hover:-translate-y-0.5 transition-transform">
                 <div className="flex items-start gap-4">
-                  <div className="w-11 h-11 rounded-lg bg-moss-50 flex items-center justify-center flex-shrink-0">
-                    <opp.icon className="w-5 h-5 text-moss-500" />
+                  <div className="w-11 h-11 rounded-lg bg-brand-50 flex items-center justify-center flex-shrink-0">
+                    <opp.icon className="w-5 h-5 text-brand-500" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-heading text-h4 text-text-primary truncate">{opp.title}</h3>
@@ -139,14 +139,14 @@ export default function OpportunitiesPage() {
                   </div>
                 </div>
                 <div className="flex items-center justify-between mt-4 pt-3 border-t border-cream-300">
-                  <span className="flex items-center gap-1 text-body-sm font-bold text-moss-500"><Star className="w-4 h-4" />Match: {opp.match}%</span>
+                  <span className="flex items-center gap-1 text-body-sm font-bold text-brand-500"><Star className="w-4 h-4" />Match: {opp.match}%</span>
                   <div className="flex gap-2">
                     {alreadyAdded ? (
-                      <span className="inline-flex items-center gap-1 px-3 py-1.5 text-caption font-medium text-moss-500"><CheckCircle className="w-3 h-3" /> Adicionado</span>
+                      <span className="inline-flex items-center gap-1 px-3 py-1.5 text-caption font-medium text-brand-500"><CheckCircle className="w-3 h-3" /> Adicionado</span>
                     ) : (
                       <button onClick={() => handleAddToWatchlist(opp)} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-cream-500 text-text-secondary text-caption font-medium hover:bg-cream-200 transition-colors"><Eye className="w-3 h-3" /> Watchlist</button>
                     )}
-                    <button onClick={() => handleApply(opp)} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-moss-500 text-white text-caption font-medium hover:bg-moss-600 transition-colors">
+                    <button onClick={() => handleApply(opp)} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-brand-500 text-white text-caption font-medium hover:bg-brand-600 transition-colors">
                       {existingPrograms.has(opp.title) ? "Ver" : "Aplicar"} <ArrowRight className="w-3 h-3" />
                     </button>
                   </div>

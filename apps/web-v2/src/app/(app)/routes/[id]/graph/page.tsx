@@ -35,7 +35,7 @@ export default function RouteGraphPage() {
       <PageHeader backHref={`/routes/${id}`} title="Grafo de Dependências" subtitle={`Visualização DAG da rota ${route.name}`} />
 
       <div className="card-surface p-4 flex items-center gap-3 bg-cream-100">
-        <Info className="w-5 h-5 text-moss-500 flex-shrink-0" />
+        <Info className="w-5 h-5 text-brand-500 flex-shrink-0" />
         <p className="text-body-sm text-text-secondary">O grafo mostra as dependências entre milestones. Nodes cinzas foram podados por restrições do seu perfil.</p>
       </div>
 
@@ -48,7 +48,7 @@ export default function RouteGraphPage() {
                 <h4 className="font-heading text-caption text-text-muted uppercase tracking-wider mb-2">{group}</h4>
                 <div className="flex flex-wrap gap-3">
                   {groupMs.map((m) => {
-                    const statusColor = m.status === "completed" ? "bg-moss-500 text-white" : m.status === "in_progress" ? "border-2 border-moss-500 text-moss-500" : m.status === "blocked" ? "bg-clay-300 opacity-50 text-white" : "bg-cream-300 text-text-secondary";
+                    const statusColor = m.status === "completed" ? "bg-brand-500 text-white" : m.status === "in_progress" ? "border-2 border-brand-500 text-brand-500" : m.status === "blocked" ? "bg-clay-300 opacity-50 text-white" : "bg-cream-300 text-text-secondary";
                     const deps = m.dependsOn?.map((dId) => route.milestones.find((x) => x.id === dId)?.name).filter(Boolean) ?? [];
                     return (
                       <div key={m.id} className={`px-4 py-2 rounded-lg text-body-sm font-medium ${statusColor}`} title={deps.length > 0 ? `Depende de: ${deps.join(", ")}` : undefined}>
@@ -62,8 +62,8 @@ export default function RouteGraphPage() {
           })}
         </div>
         <div className="flex flex-wrap justify-center gap-4 text-body-sm mt-6 pt-4 border-t border-cream-300">
-          <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-moss-500" /> Completo</span>
-          <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full border-2 border-moss-500" /> Em progresso</span>
+          <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-brand-500" /> Completo</span>
+          <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full border-2 border-brand-500" /> Em progresso</span>
           <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-cream-400" /> Pendente</span>
           <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-clay-300 opacity-50" /> Bloqueado</span>
         </div>
@@ -71,7 +71,7 @@ export default function RouteGraphPage() {
 
       <div className="grid md:grid-cols-3 gap-4">
         <div className="card-surface p-4 text-center">
-          <p className="font-heading text-h2 text-moss-500">{stats.nodes}</p>
+          <p className="font-heading text-h2 text-brand-500">{stats.nodes}</p>
           <p className="text-caption text-text-muted">Nodes ativos</p>
         </div>
         <div className="card-surface p-4 text-center">

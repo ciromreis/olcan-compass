@@ -67,20 +67,20 @@ export default function InterviewsListPage() {
           <h1 className="font-heading text-h2 text-text-primary">Simulador de Entrevistas</h1>
           <p className="text-body text-text-secondary mt-1">Pratique e receba feedback em tempo real</p>
         </div>
-        <Link href="/interviews/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors">
+        <Link href="/interviews/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
           <Plus className="w-4 h-4" /> Nova Sessão
         </Link>
       </div>
 
       <div className="grid sm:grid-cols-4 gap-4">
         <div className="card-surface p-5 text-center">
-          <Mic className="w-5 h-5 text-moss-500 mx-auto mb-1" />
+          <Mic className="w-5 h-5 text-brand-500 mx-auto mb-1" />
           <p className="font-heading text-h2 text-text-primary">{stats.totalSessions}</p>
           <p className="text-caption text-text-muted">Sessões</p>
         </div>
         <div className="card-surface p-5 text-center">
-          <Star className="w-5 h-5 text-moss-500 mx-auto mb-1" />
-          <p className={`font-heading text-h2 ${stats.avgScore >= 70 ? "text-moss-500" : "text-amber-500"}`}>{stats.avgScore || "—"}</p>
+          <Star className="w-5 h-5 text-brand-500 mx-auto mb-1" />
+          <p className={`font-heading text-h2 ${stats.avgScore >= 70 ? "text-brand-500" : "text-amber-500"}`}>{stats.avgScore || "—"}</p>
           <p className="text-caption text-text-muted">Score médio</p>
         </div>
         <div className="card-surface p-5 text-center">
@@ -103,7 +103,7 @@ export default function InterviewsListPage() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Buscar sessões..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent"
           />
         </div>
         <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-cream-500 text-text-secondary text-body-sm font-medium bg-white">
@@ -145,7 +145,7 @@ export default function InterviewsListPage() {
                       <span>{new Date(session.startedAt).toLocaleDateString("pt-BR")}</span>
                     </div>
                   </div>
-                  <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-moss-500 transition-colors" />
+                  <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-brand-500 transition-colors" />
                 </div>
               </Link>
             ))}
@@ -161,8 +161,8 @@ export default function InterviewsListPage() {
           return (
             <Link key={session.id} href={`/interviews/${session.id}`} className="card-surface p-6 group hover:-translate-y-0.5 transition-transform">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-moss-50 flex items-center justify-center flex-shrink-0">
-                  <Mic className="w-6 h-6 text-moss-500" />
+                <div className="w-12 h-12 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
+                  <Mic className="w-6 h-6 text-brand-500" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-heading text-h4 text-text-primary truncate">{session.typeLabel}</h3>
@@ -175,12 +175,12 @@ export default function InterviewsListPage() {
                 </div>
                 <div className="flex items-center gap-4 flex-shrink-0">
                   <div className="text-right">
-                    <p className={`font-heading font-bold text-h3 ${(session.overallScore || 0) >= 70 ? "text-moss-500" : "text-clay-500"}`}>
+                    <p className={`font-heading font-bold text-h3 ${(session.overallScore || 0) >= 70 ? "text-brand-500" : "text-clay-500"}`}>
                       {session.overallScore ?? "—"}
                     </p>
                     <p className="text-caption text-text-muted">Score</p>
                   </div>
-                  <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-moss-500 transition-colors" />
+                  <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-brand-500 transition-colors" />
                 </div>
               </div>
             </Link>

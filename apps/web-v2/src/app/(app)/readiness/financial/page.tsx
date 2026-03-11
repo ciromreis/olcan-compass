@@ -59,9 +59,9 @@ export default function FinancialViabilityPage() {
           <p className="text-caption text-text-muted mt-3">{doneTasks} de {tasks.length} tarefas concluídas</p>
         </div>
         <div className="card-surface p-5 text-center">
-          <TrendingUp className="w-5 h-5 text-moss-500 mx-auto mb-1" />
+          <TrendingUp className="w-5 h-5 text-brand-500 mx-auto mb-1" />
           <p className="text-caption text-text-muted">Reserva Estimada</p>
-          <p className="font-heading text-h3 text-moss-500">R$ {reserveEstimate.toLocaleString("pt-BR")}</p>
+          <p className="font-heading text-h3 text-brand-500">R$ {reserveEstimate.toLocaleString("pt-BR")}</p>
         </div>
         <div className="card-surface p-5 text-center">
           <TrendingDown className="w-5 h-5 text-clay-500 mx-auto mb-1" />
@@ -71,14 +71,14 @@ export default function FinancialViabilityPage() {
         <div className="card-surface p-5 text-center">
           <Calculator className="w-5 h-5 text-clay-400 mx-auto mb-1" />
           <p className="text-caption text-text-muted">Gap</p>
-          <p className={`font-heading text-h3 ${gap === 0 ? "text-moss-500" : "text-clay-500"}`}>R$ {gap.toLocaleString("pt-BR")}</p>
+          <p className={`font-heading text-h3 ${gap === 0 ? "text-brand-500" : "text-clay-500"}`}>R$ {gap.toLocaleString("pt-BR")}</p>
         </div>
       </div>
 
       {tasks.length === 0 && (
         <div className="card-surface p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-moss-50 flex items-center justify-center flex-shrink-0">
-            <Zap className="w-5 h-5 text-moss-500" />
+          <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
+            <Zap className="w-5 h-5 text-brand-500" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-heading font-semibold text-text-primary text-body-sm">Nenhum sprint financeiro ativo</p>
@@ -86,7 +86,7 @@ export default function FinancialViabilityPage() {
           </div>
           <Link
             href="/sprints/new?template=financial"
-            className="flex-shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors"
+            className="flex-shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors"
           >
             <Zap className="w-4 h-4" /> Iniciar Sprint <ArrowRight className="w-3.5 h-3.5" />
           </Link>
@@ -100,7 +100,7 @@ export default function FinancialViabilityPage() {
           <div className="space-y-2">
             {tasks.map((t, i) => (
               <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-cream-50">
-                {t.done ? <CheckCircle className="w-4 h-4 text-moss-500 flex-shrink-0" /> : <Circle className="w-4 h-4 text-cream-500 flex-shrink-0" />}
+                {t.done ? <CheckCircle className="w-4 h-4 text-brand-500 flex-shrink-0" /> : <Circle className="w-4 h-4 text-cream-500 flex-shrink-0" />}
                 <span className={`text-body-sm ${t.done ? "text-text-muted line-through" : "text-text-primary"}`}>{t.name}</span>
               </div>
             ))}
@@ -117,9 +117,9 @@ export default function FinancialViabilityPage() {
               <span className="text-body-sm font-bold text-text-primary">R$ {cost.value.toLocaleString("pt-BR")}</span>
             </div>
           ))}
-          <div className="flex items-center justify-between p-3 rounded-lg bg-moss-50 border border-moss-200">
+          <div className="flex items-center justify-between p-3 rounded-lg bg-brand-50 border border-brand-200">
             <span className="text-body-sm font-bold text-text-primary">Total Estimado</span>
-            <span className="text-body-sm font-bold text-moss-500">R$ {TOTAL_COST.toLocaleString("pt-BR")}</span>
+            <span className="text-body-sm font-bold text-brand-500">R$ {TOTAL_COST.toLocaleString("pt-BR")}</span>
           </div>
         </div>
       </div>
@@ -138,13 +138,13 @@ export default function FinancialViabilityPage() {
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <Link href="/sprints/new?template=financial" className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-moss-300 text-moss-600 font-medium hover:bg-moss-50 transition-colors">
+        <Link href="/sprints/new?template=financial" className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-brand-300 text-brand-600 font-medium hover:bg-brand-50 transition-colors">
           <Zap className="w-4 h-4" /> Novo Sprint
         </Link>
         <Link href="/readiness/gaps" className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-cream-500 text-text-secondary font-medium hover:bg-cream-200 transition-colors">
           <Calculator className="w-4 h-4" /> Ver Gaps
         </Link>
-        <Link href="/marketplace" className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-moss-500 text-white font-heading font-semibold hover:bg-moss-600 transition-colors">
+        <Link href="/marketplace" className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 transition-colors">
           Consultar Especialista <ArrowRight className="w-4 h-4" />
         </Link>
       </div>

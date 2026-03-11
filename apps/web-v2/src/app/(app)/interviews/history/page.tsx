@@ -28,7 +28,7 @@ export default function InterviewHistoryPage() {
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-heading text-h4 text-text-primary">Tendência de Score</h3>
             {trendDelta !== 0 && (
-              <span className={`flex items-center gap-1 text-body-sm font-bold ${trendDelta > 0 ? "text-moss-500" : "text-clay-500"}`}>
+              <span className={`flex items-center gap-1 text-body-sm font-bold ${trendDelta > 0 ? "text-brand-500" : "text-clay-500"}`}>
                 <TrendingUp className="w-4 h-4" /> {trendDelta > 0 ? "+" : ""}{trendDelta} pts em {chronological.length} sessões
               </span>
             )}
@@ -38,7 +38,7 @@ export default function InterviewHistoryPage() {
               <Link key={s.id} href={`/interviews/${s.id}`} className="flex flex-col items-center gap-1 min-w-[3.5rem] hover:opacity-80 transition-opacity">
                 <span className="text-caption font-bold text-text-primary">{s.overallScore ?? "—"}</span>
                 <div
-                  className={`w-14 rounded-t-lg ${(s.overallScore || 0) >= 70 ? "bg-moss-500" : "bg-clay-400"}`}
+                  className={`w-14 rounded-t-lg ${(s.overallScore || 0) >= 70 ? "bg-brand-500" : "bg-clay-400"}`}
                   style={{ height: `${((s.overallScore || 0) / 100) * 120}px` }}
                 />
                 <span className="text-[10px] text-text-muted whitespace-nowrap">
@@ -55,7 +55,7 @@ export default function InterviewHistoryPage() {
           {completed.length > 0 ? `Todas as Sessões (${completed.length})` : "Nenhuma sessão completada ainda"}
         </h3>
         {completed.length === 0 ? (
-          <EmptyState icon={MessageSquare} title="Nenhuma sessão completada" description="Complete sua primeira simulação de entrevista para ver o histórico." action={<Link href="/interviews/new" className="text-moss-500 font-medium hover:underline">Iniciar sessão →</Link>} />
+          <EmptyState icon={MessageSquare} title="Nenhuma sessão completada" description="Complete sua primeira simulação de entrevista para ver o histórico." action={<Link href="/interviews/new" className="text-brand-500 font-medium hover:underline">Iniciar sessão →</Link>} />
         ) : (
           <div className="space-y-3">
             {completed.map((s, idx) => {
@@ -80,11 +80,11 @@ export default function InterviewHistoryPage() {
                     </div>
                   </div>
                   {delta !== null && (
-                    <span className={`text-body-sm font-bold ${delta > 0 ? "text-moss-500" : delta < 0 ? "text-clay-500" : "text-text-muted"}`}>
+                    <span className={`text-body-sm font-bold ${delta > 0 ? "text-brand-500" : delta < 0 ? "text-clay-500" : "text-text-muted"}`}>
                       {delta > 0 ? "+" : ""}{delta}
                     </span>
                   )}
-                  <ArrowRight className="w-4 h-4 text-text-muted group-hover:text-moss-500 transition-colors" />
+                  <ArrowRight className="w-4 h-4 text-text-muted group-hover:text-brand-500 transition-colors" />
                 </Link>
               );
             })}

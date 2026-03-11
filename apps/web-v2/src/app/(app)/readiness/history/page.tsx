@@ -67,7 +67,7 @@ export default function ReadinessHistoryPage() {
       <div className="card-surface p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-heading text-h4 text-text-primary">Snapshot Atual</h3>
-          <span className="flex items-center gap-1 text-body-sm font-bold text-moss-500"><TrendingUp className="w-4 h-4" /> Score: {snapshot.overall}</span>
+          <span className="flex items-center gap-1 text-body-sm font-bold text-brand-500"><TrendingUp className="w-4 h-4" /> Score: {snapshot.overall}</span>
         </div>
         <div className="grid md:grid-cols-[0.8fr_1.2fr] gap-6 items-center">
           <div className="flex justify-center">
@@ -125,7 +125,7 @@ export default function ReadinessHistoryPage() {
                   <td className="py-2.5 text-center font-bold text-text-primary">{entry.overall}</td>
                   <td className="py-2.5 text-center">
                     {entry.status === "approved" ? (
-                      <span className="inline-flex items-center gap-1 text-moss-500 text-caption font-medium"><ShieldCheck className="w-3.5 h-3.5" /> Aprovado</span>
+                      <span className="inline-flex items-center gap-1 text-brand-500 text-caption font-medium"><ShieldCheck className="w-3.5 h-3.5" /> Aprovado</span>
                     ) : (
                       <span className="inline-flex items-center gap-1 text-clay-500 text-caption font-medium"><AlertTriangle className="w-3.5 h-3.5" /> Bloqueado</span>
                     )}

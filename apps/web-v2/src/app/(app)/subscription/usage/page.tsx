@@ -57,7 +57,7 @@ export default function SubscriptionUsagePage() {
           ? "Sua assinatura segue ativa até o fim do ciclo atual. Acompanhe o consumo antes do downgrade."
           : "Acompanhe seus limites e veja quando faz sentido expandir sua capacidade operacional"}
         actions={
-          <Link href="/subscription" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-moss-500 text-white text-body-sm font-semibold hover:bg-moss-600 transition-colors">
+          <Link href="/subscription" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-500 text-white text-body-sm font-semibold hover:bg-brand-600 transition-colors">
             <Crown className="w-4 h-4" /> Ver planos
           </Link>
         }
@@ -73,8 +73,8 @@ export default function SubscriptionUsagePage() {
           return (
             <div key={item.key} className="card-surface p-5 space-y-4">
               <div className="flex items-start justify-between gap-3">
-                <div className="w-10 h-10 rounded-xl bg-moss-50 flex items-center justify-center">
-                  <Icon className="w-5 h-5 text-moss-500" />
+                <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center">
+                  <Icon className="w-5 h-5 text-brand-500" />
                 </div>
                 <span className={`text-caption px-2 py-1 rounded-full font-medium ${nearLimit ? "bg-clay-50 text-clay-500" : "bg-cream-100 text-text-secondary"}`}>
                   {unlimited ? "Sem limite rígido" : `${item.used}/${item.limit}`}

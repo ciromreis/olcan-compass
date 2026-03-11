@@ -53,16 +53,16 @@ export default function OrgDashboardPage() {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="card-surface p-5">
-          <Users className="w-5 h-5 text-moss-500 mb-2" />
+          <Users className="w-5 h-5 text-brand-500 mb-2" />
           <p className="text-caption text-text-muted">Membros</p>
           <p className="font-heading text-h2 text-text-primary">{stats.activeMembers}</p>
-          <p className="text-caption text-moss-500 mt-1">{members.length} no total</p>
+          <p className="text-caption text-brand-500 mt-1">{members.length} no total</p>
         </div>
         <div className="card-surface p-5">
           <TrendingUp className="w-5 h-5 text-clay-500 mb-2" />
           <p className="text-caption text-text-muted">Score Médio</p>
           <p className="font-heading text-h2 text-text-primary">{stats.avgScore}</p>
-          <p className="text-caption text-moss-500 mt-1">{stats.activeSprints} sprints ativos</p>
+          <p className="text-caption text-brand-500 mt-1">{stats.activeSprints} sprints ativos</p>
         </div>
         <div className="card-surface p-5">
           <BarChart3 className="w-5 h-5 text-sage-500 mb-2" />
@@ -70,16 +70,16 @@ export default function OrgDashboardPage() {
           <p className="font-heading text-h2 text-text-primary">{stats.routesCount}</p>
         </div>
         <div className="card-surface p-5">
-          <Shield className="w-5 h-5 text-moss-500 mb-2" />
+          <Shield className="w-5 h-5 text-brand-500 mb-2" />
           <p className="text-caption text-text-muted">Aprovados</p>
-          <p className="font-heading text-h2 text-moss-500">{stats.approvedApplications}</p>
+          <p className="font-heading text-h2 text-brand-500">{stats.approvedApplications}</p>
           <p className="text-caption text-text-muted mt-1">{stats.acceptedRate}% das candidaturas</p>
         </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">
         <Link href="/org/members" className="card-surface p-5 flex items-center gap-4 hover:bg-cream-100 transition-colors">
-          <Users className="w-6 h-6 text-moss-500" />
+          <Users className="w-6 h-6 text-brand-500" />
           <div className="flex-1"><h3 className="font-heading text-h4 text-text-primary">Membros</h3><p className="text-body-sm text-text-secondary">Ver e gerenciar membros da organização</p></div>
           <ArrowRight className="w-5 h-5 text-text-muted" />
         </Link>
@@ -93,12 +93,12 @@ export default function OrgDashboardPage() {
       <div className="card-surface p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-heading text-h4 text-text-primary">Atividade Recente</h3>
-          <Link href="/org/members" className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-moss-500 text-white text-caption font-medium"><UserPlus className="w-3 h-3" /> Convidar</Link>
+          <Link href="/org/members" className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-brand-500 text-white text-caption font-medium"><UserPlus className="w-3 h-3" /> Convidar</Link>
         </div>
         <div className="space-y-3">
           {activity.slice(0, 6).map((item) => (
             <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg bg-cream-50">
-              <div className="w-2 h-2 rounded-full bg-moss-400 flex-shrink-0" />
+              <div className="w-2 h-2 rounded-full bg-brand-400 flex-shrink-0" />
               <p className="text-body-sm text-text-primary flex-1">{item.event}</p>
               <span className="text-caption text-text-muted flex-shrink-0">{formatRelativeTime(item.time)}</span>
             </div>

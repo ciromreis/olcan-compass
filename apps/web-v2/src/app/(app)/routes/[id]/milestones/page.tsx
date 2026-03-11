@@ -48,13 +48,13 @@ export default function MilestonesPage() {
               <div className="space-y-2">
                 {group.milestones.map((m) => (
                   <Link key={m.id} href={`/routes/${id}/milestones/${m.id}`} className="card-surface p-4 flex items-center gap-3 group hover:bg-cream-100 transition-colors">
-                    {m.status === "completed" ? <CheckCircle className="w-5 h-5 text-moss-500 flex-shrink-0" /> : m.status === "in_progress" ? <div className="w-5 h-5 rounded-full border-2 border-moss-500 flex items-center justify-center flex-shrink-0"><div className="w-2 h-2 rounded-full bg-moss-500" /></div> : <Circle className="w-5 h-5 text-cream-500 flex-shrink-0" />}
+                    {m.status === "completed" ? <CheckCircle className="w-5 h-5 text-brand-500 flex-shrink-0" /> : m.status === "in_progress" ? <div className="w-5 h-5 rounded-full border-2 border-brand-500 flex items-center justify-center flex-shrink-0"><div className="w-2 h-2 rounded-full bg-brand-500" /></div> : <Circle className="w-5 h-5 text-cream-500 flex-shrink-0" />}
                     <div className="flex-1 min-w-0">
                       <p className={`text-body-sm font-medium ${m.status === "completed" ? "text-text-muted line-through" : "text-text-primary"}`}>{m.name}</p>
                     </div>
                     <div className="flex items-center gap-3 flex-shrink-0">
                       {m.dueDate && <span className="text-caption text-text-muted flex items-center gap-1"><Clock className="w-3 h-3" />{new Date(m.dueDate).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>}
-                      <ChevronRight className="w-4 h-4 text-text-muted group-hover:text-moss-500 transition-colors" />
+                      <ChevronRight className="w-4 h-4 text-text-muted group-hover:text-brand-500 transition-colors" />
                     </div>
                   </Link>
                 ))}

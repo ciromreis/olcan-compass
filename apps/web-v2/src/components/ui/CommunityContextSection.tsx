@@ -30,7 +30,7 @@ export function CommunityContextSection({
           <h3 className="font-heading text-h4 text-text-primary">{title}</h3>
           <p className="mt-1 text-body-sm text-text-secondary">{description}</p>
         </div>
-        <Link href="/community" className="inline-flex items-center gap-2 text-body-sm font-medium text-moss-500 transition-colors hover:text-moss-600">
+        <Link href="/community" className="inline-flex items-center gap-2 text-body-sm font-medium text-brand-500 transition-colors hover:text-brand-600">
           {ctaLabel} <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
@@ -39,7 +39,7 @@ export function CommunityContextSection({
         {items.map((item) => (
           <Link key={item.id} href="/community" className="rounded-xl border border-cream-300 bg-cream-50 p-4 transition-colors hover:bg-cream-100">
             <div className="mb-2 flex items-center gap-2 text-caption text-text-muted">
-              {item.type === "question" ? <MessageSquare className="w-3.5 h-3.5 text-moss-500" /> : <Bookmark className="w-3.5 h-3.5 text-sage-500" />}
+              {item.type === "question" ? <MessageSquare className="w-3.5 h-3.5 text-brand-500" /> : <Bookmark className="w-3.5 h-3.5 text-sage-500" />}
               <span>{item.type === "question" ? "Pergunta útil" : "Referência útil"}</span>
             </div>
             <p className="text-body-sm font-semibold text-text-primary">{item.title}</p>

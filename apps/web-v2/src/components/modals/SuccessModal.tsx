@@ -28,8 +28,8 @@ export default function SuccessModal({
         <button onClick={onClose} className="absolute top-4 right-4 p-1 rounded-lg hover:bg-cream-200 transition-colors">
           <X className="w-5 h-5 text-text-muted" />
         </button>
-        <div className="w-12 h-12 rounded-xl bg-moss-50 flex items-center justify-center mx-auto mb-4">
-          <CheckCircle className="w-6 h-6 text-moss-500" />
+        <div className="w-12 h-12 rounded-xl bg-brand-50 flex items-center justify-center mx-auto mb-4">
+          <CheckCircle className="w-6 h-6 text-brand-500" />
         </div>
         <h2 className="font-heading text-h3 text-text-primary mb-2">{title}</h2>
         <p className="text-body-sm text-text-secondary mb-6">{message}</p>
@@ -38,12 +38,12 @@ export default function SuccessModal({
             <button onClick={onClose} className="flex-1 px-4 py-2.5 rounded-xl border border-cream-500 text-text-secondary font-heading font-medium text-body-sm hover:bg-cream-200 transition-colors">
               Fechar
             </button>
-            <button onClick={() => { onAction(); onClose(); }} className="flex-1 px-4 py-2.5 rounded-xl bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors">
+            <button onClick={() => { onAction(); onClose(); }} className="flex-1 px-4 py-2.5 rounded-xl bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
               {actionLabel}
             </button>
           </div>
         ) : (
-          <button onClick={onClose} className="w-full px-4 py-2.5 rounded-xl bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors">
+          <button onClick={onClose} className="w-full px-4 py-2.5 rounded-xl bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
             Continuar
           </button>
         )}

@@ -50,7 +50,7 @@ export default function CategoryPage() {
       <div className="flex gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar nesta categoria..." className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-transparent" />
+          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar nesta categoria..." className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent" />
         </div>
         <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-cream-500 text-text-secondary text-body-sm font-medium hover:bg-cream-200 transition-colors">
           <Filter className="w-4 h-4" /> Filtrar
@@ -59,7 +59,7 @@ export default function CategoryPage() {
 
       <div className="flex flex-wrap gap-2">
         {countries.map((f) => (
-          <button key={f} onClick={() => setCountryFilter(f)} className={`px-3 py-1.5 rounded-full text-body-sm font-medium transition-colors ${f === countryFilter ? "bg-moss-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>{f}</button>
+          <button key={f} onClick={() => setCountryFilter(f)} className={`px-3 py-1.5 rounded-full text-body-sm font-medium transition-colors ${f === countryFilter ? "bg-brand-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>{f}</button>
         ))}
       </div>
 
@@ -72,13 +72,13 @@ export default function CategoryPage() {
             const minPrice = pro.services.length > 0 ? Math.min(...pro.services.map((s) => s.price)) : 0;
             return (
               <Link key={pro.id} href={`/marketplace/provider/${pro.id}`} className="card-surface p-6 flex flex-col md:flex-row md:items-center gap-4 group hover:-translate-y-0.5 transition-transform">
-                <div className="w-14 h-14 rounded-full bg-moss-50 flex items-center justify-center flex-shrink-0 text-moss-500 font-heading font-bold text-h4">
+                <div className="w-14 h-14 rounded-full bg-brand-50 flex items-center justify-center flex-shrink-0 text-brand-500 font-heading font-bold text-h4">
                   {pro.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <h3 className="font-heading text-h4 text-text-primary">{pro.name}</h3>
-                    {pro.verified && <Shield className="w-4 h-4 text-moss-500" />}
+                    {pro.verified && <Shield className="w-4 h-4 text-brand-500" />}
                     {!hasActive && <span className="text-caption px-2 py-0.5 rounded-full bg-cream-200 text-text-muted">Indisponível</span>}
                   </div>
                   <p className="text-body-sm text-text-secondary line-clamp-1">{pro.bio}</p>
@@ -89,7 +89,7 @@ export default function CategoryPage() {
                 </div>
                 <div className="flex items-center gap-4 flex-shrink-0">
                   {minPrice > 0 && <p className="text-body-sm font-bold text-text-primary">R$ {minPrice}</p>}
-                  <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-moss-500 transition-colors" />
+                  <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-brand-500 transition-colors" />
                 </div>
               </Link>
             );

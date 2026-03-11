@@ -37,7 +37,7 @@ export default function DeadlineCalendarPage() {
       <PageHeader title="Calendário de Deadlines" subtitle={`${active.length} candidaturas ativas`} backHref="/applications" />
 
       {months.length === 0 ? (
-        <EmptyState icon={Calendar} title="Nenhuma candidatura ativa" action={<Link href="/applications/new" className="text-moss-500 font-medium hover:underline">Criar candidatura →</Link>} />
+        <EmptyState icon={Calendar} title="Nenhuma candidatura ativa" action={<Link href="/applications/new" className="text-brand-500 font-medium hover:underline">Criar candidatura →</Link>} />
       ) : (
         <>
           <div className="grid md:grid-cols-3 gap-4">
@@ -60,7 +60,7 @@ export default function DeadlineCalendarPage() {
             {months.map(([month, items]) => (
               <div key={month}>
                 <h2 className="font-heading text-h4 text-text-primary mb-3 flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-moss-500" /> {month}
+                  <Calendar className="w-5 h-5 text-brand-500" /> {month}
                 </h2>
                 <div className="space-y-2">
                   {items.sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime()).map((item) => (
@@ -73,7 +73,7 @@ export default function DeadlineCalendarPage() {
                         <p className="text-body-sm font-medium text-text-primary">{item.program}</p>
                         <p className={`text-caption flex items-center gap-1 ${item.urgent ? "text-clay-500 font-medium" : "text-text-muted"}`}>
                           {item.status === "submitted" ? (
-                            <><CheckCircle className="w-3 h-3 text-moss-500" /> Submetida</>
+                            <><CheckCircle className="w-3 h-3 text-brand-500" /> Submetida</>
                           ) : item.daysLeft <= 0 ? (
                             <><AlertTriangle className="w-3 h-3 text-clay-500" /> Vencido</>
                           ) : (

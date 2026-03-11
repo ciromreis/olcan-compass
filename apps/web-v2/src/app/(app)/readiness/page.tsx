@@ -112,7 +112,7 @@ export default function ReadinessOverviewPage() {
       <div className="grid md:grid-cols-3 gap-4">
         <div className="card-surface p-6 md:col-span-1">
           <div className="text-center">
-            <Gauge className="w-8 h-8 text-moss-500 mx-auto mb-2" />
+            <Gauge className="w-8 h-8 text-brand-500 mx-auto mb-2" />
             <p className="text-caption font-heading font-semibold text-text-muted mb-1">Score Geral</p>
             <ProgressRing value={totalScore} size={120} strokeWidth={9} variant="auto" className="mx-auto" />
             <p className="text-caption text-text-muted mt-2">de 100</p>
@@ -132,15 +132,15 @@ export default function ReadinessOverviewPage() {
             {dimensions.map((d) => (
               <Link key={d.id} href={`/readiness/${d.id}`} className="block group">
                 <div className="mb-1 flex items-center justify-between">
-                  <span className="text-body-sm font-medium text-text-primary group-hover:text-moss-500 transition-colors flex items-center gap-1.5">
-                    <d.icon className="w-3.5 h-3.5 text-text-muted group-hover:text-moss-500 transition-colors" />
+                  <span className="text-body-sm font-medium text-text-primary group-hover:text-brand-500 transition-colors flex items-center gap-1.5">
+                    <d.icon className="w-3.5 h-3.5 text-text-muted group-hover:text-brand-500 transition-colors" />
                     {d.label}
                   </span>
                   <span className="text-caption text-text-muted">Sprint {d.sprintDimension}</span>
                 </div>
                 <div className="mb-1 flex items-center justify-between">
                   <span className="text-caption text-text-muted">Peso {d.weight}%</span>
-                  <span className={`text-body-sm font-bold ${d.score >= 60 ? "text-moss-500" : d.score > 0 ? "text-clay-500" : "text-text-muted"}`}>{d.score}</span>
+                  <span className={`text-body-sm font-bold ${d.score >= 60 ? "text-brand-500" : d.score > 0 ? "text-clay-500" : "text-text-muted"}`}>{d.score}</span>
                 </div>
                 <Progress
                   value={d.score}
@@ -167,14 +167,14 @@ export default function ReadinessOverviewPage() {
           <History className="w-5 h-5 text-sage-500 mx-auto mb-1" /><span className="text-body-sm font-medium text-text-primary">Histórico</span>
         </Link>
         <Link href="/readiness/simulation" className="card-surface p-4 text-center hover:bg-cream-100 transition-colors">
-          <Calculator className="w-5 h-5 text-moss-500 mx-auto mb-1" /><span className="text-body-sm font-medium text-text-primary">Simulação</span>
+          <Calculator className="w-5 h-5 text-brand-500 mx-auto mb-1" /><span className="text-body-sm font-medium text-text-primary">Simulação</span>
         </Link>
       </div>
 
       {weakest && (
-        <div className="card-surface p-6 border-l-4 border-moss-500">
+        <div className="card-surface p-6 border-l-4 border-brand-500">
           <div className="flex items-start gap-4">
-            <TrendingUp className="w-6 h-6 text-moss-500 flex-shrink-0 mt-0.5" />
+            <TrendingUp className="w-6 h-6 text-brand-500 flex-shrink-0 mt-0.5" />
             <div>
               <h3 className="font-heading text-h4 text-text-primary mb-1">Próximo Passo Recomendado</h3>
               <p className="text-body text-text-secondary">
@@ -184,11 +184,11 @@ export default function ReadinessOverviewPage() {
                   : " Continue avançando nas tarefas pendentes ou use o simulador para recalcular cenários."}
               </p>
               <div className="flex flex-wrap items-center gap-3 mt-2">
-                <Link href={`/readiness/${weakest.id}`} className="inline-flex items-center gap-1 text-body-sm font-medium text-moss-500 hover:text-moss-600 transition-colors">
+                <Link href={`/readiness/${weakest.id}`} className="inline-flex items-center gap-1 text-body-sm font-medium text-brand-500 hover:text-brand-600 transition-colors">
                   Ver detalhes <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
                 {weakest.score === 0 && weakest.id !== "logistical" && (
-                  <Link href={`/sprints/new?template=${weakest.id === "financial" ? "financial" : weakest.id === "documental" ? "documental" : weakest.id === "linguistic" ? "linguistic" : weakest.id === "psychological" ? "psychological" : "relocation"}`} className="inline-flex items-center gap-1.5 text-body-sm font-semibold text-white bg-moss-500 px-3 py-1.5 rounded-lg hover:bg-moss-600 transition-colors">
+                  <Link href={`/sprints/new?template=${weakest.id === "financial" ? "financial" : weakest.id === "documental" ? "documental" : weakest.id === "linguistic" ? "linguistic" : weakest.id === "psychological" ? "psychological" : "relocation"}`} className="inline-flex items-center gap-1.5 text-body-sm font-semibold text-white bg-brand-500 px-3 py-1.5 rounded-lg hover:bg-brand-600 transition-colors">
                     <Zap className="w-3.5 h-3.5" /> Iniciar Sprint
                   </Link>
                 )}

@@ -44,9 +44,9 @@ export default function AdminDashboardPage() {
     const activeProviders = providers.filter((p) => p.verified).length;
     return [
       { label: "Provedores", value: String(providers.length), delta: `${activeProviders} verificados`, icon: Shield, color: "text-clay-500" },
-      { label: "Contratações", value: String(bookings.length), delta: `R$ ${totalBookingRevenue.toLocaleString("pt-BR")}`, icon: DollarSign, color: "text-moss-500" },
+      { label: "Contratações", value: String(bookings.length), delta: `R$ ${totalBookingRevenue.toLocaleString("pt-BR")}`, icon: DollarSign, color: "text-brand-500" },
       { label: "Documentos Forge", value: String(documents.length), delta: `${sessions.length} entrevistas`, icon: FileText, color: "text-sage-500" },
-      { label: "Candidaturas", value: String(applications.length), delta: `${sprints.length} sprints · ${routes.length} rotas`, icon: TrendingUp, color: "text-moss-500" },
+      { label: "Candidaturas", value: String(applications.length), delta: `${sprints.length} sprints · ${routes.length} rotas`, icon: TrendingUp, color: "text-brand-500" },
     ];
   }, [hydrated, providers, bookings, documents, sessions, applications, sprints, routes]);
 
@@ -104,19 +104,19 @@ export default function AdminDashboardPage() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {SECTIONS.map((section) => (
           <Link key={section.href} href={section.href} className="card-surface p-5 group hover:-translate-y-0.5 transition-transform">
-            <section.icon className="w-6 h-6 text-moss-500 mb-3" />
-            <h3 className="font-heading text-h4 text-text-primary group-hover:text-moss-500 transition-colors">{section.label}</h3>
+            <section.icon className="w-6 h-6 text-brand-500 mb-3" />
+            <h3 className="font-heading text-h4 text-text-primary group-hover:text-brand-500 transition-colors">{section.label}</h3>
             <p className="text-caption text-text-muted mt-1">{section.description}</p>
           </Link>
         ))}
       </div>
 
       <div className="card-surface p-6">
-        <h3 className="font-heading text-h4 text-text-primary mb-4 flex items-center gap-2"><Activity className="w-5 h-5 text-moss-500" /> Atividade Recente</h3>
+        <h3 className="font-heading text-h4 text-text-primary mb-4 flex items-center gap-2"><Activity className="w-5 h-5 text-brand-500" /> Atividade Recente</h3>
         <div className="space-y-3">
           {recentActivity.length > 0 ? recentActivity.map((item, i) => (
             <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-cream-50">
-              <div className={`w-2 h-2 rounded-full flex-shrink-0 ${item.type === "dispute" ? "bg-clay-500" : item.type === "provider" ? "bg-moss-500" : item.type === "audit" ? "bg-text-muted" : "bg-sage-400"}`} />
+              <div className={`w-2 h-2 rounded-full flex-shrink-0 ${item.type === "dispute" ? "bg-clay-500" : item.type === "provider" ? "bg-brand-500" : item.type === "audit" ? "bg-text-muted" : "bg-sage-400"}`} />
               <p className="text-body-sm text-text-primary flex-1">{item.event}</p>
               <span className="text-caption text-text-muted flex-shrink-0">{formatDate(item.time)}</span>
             </div>

@@ -21,7 +21,7 @@ const ICONS: Record<ToastVariant, typeof CheckCircle> = {
 };
 
 const COLORS: Record<ToastVariant, string> = {
-  success: "bg-moss-50 border-moss-300 text-moss-600",
+  success: "bg-brand-50 border-brand-300 text-brand-600",
   error: "bg-clay-50 border-clay-300 text-clay-600",
   info: "bg-cream-100 border-cream-400 text-text-primary",
   warning: "bg-clay-50 border-clay-200 text-clay-500",

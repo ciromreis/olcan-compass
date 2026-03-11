@@ -62,7 +62,7 @@ export default function ProviderDashboardPage() {
           <select
             value={provider?.id || ""}
             onChange={(event) => setActiveProvider(event.target.value)}
-            className="w-full md:w-[360px] px-3 py-2 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-moss-400"
+            className="w-full md:w-[360px] px-3 py-2 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-400"
           >
             {providers.map((item) => (
               <option key={item.id} value={item.id}>{item.name}</option>
@@ -73,10 +73,10 @@ export default function ProviderDashboardPage() {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="card-surface p-5">
-          <DollarSign className="w-5 h-5 text-moss-500 mb-2" />
+          <DollarSign className="w-5 h-5 text-brand-500 mb-2" />
           <p className="text-caption text-text-muted">Receita Total</p>
           <p className="font-heading text-h2 text-text-primary">R$ {(stats?.revenue ?? 0).toLocaleString("pt-BR")}</p>
-          <p className="text-caption text-moss-500 flex items-center gap-1 mt-1"><TrendingUp className="w-3 h-3" />{stats?.totalBookings ?? 0} contratações</p>
+          <p className="text-caption text-brand-500 flex items-center gap-1 mt-1"><TrendingUp className="w-3 h-3" />{stats?.totalBookings ?? 0} contratações</p>
         </div>
         <div className="card-surface p-5">
           <Calendar className="w-5 h-5 text-clay-500 mb-2" />
@@ -109,7 +109,7 @@ export default function ProviderDashboardPage() {
                   <p className="text-body-sm font-medium text-text-primary truncate">{s.title}</p>
                   <p className="text-caption text-text-muted">{s.duration} min · {s.isActive ? "Ativo" : "Inativo"}</p>
                 </div>
-                <span className="text-body-sm font-bold text-moss-500">R$ {s.price}</span>
+                <span className="text-body-sm font-bold text-brand-500">R$ {s.price}</span>
               </div>
             ))}
           </div>
@@ -123,7 +123,7 @@ export default function ProviderDashboardPage() {
           <div className="space-y-3">
             {stats.recentBookings.map((b) => (
               <Link key={b.id} href={`/marketplace/bookings/${b.id}`} className="flex items-center gap-3 p-3 rounded-lg bg-cream-50 hover:bg-cream-100 transition-colors">
-                {b.status === "completed" ? <CheckCircle className="w-4 h-4 text-moss-500 flex-shrink-0" /> : <Clock className="w-4 h-4 text-clay-500 flex-shrink-0" />}
+                {b.status === "completed" ? <CheckCircle className="w-4 h-4 text-brand-500 flex-shrink-0" /> : <Clock className="w-4 h-4 text-clay-500 flex-shrink-0" />}
                 <div className="flex-1 min-w-0">
                   <p className="text-body-sm font-medium text-text-primary truncate">{b.serviceTitle}</p>
                   <p className="text-caption text-text-muted">{b.date} · {b.status}</p>
@@ -137,7 +137,7 @@ export default function ProviderDashboardPage() {
 
       <div className="grid md:grid-cols-2 gap-4">
         <Link href="/provider/bookings" className="card-surface p-5 flex items-center gap-4 hover:bg-cream-100 transition-colors">
-          <Calendar className="w-6 h-6 text-moss-500" />
+          <Calendar className="w-6 h-6 text-brand-500" />
           <div className="flex-1"><h3 className="font-heading text-h4 text-text-primary">Agendamentos</h3><p className="text-body-sm text-text-secondary">Gerencie suas consultas e entregas</p></div>
           <ArrowRight className="w-5 h-5 text-text-muted" />
         </Link>
@@ -147,7 +147,7 @@ export default function ProviderDashboardPage() {
           <ArrowRight className="w-5 h-5 text-text-muted" />
         </Link>
         <Link href="/provider/earnings" className="card-surface p-5 flex items-center gap-4 hover:bg-cream-100 transition-colors">
-          <DollarSign className="w-6 h-6 text-moss-500" />
+          <DollarSign className="w-6 h-6 text-brand-500" />
           <div className="flex-1"><h3 className="font-heading text-h4 text-text-primary">Financeiro</h3><p className="text-body-sm text-text-secondary">Receitas, saques e relatórios</p></div>
           <ArrowRight className="w-5 h-5 text-text-muted" />
         </Link>

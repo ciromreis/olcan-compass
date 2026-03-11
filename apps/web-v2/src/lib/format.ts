@@ -64,17 +64,17 @@ export function scoreTier(score: number, highThreshold = 70, midThreshold = 50):
 
 export function scoreColor(score: number, highThreshold = 70, midThreshold = 50): string {
   const tier = scoreTier(score, highThreshold, midThreshold);
-  return tier === "high" ? "text-moss-500" : tier === "mid" ? "text-amber-500" : "text-clay-500";
+  return tier === "high" ? "text-brand-500" : tier === "mid" ? "text-amber-500" : "text-clay-500";
 }
 
 export function scoreBgColor(score: number, highThreshold = 70, midThreshold = 50): string {
   const tier = scoreTier(score, highThreshold, midThreshold);
-  return tier === "high" ? "bg-moss-500" : tier === "mid" ? "bg-amber-400" : "bg-clay-400";
+  return tier === "high" ? "bg-brand-500" : tier === "mid" ? "bg-amber-400" : "bg-clay-400";
 }
 
 export function scoreBarColor(score: number, highThreshold = 75, midThreshold = 60): string {
   const tier = scoreTier(score, highThreshold, midThreshold);
-  return tier === "high" ? "bg-moss-500" : tier === "mid" ? "bg-clay-300" : "bg-clay-500";
+  return tier === "high" ? "bg-brand-500" : tier === "mid" ? "bg-clay-300" : "bg-clay-500";
 }
 
 // ── Text utilities ───────────────────────────────────────────────────────────

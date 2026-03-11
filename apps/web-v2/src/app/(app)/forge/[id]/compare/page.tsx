@@ -65,7 +65,7 @@ export default function ComparePage() {
         <p className="text-body text-text-muted mb-4">
           {!doc ? "Documento não encontrado." : "Precisa de pelo menos 2 versões salvas para comparar."}
         </p>
-        <Link href={doc ? `/forge/${docId}` : "/forge"} className="text-moss-500 font-medium hover:underline">← Voltar</Link>
+        <Link href={doc ? `/forge/${docId}` : "/forge"} className="text-brand-500 font-medium hover:underline">← Voltar</Link>
       </div>
     );
   }
@@ -84,7 +84,7 @@ export default function ComparePage() {
         <select
           value={leftIdx}
           onChange={(e) => setLeftIdx(Number(e.target.value))}
-          className="flex-1 px-4 py-2 rounded-lg border border-cream-500 bg-white text-text-primary text-body-sm focus:outline-none focus:ring-2 focus:ring-moss-400"
+          className="flex-1 px-4 py-2 rounded-lg border border-cream-500 bg-white text-text-primary text-body-sm focus:outline-none focus:ring-2 focus:ring-brand-400"
         >
           {versions.map((v, i) => (
             <option key={v.id} value={i}>
@@ -96,7 +96,7 @@ export default function ComparePage() {
         <select
           value={rightIdx}
           onChange={(e) => setRightIdx(Number(e.target.value))}
-          className="flex-1 px-4 py-2 rounded-lg border border-cream-500 bg-white text-text-primary text-body-sm focus:outline-none focus:ring-2 focus:ring-moss-400"
+          className="flex-1 px-4 py-2 rounded-lg border border-cream-500 bg-white text-text-primary text-body-sm focus:outline-none focus:ring-2 focus:ring-brand-400"
         >
           {versions.map((v, i) => (
             <option key={v.id} value={i}>
@@ -108,7 +108,7 @@ export default function ComparePage() {
 
       <div className="card-surface p-6 font-mono text-body-sm leading-relaxed max-h-[500px] overflow-y-auto">
         {diff.map((line, i) => (
-          <div key={i} className={`px-3 py-1 rounded ${line.type === "added" ? "bg-moss-50 text-moss-700" : line.type === "removed" ? "bg-clay-50 text-clay-600 line-through" : "text-text-secondary"}`}>
+          <div key={i} className={`px-3 py-1 rounded ${line.type === "added" ? "bg-brand-50 text-brand-700" : line.type === "removed" ? "bg-clay-50 text-clay-600 line-through" : "text-text-secondary"}`}>
             {line.type === "added" && <Plus className="w-3 h-3 inline mr-1" />}
             {line.type === "removed" && <Minus className="w-3 h-3 inline mr-1" />}
             {line.text || "\u00A0"}
@@ -119,7 +119,7 @@ export default function ComparePage() {
       <div className="grid grid-cols-3 gap-4">
         <div className="card-surface p-4 text-center">
           <p className="text-caption text-text-muted">Linhas adicionadas</p>
-          <p className="font-heading text-h3 text-moss-500">+{addedCount}</p>
+          <p className="font-heading text-h3 text-brand-500">+{addedCount}</p>
         </div>
         <div className="card-surface p-4 text-center">
           <p className="text-caption text-text-muted">Linhas removidas</p>
@@ -127,7 +127,7 @@ export default function ComparePage() {
         </div>
         <div className="card-surface p-4 text-center">
           <p className="text-caption text-text-muted">Delta de palavras</p>
-          <p className={`font-heading text-h3 ${wordDelta >= 0 ? "text-moss-500" : "text-clay-500"}`}>
+          <p className={`font-heading text-h3 ${wordDelta >= 0 ? "text-brand-500" : "text-clay-500"}`}>
             {wordDelta >= 0 ? "+" : ""}{wordDelta}
           </p>
         </div>

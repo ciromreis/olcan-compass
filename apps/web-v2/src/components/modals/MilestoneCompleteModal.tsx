@@ -24,8 +24,8 @@ export default function MilestoneCompleteModal({
         <button onClick={onClose} className="absolute top-4 right-4 p-1 rounded-lg hover:bg-cream-200 transition-colors">
           <X className="w-5 h-5 text-text-muted" />
         </button>
-        <div className="w-14 h-14 rounded-2xl bg-moss-50 flex items-center justify-center mx-auto mb-4">
-          <Trophy className="w-7 h-7 text-moss-500" />
+        <div className="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center mx-auto mb-4">
+          <Trophy className="w-7 h-7 text-brand-500" />
         </div>
         <div className="flex items-center justify-center gap-1 mb-2">
           <Sparkles className="w-4 h-4 text-clay-500" />
@@ -38,11 +38,11 @@ export default function MilestoneCompleteModal({
           <div className="p-3 rounded-xl bg-cream-50 mb-4">
             <p className="text-caption text-text-muted">Próximo milestone</p>
             <p className="text-body-sm font-medium text-text-primary flex items-center justify-center gap-1">
-              <ArrowRight className="w-3 h-3 text-moss-500" /> {nextMilestone}
+              <ArrowRight className="w-3 h-3 text-brand-500" /> {nextMilestone}
             </p>
           </div>
         )}
-        <button onClick={onClose} className="w-full px-4 py-2.5 rounded-xl bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors">
+        <button onClick={onClose} className="w-full px-4 py-2.5 rounded-xl bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
           Continuar Jornada
         </button>
       </div>

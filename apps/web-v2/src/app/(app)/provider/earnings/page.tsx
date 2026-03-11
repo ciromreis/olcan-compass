@@ -41,9 +41,9 @@ export default function ProviderEarningsPage() {
 
       <div className="grid md:grid-cols-3 gap-4">
         <div className="card-surface p-5">
-          <DollarSign className="w-5 h-5 text-moss-500 mb-2" />
+          <DollarSign className="w-5 h-5 text-brand-500 mb-2" />
           <p className="text-caption text-text-muted">Recebido</p>
-          <p className="font-heading text-h2 text-moss-500">R$ {totalEarned.toLocaleString("pt-BR")}</p>
+          <p className="font-heading text-h2 text-brand-500">R$ {totalEarned.toLocaleString("pt-BR")}</p>
         </div>
         <div className="card-surface p-5">
           <Clock className="w-5 h-5 text-clay-400 mb-2" />
@@ -80,7 +80,7 @@ export default function ProviderEarningsPage() {
                 variant: "success",
               });
             }}
-            className="mt-2 text-body-sm text-moss-500 font-medium hover:underline"
+            className="mt-2 text-body-sm text-brand-500 font-medium hover:underline"
           >
             Sacar
           </button>
@@ -102,7 +102,7 @@ export default function ProviderEarningsPage() {
                 ];
                 downloadCsv(rows, "provider-transacoes.csv");
               }}
-              className="inline-flex items-center gap-1 text-body-sm text-moss-500 font-medium hover:underline"
+              className="inline-flex items-center gap-1 text-body-sm text-brand-500 font-medium hover:underline"
             >
               <Download className="w-4 h-4" /> Exportar CSV
             </button>
@@ -116,7 +116,7 @@ export default function ProviderEarningsPage() {
                 </div>
                 <div className="text-right flex-shrink-0">
                   <p className="font-heading font-bold text-text-primary">{tx.currency} {tx.price.toLocaleString("pt-BR")}</p>
-                  <p className={`text-caption font-medium ${tx.escrow === "released" ? "text-moss-500" : tx.escrow === "held" ? "text-clay-400" : "text-text-muted"}`}>
+                  <p className={`text-caption font-medium ${tx.escrow === "released" ? "text-brand-500" : tx.escrow === "held" ? "text-clay-400" : "text-text-muted"}`}>
                     {tx.escrow === "released" ? "Liberado" : tx.escrow === "held" ? "Em escrow" : "Pendente"}
                   </p>
                 </div>
@@ -136,7 +136,7 @@ export default function ProviderEarningsPage() {
               <div key={request.id} className="rounded-lg bg-cream-50 p-4">
                 <div className="flex items-center justify-between gap-3 mb-1">
                   <p className="text-body-sm font-semibold text-text-primary">R$ {request.amount.toLocaleString("pt-BR")}</p>
-                  <span className={`text-caption font-medium ${request.status === "approved" || request.status === "paid" ? "text-moss-500" : request.status === "rejected" ? "text-clay-500" : "text-text-muted"}`}>
+                  <span className={`text-caption font-medium ${request.status === "approved" || request.status === "paid" ? "text-brand-500" : request.status === "rejected" ? "text-clay-500" : "text-text-muted"}`}>
                     {request.status === "pending" ? "Pendente" : request.status === "approved" ? "Aprovado" : request.status === "paid" ? "Pago" : "Rejeitado"}
                   </span>
                 </div>

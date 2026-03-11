@@ -35,7 +35,7 @@ export default function SettingsPage() {
 
       <div className="grid md:grid-cols-3 gap-6">
         <div className="col-span-1 space-y-2">
-          <Link href="/settings" className="flex items-center gap-3 px-4 py-3 rounded-lg bg-cream-100 text-moss-600 font-medium transition-colors">
+          <Link href="/settings" className="flex items-center gap-3 px-4 py-3 rounded-lg bg-cream-100 text-brand-600 font-medium transition-colors">
             <User className="w-5 h-5" /> Perfil Geral
           </Link>
           <Link href="/settings/billing" className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-cream-50 text-text-secondary transition-colors">
@@ -54,7 +54,7 @@ export default function SettingsPage() {
             
             <div className="pt-4 border-t border-cream-200">
               <label className="block text-body-sm font-medium text-text-primary mb-1.5 flex items-center gap-2"><Globe className="w-4 h-4 text-text-muted"/> Idioma e Região</label>
-              <select value={language} onChange={(e) => setLanguage(e.target.value)} className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-moss-400">
+              <select value={language} onChange={(e) => setLanguage(e.target.value)} className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-400">
                 <option value="pt-BR">Português (Brasil)</option>
                 <option value="en-US">Inglês (Estados Unidos)</option>
                 <option value="es-ES">Espanhol</option>
@@ -63,9 +63,9 @@ export default function SettingsPage() {
           </div>
 
           <div className="card-surface p-6 space-y-5">
-            <h3 className="font-heading text-h3 text-text-primary flex items-center gap-2"><Lock className="w-5 h-5 text-moss-500" /> Privacidade</h3>
+            <h3 className="font-heading text-h3 text-text-primary flex items-center gap-2"><Lock className="w-5 h-5 text-brand-500" /> Privacidade</h3>
             <label className="flex items-start gap-3 p-3 rounded-lg bg-cream-50 cursor-pointer">
-              <input type="checkbox" checked={privacyPublic} onChange={(e) => setPrivacyPublic(e.target.checked)} className="mt-1 rounded border-cream-500 text-moss-500 focus:ring-moss-400" />
+              <input type="checkbox" checked={privacyPublic} onChange={(e) => setPrivacyPublic(e.target.checked)} className="mt-1 rounded border-cream-500 text-brand-500 focus:ring-brand-400" />
               <div>
                 <span className="block text-body font-medium text-text-primary">Perfil Público de Mentoria</span>
                 <span className="block text-caption text-text-muted">Permite que recrutadores e universidades encontrem seu perfil anonimizado no painel institucional.</span>
@@ -74,7 +74,7 @@ export default function SettingsPage() {
           </div>
 
           <div className="flex justify-end gap-3">
-            <Button onClick={handleSave} className="bg-moss-500 text-white min-w-[140px] justify-center hover:bg-moss-600"><Save className="w-4 h-4 mr-2" /> Salvar Alterações</Button>
+            <Button onClick={handleSave} className="bg-brand-500 text-white min-w-[140px] justify-center hover:bg-brand-600"><Save className="w-4 h-4 mr-2" /> Salvar Alterações</Button>
           </div>
         </div>
       </div>

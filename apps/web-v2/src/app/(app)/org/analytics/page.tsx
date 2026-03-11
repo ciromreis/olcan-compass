@@ -148,14 +148,14 @@ export default function OrgAnalyticsPage() {
 
       <div className="grid sm:grid-cols-3 gap-4">
         <div className="card-surface p-5 text-center">
-          <Users className="w-5 h-5 text-moss-500 mx-auto mb-1" />
+          <Users className="w-5 h-5 text-brand-500 mx-auto mb-1" />
           <p className="text-caption text-text-muted">Membros Ativos</p>
           <p className="font-heading text-h2 text-text-primary">{analytics.activeMembers}</p>
         </div>
         <div className="card-surface p-5 text-center">
-          <TrendingUp className="w-5 h-5 text-moss-500 mx-auto mb-1" />
+          <TrendingUp className="w-5 h-5 text-brand-500 mx-auto mb-1" />
           <p className="text-caption text-text-muted">Score Médio</p>
-          <p className="font-heading text-h2 text-moss-500">{analytics.avgScore}</p>
+          <p className="font-heading text-h2 text-brand-500">{analytics.avgScore}</p>
         </div>
         <div className="card-surface p-5 text-center">
           <Target className="w-5 h-5 text-sage-500 mx-auto mb-1" />
@@ -165,16 +165,16 @@ export default function OrgAnalyticsPage() {
       </div>
 
       <div className="card-surface p-6">
-        <h3 className="font-heading text-h4 text-text-primary mb-4 flex items-center gap-2"><BarChart3 className="w-5 h-5 text-moss-500" /> Scores por Dimensão (média)</h3>
+        <h3 className="font-heading text-h4 text-text-primary mb-4 flex items-center gap-2"><BarChart3 className="w-5 h-5 text-brand-500" /> Scores por Dimensão (média)</h3>
         <div className="space-y-3">
           {analytics.dimensions.map((d) => (
             <div key={d.name} className="flex items-center gap-4">
               <span className="w-28 text-body-sm text-text-primary font-medium">{d.name}</span>
               <div className="flex-1 h-3 bg-cream-300 rounded-full overflow-hidden">
-                <div className="h-full bg-moss-500 rounded-full" style={{ width: `${d.avg}%` }} />
+                <div className="h-full bg-brand-500 rounded-full" style={{ width: `${d.avg}%` }} />
               </div>
               <span className="w-10 text-body-sm font-bold text-text-primary text-right">{d.avg}</span>
-              <span className="w-10 text-caption text-moss-500">{d.delta}</span>
+              <span className="w-10 text-caption text-brand-500">{d.delta}</span>
             </div>
           ))}
         </div>

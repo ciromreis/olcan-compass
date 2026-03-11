@@ -57,7 +57,7 @@ export default function VoiceAnalysisPage() {
           <div className="flex items-end gap-0.5 h-16">
             {Array.from({ length: 60 }).map((_, i) => {
               const seed = ((i + 1) * 7 + (session.overallScore ?? 50)) % 100;
-              return <div key={i} className="w-1 bg-moss-400 rounded-full" style={{ height: `${seed}%`, opacity: 0.5 + seed / 200 }} />;
+              return <div key={i} className="w-1 bg-brand-400 rounded-full" style={{ height: `${seed}%`, opacity: 0.5 + seed / 200 }} />;
             })}
           </div>
         </div>
@@ -71,11 +71,11 @@ export default function VoiceAnalysisPage() {
           <div key={m.label} className="card-surface p-5">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                {m.status === "ok" ? <Volume2 className="w-4 h-4 text-moss-500" /> : <AlertTriangle className="w-4 h-4 text-clay-400" />}
+                {m.status === "ok" ? <Volume2 className="w-4 h-4 text-brand-500" /> : <AlertTriangle className="w-4 h-4 text-clay-400" />}
                 <h4 className="font-heading font-semibold text-text-primary">{m.label}</h4>
               </div>
               <div className="flex items-center gap-3">
-                <span className={`font-heading font-bold ${m.status === "ok" ? "text-moss-500" : "text-clay-500"}`}>{m.value}</span>
+                <span className={`font-heading font-bold ${m.status === "ok" ? "text-brand-500" : "text-clay-500"}`}>{m.value}</span>
                 <span className="text-caption text-text-muted">meta: {m.target}</span>
               </div>
             </div>

@@ -25,8 +25,8 @@ export default function PsychLayout({ children }: { children: React.ReactNode })
   return (
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-lg bg-moss-50 flex items-center justify-center">
-          <Brain className="w-5 h-5 text-moss-500" />
+        <div className="w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center">
+          <Brain className="w-5 h-5 text-brand-500" />
         </div>
         <div className="flex-1">
           <h2 className="font-heading text-h4 text-text-primary">Diagnóstico Psicológico</h2>
@@ -38,11 +38,11 @@ export default function PsychLayout({ children }: { children: React.ReactNode })
       {currentIndex > 0 && (
         <div className="mb-8">
           <div className="h-1.5 bg-cream-300 rounded-full overflow-hidden">
-            <div className="h-full bg-moss-500 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
+            <div className="h-full bg-brand-500 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
           </div>
           <div className="flex justify-between mt-2">
             {STEPS.map((step, i) => (
-              <span key={step.path} className={`text-[10px] font-medium ${i <= currentIndex ? "text-moss-500" : "text-text-muted"}`}>
+              <span key={step.path} className={`text-[10px] font-medium ${i <= currentIndex ? "text-brand-500" : "text-text-muted"}`}>
                 {i + 1}
               </span>
             ))}

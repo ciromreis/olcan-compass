@@ -92,14 +92,14 @@ export default function QuestionBankPage() {
       <div className="flex flex-col gap-3 md:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-          <input value={search} onChange={(event) => setSearch(event.target.value)} type="text" placeholder="Buscar perguntas..." className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-transparent" />
+          <input value={search} onChange={(event) => setSearch(event.target.value)} type="text" placeholder="Buscar perguntas..." className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent" />
         </div>
         <div className="flex flex-wrap gap-2">
-          <button onClick={() => setSelectedType("all")} className={`rounded-lg px-4 py-2.5 text-body-sm font-medium transition-colors ${selectedType === "all" ? "bg-moss-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>
+          <button onClick={() => setSelectedType("all")} className={`rounded-lg px-4 py-2.5 text-body-sm font-medium transition-colors ${selectedType === "all" ? "bg-brand-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>
             Todas
           </button>
           {categories.map((category) => (
-            <button key={category.id} onClick={() => setSelectedType(category.id)} className={`rounded-lg px-4 py-2.5 text-body-sm font-medium transition-colors ${selectedType === category.id ? "bg-moss-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>
+            <button key={category.id} onClick={() => setSelectedType(category.id)} className={`rounded-lg px-4 py-2.5 text-body-sm font-medium transition-colors ${selectedType === category.id ? "bg-brand-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>
               {category.label}
             </button>
           ))}
@@ -110,7 +110,7 @@ export default function QuestionBankPage() {
         {categories.map((cat) => (
           <div key={cat.id} className="card-surface p-5">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-lg bg-moss-50 flex items-center justify-center"><cat.icon className="w-5 h-5 text-moss-500" /></div>
+              <div className="w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center"><cat.icon className="w-5 h-5 text-brand-500" /></div>
               <div>
                 <h3 className="font-heading text-h4 text-text-primary">{cat.label}</h3>
                 <p className="text-caption text-text-muted">{cat.count} perguntas</p>
@@ -127,7 +127,7 @@ export default function QuestionBankPage() {
                 Ver perguntas
                 <ChevronRight className="w-4 h-4" />
               </button>
-              <Link href={`/interviews/new?type=${cat.id}&target=${encodeURIComponent(cat.targetHint)}`} className="inline-flex items-center gap-2 text-body-sm font-medium text-moss-500 transition-colors hover:text-moss-600">
+              <Link href={`/interviews/new?type=${cat.id}&target=${encodeURIComponent(cat.targetHint)}`} className="inline-flex items-center gap-2 text-body-sm font-medium text-brand-500 transition-colors hover:text-brand-600">
                 Praticar agora
                 <ArrowRight className="w-4 h-4" />
               </Link>
@@ -168,7 +168,7 @@ export default function QuestionBankPage() {
             {filteredQuestions.map((entry) => (
               <Link key={entry.id} href={`/interviews/new?type=${entry.type}&target=${encodeURIComponent(entry.label)}`} className="flex items-center gap-3 rounded-lg border border-cream-300 px-4 py-3 transition-colors hover:bg-cream-50">
                 <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-cream-100">
-                  <Mic className="h-4 w-4 text-moss-500" />
+                  <Mic className="h-4 w-4 text-brand-500" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-body-sm font-medium text-text-primary">{entry.question}</p>

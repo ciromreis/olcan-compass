@@ -85,7 +85,7 @@ export default function DimensionDetailPage() {
   }
 
   if (!meta) {
-    return <div className="max-w-4xl mx-auto py-12"><EmptyState icon={DollarSign} title="Dimensão não encontrada" action={<Link href="/readiness" className="px-4 py-2 rounded-lg bg-moss-500 text-white text-body-sm font-semibold hover:bg-moss-600 transition-colors">Voltar à Prontidão</Link>} /></div>;
+    return <div className="max-w-4xl mx-auto py-12"><EmptyState icon={DollarSign} title="Dimensão não encontrada" action={<Link href="/readiness" className="px-4 py-2 rounded-lg bg-brand-500 text-white text-body-sm font-semibold hover:bg-brand-600 transition-colors">Voltar à Prontidão</Link>} /></div>;
   }
 
   const Icon = meta.icon;
@@ -123,7 +123,7 @@ export default function DimensionDetailPage() {
           <div className="space-y-3">
             {tasks.map((t, i) => (
               <div key={i} className="p-4 rounded-lg bg-cream-50 flex items-center gap-3">
-                {t.done ? <CheckCircle className="w-5 h-5 text-moss-500 flex-shrink-0" /> : <Circle className="w-5 h-5 text-cream-500 flex-shrink-0" />}
+                {t.done ? <CheckCircle className="w-5 h-5 text-brand-500 flex-shrink-0" /> : <Circle className="w-5 h-5 text-cream-500 flex-shrink-0" />}
                 <div className="flex-1 min-w-0">
                   <p className={`text-body-sm font-medium ${t.done ? "text-text-primary line-through opacity-60" : "text-text-primary"}`}>{t.name}</p>
                   <p className="text-caption text-text-muted">{t.sprint}</p>
@@ -136,8 +136,8 @@ export default function DimensionDetailPage() {
 
       {tasks.length === 0 && dimension !== "psychological" && meta.sprintTemplate && (
         <div className="card-surface p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-moss-50 flex items-center justify-center flex-shrink-0">
-            <Zap className="w-5 h-5 text-moss-500" />
+          <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
+            <Zap className="w-5 h-5 text-brand-500" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-heading font-semibold text-text-primary text-body-sm">Nenhum sprint ativo para esta dimensão</p>
@@ -145,7 +145,7 @@ export default function DimensionDetailPage() {
           </div>
           <Link
             href={`/sprints/new?template=${meta.sprintTemplate}`}
-            className="flex-shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors"
+            className="flex-shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors"
           >
             <Zap className="w-4 h-4" /> Iniciar Sprint <ArrowRight className="w-3.5 h-3.5" />
           </Link>
@@ -154,11 +154,11 @@ export default function DimensionDetailPage() {
 
       {tasks.length === 0 && dimension === "psychological" && (
         <div className="card-surface p-6 text-center">
-          <Brain className="w-8 h-8 text-moss-500 mx-auto mb-3" />
+          <Brain className="w-8 h-8 text-brand-500 mx-auto mb-3" />
           <p className="text-body text-text-secondary mb-3">
             {isComplete() ? `Seu score psicológico é ${score}. Refaça o diagnóstico para atualizar.` : "Complete o diagnóstico psicológico para calcular este score."}
           </p>
-          <Link href="/profile/psych" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-moss-500 text-white text-body-sm font-semibold hover:bg-moss-600 transition-colors">
+          <Link href="/profile/psych" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-500 text-white text-body-sm font-semibold hover:bg-brand-600 transition-colors">
             {isComplete() ? "Refazer Diagnóstico" : "Iniciar Diagnóstico"} <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -169,7 +169,7 @@ export default function DimensionDetailPage() {
           <h3 className="font-heading text-h4 text-text-primary mb-2">Recomendações</h3>
           <ul className="space-y-2 text-body-sm text-text-secondary">
             {recs.map((r, i) => (
-              <li key={i} className="flex items-start gap-2"><ArrowRight className="w-4 h-4 text-moss-500 mt-0.5 flex-shrink-0" />{r}</li>
+              <li key={i} className="flex items-start gap-2"><ArrowRight className="w-4 h-4 text-brand-500 mt-0.5 flex-shrink-0" />{r}</li>
             ))}
           </ul>
         </div>

@@ -14,11 +14,11 @@ import { useCommunityArtifactSave, useHydration } from "@/hooks";
 import { CommunityContextSection, Progress, SaveToCommunityButton, Skeleton } from "@/components/ui";
 
 function MilestoneIcon({ status }: { status: MilestoneStatus }) {
-  if (status === "completed") return <CheckCircle className="w-5 h-5 text-moss-500" />;
+  if (status === "completed") return <CheckCircle className="w-5 h-5 text-brand-500" />;
   if (status === "in_progress")
     return (
-      <div className="w-5 h-5 rounded-full border-2 border-moss-500 flex items-center justify-center">
-        <div className="w-2 h-2 rounded-full bg-moss-500 animate-pulse" />
+      <div className="w-5 h-5 rounded-full border-2 border-brand-500 flex items-center justify-center">
+        <div className="w-2 h-2 rounded-full bg-brand-500 animate-pulse" />
       </div>
     );
   if (status === "blocked") return <AlertTriangle className="w-5 h-5 text-clay-400" />;
@@ -70,7 +70,7 @@ export default function RouteOverviewPage() {
       <div className="max-w-5xl mx-auto text-center py-20">
         <RouteIcon className="w-12 h-12 text-text-muted mx-auto mb-4" />
         <h2 className="font-heading text-h3 text-text-primary mb-2">Rota não encontrada</h2>
-        <Link href="/routes" className="text-moss-500 font-medium hover:underline">Voltar às rotas</Link>
+        <Link href="/routes" className="text-brand-500 font-medium hover:underline">Voltar às rotas</Link>
       </div>
     );
   }
@@ -109,7 +109,7 @@ export default function RouteOverviewPage() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-caption font-heading font-semibold tracking-widest uppercase text-moss-400 mb-1">Rota Ativa</p>
+          <p className="text-caption font-heading font-semibold tracking-widest uppercase text-brand-400 mb-1">Rota Ativa</p>
           <h1 className="font-heading text-h2 text-text-primary">{route.name}</h1>
           <div className="flex flex-wrap gap-4 mt-2 text-body-sm text-text-secondary">
             <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{route.country}</span>
@@ -128,14 +128,14 @@ export default function RouteOverviewPage() {
       {/* Stats */}
       <div className="grid md:grid-cols-3 gap-4">
         <div className="card-surface p-5">
-          <div className="flex items-center gap-2 mb-2"><Target className="w-4 h-4 text-moss-500" /><span className="text-body-sm font-medium text-text-secondary">Progresso</span></div>
+          <div className="flex items-center gap-2 mb-2"><Target className="w-4 h-4 text-brand-500" /><span className="text-body-sm font-medium text-text-secondary">Progresso</span></div>
           <p className="font-heading text-h2 text-text-primary">{progress}%</p>
           <Progress value={progress} variant="moss" size="sm" className="mt-2" />
           <p className="text-caption text-text-muted mt-1">{completedMilestones}/{route.milestones.length} milestones</p>
         </div>
         <div className="card-surface p-5">
-          <div className="flex items-center gap-2 mb-2"><TrendingUp className="w-4 h-4 text-moss-500" /><span className="text-body-sm font-medium text-text-secondary">Probabilidade</span></div>
-          <p className={`font-heading text-h2 ${probabilityScore >= 60 ? "text-moss-500" : "text-amber-500"}`}>{probabilityScore}%</p>
+          <div className="flex items-center gap-2 mb-2"><TrendingUp className="w-4 h-4 text-brand-500" /><span className="text-body-sm font-medium text-text-secondary">Probabilidade</span></div>
+          <p className={`font-heading text-h2 ${probabilityScore >= 60 ? "text-brand-500" : "text-amber-500"}`}>{probabilityScore}%</p>
           <p className="text-caption text-text-muted mt-1">Baseada no seu perfil e progresso</p>
         </div>
         <div className="card-surface p-5">
@@ -146,10 +146,10 @@ export default function RouteOverviewPage() {
       </div>
 
       {nextMilestone && (
-        <div className="card-surface p-6 border-l-4 border-moss-500">
+        <div className="card-surface p-6 border-l-4 border-brand-500">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <div className="flex items-center gap-2 mb-2 text-moss-500">
+              <div className="flex items-center gap-2 mb-2 text-brand-500">
                 <Sparkles className="w-4 h-4" />
                 <p className="text-caption font-heading font-semibold uppercase tracking-wider">Foco atual da rota</p>
               </div>
@@ -169,7 +169,7 @@ export default function RouteOverviewPage() {
                 </span>
               </div>
             </div>
-            <button onClick={() => handleToggle(nextMilestone.id)} className="inline-flex items-center gap-2 self-start rounded-xl bg-moss-500 px-5 py-3 text-body-sm font-semibold text-white transition-colors hover:bg-moss-600">
+            <button onClick={() => handleToggle(nextMilestone.id)} className="inline-flex items-center gap-2 self-start rounded-xl bg-brand-500 px-5 py-3 text-body-sm font-semibold text-white transition-colors hover:bg-brand-600">
               Avançar milestone
               <ArrowRight className="w-4 h-4" />
             </button>
@@ -179,16 +179,16 @@ export default function RouteOverviewPage() {
 
       {/* Quick nav */}
       <div className="grid md:grid-cols-4 gap-3">
-        <Link href={`/routes/${routeId}/milestones`} className="card-surface p-4 text-center hover:bg-cream-100 transition-colors"><GitBranch className="w-5 h-5 text-moss-500 mx-auto mb-1" /><span className="text-body-sm font-medium text-text-primary">Milestones</span></Link>
+        <Link href={`/routes/${routeId}/milestones`} className="card-surface p-4 text-center hover:bg-cream-100 transition-colors"><GitBranch className="w-5 h-5 text-brand-500 mx-auto mb-1" /><span className="text-body-sm font-medium text-text-primary">Milestones</span></Link>
         <Link href={`/routes/${routeId}/graph`} className="card-surface p-4 text-center hover:bg-cream-100 transition-colors"><GitBranch className="w-5 h-5 text-sage-500 mx-auto mb-1" /><span className="text-body-sm font-medium text-text-primary">Grafo DAG</span></Link>
         <Link href={`/routes/${routeId}/timeline`} className="card-surface p-4 text-center hover:bg-cream-100 transition-colors"><Calendar className="w-5 h-5 text-clay-500 mx-auto mb-1" /><span className="text-body-sm font-medium text-text-primary">Timeline</span></Link>
         <Link href={`/routes/${routeId}/risk`} className="card-surface p-4 text-center hover:bg-cream-100 transition-colors"><AlertTriangle className="w-5 h-5 text-clay-400 mx-auto mb-1" /><span className="text-body-sm font-medium text-text-primary">Riscos</span></Link>
       </div>
 
       {progress < 60 && (
-        <div className="card-surface p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 border border-moss-200">
-          <div className="w-10 h-10 rounded-xl bg-moss-50 flex items-center justify-center flex-shrink-0">
-            <Zap className="w-5 h-5 text-moss-500" />
+        <div className="card-surface p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 border border-brand-200">
+          <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
+            <Zap className="w-5 h-5 text-brand-500" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-heading font-semibold text-text-primary text-body-sm">Reforce a execução logística</p>
@@ -196,7 +196,7 @@ export default function RouteOverviewPage() {
           </div>
           <Link
             href="/sprints/new?template=relocation"
-            className="flex-shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors"
+            className="flex-shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors"
           >
             <Zap className="w-4 h-4" /> Criar Sprint <ArrowRight className="w-3.5 h-3.5" />
           </Link>
@@ -239,9 +239,9 @@ export default function RouteOverviewPage() {
                       onClick={() => handleToggle(m.id)}
                       className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all duration-200 ${
                         m.status === "completed"
-                          ? "bg-moss-50/50"
+                          ? "bg-brand-50/50"
                           : m.status === "in_progress"
-                          ? "bg-cream-100 border border-moss-200"
+                          ? "bg-cream-100 border border-brand-200"
                           : "bg-cream-50 hover:bg-cream-100"
                       } ${justToggled === m.id ? "scale-[1.01] shadow-sm" : ""}`}
                     >
@@ -260,7 +260,7 @@ export default function RouteOverviewPage() {
                         )}
                       </div>
                       {m.status === "in_progress" && (
-                        <span className="text-caption font-medium text-moss-500 px-2 py-0.5 rounded-full bg-moss-50">Em andamento</span>
+                        <span className="text-caption font-medium text-brand-500 px-2 py-0.5 rounded-full bg-brand-50">Em andamento</span>
                       )}
                     </button>
                   ))}

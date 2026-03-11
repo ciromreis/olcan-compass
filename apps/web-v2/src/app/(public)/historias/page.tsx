@@ -13,7 +13,7 @@ export default function SuccessStoriesPage() {
   return (
     <section className="max-w-5xl mx-auto px-6 py-20">
       <div className="text-center mb-16">
-        <p className="text-caption font-heading font-semibold tracking-widest uppercase text-moss-400 mb-3">Histórias Reais</p>
+        <p className="text-caption font-heading font-semibold tracking-widest uppercase text-brand-400 mb-3">Histórias Reais</p>
         <h1 className="font-heading text-display text-text-primary mb-4">Quem já chegou lá</h1>
         <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">Brasileiros que usaram o Compass para transformar o sonho de morar fora em realidade calculada.</p>
       </div>
@@ -30,7 +30,7 @@ export default function SuccessStoriesPage() {
                 </p>
               </div>
               <div className="text-right">
-                <div className="flex items-center gap-1 text-moss-500">
+                <div className="flex items-center gap-1 text-brand-500">
                   <Star className="w-4 h-4 fill-current" />
                   <span className="font-heading font-bold">{story.score}</span>
                 </div>

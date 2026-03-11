@@ -29,7 +29,7 @@ export default function ProviderProfilePage() {
   if (!provider) {
     return (
       <div className="max-w-4xl mx-auto">
-        <EmptyState icon={Briefcase} title="Profissional não encontrado" description="Este profissional não está mais disponível." action={<button onClick={() => router.push("/marketplace")} className="px-4 py-2 rounded-lg bg-moss-500 text-white text-body-sm font-semibold hover:bg-moss-600 transition-colors">Voltar ao Marketplace</button>} />
+        <EmptyState icon={Briefcase} title="Profissional não encontrado" description="Este profissional não está mais disponível." action={<button onClick={() => router.push("/marketplace")} className="px-4 py-2 rounded-lg bg-brand-500 text-white text-body-sm font-semibold hover:bg-brand-600 transition-colors">Voltar ao Marketplace</button>} />
       </div>
     );
   }
@@ -45,13 +45,13 @@ export default function ProviderProfilePage() {
       <PageHeader title={provider.name} subtitle={provider.specialties.map((s) => CATEGORY_LABELS[s]).join(" · ")} backHref="/marketplace" />
 
       <div className="card-surface p-6 flex flex-col md:flex-row gap-6">
-        <div className="w-20 h-20 rounded-full bg-moss-50 flex items-center justify-center flex-shrink-0 text-moss-500 font-heading font-bold text-h2">
+        <div className="w-20 h-20 rounded-full bg-brand-50 flex items-center justify-center flex-shrink-0 text-brand-500 font-heading font-bold text-h2">
           {provider.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <h1 className="font-heading text-h2 text-text-primary">{provider.name}</h1>
-            {provider.verified && <Shield className="w-5 h-5 text-moss-500" />}
+            {provider.verified && <Shield className="w-5 h-5 text-brand-500" />}
           </div>
           <p className="text-body text-text-secondary mb-3">
             {provider.specialties.map((s) => CATEGORY_LABELS[s]).join(" · ")}
@@ -64,7 +64,7 @@ export default function ProviderProfilePage() {
           </div>
         </div>
         <div className="flex flex-col gap-2 flex-shrink-0">
-          <button onClick={() => router.push(`/marketplace/provider/${provider.id}/book`)} className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors">
+          <button onClick={() => router.push(`/marketplace/provider/${provider.id}/book`)} className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
             <Calendar className="w-4 h-4" /> Agendar
           </button>
           <button onClick={handleContact} className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg border border-cream-500 text-text-secondary text-body-sm font-medium hover:bg-cream-200 transition-colors">
@@ -92,7 +92,7 @@ export default function ProviderProfilePage() {
                   <p className="text-body-sm font-bold text-text-primary">R$ {svc.price}</p>
                   {svc.duration > 0 && <p className="text-caption text-text-muted flex items-center gap-1"><Clock className="w-3 h-3" />{svc.duration} min</p>}
                 </div>
-                <button onClick={() => router.push(`/marketplace/provider/${provider.id}/book`)} className="px-3 py-1.5 rounded-lg bg-moss-500 text-white text-caption font-medium hover:bg-moss-600 transition-colors">Contratar</button>
+                <button onClick={() => router.push(`/marketplace/provider/${provider.id}/book`)} className="px-3 py-1.5 rounded-lg bg-brand-500 text-white text-caption font-medium hover:bg-brand-600 transition-colors">Contratar</button>
               </div>
             </div>
           ))}

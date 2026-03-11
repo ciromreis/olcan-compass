@@ -2,22 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@300;400;500;600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
 @layer base {
   :root {
-    /* Surface tokens */
+    /* Olcan brand surface tokens */
     --surface-bg: #F2F0E9;
     --surface-card: #FFFFFF;
     --surface-elevated: #FFFFFF;
-    --surface-overlay: rgba(26, 26, 26, 0.4);
+    --surface-overlay: rgba(0, 19, 56, 0.5);
     --surface-glass: rgba(255, 255, 255, 0.7);
 
-    /* Text tokens */
-    --text-primary: #1A1A1A;
-    --text-secondary: #686352;
-    --text-muted: #8C8776;
+    /* Olcan brand text tokens */
+    --text-primary: #0A0D1A;
+    --text-secondary: #4A507A;
+    --text-muted: #8A8A8A;
 
     /* Spring easing */
     --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* Olcan brand accent */
+    --brand-primary: #001338;
+    --brand-accent: #21264D;
   }
 
   html {
@@ -29,19 +35,19 @@
   body {
     color: var(--text-primary);
     background-color: var(--surface-bg);
-    font-family: var(--font-body), 'Inter', sans-serif;
+    font-family: 'Source Sans 3', var(--font-body), sans-serif;
   }
 
-  /* Premium typography defaults */
+  /* Olcan brand heading typography */
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-heading), 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Merriweather Sans', var(--font-heading), sans-serif;
     color: var(--text-primary);
   }
 
-  /* Selection color matching moss palette */
+  /* Selection color matching brand palette */
   ::selection {
-    background-color: rgba(46, 64, 54, 0.15);
-    color: #1A1A1A;
+    background-color: rgba(0, 19, 56, 0.15);
+    color: #0A0D1A;
   }
 }
 
@@ -72,16 +78,16 @@
   .card-surface {
     background: var(--surface-card);
     border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(26, 26, 26, 0.04), 0 1px 2px rgba(26, 26, 26, 0.06);
+    box-shadow: 0 1px 3px rgba(0, 19, 56, 0.04), 0 1px 2px rgba(0, 19, 56, 0.06);
     transition: box-shadow 200ms ease, transform 200ms ease;
   }
   .card-surface:hover {
-    box-shadow: 0 4px 12px rgba(26, 26, 26, 0.08), 0 2px 4px rgba(26, 26, 26, 0.04);
+    box-shadow: 0 4px 12px rgba(0, 19, 56, 0.08), 0 2px 4px rgba(0, 19, 56, 0.04);
   }
 
-  /* Focus ring consistent with moss palette */
+  /* Focus ring consistent with brand palette */
   .focus-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss-400 focus-visible:ring-offset-2 focus-visible:ring-offset-cream-300;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-cream-300;
   }
 }
 
@@ -90,9 +96,9 @@
     text-wrap: balance;
   }
 
-  /* Emphasis italic for Cormorant Garamond dramatic text */
+  /* Emphasis text for editorial moments */
   .text-emphasis {
-    font-family: var(--font-emphasis), 'Cormorant Garamond', serif;
+    font-family: 'Source Sans 3', var(--font-emphasis), sans-serif;
     font-style: italic;
   }
 }

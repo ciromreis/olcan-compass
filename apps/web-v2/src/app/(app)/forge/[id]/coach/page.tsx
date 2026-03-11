@@ -86,7 +86,7 @@ export default function CoachPage() {
   };
 
   if (!doc) {
-    return <EmptyState icon={Sparkles} title="Documento não encontrado" action={<Link href="/forge" className="text-moss-500 font-medium hover:underline">← Voltar</Link>} />;
+    return <EmptyState icon={Sparkles} title="Documento não encontrado" action={<Link href="/forge" className="text-brand-500 font-medium hover:underline">← Voltar</Link>} />;
   }
 
   return (
@@ -103,7 +103,7 @@ export default function CoachPage() {
         }
       />
 
-      <div className="px-3 py-2 mb-3 rounded-lg bg-moss-50 text-moss-700 text-caption flex items-center gap-2">
+      <div className="px-3 py-2 mb-3 rounded-lg bg-brand-50 text-brand-700 text-caption flex items-center gap-2">
         <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
         Coach persistente local. O histórico desta conversa fica salvo por documento.
       </div>
@@ -124,11 +124,11 @@ export default function CoachPage() {
         {messages.map((msg, i) => (
           <div key={msg.id || i} className={`flex gap-3 ${msg.role === "user" ? "justify-end" : ""}`}>
             {msg.role === "assistant" && (
-              <div className="w-8 h-8 rounded-lg bg-moss-50 flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-4 h-4 text-moss-500" />
+              <div className="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center flex-shrink-0">
+                <Sparkles className="w-4 h-4 text-brand-500" />
               </div>
             )}
-            <div className={`max-w-[80%] p-4 rounded-xl ${msg.role === "user" ? "bg-moss-500 text-white" : "card-surface"}`}>
+            <div className={`max-w-[80%] p-4 rounded-xl ${msg.role === "user" ? "bg-brand-500 text-white" : "card-surface"}`}>
               <p className={`text-body-sm whitespace-pre-wrap ${msg.role === "user" ? "text-white" : "text-text-primary"}`}>{msg.text}</p>
             </div>
             {msg.role === "user" && (
@@ -147,9 +147,9 @@ export default function CoachPage() {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
           placeholder="Pergunte sobre seu documento..."
-          className="flex-1 px-4 py-3 rounded-xl border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-transparent"
+          className="flex-1 px-4 py-3 rounded-xl border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent"
         />
-        <button onClick={() => handleSend()} className="px-4 py-3 rounded-xl bg-moss-500 text-white hover:bg-moss-600 transition-colors">
+        <button onClick={() => handleSend()} className="px-4 py-3 rounded-xl bg-brand-500 text-white hover:bg-brand-600 transition-colors">
           <Send className="w-5 h-5" />
         </button>
       </div>

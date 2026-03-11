@@ -37,7 +37,7 @@ export default function SprintsPage() {
         title="Sprints de Prontidão"
         subtitle="Planos de ação focados para fechar gaps rapidamente"
         actions={
-          <Link href="/sprints/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors">
+          <Link href="/sprints/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
             <Plus className="w-4 h-4" /> Novo Sprint
           </Link>
         }
@@ -45,7 +45,7 @@ export default function SprintsPage() {
 
       <div className="grid sm:grid-cols-3 gap-4">
         <div className="card-surface p-5 text-center">
-          <Zap className="w-5 h-5 text-moss-500 mx-auto mb-1" />
+          <Zap className="w-5 h-5 text-brand-500 mx-auto mb-1" />
           <p className="font-heading text-h2 text-text-primary">{activeSprints.length}</p>
           <p className="text-caption text-text-muted">Sprints ativos</p>
         </div>
@@ -66,7 +66,7 @@ export default function SprintsPage() {
           icon={Zap}
           title="Nenhum sprint criado"
           description="Crie um sprint para organizar ações focadas na sua prontidão."
-          action={<Link href="/sprints/new" className="text-moss-500 font-medium hover:underline">Criar sprint →</Link>}
+          action={<Link href="/sprints/new" className="text-brand-500 font-medium hover:underline">Criar sprint →</Link>}
         />
       ) : (
       <div className="space-y-4">
@@ -78,12 +78,12 @@ export default function SprintsPage() {
             <Link key={sprint.id} href={`/sprints/${sprint.id}`} className="card-surface p-6 group hover:-translate-y-0.5 transition-transform block">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                  sprint.status === "completed" ? "bg-sage-50" : sprint.status === "paused" ? "bg-amber-50" : "bg-moss-50"
+                  sprint.status === "completed" ? "bg-sage-50" : sprint.status === "paused" ? "bg-amber-50" : "bg-brand-50"
                 }`}>
                   {sprint.status === "paused" ? (
                     <Pause className="w-6 h-6 text-amber-500" />
                   ) : (
-                    <Zap className={`w-6 h-6 ${sprint.status === "completed" ? "text-sage-500" : "text-moss-500"}`} />
+                    <Zap className={`w-6 h-6 ${sprint.status === "completed" ? "text-sage-500" : "text-brand-500"}`} />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -91,7 +91,7 @@ export default function SprintsPage() {
                   <div className="flex flex-wrap gap-3 mt-1 text-body-sm text-text-secondary">
                     <span className="px-2 py-0.5 rounded-full bg-cream-200 text-caption">{sprint.dimension}</span>
                     {sprint.status === "active" ? (
-                      <span className={`flex items-center gap-1 ${dl <= 14 ? "text-clay-500" : "text-moss-500"}`}>
+                      <span className={`flex items-center gap-1 ${dl <= 14 ? "text-clay-500" : "text-brand-500"}`}>
                         <Clock className="w-3.5 h-3.5" />{dl} dias restantes
                       </span>
                     ) : sprint.status === "paused" ? (
@@ -107,7 +107,7 @@ export default function SprintsPage() {
                     <p className="text-body-sm font-bold text-text-primary text-right mb-1">{progress}%</p>
                     <Progress value={progress} size="sm" variant={sprint.status === "completed" ? "moss" : sprint.status === "paused" ? "clay" : "moss"} />
                   </div>
-                  <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-moss-500 transition-colors" />
+                  <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-brand-500 transition-colors" />
                 </div>
               </div>
             </Link>

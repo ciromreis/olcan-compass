@@ -25,8 +25,8 @@ export default function OnboardingWelcomeModal({ open, onClose }: OnboardingWelc
           <X className="w-5 h-5 text-text-muted" />
         </button>
         <div className="text-center mb-6">
-          <div className="w-14 h-14 rounded-2xl bg-moss-50 flex items-center justify-center mx-auto mb-3">
-            <Compass className="w-7 h-7 text-moss-500" />
+          <div className="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center mx-auto mb-3">
+            <Compass className="w-7 h-7 text-brand-500" />
           </div>
           <h2 className="font-heading text-h2 text-text-primary">Bem-vindo ao Olcan Compass!</h2>
           <p className="text-body-sm text-text-secondary mt-2">Sua jornada internacional começa aqui. Vamos configurar tudo em 3 passos simples:</p>
@@ -34,8 +34,8 @@ export default function OnboardingWelcomeModal({ open, onClose }: OnboardingWelc
         <div className="space-y-3 mb-6">
           {STEPS.map((step, i) => (
             <div key={step.title} className="flex items-center gap-3 p-3 rounded-xl bg-cream-50">
-              <div className="w-9 h-9 rounded-lg bg-moss-50 flex items-center justify-center flex-shrink-0">
-                <step.icon className="w-4 h-4 text-moss-500" />
+              <div className="w-9 h-9 rounded-lg bg-brand-50 flex items-center justify-center flex-shrink-0">
+                <step.icon className="w-4 h-4 text-brand-500" />
               </div>
               <div className="flex-1">
                 <p className="text-body-sm font-medium text-text-primary">{i + 1}. {step.title}</p>
@@ -44,7 +44,7 @@ export default function OnboardingWelcomeModal({ open, onClose }: OnboardingWelc
             </div>
           ))}
         </div>
-        <Link href="/profile/onboarding" onClick={onClose} className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-moss-500 text-white font-heading font-semibold hover:bg-moss-600 transition-colors">
+        <Link href="/profile/onboarding" onClick={onClose} className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 transition-colors">
           Começar Diagnóstico <ArrowRight className="w-4 h-4" />
         </Link>
         <button onClick={onClose} className="w-full mt-2 text-center text-body-sm text-text-muted hover:text-text-secondary transition-colors py-2">

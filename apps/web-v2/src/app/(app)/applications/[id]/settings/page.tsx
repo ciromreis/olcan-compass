@@ -125,14 +125,14 @@ export default function ApplicationSettingsPage() {
       <PageHeader backHref={`/applications/${id}`} title="Configurações da Candidatura" subtitle="Ajuste campos persistidos e revise o estado operacional da aplicação." />
 
       {status === "submitted" && app.status !== "submitted" && (
-        <div className={`card-surface p-4 border-l-4 ${gate.canSubmit ? "border-moss-500" : "border-clay-500"}`}>
-          <p className={`text-body-sm font-medium ${gate.canSubmit ? "text-moss-600" : "text-clay-600"}`}>
+        <div className={`card-surface p-4 border-l-4 ${gate.canSubmit ? "border-brand-500" : "border-clay-500"}`}>
+          <p className={`text-body-sm font-medium ${gate.canSubmit ? "text-brand-600" : "text-clay-600"}`}>
             {gate.canSubmit
               ? "Gate aprovado para submissão."
               : "Gate de submissão ainda bloqueado. Salvar com status Enviada será impedido até atender os critérios."}
           </p>
           {!gate.canSubmit && (
-            <Link href={`/readiness/gate?appId=${id}`} className="inline-flex items-center gap-1 mt-2 text-body-sm font-medium text-moss-500 hover:text-moss-600">
+            <Link href={`/readiness/gate?appId=${id}`} className="inline-flex items-center gap-1 mt-2 text-body-sm font-medium text-brand-500 hover:text-brand-600">
               Ir para Submission Gate <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           )}
@@ -141,7 +141,7 @@ export default function ApplicationSettingsPage() {
 
       <div className="grid gap-4 md:grid-cols-3">
         <div className="card-surface p-4 text-center">
-          <FileCheck className="mx-auto mb-2 h-5 w-5 text-moss-500" />
+          <FileCheck className="mx-auto mb-2 h-5 w-5 text-brand-500" />
           <p className="font-heading text-h3 text-text-primary">{readyDocs}/{app.documents.length}</p>
           <p className="text-caption text-text-muted">Documentos prontos</p>
         </div>
@@ -161,7 +161,7 @@ export default function ApplicationSettingsPage() {
         <Input label="Nome" type="text" value={name} onChange={(e) => setName(e.target.value)} />
         <div>
           <label className="block text-body-sm font-medium text-text-primary mb-1.5">Status</label>
-          <select value={status} onChange={(e) => setStatus(e.target.value as AppStatus)} className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-moss-400">
+          <select value={status} onChange={(e) => setStatus(e.target.value as AppStatus)} className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-400">
             {STATUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
         </div>
@@ -174,7 +174,7 @@ export default function ApplicationSettingsPage() {
             placeholder="Registre riscos, follow-ups, dependências, observações sobre documentos ou próximos passos desta candidatura."
           />
         </div>
-        <button onClick={handleSave} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors">
+        <button onClick={handleSave} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
           <Save className="w-4 h-4" /> Salvar
         </button>
       </div>

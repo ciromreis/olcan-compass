@@ -15,8 +15,8 @@ export default function VerifyEmailPage() {
 
   return (
     <div className="card-surface p-8 text-center">
-      <div className="w-14 h-14 rounded-full bg-moss-50 flex items-center justify-center mx-auto mb-4">
-        <Mail className="w-7 h-7 text-moss-500" />
+      <div className="w-14 h-14 rounded-full bg-brand-50 flex items-center justify-center mx-auto mb-4">
+        <Mail className="w-7 h-7 text-brand-500" />
       </div>
       <h1 className="font-heading text-h2 text-text-primary mb-2">Verifique seu e-mail</h1>
       <p className="text-body text-text-secondary mb-6 max-w-sm mx-auto">
@@ -32,7 +32,7 @@ export default function VerifyEmailPage() {
         {resending ? "Reenviando..." : "Reenviar e-mail"}
       </button>
       <div className="mt-8">
-        <Link href="/login" className="text-body-sm text-text-secondary hover:text-moss-500 transition-colors">Voltar para o login</Link>
+        <Link href="/login" className="text-body-sm text-text-secondary hover:text-brand-500 transition-colors">Voltar para o login</Link>
       </div>
     </div>
   );

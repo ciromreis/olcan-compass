@@ -10,7 +10,7 @@ export default function CompetitivenessPage() {
   const { docId, doc, stats } = useDocument();
 
   if (!doc || !stats) {
-    return <EmptyState icon={Sparkles} title="Documento não encontrado" action={<Link href="/forge" className="text-moss-500 font-medium hover:underline">← Voltar</Link>} />;
+    return <EmptyState icon={Sparkles} title="Documento não encontrado" action={<Link href="/forge" className="text-brand-500 font-medium hover:underline">← Voltar</Link>} />;
   }
 
   if (!stats.hasContent) {
@@ -55,7 +55,7 @@ export default function CompetitivenessPage() {
                 <span className="text-body-sm font-medium text-text-primary">{b.metric}</span>
                 <div className="flex items-center gap-3 text-caption">
                   <span className="text-text-muted">Média: {b.average}</span>
-                  <span className={`font-bold ${b.yours >= b.average ? "text-moss-500" : "text-clay-500"}`}>
+                  <span className={`font-bold ${b.yours >= b.average ? "text-brand-500" : "text-clay-500"}`}>
                     {b.yours >= b.average ? <ArrowUpRight className="w-3 h-3 inline" /> : <ArrowDownRight className="w-3 h-3 inline" />}
                     {b.yours}
                   </span>
@@ -64,14 +64,14 @@ export default function CompetitivenessPage() {
               </div>
               <div className="relative h-3 bg-cream-300 rounded-full overflow-hidden">
                 <div className="absolute h-full bg-cream-400 rounded-full" style={{ width: `${b.average}%` }} />
-                <div className={`absolute h-full rounded-full ${b.yours >= b.average ? "bg-moss-500" : "bg-clay-400"}`} style={{ width: `${b.yours}%` }} />
+                <div className={`absolute h-full rounded-full ${b.yours >= b.average ? "bg-brand-500" : "bg-clay-400"}`} style={{ width: `${b.yours}%` }} />
                 <div className="absolute h-full w-0.5 bg-clay-600" style={{ left: `${b.top10}%` }} />
               </div>
             </div>
           ))}
         </div>
         <div className="flex items-center gap-6 mt-4 text-caption text-text-muted">
-          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-moss-500" /> Seu doc</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-brand-500" /> Seu doc</span>
           <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-cream-400" /> Média</span>
           <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-clay-600" /> Top 10%</span>
         </div>

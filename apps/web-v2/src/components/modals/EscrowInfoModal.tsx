@@ -18,8 +18,8 @@ export default function EscrowInfoModal({ open, onClose }: EscrowInfoModalProps)
           <X className="w-5 h-5 text-text-muted" />
         </button>
         <div className="text-center mb-6">
-          <div className="w-12 h-12 rounded-xl bg-moss-50 flex items-center justify-center mx-auto mb-3">
-            <Shield className="w-6 h-6 text-moss-500" />
+          <div className="w-12 h-12 rounded-xl bg-brand-50 flex items-center justify-center mx-auto mb-3">
+            <Shield className="w-6 h-6 text-brand-500" />
           </div>
           <h2 className="font-heading text-h3 text-text-primary">Como funciona o Escrow</h2>
         </div>
@@ -31,8 +31,8 @@ export default function EscrowInfoModal({ open, onClose }: EscrowInfoModalProps)
             { icon: Shield, step: "4. Proteção", desc: "Em caso de disputa, nossa equipe media e resolve." },
           ].map((s) => (
             <div key={s.step} className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-moss-50 flex items-center justify-center flex-shrink-0">
-                <s.icon className="w-4 h-4 text-moss-500" />
+              <div className="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center flex-shrink-0">
+                <s.icon className="w-4 h-4 text-brand-500" />
               </div>
               <div>
                 <p className="text-body-sm font-medium text-text-primary">{s.step}</p>
@@ -41,7 +41,7 @@ export default function EscrowInfoModal({ open, onClose }: EscrowInfoModalProps)
             </div>
           ))}
         </div>
-        <button onClick={onClose} className="w-full px-4 py-2.5 rounded-xl bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors">
+        <button onClick={onClose} className="w-full px-4 py-2.5 rounded-xl bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
           Entendi
         </button>
       </div>

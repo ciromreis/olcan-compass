@@ -140,10 +140,10 @@ export default function ReadinessRiskPage() {
                     <span className="text-body-sm font-bold text-text-primary">{r.probability}%</span>
                   </div>
                   <div className="p-3 rounded-lg bg-cream-100 flex items-start gap-2 mb-3">
-                    <Shield className="w-4 h-4 text-moss-500 mt-0.5 flex-shrink-0" />
+                    <Shield className="w-4 h-4 text-brand-500 mt-0.5 flex-shrink-0" />
                     <p className="text-body-sm text-text-secondary"><strong>Mitigação:</strong> {r.mitigation}</p>
                   </div>
-                  <Link href={r.link} className="inline-flex items-center gap-1.5 text-body-sm font-semibold text-moss-500 hover:text-moss-600 transition-colors">
+                  <Link href={r.link} className="inline-flex items-center gap-1.5 text-body-sm font-semibold text-brand-500 hover:text-brand-600 transition-colors">
                     {r.linkLabel} <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>

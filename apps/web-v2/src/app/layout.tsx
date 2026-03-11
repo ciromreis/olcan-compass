@@ -1,27 +1,20 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Inter, Cormorant_Garamond } from "next/font/google";
+import { Merriweather_Sans, Source_Sans_3 } from "next/font/google";
 import { QueryProvider } from "@/providers/QueryProvider";
 import "./globals.css";
 
-const plusJakarta = Plus_Jakarta_Sans({
+const merriweatherSans = Merriweather_Sans({
   subsets: ["latin"],
   variable: "--font-heading",
   display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-const inter = Inter({
+const sourceSans = Source_Sans_3({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
-});
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  variable: "--font-emphasis",
-  display: "swap",
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -47,7 +40,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={`${plusJakarta.variable} ${inter.variable} ${cormorant.variable}`}
+      className={`${merriweatherSans.variable} ${sourceSans.variable}`}
     >
       <body className="font-body antialiased bg-surface-bg text-text-primary">
         <QueryProvider>{children}</QueryProvider>

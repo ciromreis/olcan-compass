@@ -65,7 +65,7 @@ export default function ProviderReviewsPage() {
                   <span className="text-caption text-text-muted">{new Date(r.createdAt).toLocaleDateString("pt-BR")}</span>
                 </div>
                 <p className="text-body-sm text-text-secondary mb-3">{r.comment}</p>
-                <button className="flex items-center gap-1 text-caption text-text-muted hover:text-moss-500 transition-colors">
+                <button className="flex items-center gap-1 text-caption text-text-muted hover:text-brand-500 transition-colors">
                   <ThumbsUp className="w-3 h-3" /> Útil
                 </button>
               </div>

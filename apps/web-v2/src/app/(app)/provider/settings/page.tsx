@@ -97,14 +97,14 @@ export default function ProviderSettingsPage() {
                 type="checkbox"
                 checked={specialties.includes(key)}
                 onChange={() => toggleSpecialty(key)}
-                className="rounded border-cream-500 text-moss-500 focus:ring-moss-400"
+                className="rounded border-cream-500 text-brand-500 focus:ring-brand-400"
               />
             </label>
           ))}
         </div>
       </div>
 
-      <button onClick={handleSave} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors">
+      <button onClick={handleSave} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
         <Save className="w-4 h-4" /> Salvar Configurações
       </button>
     </div>

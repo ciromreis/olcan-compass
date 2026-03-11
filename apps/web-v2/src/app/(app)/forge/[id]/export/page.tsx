@@ -24,7 +24,7 @@ export default function ExportPage() {
   const { toast } = useToast();
 
   if (!doc || !stats) {
-    return <EmptyState icon={FileText} title="Documento não encontrado" action={<Link href="/forge" className="text-moss-500 font-medium hover:underline">← Voltar</Link>} />;
+    return <EmptyState icon={FileText} title="Documento não encontrado" action={<Link href="/forge" className="text-brand-500 font-medium hover:underline">← Voltar</Link>} />;
   }
 
   const handleCopy = async () => {
@@ -141,8 +141,8 @@ export default function ExportPage() {
               onClick={() => handleExport(fmt.ext)}
               className="card-surface p-4 flex items-center gap-3 text-left transition-transform hover:-translate-y-0.5 cursor-pointer"
             >
-              <div className="w-10 h-10 rounded-lg bg-moss-50 flex items-center justify-center flex-shrink-0">
-                <fmt.icon className="w-5 h-5 text-moss-500" />
+              <div className="w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center flex-shrink-0">
+                <fmt.icon className="w-5 h-5 text-brand-500" />
               </div>
               <div className="flex-1">
                 <p className="font-heading font-semibold text-text-primary">{fmt.label}</p>
@@ -158,7 +158,7 @@ export default function ExportPage() {
         <h3 className="font-heading text-h4 text-text-primary mb-4">Outras Opções</h3>
         <div className="space-y-3">
           <button onClick={handleCopy} className="w-full flex items-center gap-3 p-4 rounded-lg hover:bg-cream-100 transition-colors text-left">
-            {copied ? <CheckCircle className="w-5 h-5 text-moss-500" /> : <Copy className="w-5 h-5 text-text-muted" />}
+            {copied ? <CheckCircle className="w-5 h-5 text-brand-500" /> : <Copy className="w-5 h-5 text-text-muted" />}
             <div>
               <p className="text-body-sm font-medium text-text-primary">{copied ? "Copiado!" : "Copiar para Área de Transferência"}</p>
               <p className="text-caption text-text-muted">Texto puro sem formatação</p>

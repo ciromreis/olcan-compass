@@ -64,7 +64,7 @@ export default function RouteSettingsPage() {
 
       <div className="grid gap-4 md:grid-cols-3">
         <div className="card-surface p-4 text-center">
-          <RouteIcon className="mx-auto mb-2 h-5 w-5 text-moss-500" />
+          <RouteIcon className="mx-auto mb-2 h-5 w-5 text-brand-500" />
           <p className="font-heading text-h3 text-text-primary">{progress}%</p>
           <p className="text-caption text-text-muted">Progresso geral</p>
         </div>
@@ -129,17 +129,17 @@ export default function RouteSettingsPage() {
         </div>
 
         {nextMilestone ? (
-          <div className="rounded-xl border border-moss-200 bg-moss-50/70 p-4">
+          <div className="rounded-xl border border-brand-200 bg-brand-50/70 p-4">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-moss-600">Próxima milestone</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-600">Próxima milestone</p>
                 <p className="mt-1 text-body-sm font-medium text-text-primary">{nextMilestone.name}</p>
                 <p className="mt-1 text-caption text-text-muted">Etapa: {nextMilestone.group}</p>
                 {nextMilestone.dueDate ? (
                   <p className="mt-1 text-caption text-text-muted">Prazo: {new Date(nextMilestone.dueDate).toLocaleDateString("pt-BR")}</p>
                 ) : null}
               </div>
-              <Link href={`/routes/${id}/milestones`} className="inline-flex items-center gap-2 rounded-lg border border-moss-300 bg-white px-3 py-2 text-body-sm font-medium text-moss-700 transition-colors hover:bg-moss-50">
+              <Link href={`/routes/${id}/milestones`} className="inline-flex items-center gap-2 rounded-lg border border-brand-300 bg-white px-3 py-2 text-body-sm font-medium text-brand-700 transition-colors hover:bg-brand-50">
                 Ver milestones
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -153,7 +153,7 @@ export default function RouteSettingsPage() {
 
         <div className="grid gap-3 md:grid-cols-3">
           <Link href={`/routes/${id}/milestones`} className="rounded-xl border border-cream-300 bg-cream-50 p-4 transition-colors hover:bg-cream-100">
-            <GitBranch className="mb-2 h-5 w-5 text-moss-500" />
+            <GitBranch className="mb-2 h-5 w-5 text-brand-500" />
             <p className="text-body-sm font-medium text-text-primary">Milestones</p>
             <p className="mt-1 text-caption text-text-muted">{completedMilestones}/{route.milestones.length} concluídas</p>
           </Link>

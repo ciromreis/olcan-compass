@@ -53,7 +53,7 @@ export function CommunityFeedItem({
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-moss-50 px-2.5 py-1 text-caption font-medium text-moss-600">{typeLabels[item.type]}</span>
+            <span className="rounded-full bg-brand-50 px-2.5 py-1 text-caption font-medium text-brand-600">{typeLabels[item.type]}</span>
             <span className="rounded-full bg-cream-100 px-2.5 py-1 text-caption text-text-secondary">{topicLabels[item.topic]}</span>
             {item.source ? <span className="rounded-full bg-cream-100 px-2.5 py-1 text-caption text-text-secondary">{item.source}</span> : null}
             {engineLabel ? <span className="rounded-full bg-sage-50 px-2.5 py-1 text-caption font-medium text-sage-600">Origem: {engineLabel}</span> : null}
@@ -104,13 +104,13 @@ export function CommunityFeedItem({
         </div>
         <div className="flex flex-wrap gap-2 md:justify-end">
           {item.sourceRef && item.href && !isExternalHref ? (
-            <Link href={item.href} className="inline-flex items-center gap-2 rounded-lg bg-moss-500 px-4 py-2.5 text-body-sm font-semibold text-white transition-colors hover:bg-moss-600">
+            <Link href={item.href} className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-body-sm font-semibold text-white transition-colors hover:bg-brand-600">
               <ArrowRight className="h-4 w-4" />
               {engineActionLabel}
             </Link>
           ) : null}
           {directReuseTarget ? (
-            <Link href={directReuseTarget.href} className="inline-flex items-center gap-2 rounded-lg border border-moss-300 bg-moss-50 px-4 py-2.5 text-body-sm font-medium text-moss-700 transition-colors hover:bg-moss-100">
+            <Link href={directReuseTarget.href} className="inline-flex items-center gap-2 rounded-lg border border-brand-300 bg-brand-50 px-4 py-2.5 text-body-sm font-medium text-brand-700 transition-colors hover:bg-brand-100">
               <ArrowRight className="h-4 w-4" />
               {directReuseTarget.label}
             </Link>
@@ -131,7 +131,7 @@ export function CommunityFeedItem({
       </div>
 
       <div className="flex flex-wrap items-center gap-3 border-t border-cream-200 pt-4">
-        <button onClick={() => onToggleSave(item.id, collectionId)} className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-body-sm font-medium transition-colors ${item.isSaved ? "bg-moss-50 text-moss-600" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>
+        <button onClick={() => onToggleSave(item.id, collectionId)} className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-body-sm font-medium transition-colors ${item.isSaved ? "bg-brand-50 text-brand-600" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>
           <Bookmark className="h-4 w-4" />
           Salvar ({item.savedCount})
         </button>
@@ -157,7 +157,7 @@ export function CommunityFeedItem({
           <button
             onClick={() => onReplySubmit(item.id)}
             disabled={!replyDraft.trim()}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-moss-500 px-4 py-2.5 text-body-sm font-semibold text-white transition-colors hover:bg-moss-600 disabled:pointer-events-none disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-body-sm font-semibold text-white transition-colors hover:bg-brand-600 disabled:pointer-events-none disabled:opacity-50"
           >
             <MessageSquare className="h-4 w-4" />
             Responder

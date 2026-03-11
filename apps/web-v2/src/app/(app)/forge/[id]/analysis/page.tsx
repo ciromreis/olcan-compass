@@ -11,7 +11,7 @@ export default function AnalysisPage() {
   const { docId, doc, stats } = useDocument();
 
   if (!doc || !stats) {
-    return <EmptyState icon={Sparkles} title="Documento não encontrado" action={<Link href="/forge" className="text-moss-500 font-medium hover:underline">← Voltar</Link>} />;
+    return <EmptyState icon={Sparkles} title="Documento não encontrado" action={<Link href="/forge" className="text-brand-500 font-medium hover:underline">← Voltar</Link>} />;
   }
 
   if (!stats.hasContent) {
@@ -31,7 +31,7 @@ export default function AnalysisPage() {
       <PageHeader title="Análise do Documento" subtitle={doc.title} backHref={`/forge/${docId}`} />
 
       <div className="card-surface p-6 text-center">
-        <Sparkles className="w-6 h-6 text-moss-500 mx-auto mb-2" />
+        <Sparkles className="w-6 h-6 text-brand-500 mx-auto mb-2" />
         <p className="text-caption text-text-muted mb-1">Score Geral</p>
         <ScoreBadge score={avgScore} size="display" />
         <p className="text-body-sm text-text-secondary mt-1">Score de competitividade: {doc.competitivenessScore ?? "—"}</p>
@@ -48,7 +48,7 @@ export default function AnalysisPage() {
               <div className={`h-full rounded-full ${scoreBarColor(item.score)}`} style={{ width: `${item.score}%` }} />
             </div>
             <p className="text-body-sm text-text-secondary flex items-start gap-2">
-              {item.score >= 75 ? <CheckCircle className="w-4 h-4 text-moss-500 mt-0.5 flex-shrink-0" /> : <AlertTriangle className="w-4 h-4 text-clay-400 mt-0.5 flex-shrink-0" />}
+              {item.score >= 75 ? <CheckCircle className="w-4 h-4 text-brand-500 mt-0.5 flex-shrink-0" /> : <AlertTriangle className="w-4 h-4 text-clay-400 mt-0.5 flex-shrink-0" />}
               {item.feedback}
             </p>
           </div>

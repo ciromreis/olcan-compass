@@ -48,15 +48,15 @@ export default function PricingPage() {
   return (
     <section className="max-w-6xl mx-auto px-6 py-20">
       <div className="text-center mb-16">
-        <p className="text-caption font-heading font-semibold tracking-widest uppercase text-moss-400 mb-3">Planos e Preços</p>
+        <p className="text-caption font-heading font-semibold tracking-widest uppercase text-brand-400 mb-3">Planos e Preços</p>
         <h1 className="font-heading text-display text-text-primary mb-4">Invista no seu futuro</h1>
         <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">Cada real investido no Compass economiza semanas de pesquisa, erros de documentação e oportunidades perdidas.</p>
       </div>
       <div className="grid md:grid-cols-3 gap-6">
         {PLANS.map((plan) => (
-          <div key={plan.name} className={`card-surface p-8 flex flex-col relative ${plan.popular ? "ring-2 ring-moss-500" : ""}`}>
+          <div key={plan.name} className={`card-surface p-8 flex flex-col relative ${plan.popular ? "ring-2 ring-brand-500" : ""}`}>
             {plan.popular && (
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-moss-500 text-white text-caption font-heading font-bold flex items-center gap-1">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-brand-500 text-white text-caption font-heading font-bold flex items-center gap-1">
                 <Sparkles className="w-3 h-3" /> Mais Popular
               </div>
             )}
@@ -71,13 +71,13 @@ export default function PricingPage() {
             <ul className="space-y-3 flex-1 mb-8">
               {plan.features.map((f) => (
                 <li key={f.text} className="flex items-start gap-2 text-body-sm">
-                  {f.included ? <Check className="w-4 h-4 text-moss-500 mt-0.5 flex-shrink-0" /> : <X className="w-4 h-4 text-text-muted mt-0.5 flex-shrink-0" />}
+                  {f.included ? <Check className="w-4 h-4 text-brand-500 mt-0.5 flex-shrink-0" /> : <X className="w-4 h-4 text-text-muted mt-0.5 flex-shrink-0" />}
                   <span className={f.included ? "text-text-primary" : "text-text-muted"}>{f.text}</span>
                 </li>
               ))}
             </ul>
             <a href="/register" className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-heading font-semibold transition-colors ${
-              plan.popular ? "bg-moss-500 text-white hover:bg-moss-600" : "border border-cream-500 text-text-primary hover:bg-cream-200"
+              plan.popular ? "bg-brand-500 text-white hover:bg-brand-600" : "border border-cream-500 text-text-primary hover:bg-cream-200"
             }`}>
               Começar com {plan.name} <ArrowRight className="w-4 h-4" />
             </a>
@@ -85,7 +85,7 @@ export default function PricingPage() {
         ))}
       </div>
       <div className="text-center mt-12">
-        <p className="text-body text-text-secondary">Precisa de um plano institucional? <a href="/institucional" className="text-moss-500 font-medium hover:underline">Fale conosco →</a></p>
+        <p className="text-body text-text-secondary">Precisa de um plano institucional? <a href="/institucional" className="text-brand-500 font-medium hover:underline">Fale conosco →</a></p>
       </div>
     </section>
   );

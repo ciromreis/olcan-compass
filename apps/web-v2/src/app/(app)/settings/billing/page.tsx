@@ -24,10 +24,10 @@ export default function SettingsBillingPage() {
 
       <div className="grid md:grid-cols-2 gap-4">
         {/* Cur Plan */}
-        <div className="card-surface p-6 border border-moss-200 bg-gradient-to-br from-white to-moss-50">
+        <div className="card-surface p-6 border border-brand-200 bg-gradient-to-br from-white to-brand-50">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-heading text-h3 text-text-primary flex items-center gap-2"><Settings className="w-6 h-6 text-moss-500" /> Plano Pro</h3>
-            <span className="text-caption px-2 py-1 bg-moss-200 text-moss-800 rounded font-medium">Ativo</span>
+            <h3 className="font-heading text-h3 text-text-primary flex items-center gap-2"><Settings className="w-6 h-6 text-brand-500" /> Plano Pro</h3>
+            <span className="text-caption px-2 py-1 bg-brand-200 text-brand-800 rounded font-medium">Ativo</span>
           </div>
           <p className="text-h1 font-heading text-text-primary mb-2">R$ 49,99 <span className="text-body text-text-muted font-normal">/mês</span></p>
           <p className="text-body-sm text-text-secondary mb-6">Próxima cobrança em 01 de Abril de 2024 no cartão final 4242.</p>
@@ -53,7 +53,7 @@ export default function SettingsBillingPage() {
       </div>
 
       <div className="card-surface p-6">
-        <h3 className="font-heading text-h4 text-text-primary mb-4 flex items-center gap-2"><DollarSign className="w-5 h-5 text-moss-500" /> Histórico de Faturas</h3>
+        <h3 className="font-heading text-h4 text-text-primary mb-4 flex items-center gap-2"><DollarSign className="w-5 h-5 text-brand-500" /> Histórico de Faturas</h3>
         <table className="w-full text-left text-body-sm">
           <thead>
             <tr className="border-b border-cream-300">
@@ -71,12 +71,12 @@ export default function SettingsBillingPage() {
                 <td className="py-3 text-text-secondary">Assinatura Mensal - Pro</td>
                 <td className="py-3 text-text-primary font-medium">R$ {inv.amount.toFixed(2)}</td>
                 <td className="py-3">
-                  <span className={`text-caption px-2 py-0.5 rounded-full ${inv.status === 'paid' ? 'bg-moss-50 text-moss-600' : 'bg-clay-50 text-clay-600'}`}>
+                  <span className={`text-caption px-2 py-0.5 rounded-full ${inv.status === 'paid' ? 'bg-brand-50 text-brand-600' : 'bg-clay-50 text-clay-600'}`}>
                     {inv.status === 'paid' ? 'Pago' : 'Pendente'}
                   </span>
                 </td>
                 <td className="py-3 text-right">
-                  <a href={inv.pdf} className="inline-flex items-center text-moss-500 hover:text-moss-600 transition-colors">
+                  <a href={inv.pdf} className="inline-flex items-center text-brand-500 hover:text-brand-600 transition-colors">
                     <Download className="w-4 h-4" />
                   </a>
                 </td>

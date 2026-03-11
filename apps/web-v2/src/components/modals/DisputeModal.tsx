@@ -44,14 +44,14 @@ export default function DisputeModal({ open, onClose, bookingId, onSubmit }: Dis
         <div className="space-y-4">
           <div>
             <label className="block text-body-sm font-medium text-text-primary mb-1.5">Motivo</label>
-            <select value={reason} onChange={(e) => setReason(e.target.value)} className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-moss-400">
+            <select value={reason} onChange={(e) => setReason(e.target.value)} className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-400">
               <option value="">Selecione...</option>
               {REASONS.map((r) => <option key={r} value={r}>{r}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-body-sm font-medium text-text-primary mb-1.5">Detalhes</label>
-            <textarea value={details} onChange={(e) => setDetails(e.target.value)} placeholder="Descreva o problema em detalhes..." rows={4} className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-transparent resize-none" />
+            <textarea value={details} onChange={(e) => setDetails(e.target.value)} placeholder="Descreva o problema em detalhes..." rows={4} className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent resize-none" />
           </div>
         </div>
         <p className="text-caption text-text-muted mt-3 mb-4">Ao abrir uma disputa, o escrow permanece retido até a resolução. Nossa equipe analisará em até 48h.</p>

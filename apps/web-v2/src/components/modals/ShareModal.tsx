@@ -34,12 +34,12 @@ export default function ShareModal({
           <X className="w-5 h-5 text-text-muted" />
         </button>
         <div className="flex items-center gap-2 mb-4">
-          <Share2 className="w-5 h-5 text-moss-500" />
+          <Share2 className="w-5 h-5 text-brand-500" />
           <h2 className="font-heading text-h3 text-text-primary">{title}</h2>
         </div>
         <div className="flex gap-2 mb-4">
           <input type="text" readOnly value={url} className="flex-1 px-3 py-2 rounded-lg border border-cream-500 bg-cream-50 text-body-sm text-text-primary" />
-          <button onClick={handleCopy} className="px-3 py-2 rounded-lg bg-moss-500 text-white hover:bg-moss-600 transition-colors">
+          <button onClick={handleCopy} className="px-3 py-2 rounded-lg bg-brand-500 text-white hover:bg-brand-600 transition-colors">
             {copied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
           </button>
         </div>

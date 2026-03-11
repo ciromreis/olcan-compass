@@ -55,7 +55,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="seu@email.com"
-              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-transparent transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent transition-colors"
               required
             />
           </div>
@@ -68,7 +68,7 @@ export default function LoginPage() {
             </label>
             <Link
               href="/reset-password"
-              className="text-caption text-moss-500 hover:text-moss-600 transition-colors"
+              className="text-caption text-brand-500 hover:text-brand-600 transition-colors"
             >
               Esqueceu a senha?
             </Link>
@@ -80,7 +80,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full pl-10 pr-10 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-transparent transition-colors"
+              className="w-full pl-10 pr-10 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent transition-colors"
               required
             />
             <button
@@ -96,7 +96,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-moss-500 text-white font-heading font-semibold hover:bg-moss-600 disabled:opacity-50 transition-colors"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 disabled:opacity-50 transition-colors"
         >
           {loading ? "Entrando..." : "Entrar"}
           {!loading && <ArrowRight className="w-4 h-4" />}
@@ -106,7 +106,7 @@ export default function LoginPage() {
       <div className="mt-6 text-center">
         <p className="text-body-sm text-text-secondary">
           Não tem uma conta?{" "}
-          <Link href="/register" className="text-moss-500 font-medium hover:text-moss-600 transition-colors">
+          <Link href="/register" className="text-brand-500 font-medium hover:text-brand-600 transition-colors">
             Criar conta gratuita
           </Link>
         </p>

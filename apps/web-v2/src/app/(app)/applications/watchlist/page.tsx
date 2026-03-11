@@ -48,8 +48,8 @@ export default function WatchlistPage() {
           description="Explore oportunidades ou crie uma nova candidatura como rascunho."
           action={
             <div className="flex gap-3">
-              <Link href="/applications/opportunities" className="text-moss-500 font-medium hover:underline">Explorar →</Link>
-              <Link href="/applications/new" className="text-moss-500 font-medium hover:underline">Criar nova →</Link>
+              <Link href="/applications/opportunities" className="text-brand-500 font-medium hover:underline">Explorar →</Link>
+              <Link href="/applications/new" className="text-brand-500 font-medium hover:underline">Criar nova →</Link>
             </div>
           }
         />
@@ -65,7 +65,7 @@ export default function WatchlistPage() {
                     <div className="flex gap-3 mt-1 text-body-sm text-text-secondary">
                       <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{item.country}</span>
                       <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{formatDate(item.deadline)}</span>
-                      {item.match > 0 && <span className="flex items-center gap-1"><Star className="w-3.5 h-3.5 text-moss-500" />Match: {item.match}%</span>}
+                      {item.match > 0 && <span className="flex items-center gap-1"><Star className="w-3.5 h-3.5 text-brand-500" />Match: {item.match}%</span>}
                       {dl <= 14 && dl > 0 && <span className="text-clay-500 font-medium">{dl} dias!</span>}
                     </div>
                   </div>
@@ -73,7 +73,7 @@ export default function WatchlistPage() {
                 </div>
                 {item.notes && <p className="text-body-sm text-text-muted italic mb-3">{item.notes}</p>}
                 <div className="flex gap-3">
-                  <Link href={`/applications/${item.id}`} className="inline-flex items-center gap-1 text-body-sm font-medium text-moss-500 hover:text-moss-600 transition-colors">
+                  <Link href={`/applications/${item.id}`} className="inline-flex items-center gap-1 text-body-sm font-medium text-brand-500 hover:text-brand-600 transition-colors">
                     Ver Detalhes <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>

@@ -52,11 +52,11 @@ export default function OrgSettingsPage() {
       <PageHeader backHref="/org" title="Configurações da Organização" />
 
       <div className="card-surface p-6 space-y-4">
-        <h3 className="font-heading text-h4 text-text-primary flex items-center gap-2"><Building2 className="w-5 h-5 text-moss-500" /> Informações</h3>
+        <h3 className="font-heading text-h4 text-text-primary flex items-center gap-2"><Building2 className="w-5 h-5 text-brand-500" /> Informações</h3>
         <Input label="Nome da organização" type="text" value={name} onChange={(event) => setName(event.target.value)} />
         <div>
           <label className="block text-body-sm font-medium text-text-primary mb-1.5">Tipo</label>
-          <select value={type} onChange={(event) => setType(event.target.value)} className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-moss-400">
+          <select value={type} onChange={(event) => setType(event.target.value)} className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-400">
             <option>Universidade</option><option>Escola de Idiomas</option><option>Consultoria</option><option>ONG</option><option>Empresa</option>
           </select>
         </div>
@@ -65,7 +65,7 @@ export default function OrgSettingsPage() {
       </div>
 
       <div className="card-surface p-6 space-y-4">
-        <h3 className="font-heading text-h4 text-text-primary flex items-center gap-2"><Shield className="w-5 h-5 text-moss-500" /> Permissões</h3>
+        <h3 className="font-heading text-h4 text-text-primary flex items-center gap-2"><Shield className="w-5 h-5 text-brand-500" /> Permissões</h3>
         {[
           { key: "coordinatorsCanInvite", label: "Coordenadores podem convidar membros" },
           { key: "membersCanViewScores", label: "Membros podem ver scores de outros" },
@@ -78,14 +78,14 @@ export default function OrgSettingsPage() {
               type="checkbox"
               checked={permissions[permission.key as keyof typeof permissions]}
               onChange={(event) => togglePermission(permission.key as keyof typeof permissions, event.target.checked)}
-              className="rounded border-cream-500 text-moss-500 focus:ring-moss-400"
+              className="rounded border-cream-500 text-brand-500 focus:ring-brand-400"
             />
           </label>
         ))}
       </div>
 
       <div className="card-surface p-6 space-y-4">
-        <h3 className="font-heading text-h4 text-text-primary flex items-center gap-2"><UserPlus className="w-5 h-5 text-moss-500" /> Domínio de E-mail</h3>
+        <h3 className="font-heading text-h4 text-text-primary flex items-center gap-2"><UserPlus className="w-5 h-5 text-brand-500" /> Domínio de E-mail</h3>
         <p className="text-body-sm text-text-secondary">Membros com estes domínios de e-mail serão automaticamente associados à organização.</p>
         <Input
           type="text"

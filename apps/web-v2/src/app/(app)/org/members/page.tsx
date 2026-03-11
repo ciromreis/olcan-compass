@@ -8,7 +8,7 @@ import { useOrgStore, type OrgMemberRole } from "@/stores/org";
 
 const ROLE_COLORS: Record<string, string> = {
   Membro: "bg-cream-200 text-text-muted",
-  Coordenador: "bg-moss-50 text-moss-500",
+  Coordenador: "bg-brand-50 text-brand-500",
   Admin: "bg-clay-50 text-clay-500",
 };
 
@@ -86,7 +86,7 @@ export default function OrgMembersPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <PageHeader backHref="/org" title="Membros" subtitle={`${activeCount} membros ativos`} actions={
-        <button onClick={() => setInviteOpen(true)} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors">
+        <button onClick={() => setInviteOpen(true)} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
           <UserPlus className="w-4 h-4" /> Convidar
         </button>
       } />
@@ -94,9 +94,9 @@ export default function OrgMembersPage() {
       <div className="flex gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar membros..." className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-transparent" />
+          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar membros..." className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent" />
         </div>
-        <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} className="px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-secondary text-body-sm font-medium focus:outline-none focus:ring-2 focus:ring-moss-400">
+        <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} className="px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-secondary text-body-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-400">
           <option value="all">Todos</option>
               <option value="Membro">Membro</option>
               <option value="Coordenador">Coordenador</option>
@@ -141,9 +141,9 @@ export default function OrgMembersPage() {
                       <option value="Admin">Admin</option>
                     </select>
                   </td>
-                  <td className="py-3 px-4 text-center">{typeof m.score === "number" ? <span className="flex items-center justify-center gap-1 font-bold text-moss-500"><TrendingUp className="w-3 h-3" />{m.score}</span> : <span className="text-text-muted">—</span>}</td>
+                  <td className="py-3 px-4 text-center">{typeof m.score === "number" ? <span className="flex items-center justify-center gap-1 font-bold text-brand-500"><TrendingUp className="w-3 h-3" />{m.score}</span> : <span className="text-text-muted">—</span>}</td>
                   <td className="py-3 px-4 text-text-secondary">{m.route || "—"}</td>
-                  <td className="py-3 px-4"><span className={`text-caption font-medium ${m.status === "active" ? "text-moss-500" : m.status === "invited" ? "text-clay-400" : "text-text-muted"}`}>{m.status === "active" ? "Ativo" : m.status === "invited" ? "Convidado" : "Inativo"}</span></td>
+                  <td className="py-3 px-4"><span className={`text-caption font-medium ${m.status === "active" ? "text-brand-500" : m.status === "invited" ? "text-clay-400" : "text-text-muted"}`}>{m.status === "active" ? "Ativo" : m.status === "invited" ? "Convidado" : "Inativo"}</span></td>
                   <td className="py-3 px-4">
                     <button
                       onClick={() => {
@@ -174,7 +174,7 @@ export default function OrgMembersPage() {
           <Input label="E-mail" type="email" value={inviteEmail} onChange={(event) => setInviteEmail(event.target.value)} placeholder="nome@empresa.com" />
           <div>
             <label className="block text-body-sm font-medium text-text-primary mb-1.5">Role inicial</label>
-            <select value={inviteRole} onChange={(event) => setInviteRole(event.target.value as OrgMemberRole)} className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-moss-400">
+            <select value={inviteRole} onChange={(event) => setInviteRole(event.target.value as OrgMemberRole)} className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-400">
               <option value="Membro">Membro</option>
               <option value="Coordenador">Coordenador</option>
               <option value="Admin">Admin</option>

@@ -117,7 +117,7 @@ export default function InterviewSessionPage() {
       <div className="max-w-3xl mx-auto text-center py-20">
         <MessageSquare className="w-12 h-12 text-text-muted mx-auto mb-4" />
         <h2 className="font-heading text-h3 text-text-primary mb-2">Sessão não encontrada</h2>
-        <Link href="/interviews" className="text-moss-500 font-medium hover:underline">Voltar ao simulador</Link>
+        <Link href="/interviews" className="text-brand-500 font-medium hover:underline">Voltar ao simulador</Link>
       </div>
     );
   }
@@ -130,8 +130,8 @@ export default function InterviewSessionPage() {
     return (
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="text-center py-8">
-          <div className={`w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center ${avgScore >= 70 ? "bg-moss-50" : "bg-clay-50"}`}>
-            {avgScore >= 70 ? <Star className="w-10 h-10 text-moss-500" /> : <AlertTriangle className="w-10 h-10 text-clay-500" />}
+          <div className={`w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center ${avgScore >= 70 ? "bg-brand-50" : "bg-clay-50"}`}>
+            {avgScore >= 70 ? <Star className="w-10 h-10 text-brand-500" /> : <AlertTriangle className="w-10 h-10 text-clay-500" />}
           </div>
           <h1 className="font-heading text-h2 text-text-primary mb-2">Sessão Concluída!</h1>
           <p className="text-body text-text-secondary">{session.typeLabel} — {session.target}</p>
@@ -139,7 +139,7 @@ export default function InterviewSessionPage() {
 
         <div className="grid grid-cols-3 gap-4">
           <div className="card-surface p-5 text-center">
-            <p className={`font-heading text-display ${avgScore >= 70 ? "text-moss-500" : "text-clay-500"}`}>{avgScore}</p>
+            <p className={`font-heading text-display ${avgScore >= 70 ? "text-brand-500" : "text-clay-500"}`}>{avgScore}</p>
             <p className="text-caption text-text-muted">Score Geral</p>
           </div>
           <div className="card-surface p-5 text-center">
@@ -159,11 +159,11 @@ export default function InterviewSessionPage() {
               <div key={i} className="p-4 rounded-lg bg-cream-50">
                 <div className="flex items-start justify-between mb-2">
                   <p className="text-body-sm font-medium text-text-primary flex-1 pr-4">Q{i + 1}: {a.question}</p>
-                  <span className={`font-heading font-bold text-h4 ${a.score >= 70 ? "text-moss-500" : a.score >= 50 ? "text-amber-500" : "text-clay-500"}`}>{a.score}</span>
+                  <span className={`font-heading font-bold text-h4 ${a.score >= 70 ? "text-brand-500" : a.score >= 50 ? "text-amber-500" : "text-clay-500"}`}>{a.score}</span>
                 </div>
                 <p className="text-body-sm text-text-secondary mb-2 line-clamp-2">&ldquo;{a.answer}&rdquo;</p>
                 <p className="text-body-sm text-text-secondary flex items-start gap-2">
-                  <Sparkles className="w-4 h-4 text-moss-500 mt-0.5 flex-shrink-0" />
+                  <Sparkles className="w-4 h-4 text-brand-500 mt-0.5 flex-shrink-0" />
                   {a.feedback}
                 </p>
               </div>
@@ -175,7 +175,7 @@ export default function InterviewSessionPage() {
           <Link href="/interviews" className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-cream-500 text-text-secondary font-medium hover:bg-cream-200 transition-colors">
             Voltar ao Simulador
           </Link>
-          <Link href={`/interviews/${sessionId}`} className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-moss-500 text-white font-heading font-semibold hover:bg-moss-600 transition-colors">
+          <Link href={`/interviews/${sessionId}`} className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 transition-colors">
             Ver Resultado Completo <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -203,7 +203,7 @@ export default function InterviewSessionPage() {
       <div className="flex items-center gap-2 mb-6">
         {questions.map((_, i) => (
           <div key={i} className={`h-2 flex-1 rounded-full transition-all duration-300 ${
-            i < currentQ ? "bg-moss-500" : i === currentQ ? (submitted ? "bg-moss-400" : "bg-moss-300 animate-pulse") : "bg-cream-300"
+            i < currentQ ? "bg-brand-500" : i === currentQ ? (submitted ? "bg-brand-400" : "bg-brand-300 animate-pulse") : "bg-cream-300"
           }`} />
         ))}
       </div>
@@ -211,7 +211,7 @@ export default function InterviewSessionPage() {
       {/* Question */}
       <div className="card-surface p-8 mb-6">
         <div className="flex items-center gap-2 mb-3 justify-center">
-          <MessageSquare className="w-5 h-5 text-moss-500" />
+          <MessageSquare className="w-5 h-5 text-brand-500" />
           <span className="text-caption text-text-muted">Pergunta {currentQ + 1} de {questions.length}</span>
           <span className="text-caption text-text-muted">·</span>
           <span className="text-caption text-text-muted font-mono">{formatTime(timer)}</span>
@@ -231,7 +231,7 @@ export default function InterviewSessionPage() {
                 if (e.key === "Enter" && e.metaKey && answer.trim()) handleSubmitAnswer();
               }}
               placeholder="Digite sua resposta aqui... (⌘+Enter para enviar)"
-              className="w-full h-full min-h-[200px] p-4 rounded-xl border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-transparent text-body resize-none"
+              className="w-full h-full min-h-[200px] p-4 rounded-xl border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent text-body resize-none"
             />
             <div className="absolute bottom-3 right-3 flex items-center gap-2">
               <span className="text-caption text-text-muted">{answer.length} caracteres</span>
@@ -249,7 +249,7 @@ export default function InterviewSessionPage() {
               disabled={!answer.trim()}
               className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-lg font-heading font-semibold text-body-sm transition-colors ${
                 answer.trim()
-                  ? "bg-moss-500 text-white hover:bg-moss-600"
+                  ? "bg-brand-500 text-white hover:bg-brand-600"
                   : "bg-cream-300 text-text-muted cursor-not-allowed"
               }`}
             >
@@ -264,11 +264,11 @@ export default function InterviewSessionPage() {
             <div className="card-surface p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-moss-500" />
+                  <Sparkles className="w-5 h-5 text-brand-500" />
                   <span className="font-heading font-semibold text-text-primary">Feedback</span>
                 </div>
                 <div className={`flex items-center gap-1 px-3 py-1 rounded-full ${
-                  lastFeedback.score >= 70 ? "bg-moss-50 text-moss-600" : lastFeedback.score >= 50 ? "bg-amber-50 text-amber-600" : "bg-clay-50 text-clay-600"
+                  lastFeedback.score >= 70 ? "bg-brand-50 text-brand-600" : lastFeedback.score >= 50 ? "bg-amber-50 text-amber-600" : "bg-clay-50 text-clay-600"
                 }`}>
                   <Star className="w-3.5 h-3.5" />
                   <span className="font-heading font-bold">{lastFeedback.score}</span>
@@ -292,7 +292,7 @@ export default function InterviewSessionPage() {
             </button>
             <button
               onClick={handleNext}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-moss-500 text-white font-heading font-semibold text-body-sm hover:bg-moss-600 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors"
             >
               {currentQ < questions.length - 1 ? (
                 <>Próxima Pergunta <SkipForward className="w-4 h-4" /></>
