@@ -11,8 +11,8 @@ WEB_DIR="$ROOT_DIR/apps/web-v2"
 API_DIR="$ROOT_DIR/apps/api"
 
 echo "Checking dependencies..."
-if ! command -v vercel &> /dev/null; then
-    echo "x Vercel CLI not found. Running local build test instead."
+if ! npx vercel --version &> /dev/null; then
+    echo "x Vercel CLI not found via npx. Running local build test instead."
     TEST_MODE=true
 else
     TEST_MODE=false
@@ -38,7 +38,7 @@ if [ "$TEST_MODE" = true ]; then
     echo "✓ Local validation successful. To deploy directly, install Vercel or Render CLIs."
 else
     echo "-> Deploying Frontend to Vercel..."
-    # vercel --prod --yes
+    npx vercel --prod --yes
     echo "✓ Vercel deployment triggered successfully."
 fi
 
