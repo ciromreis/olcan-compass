@@ -27,7 +27,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="card-surface p-8">
+    <div className="glass-panel p-8 shadow-glass">
       <div className="text-center mb-8">
         <h1 className="font-heading text-h2 text-text-primary mb-2">
           Bem-vindo de volta
@@ -38,7 +38,7 @@ export default function LoginPage() {
       </div>
 
       {error && (
-        <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-body-sm text-red-700">
+        <div className="mb-4 p-3 rounded-lg bg-red-50/90 backdrop-blur-sm border border-red-200 text-body-sm text-red-700">
           {error}
         </div>
       )}
@@ -55,7 +55,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="seu@email.com"
-              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-400/60 bg-white/90 backdrop-blur-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent focus:bg-white transition-all shadow-sm"
               required
             />
           </div>
@@ -80,7 +80,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full pl-10 pr-10 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent transition-colors"
+              className="w-full pl-10 pr-10 py-2.5 rounded-lg border border-cream-400/60 bg-white/90 backdrop-blur-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent focus:bg-white transition-all shadow-sm"
               required
             />
             <button
@@ -96,7 +96,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 disabled:opacity-50 transition-colors"
+          className="w-full btn-liquid flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-white font-heading font-semibold disabled:opacity-50 transition-all"
         >
           {loading ? "Entrando..." : "Entrar"}
           {!loading && <ArrowRight className="w-4 h-4" />}
@@ -118,14 +118,14 @@ export default function LoginPage() {
             <div className="w-full border-t border-cream-400" />
           </div>
           <div className="relative flex justify-center text-caption">
-            <span className="bg-white px-3 text-text-muted">ou continue com</span>
+            <span className="bg-white/90 backdrop-blur-sm px-3 text-text-muted">ou continue com</span>
           </div>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-3">
-          <button className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-cream-500 text-text-secondary text-body-sm font-medium hover:bg-cream-200 transition-colors">
+          <button className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-cream-400/60 bg-white/80 backdrop-blur-sm text-text-secondary text-body-sm font-medium hover:bg-white hover:border-cream-500 transition-all shadow-sm">
             Google
           </button>
-          <button className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-cream-500 text-text-secondary text-body-sm font-medium hover:bg-cream-200 transition-colors">
+          <button className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-cream-400/60 bg-white/80 backdrop-blur-sm text-text-secondary text-body-sm font-medium hover:bg-white hover:border-cream-500 transition-all shadow-sm">
             LinkedIn
           </button>
         </div>

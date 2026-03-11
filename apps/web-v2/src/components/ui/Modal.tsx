@@ -61,10 +61,10 @@ function Modal({
         if (closeOnOverlay && e.target === overlayRef.current) onClose();
       }}
     >
-      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm animate-fade-in" />
+      <div className="fixed inset-0 bg-navy-900/60 backdrop-blur-md animate-fade-in" />
       <div
         className={cn(
-          "relative w-full bg-white rounded-2xl shadow-elevated animate-scale-in",
+          "relative w-full glass-panel animate-scale-in",
           sizeStyles[size],
           className
         )}
@@ -80,7 +80,7 @@ function Modal({
         )}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-cream-200 transition-colors"
+          className="absolute top-4 right-4 p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-cream-200/80 hover:backdrop-blur-sm transition-colors"
           aria-label="Fechar"
         >
           <X className="w-4 h-4" />

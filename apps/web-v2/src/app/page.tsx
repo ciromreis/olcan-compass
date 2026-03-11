@@ -38,7 +38,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-surface-bg">
       {/* Public Nav */}
-      <header className="sticky top-0 z-50 glass-panel border-b border-cream-400">
+      <header className="sticky top-0 z-50 glass-panel border-b border-cream-400/60 shadow-sm">
         <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <span className="font-heading text-h4 font-bold text-brand-500">Olcan Compass</span>
           <div className="hidden md:flex items-center gap-6">
@@ -48,7 +48,7 @@ export default function LandingPage() {
           </div>
           <div className="flex items-center gap-4">
             <a href="/login" className="text-body-sm font-medium text-text-secondary hover:text-brand-500 transition-colors">Entrar</a>
-            <a href="/register" className="text-body-sm font-medium px-4 py-2 rounded-lg bg-brand-500 text-white hover:bg-brand-600 transition-colors">Começar Agora</a>
+            <a href="/register" className="btn-liquid text-body-sm font-medium px-4 py-2 rounded-lg text-white transition-all">Começar Agora</a>
           </div>
         </nav>
       </header>
@@ -66,10 +66,10 @@ export default function LandingPage() {
               O Olcan Compass transforma a complexidade da emigração em um plano de ação claro, personalizado e financeiramente otimizado. Do diagnóstico ao desembarque.
             </p>
             <div className="flex flex-wrap gap-4">
-              <a href="/register" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-500 text-white font-heading font-semibold text-body hover:bg-brand-600 transition-colors shadow-md">
+              <a href="/register" className="btn-liquid inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-heading font-semibold text-body transition-all shadow-lg">
                 Começar Minha Jornada <ArrowRight className="w-4 h-4" />
               </a>
-              <a href="#como-funciona" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-cream-500 text-text-secondary font-heading font-medium text-body hover:bg-cream-200 transition-colors">
+              <a href="#como-funciona" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-cream-400/60 bg-white/80 backdrop-blur-sm text-text-secondary font-heading font-medium text-body hover:bg-white hover:border-cream-500 transition-all shadow-sm">
                 Como Funciona
               </a>
             </div>
@@ -167,7 +167,7 @@ export default function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <a href="/register" className={`mt-6 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-heading font-semibold text-body-sm transition-colors ${plan.highlight ? "bg-brand-500 text-white hover:bg-brand-600" : "border border-brand-500 text-brand-500 hover:bg-brand-50"}`}>
+                <a href="/register" className={`mt-6 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-heading font-semibold text-body-sm transition-all ${plan.highlight ? "btn-liquid text-white" : "border border-brand-500 bg-white/80 backdrop-blur-sm text-brand-500 hover:bg-white hover:border-brand-600"}`}>
                   {plan.price === "Grátis" ? "Começar Grátis" : "Assinar"} <ArrowRight className="w-4 h-4" />
                 </a>
               </div>

@@ -12,15 +12,15 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    "bg-brand-500 text-white hover:bg-brand-600 active:bg-brand-700 shadow-sm",
+    "btn-liquid bg-gradient-to-br from-brand-500 to-brand-700 text-white border border-brand-400/20",
   secondary:
-    "bg-white border border-cream-500 text-text-primary hover:bg-cream-100 active:bg-cream-200",
+    "bg-white/90 backdrop-blur-sm border border-cream-400/60 text-text-primary hover:bg-white hover:border-cream-500 active:bg-cream-50 shadow-sm",
   ghost:
-    "text-text-secondary hover:bg-cream-200 hover:text-text-primary active:bg-cream-300",
+    "text-text-secondary hover:bg-cream-200/80 hover:backdrop-blur-sm hover:text-text-primary active:bg-cream-300/80",
   danger:
-    "bg-error text-white hover:bg-red-700 active:bg-red-800 shadow-sm",
+    "bg-gradient-to-br from-error to-red-700 text-white hover:from-red-700 hover:to-red-800 active:from-red-800 active:to-red-900 shadow-sm border border-red-400/20",
   accent:
-    "bg-clay-500 text-white hover:bg-clay-600 active:bg-clay-700 shadow-sm",
+    "bg-gradient-to-br from-clay-500 to-clay-700 text-white hover:from-clay-600 hover:to-clay-800 active:from-clay-700 active:to-clay-900 shadow-sm border border-clay-400/20",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {

@@ -9,10 +9,10 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 
 const variantStyles = {
   default: "card-surface",
-  elevated: "bg-white rounded-xl shadow-md",
-  outlined: "bg-white rounded-xl border border-cream-400",
-  glass: "glass-panel rounded-xl",
-  accent: "bg-gradient-to-br from-brand-500 to-brand-700 text-white rounded-xl shadow-md",
+  elevated: "bg-white/95 backdrop-blur-md rounded-xl shadow-lg border border-cream-200/50",
+  outlined: "bg-white/90 backdrop-blur-sm rounded-xl border border-cream-400/60 shadow-sm",
+  glass: "glass-panel rounded-xl shadow-glass",
+  accent: "bg-gradient-to-br from-brand-500 to-brand-700 text-white rounded-xl shadow-lg border border-brand-400/20",
 };
 
 const paddingStyles = {

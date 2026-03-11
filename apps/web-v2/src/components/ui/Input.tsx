@@ -29,12 +29,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             className={cn(
-              "w-full rounded-lg border bg-white text-text-primary placeholder:text-text-muted",
-              "focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent",
-              "transition-colors duration-fast",
-              "py-2.5",
+              "w-full rounded-lg border bg-white/90 backdrop-blur-sm text-text-primary placeholder:text-text-muted",
+              "focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent focus:bg-white",
+              "transition-all duration-fast",
+              "py-2.5 shadow-sm",
               icon ? "pl-10 pr-4" : "px-4",
-              error ? "border-error" : "border-cream-500",
+              error ? "border-error ring-2 ring-error/20" : "border-cream-400/60 hover:border-cream-500",
               className
             )}
             aria-invalid={error ? "true" : undefined}
