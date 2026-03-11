@@ -1,14 +1,31 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+
+function isSupabaseConfigured(): boolean {
+  return !!(SUPABASE_URL && SUPABASE_ANON_KEY && !SUPABASE_URL.includes("placeholder"));
+}
+
 export async function updateSession(request: NextRequest) {
-  let response = NextResponse.next({
+  const response = NextResponse.next({
+    request: { headers: request.headers },
+  });
+
+  // If Supabase is not configured, skip all auth checks and let the app
+  // handle authentication via its own JWT/API layer
+  if (!isSupabaseConfigured()) {
+    return response;
+  }
+
+  let supabaseResponse = NextResponse.next({
     request: { headers: request.headers },
   });
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
     {
       cookies: {
         get(name: string) {
@@ -16,32 +33,24 @@ export async function updateSession(request: NextRequest) {
         },
         set(name: string, value: string, options: CookieOptions) {
           request.cookies.set({ name, value, ...options });
-          response = NextResponse.next({
+          supabaseResponse = NextResponse.next({
             request: { headers: request.headers },
           });
-          response.cookies.set({ name, value, ...options });
+          supabaseResponse.cookies.set({ name, value, ...options });
         },
         remove(name: string, options: CookieOptions) {
           request.cookies.set({ name, value: "", ...options });
-          response = NextResponse.next({
+          supabaseResponse = NextResponse.next({
             request: { headers: request.headers },
           });
-          response.cookies.set({ name, value: "", ...options });
+          supabaseResponse.cookies.set({ name, value: "", ...options });
         },
       },
     }
   );
 
-  // In development with placeholder Supabase creds, skip auth checks
-  const isDevBypass =
-    process.env.NODE_ENV === "development" &&
-    process.env.NEXT_PUBLIC_SUPABASE_URL?.includes("placeholder");
-
-  let user = null;
-  if (!isDevBypass) {
-    const { data } = await supabase.auth.getUser();
-    user = data.user;
-  }
+  const { data } = await supabase.auth.getUser();
+  const user = data.user;
 
   // Protected routes — redirect to login if not authenticated
   const isProtectedRoute =
@@ -62,7 +71,7 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/subscription") ||
     request.nextUrl.pathname.startsWith("/admin");
 
-  if (isProtectedRoute && !user && !isDevBypass) {
+  if (isProtectedRoute && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirect", request.nextUrl.pathname);
@@ -80,5 +89,5 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  return response;
+  return supabaseResponse;
 }
