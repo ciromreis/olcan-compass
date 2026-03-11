@@ -1,11 +1,10 @@
 [build]
-  command = "npm run build"
-  publish = "apps/web/dist"
+  command = "pnpm build:v2"
+  publish = "apps/web-v2/.next"
 
 [build.environment]
   NODE_VERSION = "20"
+  NEXT_PRIVATE_STANDALONE = "true"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
