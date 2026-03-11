@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Settings,
@@ -152,10 +153,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Logo */}
         <div className="h-16 px-5 flex items-center justify-between border-b border-cream-300/50">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-moss flex items-center justify-center">
-              <span className="text-white font-heading font-bold text-body-sm">OC</span>
-            </div>
-            <span className="font-heading text-h4 font-bold text-brand-500">Compass</span>
+            <Image src="/olcan-logo.png" alt="Olcan Compass" width={140} height={40} className="h-7 w-auto" priority />
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
