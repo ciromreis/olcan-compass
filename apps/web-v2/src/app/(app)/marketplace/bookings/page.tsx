@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { Calendar, Clock, CheckCircle, Circle, AlertTriangle, ArrowRight, Shield } from "lucide-react";
 import { useMarketplaceStore, type BookingStatus, type EscrowStatus } from "@/stores/marketplace";
@@ -26,8 +26,12 @@ type FilterTab = "all" | "active" | "completed";
 
 export default function BookingsListPage() {
   const hydrated = useHydration();
-  const { bookings } = useMarketplaceStore();
+  const { bookings, syncFromApi } = useMarketplaceStore();
   const [tab, setTab] = useState<FilterTab>("all");
+
+  useEffect(() => {
+    syncFromApi();
+  }, [syncFromApi]);
 
   const summary = useMemo(() => {
     const active = bookings.filter((b) => b.status === "pending" || b.status === "confirmed");

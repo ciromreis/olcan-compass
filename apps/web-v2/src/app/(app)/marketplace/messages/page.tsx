@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { ChevronRight, MessageSquare } from "lucide-react";
 import { useMarketplaceStore } from "@/stores/marketplace";
@@ -9,7 +10,11 @@ import { formatDate } from "@/lib/format";
 
 export default function MessagesListPage() {
   const hydrated = useHydration();
-  const { conversations, markConversationRead } = useMarketplaceStore();
+  const { conversations, markConversationRead, syncFromApi } = useMarketplaceStore();
+
+  useEffect(() => {
+    syncFromApi();
+  }, [syncFromApi]);
 
   if (!hydrated) {
     return (

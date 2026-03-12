@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { Search, Star, MapPin, Shield, Scale, Languages, MessageSquare, GraduationCap, Heart, Calendar, BookOpen, DollarSign, Briefcase } from "lucide-react";
 import { useMarketplaceStore, CATEGORY_LABELS, type ServiceCategory } from "@/stores/marketplace";
@@ -20,8 +20,12 @@ const CATEGORY_ICONS: Record<ServiceCategory, typeof Scale> = {
 
 export default function MarketplacePage() {
   const hydrated = useHydration();
-  const { providers, getStats } = useMarketplaceStore();
+  const { providers, getStats, syncFromApi } = useMarketplaceStore();
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    syncFromApi();
+  }, [syncFromApi]);
 
   const stats = getStats();
 
