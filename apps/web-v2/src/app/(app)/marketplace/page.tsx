@@ -20,7 +20,7 @@ const CATEGORY_ICONS: Record<ServiceCategory, typeof Scale> = {
 
 export default function MarketplacePage() {
   const hydrated = useHydration();
-  const { providers, getStats, syncFromApi } = useMarketplaceStore();
+  const { providers, getStats, syncFromApi, isSyncing } = useMarketplaceStore();
   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -50,12 +50,12 @@ export default function MarketplacePage() {
     }));
   }, [providers]);
 
-  if (!hydrated) {
+  if (!hydrated || (isSyncing && providers.length === 0)) {
     return (
       <div className="max-w-5xl mx-auto space-y-6">
-        <Skeleton className="h-10 w-48" />
+        <PageHeader title="Marketplace" subtitle="Conectando ao banco de dados..." />
         <Skeleton className="h-12 w-full" />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">{Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-20" />)}</div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-20" />)}</div>
         <div className="grid md:grid-cols-3 gap-4">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-48" />)}</div>
       </div>
     );
