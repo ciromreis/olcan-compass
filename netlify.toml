@@ -10,5 +10,8 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  PNPM_VERSION = "9.15.4"
+  NETLIFY_USE_PNPM = "true"
+  NPM_CONFIG_NODE_LINKER = "hoisted"
   NEXT_PUBLIC_API_URL = "https://olcan-compass-api.onrender.com"
   NEXT_PUBLIC_APP_URL = "https://compass.olcan.com.br"

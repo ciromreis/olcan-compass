@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Merriweather_Sans, Source_Sans_3 } from "next/font/google";
 import { QueryProvider } from "@/providers/QueryProvider";
+import StyledJsxRegistry from "@/lib/styled-jsx-registry";
 import "./globals.css";
 
 const merriweatherSans = Merriweather_Sans({
@@ -43,7 +44,9 @@ export default function RootLayout({
       className={`${merriweatherSans.variable} ${sourceSans.variable}`}
     >
       <body className="font-body antialiased bg-surface-bg text-text-primary">
-        <QueryProvider>{children}</QueryProvider>
+        <StyledJsxRegistry>
+          <QueryProvider>{children}</QueryProvider>
+        </StyledJsxRegistry>
       </body>
     </html>
   );
