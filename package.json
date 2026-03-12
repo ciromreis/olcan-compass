@@ -21,7 +21,8 @@
     "styled-jsx": "5.1.1"
   },
   "devDependencies": {
-    "@netlify/plugin-nextjs": "^5.15.9"
+    "@netlify/plugin-nextjs": "^5.15.9",
+    "next": "14.2.35"
   },
   "pnpm": {
     "overrides": {
