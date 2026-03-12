@@ -23,7 +23,7 @@ export default function MarketplacePage() {
   const { providers, getStats } = useMarketplaceStore();
   const [search, setSearch] = useState("");
 
-  const stats = useMemo(() => getStats(), [getStats]);
+  const stats = getStats();
 
   const filteredProviders = useMemo(() => {
     if (!search.trim()) return providers;

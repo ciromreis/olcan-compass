@@ -1,12 +1,12 @@
 [build]
-  command = "pnpm build:v2"
+  command = "pnpm install --shamefully-hoist && pnpm build:v2"
   publish = "apps/web-v2/.next"
-
-[build.environment]
-  NODE_VERSION = "20"
-  NEXT_PRIVATE_STANDALONE = "true"
-  NEXT_PUBLIC_API_URL = "https://olcan-compass-api.onrender.com"
-  NEXT_PUBLIC_APP_URL = "https://compass.olcan.com.br"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_VERSION = "20"
+  PNPM_FLAGS = "--shamefully-hoist"
+  NEXT_PUBLIC_API_URL = "https://olcan-compass-api.onrender.com"
+  NEXT_PUBLIC_APP_URL = "https://compass.olcan.com.br"

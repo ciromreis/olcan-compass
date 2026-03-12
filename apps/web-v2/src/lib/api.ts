@@ -189,6 +189,13 @@ export const marketplaceApi = {
     api.post("/marketplace/bookings", data),
   getBookings: () => api.get("/marketplace/bookings"),
   getBooking: (id: string) => api.get(`/marketplace/bookings/${id}`),
+  getConversations: () => api.get("/marketplace/conversations"),
+  createConversation: (providerId: string) =>
+    api.post("/marketplace/conversations", { provider_id: providerId }),
+  getMessages: (conversationId: string) =>
+    api.get(`/marketplace/conversations/${conversationId}/messages`),
+  sendMessage: (conversationId: string, content: string) =>
+    api.post(`/marketplace/conversations/${conversationId}/messages`, { content }),
   createReview: (bookingId: string, data: { rating: number; comment: string }) =>
     api.post(`/marketplace/bookings/${bookingId}/review`, data),
 };

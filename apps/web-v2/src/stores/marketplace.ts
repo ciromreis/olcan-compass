@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { canTransitionPayoutStatus, type PayoutRequestStatus } from "@/lib/payout-transitions";
+import { marketplaceApi } from "@/lib/api";
 
 // --- Types ---
 
@@ -123,6 +124,175 @@ export interface PayoutRequest {
   requestedAt: string;
   processedAt?: string;
   note?: string;
+}
+
+interface RemoteMarketplaceService {
+  id: string;
+  title: string;
+  description?: string | null;
+  service_type?: string;
+  price_amount?: number;
+  price_currency?: string;
+  duration_minutes?: number | null;
+}
+
+interface RemoteMarketplaceProvider {
+  id: string;
+  full_name?: string | null;
+  avatar_url?: string | null;
+  headline?: string | null;
+  bio?: string | null;
+  years_experience?: number | null;
+  languages_spoken?: string[] | null;
+  target_regions?: string[] | null;
+  rating_average?: number | null;
+  review_count?: number | null;
+  services?: RemoteMarketplaceService[];
+  recent_reviews?: Array<{
+    id: string;
+    overall_rating: number;
+    content?: string | null;
+    created_at?: string | null;
+  }>;
+}
+
+interface RemoteBooking {
+  id: string;
+  status: string;
+  scheduled_date: string;
+  scheduled_start?: string | null;
+  price_agreed: number;
+  payment_status?: string | null;
+  created_at?: string | null;
+  service: {
+    id: string;
+    title: string;
+  };
+  provider: {
+    id: string;
+    full_name?: string | null;
+    headline?: string | null;
+  };
+}
+
+interface RemoteConversation {
+  id: string;
+  other_party: {
+    id: string;
+    name?: string | null;
+  };
+  last_message?: {
+    content?: string | null;
+    created_at?: string | null;
+    is_read?: boolean;
+  } | null;
+}
+
+const SERVICE_TYPE_TO_CATEGORY: Record<string, ServiceCategory> = {
+  visa_guidance: "immigration_consulting",
+  application_strategy: "immigration_consulting",
+  sop_review: "academic_mentoring",
+  research_proposal: "academic_mentoring",
+  essay_review: "academic_mentoring",
+  mentoring: "academic_mentoring",
+  interview_prep: "interview_coaching",
+  cv_review: "cv_review",
+  language_coaching: "language_tutoring",
+  financial_planning: "financial_planning",
+};
+
+function mapServiceTypeToCategory(serviceType?: string): ServiceCategory {
+  return SERVICE_TYPE_TO_CATEGORY[serviceType || ""] || "career_coaching";
+}
+
+function mapRemoteProvider(provider: RemoteMarketplaceProvider): Provider {
+  const services = (provider.services || []).map((service) => ({
+    id: service.id,
+    providerId: provider.id,
+    title: service.title,
+    description: service.description || provider.headline || "Serviço especializado do marketplace.",
+    category: mapServiceTypeToCategory(service.service_type),
+    price: service.price_amount || 0,
+    currency: service.price_currency || "BRL",
+    duration: service.duration_minutes || 0,
+    isActive: true,
+  }));
+
+  const reviews = (provider.recent_reviews || []).map((review) => ({
+    id: review.id,
+    bookingId: review.id,
+    providerId: provider.id,
+    userId: "remote-user",
+    userName: "Cliente verificado",
+    rating: review.overall_rating,
+    comment: review.content || "Avaliação registrada no marketplace.",
+    createdAt: review.created_at || new Date().toISOString(),
+  }));
+
+  const specialties = Array.from(
+    new Set(services.map((service) => service.category))
+  );
+
+  return {
+    id: provider.id,
+    name: provider.full_name || provider.headline || "Especialista Compass",
+    bio: provider.bio || provider.headline || "Profissional verificado do marketplace.",
+    avatar: provider.avatar_url || null,
+    specialties: specialties.length > 0 ? specialties : ["career_coaching"],
+    rating: provider.rating_average || 0,
+    reviewCount: provider.review_count || 0,
+    verified: true,
+    country: provider.target_regions?.[0] || "Global",
+    languages: provider.languages_spoken?.length ? provider.languages_spoken : ["pt"],
+    yearsExperience: provider.years_experience || 0,
+    services,
+    reviews,
+    joinedAt: new Date().toISOString(),
+  };
+}
+
+function mapRemoteBooking(booking: RemoteBooking): Booking {
+  return {
+    id: booking.id,
+    providerId: booking.provider.id,
+    providerName: booking.provider.full_name || booking.provider.headline || "Especialista Compass",
+    serviceId: booking.service.id,
+    serviceTitle: booking.service.title,
+    date: booking.scheduled_date,
+    time: booking.scheduled_start
+      ? new Date(booking.scheduled_start).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
+      : null,
+    status:
+      booking.status === "completed" || booking.status === "cancelled" || booking.status === "confirmed"
+        ? booking.status
+        : "pending",
+    price: booking.price_agreed,
+    currency: "BRL",
+    escrow:
+      booking.payment_status === "released"
+        ? "released"
+        : booking.payment_status === "refunded"
+        ? "refunded"
+        : booking.payment_status === "held"
+        ? "held"
+        : "pending",
+    notes: "",
+    rating: null,
+    createdAt: booking.created_at || booking.scheduled_date,
+  };
+}
+
+function mapRemoteConversation(conversation: RemoteConversation): Conversation {
+  return {
+    id: conversation.id,
+    providerId: conversation.other_party.id,
+    providerName: conversation.other_party.name || "Especialista Compass",
+    providerAvatar: null,
+    lastMessage: conversation.last_message?.content || "Conversa iniciada",
+    lastMessageAt: conversation.last_message?.created_at || new Date().toISOString(),
+    unread: conversation.last_message?.is_read ? 0 : 1,
+    messages: [],
+  };
 }
 
 // --- Seed Data ---
@@ -296,8 +466,12 @@ interface MarketplaceState {
   conversations: Conversation[];
   payoutRequests: PayoutRequest[];
   activeProviderId: string | null;
+  isSyncing: boolean;
+  syncError: string | null;
 
   // Provider actions
+  syncFromApi: () => Promise<void>;
+  loadProviderDetail: (providerId: string) => Promise<Provider | undefined>;
   setActiveProvider: (id: string) => void;
   getActiveProvider: () => Provider | undefined;
   getProviderById: (id: string) => Provider | undefined;
@@ -321,7 +495,7 @@ interface MarketplaceState {
   removeProviderService: (providerId: string, serviceId: string) => void;
 
   // Booking actions
-  createBooking: (booking: Omit<Booking, "id" | "createdAt">) => Booking;
+  createBooking: (booking: Omit<Booking, "id" | "createdAt">) => Promise<Booking>;
   updateBookingStatus: (id: string, status: BookingStatus) => void;
   rateBooking: (id: string, rating: number) => void;
   getBookingById: (id: string) => Booking | undefined;
@@ -360,12 +534,67 @@ const initialState = {
   conversations: SEED_CONVERSATIONS,
   payoutRequests: SEED_PAYOUT_REQUESTS,
   activeProviderId: SEED_PROVIDERS[0]?.id || null,
+  isSyncing: false,
+  syncError: null,
 };
 
 export const useMarketplaceStore = create<MarketplaceState>()(
   persist(
     (set, get) => ({
       ...initialState,
+
+      syncFromApi: async () => {
+        set({ isSyncing: true, syncError: null });
+        try {
+          const [providersResult, bookingsResult, conversationsResult] = await Promise.allSettled([
+            marketplaceApi.getProviders(),
+            marketplaceApi.getBookings(),
+            marketplaceApi.getConversations(),
+          ]);
+
+          const nextState: Partial<MarketplaceState> = { isSyncing: false, syncError: null };
+
+          if (providersResult.status === "fulfilled") {
+            const items = providersResult.value.data?.items || [];
+            const providers = items.map(mapRemoteProvider);
+            nextState.providers = providers.length > 0 ? providers : get().providers;
+            nextState.activeProviderId = providers[0]?.id || get().activeProviderId;
+          }
+
+          if (bookingsResult.status === "fulfilled") {
+            const items = bookingsResult.value.data?.items || [];
+            nextState.bookings = items.map(mapRemoteBooking);
+          }
+
+          if (conversationsResult.status === "fulfilled") {
+            const items = conversationsResult.value.data || [];
+            nextState.conversations = items.map(mapRemoteConversation);
+          }
+
+          if (providersResult.status !== "fulfilled" && bookingsResult.status !== "fulfilled") {
+            nextState.syncError = "Não foi possível sincronizar o marketplace com a API.";
+          }
+
+          set(nextState as Partial<MarketplaceState>);
+        } catch {
+          set({ isSyncing: false, syncError: "Não foi possível sincronizar o marketplace com a API." });
+        }
+      },
+
+      loadProviderDetail: async (providerId) => {
+        try {
+          const { data } = await marketplaceApi.getProvider(providerId);
+          const remoteProvider = mapRemoteProvider(data);
+          set((state) => ({
+            providers: state.providers.some((provider) => provider.id === providerId)
+              ? state.providers.map((provider) => (provider.id === providerId ? remoteProvider : provider))
+              : [remoteProvider, ...state.providers],
+          }));
+          return remoteProvider;
+        } catch {
+          return get().providers.find((provider) => provider.id === providerId);
+        }
+      },
 
       setActiveProvider: (id) =>
         set((state) => ({
@@ -460,13 +689,33 @@ export const useMarketplaceStore = create<MarketplaceState>()(
           bookings: state.bookings.filter((booking) => booking.serviceId !== serviceId),
         })),
 
-      createBooking: (data) => {
+      createBooking: async (data) => {
+        let bookingId = `b${Date.now()}`;
+        let bookingStatus: BookingStatus = data.status;
+
+        try {
+          const { data: response } = await marketplaceApi.createBooking({
+            service_id: data.serviceId,
+            proposed_date: data.date,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            notes: data.time ? `${data.notes}\nHorário preferido: ${data.time}`.trim() : data.notes,
+          });
+          bookingId = response.booking_id || bookingId;
+          bookingStatus =
+            response.status === "confirmed" || response.status === "completed" || response.status === "cancelled"
+              ? response.status
+              : "pending";
+        } catch {
+          // Keep a local pending booking so the UI flow remains usable offline/fallback.
+        }
+
         const booking: Booking = {
           ...data,
-          id: `b${Date.now()}`,
+          id: bookingId,
+          status: bookingStatus,
           createdAt: new Date().toISOString().slice(0, 10),
         };
-        set((s) => ({ bookings: [...s.bookings, booking] }));
+        set((s) => ({ bookings: [booking, ...s.bookings] }));
         return booking;
       },
 

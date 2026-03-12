@@ -102,6 +102,11 @@ async def list_providers(
     # Build response
     items = []
     for provider in providers:
+        user_result = await db.execute(
+            select(User).where(User.id == provider.user_id)
+        )
+        user = user_result.scalar_one_or_none()
+
         # Get services for this provider
         services_result = await db.execute(
             select(ServiceListing).where(
@@ -120,6 +125,8 @@ async def list_providers(
         items.append({
             "id": str(provider.id),
             "user_id": str(provider.user_id),
+            "full_name": user.full_name if user else None,
+            "avatar_url": user.avatar_url if user else None,
             "headline": provider.headline,
             "bio": provider.bio,
             "current_title": provider.current_title,
@@ -200,9 +207,17 @@ async def get_provider(
         ).order_by(desc(Review.created_at)).limit(5)
     )
     reviews = reviews_result.scalars().all()
+
+    user_result = await db.execute(
+        select(User).where(User.id == provider.user_id)
+    )
+    user = user_result.scalar_one_or_none()
     
     return {
         "id": str(provider.id),
+        "user_id": str(provider.user_id),
+        "full_name": user.full_name if user else None,
+        "avatar_url": user.avatar_url if user else None,
         "headline": provider.headline,
         "bio": provider.bio,
         "current_title": provider.current_title,
@@ -628,7 +643,12 @@ async def list_bookings(
             },
             "provider": {
                 "id": str(provider.id),
-                "headline": provider.headline
+                "headline": provider.headline,
+                "full_name": (
+                    await db.execute(
+                        select(User.full_name).where(User.id == provider.user_id)
+                    )
+                ).scalar_one_or_none(),
             },
             "scheduled_date": booking.scheduled_date.isoformat(),
             "scheduled_start": booking.scheduled_start.isoformat() if booking.scheduled_start else None,
@@ -892,6 +912,13 @@ async def list_conversations(
                 select(ProviderProfile).where(ProviderProfile.id == conv.provider_id)
             )
         other = other_result.scalar_one()
+
+        other_name = getattr(other, "headline", None) or getattr(other, "email", None) or "Unknown"
+        if isinstance(other, ProviderProfile):
+            provider_user_result = await db.execute(
+                select(User.full_name).where(User.id == other.user_id)
+            )
+            other_name = provider_user_result.scalar_one_or_none() or other_name
         
         # Get last message
         last_msg_result = await db.execute(
@@ -906,7 +933,7 @@ async def list_conversations(
             "id": str(conv.id),
             "other_party": {
                 "id": str(other.id),
-                "name": getattr(other, 'headline', getattr(other, 'email', 'Unknown'))
+                "name": other_name,
             },
             "last_message": {
                 "content": last_msg.content[:100] if last_msg else None,

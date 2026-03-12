@@ -16,5 +16,8 @@
     "health:api": "curl -sS http://localhost:8000/api/health",
     "smoke:auth": "node ./scripts/smoke/auth.js",
     "seed:user": "node ./scripts/seed/user.js"
+  },
+  "dependencies": {
+    "styled-jsx": "5.1.1"
   }
 }
