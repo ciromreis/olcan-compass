@@ -531,8 +531,8 @@ interface MarketplaceState {
 const initialState = {
   providers: [],
   bookings: [],
-  conversations: SEED_CONVERSATIONS,
-  payoutRequests: SEED_PAYOUT_REQUESTS,
+  conversations: [],
+  payoutRequests: [],
   activeProviderId: null,
   isSyncing: false,
   syncError: null,
