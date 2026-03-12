@@ -59,6 +59,7 @@ export function RouteDetail() {
   const [selectedMilestone, setSelectedMilestone] = useState<RouteMilestone | null>(null)
   const [completionNotes, setCompletionNotes] = useState('')
   const [showCompleteModal, setShowCompleteModal] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   if (!id) {
     return <Alert variant="error">ID da rota não fornecido.</Alert>
@@ -73,7 +74,8 @@ export function RouteDetail() {
   }
 
   if (routeQuery.error || !routeQuery.data) {
-    return <Alert variant="error">Erro ao carregar rota. Tente novamente.</Alert>
+    setError('Erro ao carregar rota. Tente novamente.')
+    return <Alert variant="error">{error || 'Erro ao carregar rota.'}</Alert>
   }
 
   const route = routeQuery.data
@@ -96,29 +98,44 @@ export function RouteDetail() {
 
   const handleCompleteMilestone = async () => {
     if (!selectedMilestone) return
-    await updateMilestone.mutateAsync({
-      routeId: route.id,
-      milestoneId: selectedMilestone.id,
-      updates: { completed: true },
-    })
-    setShowCompleteModal(false)
-    setSelectedMilestone(null)
-    setCompletionNotes('')
-    routeQuery.refetch()
+    try {
+      await updateMilestone.mutateAsync({
+        routeId: route.id,
+        milestoneId: selectedMilestone.id,
+        updates: { completed: true },
+      })
+      setShowCompleteModal(false)
+      setSelectedMilestone(null)
+      setCompletionNotes('')
+      routeQuery.refetch()
+    } catch (err) {
+      setError('Erro ao completar marco. Tente novamente.')
+    }
   }
 
   const handleStartMilestone = async (milestone: RouteMilestone) => {
     if (milestone.status !== 'available') return
-    await updateMilestone.mutateAsync({
-      routeId: route.id,
-      milestoneId: milestone.id,
-      updates: { completed: false },
-    })
-    routeQuery.refetch()
+    try {
+      await updateMilestone.mutateAsync({
+        routeId: route.id,
+        milestoneId: milestone.id,
+        updates: { completed: false },
+      })
+      routeQuery.refetch()
+    } catch (err) {
+      setError('Erro ao iniciar marco. Tente novamente.')
+    }
   }
 
   return (
     <div className="space-y-6">
+      {/* Error Alert */}
+      {error && (
+        <Alert variant="error" onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
+
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Clock, Shield, CreditCard, Briefcase } from "lucide-react";
 import { CATEGORY_LABELS, useMarketplaceStore } from "@/stores/marketplace";
@@ -14,7 +14,8 @@ export default function BookingPage() {
   const router = useRouter();
   const hydrated = useHydration();
   const { toast } = useToast();
-  const { getProviderById, createBooking } = useMarketplaceStore();
+  const { getProviderById, createBooking, loadProviderDetail } = useMarketplaceStore();
+  const [isLoadingProvider, setIsLoadingProvider] = useState(true);
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
@@ -24,7 +25,19 @@ export default function BookingPage() {
   const services = provider?.services.filter((service) => service.isActive) ?? [];
   const service = services.find((s) => s.id === selectedService);
 
-  if (!hydrated) {
+  useEffect(() => {
+    if (!hydrated) return;
+    let active = true;
+    setIsLoadingProvider(true);
+    void loadProviderDetail(id).finally(() => {
+      if (active) setIsLoadingProvider(false);
+    });
+    return () => {
+      active = false;
+    };
+  }, [hydrated, id, loadProviderDetail]);
+
+  if (!hydrated || isLoadingProvider) {
     return (
       <div className="max-w-3xl mx-auto space-y-6">
         <Skeleton className="h-10 w-56" />
@@ -46,9 +59,9 @@ export default function BookingPage() {
     );
   }
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!service || !selectedDate || (service.duration > 0 && !selectedSlot)) return;
-    const booking = createBooking({
+    const booking = await createBooking({
       providerId: provider.id,
       providerName: provider.name,
       serviceId: service.id,
@@ -123,7 +136,7 @@ export default function BookingPage() {
             <Shield className="w-4 h-4 text-brand-500 mt-0.5 flex-shrink-0" />
             <p className="text-caption text-text-secondary">Pagamento via escrow — o valor só é liberado ao profissional após a entrega do serviço ou aprovação sua.</p>
           </div>
-          <button onClick={handleConfirm} className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 transition-colors">
+          <button onClick={() => void handleConfirm()} className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 transition-colors">
             <CreditCard className="w-4 h-4" /> Confirmar e Pagar
           </button>
         </div>

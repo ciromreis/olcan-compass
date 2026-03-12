@@ -25,3 +25,12 @@ export type { SprintTaskCardProps, SprintTask } from './SprintTaskCard';
 
 export { ProviderCard } from './ProviderCard';
 export type { ProviderCardProps, Provider, Service } from './ProviderCard';
+
+export { VerificationBadge } from './VerificationBadge';
+export type { VerificationBadgeProps } from './VerificationBadge';
+
+export { GrowthPotentialWidget } from './GrowthPotentialWidget';
+export type { GrowthPotentialWidgetProps } from './GrowthPotentialWidget';
+
+export { TemporalRouteRecommendations } from './TemporalRouteRecommendations';
+export type { TemporalRouteRecommendationsProps } from './TemporalRouteRecommendations';

@@ -24,7 +24,7 @@ class ApiClient {
 
     // Request interceptor to add auth token
     this.client.interceptors.request.use((config) => {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('access_token')
       if (token) {
         config.headers.Authorization = `Bearer ${token}`
       }
@@ -40,7 +40,7 @@ class ApiClient {
         }
 
         const requestUrl = originalRequest?.url ?? ''
-        const token = localStorage.getItem('token')
+        const token = localStorage.getItem('access_token')
 
         // Demo mode interception
         if (token === 'demo') {
@@ -209,7 +209,7 @@ class ApiClient {
   }
 
   private handleLogout() {
-    localStorage.removeItem('token')
+    localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
     window.location.href = '/login'
   }
@@ -261,7 +261,9 @@ class ApiClient {
   }
 
   post<T = any>(url: string, data?: any, config?: any) {
-    return this.client.post<T>(url, data, config)
+    // If data is FormData, don't set Content-Type (axios will set it automatically)
+    const headers = data instanceof FormData ? {} : { 'Content-Type': 'application/json' };
+    return this.client.post<T>(url, data, { ...config, headers });
   }
 
   put<T = any>(url: string, data?: any, config?: any) {
@@ -281,7 +283,7 @@ class ApiClient {
     const response = await this.client.post('/auth/login', { email, password })
     // Backend returns { user_id, email, role, token: { access_token, refresh_token } }
     const { token } = response.data
-    localStorage.setItem('token', token.access_token)
+    localStorage.setItem('access_token', token.access_token)
     localStorage.setItem('refresh_token', token.refresh_token)
 
     // Fetch full profile to get full_name
@@ -302,7 +304,7 @@ class ApiClient {
     })
     // Backend returns { user_id, email, role, token: { access_token, refresh_token } }
     const { token } = response.data
-    localStorage.setItem('token', token.access_token)
+    localStorage.setItem('access_token', token.access_token)
     localStorage.setItem('refresh_token', token.refresh_token)
 
     const profile = await this.getProfile()

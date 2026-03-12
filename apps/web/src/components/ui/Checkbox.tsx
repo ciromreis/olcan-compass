@@ -1,81 +1,43 @@
-import React from 'react';
-import { Check, Minus } from 'lucide-react';
+import { forwardRef, type InputHTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
-export interface CheckboxProps {
-  checked?: boolean;
-  indeterminate?: boolean;
-  onChange?: (checked: boolean) => void;
-  disabled?: boolean;
+interface CheckboxProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
-  error?: boolean;
-  className?: string;
-  id?: string;
+  error?: string;
 }
 
-export const Checkbox: React.FC<CheckboxProps> = ({
-  checked = false,
-  indeterminate = false,
-  onChange,
-  disabled = false,
-  label,
-  error = false,
-  className,
-  id,
-}) => {
-  const handleChange = () => {
-    if (!disabled) {
-      onChange?.(!checked);
-    }
-  };
+const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
+  ({ className, label, error, id, ...props }, ref) => {
+    const checkboxId = id || label?.toLowerCase().replace(/\s+/g, '-');
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === ' ' || e.key === 'Enter') {
-      e.preventDefault();
-      handleChange();
-    }
-  };
-
-  const checkboxId = id || `checkbox-${Math.random().toString(36).substr(2, 9)}`;
-
-  return (
-    <div className={cn('inline-flex items-center gap-2', className)}>
-      <div
-        role="checkbox"
-        aria-checked={indeterminate ? 'mixed' : checked}
-        aria-disabled={disabled}
-        tabIndex={disabled ? -1 : 0}
-        onClick={handleChange}
-        onKeyDown={handleKeyDown}
-        className={cn(
-          'flex items-center justify-center w-5 h-5 rounded border-2 transition-all cursor-pointer',
-          'focus:outline-none focus:ring-2 focus:ring-lumina-500 focus:ring-offset-2',
-          checked || indeterminate
-            ? 'bg-lumina-600 border-lumina-600'
-            : 'bg-white border-neutral-400',
-          error && !checked && !indeterminate && 'border-semantic-error',
-          disabled && 'opacity-50 cursor-not-allowed',
-          !disabled && !checked && !indeterminate && 'hover:border-lumina-500'
-        )}
-      >
-        {indeterminate ? (
-          <Minus className="w-3 h-3 text-white" strokeWidth={3} />
-        ) : checked ? (
-          <Check className="w-3 h-3 text-white" strokeWidth={3} />
-        ) : null}
-      </div>
-      {label && (
-        <label
-          htmlFor={checkboxId}
-          onClick={handleChange}
-          className={cn(
-            'text-sm text-neutral-900 cursor-pointer select-none',
-            disabled && 'opacity-50 cursor-not-allowed'
+    return (
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-3">
+          <input
+            ref={ref}
+            id={checkboxId}
+            type="checkbox"
+            className={cn(
+              'h-4 w-4 rounded border-cream-400 text-brand-500 focus:ring-brand-400 focus:ring-offset-0',
+              error ? 'border-error' : 'border-cream-400',
+              className
+            )}
+            aria-invalid={error ? 'true' : undefined}
+            {...props}
+          />
+          {label && (
+            <label htmlFor={checkboxId} className="text-body-sm text-text-primary cursor-pointer select-none">
+              {label}
+            </label>
           )}
-        >
-          {label}
-        </label>
-      )}
-    </div>
-  );
-};
+        </div>
+        {error && (
+          <p className="text-caption text-error">{error}</p>
+        )}
+      </div>
+    );
+  }
+);
+
+Checkbox.displayName = 'Checkbox';
+export { Checkbox, type CheckboxProps };

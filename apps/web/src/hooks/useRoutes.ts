@@ -118,14 +118,27 @@ export const useUserRoutes = () => {
     queryFn: async () => {
       const response = await api.get('/routes');
       const routes = response.data?.routes ?? [];
+      // Use the routes directly if they already contain milestones
+      // Otherwise fall back to detail fetch (for backward compatibility)
+      if (routes.length > 0 && routes[0]?.milestones) {
+        return routes.map((route: RawRoute) => normalizeRoute(route, route.milestones || []));
+      }
+      // N+1 fallback for older API versions
       const detailResponses = await Promise.all(
         routes.map(async (route: RawRoute) => {
-          const detail = await api.get(`/routes/${route.id}`);
-          return normalizeRoute(detail.data?.route || route, detail.data?.milestones || []);
+          try {
+            const detail = await api.get(`/routes/${route.id}`);
+            return normalizeRoute(detail.data?.route || route, detail.data?.milestones || []);
+          } catch (error) {
+            console.error(`Failed to fetch route ${route.id}:`, error);
+            return normalizeRoute(route, []);
+          }
         })
       );
       return detailResponses;
     },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   useEffect(() => {

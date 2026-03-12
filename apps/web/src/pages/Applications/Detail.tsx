@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Calendar, CheckCircle, FileText } from 'lucide-react'
 import { useApplications } from '@/hooks/useApplications'
@@ -12,6 +13,7 @@ import { Alert } from '@/components/ui/Alert'
 export function ApplicationDetail() {
   const { id } = useParams<{ id: string }>()
   const { getApplication, uploadDocument } = useApplications()
+  const [error, setError] = useState<string | null>(null)
 
   const applicationQuery = getApplication(id ?? '')
   const application = applicationQuery?.data
@@ -25,7 +27,8 @@ export function ApplicationDetail() {
   }
 
   if (applicationQuery?.error || !application) {
-    return <Alert variant="error">Erro ao carregar aplicação. Tente novamente.</Alert>
+    setError('Erro ao carregar aplicação. Tente novamente.')
+    return <Alert variant="error">{error || 'Erro ao carregar aplicação.'}</Alert>
   }
 
   const statusColors = {

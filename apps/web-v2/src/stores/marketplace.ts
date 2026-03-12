@@ -529,11 +529,11 @@ interface MarketplaceState {
 }
 
 const initialState = {
-  providers: SEED_PROVIDERS,
-  bookings: SEED_BOOKINGS,
+  providers: [],
+  bookings: [],
   conversations: SEED_CONVERSATIONS,
   payoutRequests: SEED_PAYOUT_REQUESTS,
-  activeProviderId: SEED_PROVIDERS[0]?.id || null,
+  activeProviderId: null,
   isSyncing: false,
   syncError: null,
 };

@@ -1,277 +1,103 @@
-import React from 'react';
+import { useMemo } from 'react';
+import { motion } from 'framer-motion';
+import { Briefcase, Calendar, Clock, CheckCircle, AlertTriangle, FileText } from 'lucide-react';
+import type { UserApplication } from '@/store/application';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
-import { formatDeadline, daysUntil } from '@/lib/utils';
-import { cn } from '@/lib/utils';
-import {
-  Calendar,
-  MapPin,
-  Building2,
-  TrendingUp,
-  AlertCircle,
-  CheckCircle2,
-  Clock,
-  ExternalLink,
-} from 'lucide-react';
+import { formatDeadline } from '@/lib/utils';
 
-export interface Application {
-  id: string;
-  opportunity_id: string;
-  opportunity_name: string;
-  opportunity_type?: string;
-  institution?: string;
-  location?: string;
-  status: 'draft' | 'submitted' | 'under_review' | 'accepted' | 'rejected';
-  deadline?: string;
-  match_score?: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ApplicationCardProps {
-  application: Application;
-  onViewDetails?: (applicationId: string) => void;
-  onUpdateStatus?: (applicationId: string, status: string) => void;
-  showActions?: boolean;
-  compact?: boolean;
+interface ApplicationCardProps {
+  application: UserApplication;
   className?: string;
 }
 
-export const ApplicationCard: React.FC<ApplicationCardProps> = ({
-  application,
-  onViewDetails,
-  onUpdateStatus,
-  showActions = true,
-  compact = false,
-  className,
-}) => {
-  const getStatusVariant = (
-    status: string
-  ): 'default' | 'success' | 'warning' | 'error' | 'lumina' => {
-    switch (status) {
-      case 'accepted':
-        return 'success';
-      case 'rejected':
-        return 'error';
-      case 'under_review':
-        return 'warning';
+export function ApplicationCard({ application, className }: ApplicationCardProps) {
+  const statusColor = useMemo(() => {
+    switch (application.status) {
       case 'submitted':
-        return 'lumina';
+        return 'blue';
+      case 'accepted':
+        return 'sage';
+      case 'rejected':
+        return 'clay';
+      case 'urgent':
+        return 'clay';
       default:
         return 'default';
     }
-  };
+  }, [application.status]);
 
-  const getStatusLabel = (status: string): string => {
-    switch (status) {
-      case 'draft':
-        return 'Rascunho';
+  const statusLabel = useMemo(() => {
+    switch (application.status) {
       case 'submitted':
         return 'Enviada';
-      case 'under_review':
-        return 'Em Análise';
       case 'accepted':
         return 'Aceita';
       case 'rejected':
         return 'Rejeitada';
+      case 'urgent':
+        return 'Urgente';
       default:
-        return status;
+        return application.status;
     }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'accepted':
-        return <CheckCircle2 className="w-4 h-4" />;
-      case 'rejected':
-        return <AlertCircle className="w-4 h-4" />;
-      case 'under_review':
-        return <Clock className="w-4 h-4" />;
-      default:
-        return null;
-    }
-  };
-
-  const getDeadlineUrgency = (deadline?: string): 'critical' | 'warning' | 'normal' => {
-    if (!deadline) return 'normal';
-    const days = daysUntil(deadline);
-    if (days < 0) return 'critical';
-    if (days <= 7) return 'critical';
-    if (days <= 30) return 'warning';
-    return 'normal';
-  };
-
-  const deadlineUrgency = getDeadlineUrgency(application.deadline);
-
-  if (compact) {
-    return (
-      <Card
-        className={cn(
-          'p-4 hover:bg-neutral-700/60 transition-colors cursor-pointer',
-          className
-        )}
-        noPadding
-        onClick={() => onViewDetails?.(application.id)}
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-semibold text-white truncate">
-              {application.opportunity_name}
-            </h4>
-            {application.institution && (
-              <p className="text-xs text-neutral-400 mt-1 truncate">
-                {application.institution}
-              </p>
-            )}
-          </div>
-          <Badge variant={getStatusVariant(application.status)} size="sm">
-            {getStatusLabel(application.status)}
-          </Badge>
-        </div>
-        {application.deadline && (
-          <div className="flex items-center gap-2 mt-2 text-xs text-neutral-400">
-            <Calendar className="w-3 h-3" />
-            <span>{formatDeadline(application.deadline)}</span>
-          </div>
-        )}
-      </Card>
-    );
-  }
+  }, [application.status]);
 
   return (
-    <Card 
-      className={cn('p-6 liquid-glass cursor-pointer', className)}
-      noPadding
-      onClick={() => onViewDetails?.(application.id)}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -2 }}
+      transition={{ duration: 0.2 }}
     >
-      <div className="space-y-4">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1">
-            <div className="flex items-start gap-3 mb-2">
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-white">
-                  {application.opportunity_name}
-                </h3>
-                {application.opportunity_type && (
-                  <p className="text-sm text-neutral-300 mt-1">
-                    {application.opportunity_type}
-                  </p>
-                )}
-              </div>
+      <Card className={`p-5 ${className}`}>
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center">
+              <Briefcase className="w-5 h-5 text-brand-500" />
+            </div>
+            <div>
+              <h3 className="font-heading text-h4 text-text-primary truncate">
+                {application.program}
+              </h3>
+              <p className="text-body-sm text-text-secondary truncate">
+                {application.institution}
+              </p>
             </div>
           </div>
-          <div className="flex flex-col items-end gap-2">
-            <Badge variant={getStatusVariant(application.status)}>
-              {getStatusIcon(application.status)}
-              {getStatusLabel(application.status)}
-            </Badge>
-            {application.match_score !== undefined && (
-              <Badge variant="lumina" size="sm">
-                <TrendingUp className="w-3 h-3" />
-                {application.match_score}% match
-              </Badge>
-            )}
-          </div>
+          <Badge variant={statusColor}>
+            {statusLabel}
+          </Badge>
         </div>
 
-        {/* Details */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {application.institution && (
-            <div className="flex items-center gap-2 text-sm text-neutral-300">
-              <Building2 className="w-4 h-4 text-neutral-400" />
-              <span>{application.institution}</span>
-            </div>
-          )}
-          {application.location && (
-            <div className="flex items-center gap-2 text-sm text-neutral-300">
-              <MapPin className="w-4 h-4 text-neutral-400" />
-              <span>{application.location}</span>
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center gap-2 text-body-xs text-text-muted">
+            <Calendar className="w-3 h-3" />
+            <span>Deadline: {formatDeadline(application.deadline)}</span>
+          </div>
+          {application.documents && application.documents.length > 0 && (
+            <div className="flex items-center gap-2 text-body-xs text-text-muted">
+              <FileText className="w-3 h-3" />
+              <span>{application.documents.filter((d) => d.status === 'ready').length} de {application.documents.length} documentos prontos</span>
             </div>
           )}
         </div>
 
-        {/* Deadline */}
-        {application.deadline && (
-          <div
-            className={cn(
-              'flex items-center justify-between p-3 rounded-lg',
-              deadlineUrgency === 'critical' &&
-                'bg-error/10 border border-error/30',
-              deadlineUrgency === 'warning' &&
-                'bg-warning/10 border border-warning/30',
-              deadlineUrgency === 'normal' &&
-                'bg-neutral-800/30 border border-white/10'
-            )}
-          >
-            <div className="flex items-center gap-2">
-              <Calendar
-                className={cn(
-                  'w-4 h-4',
-                  deadlineUrgency === 'critical' && 'text-error',
-                  deadlineUrgency === 'warning' && 'text-warning',
-                  deadlineUrgency === 'normal' && 'text-neutral-300'
-                )}
-              />
-              <span
-                className={cn(
-                  'text-sm font-medium',
-                  deadlineUrgency === 'critical' && 'text-error',
-                  deadlineUrgency === 'warning' && 'text-warning',
-                  deadlineUrgency === 'normal' && 'text-neutral-200'
-                )}
-              >
-                {formatDeadline(application.deadline)}
-              </span>
-            </div>
-            {deadlineUrgency === 'critical' && daysUntil(application.deadline) >= 0 && (
-              <Badge variant="error" size="sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {application.status === 'urgent' && (
+              <div className="flex items-center gap-1 text-body-xs text-clay-600 font-medium">
+                <AlertTriangle className="w-3 h-3" />
                 Urgente
-              </Badge>
+              </div>
             )}
           </div>
-        )}
-
-        {/* Actions */}
-        {showActions && (
-          <div className="flex items-center gap-2 pt-4 border-t border-white/10">
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={(e: React.MouseEvent) => {
-                e.stopPropagation()
-                onViewDetails?.(application.id)
-              }}
-            >
-              Ver Detalhes
-              <ExternalLink className="w-4 h-4" />
-            </Button>
-            {application.status === 'draft' && (
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={(e: React.MouseEvent) => {
-                  e.stopPropagation()
-                  onUpdateStatus?.(application.id, 'submitted')
-                }}
-              >
-                Enviar Candidatura
-              </Button>
-            )}
-          </div>
-        )}
-
-        {/* Metadata */}
-        <div className="flex items-center justify-between text-xs text-neutral-500 pt-2 border-t border-neutral-200">
-          <span>
-            Criada em {new Date(application.created_at).toLocaleDateString('pt-BR')}
-          </span>
-          <span>
-            Atualizada {new Date(application.updated_at).toLocaleDateString('pt-BR')}
-          </span>
+          {application.deadline && (
+            <span className="text-body-xs text-text-muted">
+              {formatDeadline(application.deadline)}
+            </span>
+          )}
         </div>
-      </div>
-    </Card>
+      </Card>
+    </motion.div>
   );
-};
+}

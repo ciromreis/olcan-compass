@@ -15,6 +15,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth";
+import { useMarketplaceStore } from "@/stores/marketplace";
 import { Avatar, Input } from "@/components/ui";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { useHydration } from "@/hooks";
@@ -60,6 +61,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout, fetchProfile } = useAuthStore();
+  const syncMarketplace = useMarketplaceStore((state) => state.syncFromApi);
   const navSections = getNavigationSectionsForRole(user?.role);
   const bottomItems = getBottomItemsForRole(user?.role);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -67,6 +69,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [authBootstrapDone, setAuthBootstrapDone] = useState(false);
   const authBootstrapStarted = useRef(false);
+  const marketplaceSyncStarted = useRef(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   // Close user menu on outside click
@@ -101,6 +104,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
     void bootstrapAuth();
   }, [fetchProfile, hydrated, pathname, router]);
+
+  useEffect(() => {
+    if (!hydrated || !authBootstrapDone || marketplaceSyncStarted.current) return;
+    marketplaceSyncStarted.current = true;
+    void syncMarketplace();
+  }, [authBootstrapDone, hydrated, syncMarketplace]);
 
   const handleLogout = () => {
     logout();

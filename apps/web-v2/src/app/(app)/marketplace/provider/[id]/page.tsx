@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Star, Shield, MapPin, Clock, MessageSquare, Calendar, Globe, Briefcase } from "lucide-react";
 import { useMarketplaceStore, CATEGORY_LABELS } from "@/stores/marketplace";
@@ -11,11 +12,24 @@ export default function ProviderProfilePage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const hydrated = useHydration();
-  const { getProviderById, ensureConversation } = useMarketplaceStore();
+  const { getProviderById, ensureConversation, loadProviderDetail } = useMarketplaceStore();
+  const [isLoadingProvider, setIsLoadingProvider] = useState(true);
 
   const provider = hydrated ? getProviderById(id) : undefined;
 
-  if (!hydrated) {
+  useEffect(() => {
+    if (!hydrated) return;
+    let active = true;
+    setIsLoadingProvider(true);
+    void loadProviderDetail(id).finally(() => {
+      if (active) setIsLoadingProvider(false);
+    });
+    return () => {
+      active = false;
+    };
+  }, [hydrated, id, loadProviderDetail]);
+
+  if (!hydrated || isLoadingProvider) {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
         <Skeleton className="h-8 w-32" />

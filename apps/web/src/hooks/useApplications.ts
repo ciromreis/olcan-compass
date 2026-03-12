@@ -233,10 +233,16 @@ export const useApplications = (filters?: {
     addToWatchlist: toggleWatchlist.mutate,
     getApplication: useApplication,
     uploadDocument: async (applicationId: string, file: File) => {
-      const response = await api.post(`/applications/${applicationId}/documents`, {
-        document_type: 'other',
-        file_name: file.name,
-        notes: 'Upload realizado pelo frontend',
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'other');
+      formData.append('file_name', file.name);
+      formData.append('notes', 'Upload realizado pelo frontend');
+
+      const response = await api.client.post(`/applications/${applicationId}/documents`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
       return response.data;
     },

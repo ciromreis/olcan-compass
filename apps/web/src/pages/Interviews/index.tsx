@@ -1,1 +1,2 @@
-export { QuestionBank as default } from './QuestionBank';
+export { QuestionBank } from './QuestionBank';
+export { InterviewSession } from './Session';

@@ -1,1 +1,3 @@
-export { MySprints as default } from './MySprints';
+export { MySprints } from './MySprints';
+export { SprintTemplates } from './Templates';
+export { SprintDetail } from './Detail';

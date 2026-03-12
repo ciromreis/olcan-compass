@@ -372,3 +372,28 @@ export function generateId(prefix?: string): string {
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max)
 }
+
+/**
+ * Format duration in months to a readable string
+ * @param months - Number of months
+ * @returns Formatted duration string
+ */
+export function formatDuration(months: number): string {
+  if (months < 1) return 'Menos de 1 mês'
+  if (months === 1) return '1 mês'
+  if (months < 12) return `${months} meses`
+  const years = Math.floor(months / 12)
+  const remainingMonths = months % 12
+  if (remainingMonths === 0) return `${years} ${years === 1 ? 'ano' : 'anos'}`
+  return `${years} ${years === 1 ? 'ano' : 'anos'} e ${remainingMonths} meses`
+}
+
+/**
+ * Format a price value
+ * @param price - Price value
+ * @returns Formatted price string
+ */
+export function formatPrice(price: number | string | null): string {
+  if (price == null || price === '') return 'Sob consulta'
+  return formatCurrency(Number(price))
+}
