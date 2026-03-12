@@ -1,9 +1,12 @@
 [build]
-  command = "pnpm install --shamefully-hoist && pnpm build:v2"
+  command = "pnpm build:v2"
   publish = "apps/web-v2/.next"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+[functions]
+  external_node_modules = ["styled-jsx"]
 
 [build.environment]
   NODE_VERSION = "20"
