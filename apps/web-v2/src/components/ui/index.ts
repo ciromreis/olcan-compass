@@ -63,3 +63,5 @@ export type { ConfirmationModalProps, ConfirmationVariant } from "./Confirmation
 
 export { ToastProvider, useToast } from "./Toast";
 export type { ToastItem, ToastVariant } from "./Toast";
+
+export { LoadingSpinner } from "./LoadingSpinner";
