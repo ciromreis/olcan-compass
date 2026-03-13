@@ -6,6 +6,8 @@
   "outputDirectory": ".next",
   "regions": ["iad1"],
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://olcan-compass-api.onrender.com"
-  }
+    "NEXT_PUBLIC_API_URL": "https://api.compass.olcan.com.br",
+    "NEXT_PUBLIC_APP_URL": "https://compass.olcan.com.br"
+  },
+  "domains": ["compass.olcan.com.br"]
 }

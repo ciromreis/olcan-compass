@@ -7,7 +7,7 @@ interface ProgressRingProps {
   max?: number;
   size?: number;
   strokeWidth?: number;
-  variant?: "moss" | "clay" | "amber" | "auto";
+  variant?: "moss" | "clay" | "gradient" | "auto";
   showValue?: boolean;
   label?: string;
   className?: string;
@@ -17,7 +17,7 @@ interface ProgressRingProps {
 const variantColors: Record<string, string> = {
   moss: "stroke-brand-500",
   clay: "stroke-clay-500",
-  amber: "stroke-amber-500",
+  gradient: "stroke-blue-500",
 };
 
 function ProgressRing({
@@ -41,15 +41,15 @@ function ProgressRing({
       ? pct >= 65
         ? "moss"
         : pct >= 40
-        ? "amber"
+        ? "gradient"
         : "clay"
       : variant;
 
   const textColor =
     resolvedVariant === "moss"
       ? "text-brand-500"
-      : resolvedVariant === "amber"
-      ? "text-amber-500"
+      : resolvedVariant === "gradient"
+      ? "text-blue-500"
       : "text-clay-500";
 
   return (

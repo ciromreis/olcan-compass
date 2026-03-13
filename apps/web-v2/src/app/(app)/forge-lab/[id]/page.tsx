@@ -8,8 +8,8 @@ import {
   TrendingUp, Target,
   Bold, Italic, List, Quote, Undo2, Redo2
 } from "lucide-react";
-import { useForgeStore } from "@/stores/forge-enhanced";
 import { Button, Card, LoadingSpinner } from "@/components/ui";
+import { useForgeStore } from "@/stores/forge-enhanced";
 
 interface WritingCoachProps {
   document: {
