@@ -293,7 +293,7 @@ export async function performHealthCheck(): Promise<{
   try {
     const response = await fetch(`${PRODUCTION_CONFIG.API_URL}/health`, {
       method: 'GET',
-      timeout: 5000
+      signal: AbortSignal.timeout(5000)
     });
     checks.api = response.ok ? 
       { status: 'pass' } : 
@@ -306,8 +306,8 @@ export async function performHealthCheck(): Promise<{
   
   // Check Supabase connectivity
   try {
-    if (typeof window !== 'undefined' && (window as Record<string, unknown>).supabase) {
-      const supabase = (window as Record<string, unknown>).supabase as { from: (table: string) => { select: (columns: string) => { limit: (count: number) => Promise<{ error?: { message: string } }> } } };
+    if (typeof window !== 'undefined' && (window as unknown as Record<string, unknown>).supabase) {
+      const supabase = (window as unknown as Record<string, unknown>).supabase as { from: (table: string) => { select: (columns: string) => { limit: (count: number) => Promise<{ error?: { message: string } }> } } };
       const { error } = await supabase.from('profiles').select('count').limit(1);
       checks.supabase = error ? 
         { status: 'fail', message: error.message } : 
@@ -366,7 +366,7 @@ export function generateCSRFToken(): string {
 
 export function validateCSRFToken(token: string): boolean {
   // Implement CSRF token validation logic
-  return token && token.length === 64;
+  return Boolean(token) && token.length === 64;
 }
 
 export function sanitizeInput(input: string): string {

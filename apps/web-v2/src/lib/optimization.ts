@@ -1,7 +1,7 @@
 // Performance optimization utilities
 // Enterprise-grade optimization for production
 
-import React, { useCallback, useRef, useEffect, useMemo } from 'react';
+import React, { useCallback, useRef, useEffect, useMemo, useState } from 'react';
 
 // Debounce hook for search and API calls
 export function useDebounce<T extends (...args: unknown[]) => unknown>(
@@ -94,8 +94,8 @@ export function useLazyLoad(
   threshold: number = 0.1,
   rootMargin: string = '0px'
 ) {
-  const [isIntersecting, setIsIntersecting] = useRef(false);
-  const elementRef = useRef<HTMLElement>();
+  const [isIntersecting, setIsIntersecting] = useState(false);
+  const elementRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const element = elementRef.current;
@@ -104,7 +104,7 @@ export function useLazyLoad(
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setIsIntersecting.current = true;
+          setIsIntersecting(true);
           observer.disconnect();
         }
       },
@@ -120,7 +120,7 @@ export function useLazyLoad(
 
   return {
     ref: elementRef,
-    isIntersecting: isIntersecting.current
+    isIntersecting
   };
 }
 
@@ -146,7 +146,7 @@ export const OptimizedImage: React.FC<{
 
   if (priority || isIntersecting) {
     return React.createElement('img', {
-      ref,
+      ref: ref as unknown as React.RefObject<HTMLImageElement>,
       src,
       alt,
       width,
@@ -158,7 +158,7 @@ export const OptimizedImage: React.FC<{
   }
 
   return React.createElement('div', {
-      ref,
+      ref: ref as unknown as React.RefObject<HTMLDivElement>,
       className,
       style: {
         width,
@@ -214,7 +214,7 @@ export function usePerformanceMonitor(componentName: string) {
 }
 
 // Bundle size optimization
-export function dynamicImport<T>(
+export function dynamicImport<T extends { default: React.ComponentType<Record<string, unknown>> }>(
   importFn: () => Promise<T>,
   fallback?: React.ComponentType<Record<string, unknown>>
 ) {
@@ -269,13 +269,13 @@ export class NetworkOptimizer {
     // Check cache
     const cached = this.requestCache.get(cacheKey);
     if (cached && (Date.now() - cached.timestamp) < cacheTime) {
-      return cached.data;
+      return cached.data as T;
     }
 
     // Check if request is pending
     const pending = this.pendingRequests.get(cacheKey);
     if (pending) {
-      return pending;
+      return pending as Promise<T>;
     }
 
     // Make request
@@ -292,7 +292,7 @@ export class NetworkOptimizer {
       });
 
     this.pendingRequests.set(cacheKey, request);
-    return request;
+    return request as Promise<T>;
   }
 
   // Batch multiple requests
@@ -301,7 +301,7 @@ export class NetworkOptimizer {
       this.cachedFetch(url, options)
     );
 
-    return Promise.all(batchedRequests);
+    return Promise.all(batchedRequests) as Promise<T[]>;
   }
 
   // Clear cache
