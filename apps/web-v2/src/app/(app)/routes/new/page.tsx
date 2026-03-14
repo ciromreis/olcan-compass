@@ -41,7 +41,7 @@ export default function NewRoutePage() {
 
   const canCreate = selected && config.country && config.budget.trim() && config.timeline;
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!selected || !config.country || !config.budget.trim() || !config.timeline) {
       setError("Preencha país, orçamento e prazo para gerar sua rota.");
       return;
@@ -54,8 +54,12 @@ export default function NewRoutePage() {
       timeline: config.timeline,
     });
 
-    addRoute(route);
-    router.push(`/routes/${route.id}`);
+    const created = await addRoute(route);
+    if (!created) {
+      setError("Não foi possível criar a rota na API.");
+      return;
+    }
+    router.push(`/routes/${created.id}`);
   };
 
   return (
@@ -128,7 +132,7 @@ export default function NewRoutePage() {
               <button onClick={() => setStep(1)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-cream-500 text-text-secondary font-medium text-body-sm hover:bg-cream-200 transition-colors">
                 <ArrowLeft className="w-4 h-4" /> Voltar
               </button>
-              <button onClick={handleCreate} disabled={!canCreate} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 disabled:opacity-50 transition-colors">
+              <button onClick={() => void handleCreate()} disabled={!canCreate} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 disabled:opacity-50 transition-colors">
                 Criar Rota <ArrowRight className="w-4 h-4" />
               </button>
             </div>

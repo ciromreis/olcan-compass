@@ -2,17 +2,64 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Mail, Lock, User, Briefcase, ArrowRight } from "lucide-react";
+import { marketplaceApi } from "@/lib/api";
+import { useAuthStore } from "@/stores/auth";
+
+const SPECIALIZATION_MAP: Record<string, string> = {
+  legal: "visa_guidance",
+  translation: "translation",
+  coaching: "career_coaching",
+  academic: "academic_mentoring",
+  interview: "interview_prep",
+  psych: "mentoring",
+  relocation: "application_strategy",
+};
 
 export default function ProviderRegisterPage() {
+  const router = useRouter();
+  const { register, fetchProfile, clearError, error: authError } = useAuthStore();
   const [loading, setLoading] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", email: "", password: "", headline: "", specialization: "" });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    clearError();
+    setLocalError(null);
     setLoading(true);
-    setTimeout(() => setLoading(false), 1500);
+    try {
+      await register(form.email, form.password, form.name);
+
+      try {
+        await marketplaceApi.applyAsProvider({
+          headline: form.headline.trim(),
+          bio: `${form.name.trim()} atua em ${form.headline.trim().toLowerCase()}.`,
+          current_title: form.headline.trim(),
+          specializations: [SPECIALIZATION_MAP[form.specialization] || form.specialization],
+          languages_spoken: ["pt", "en"],
+        });
+      } catch (err: unknown) {
+        const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+        if (detail !== "Application already submitted") {
+          throw err;
+        }
+      }
+
+      await fetchProfile();
+      router.push("/verify-email?provider=1");
+    } catch (err: unknown) {
+      const message =
+        (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ||
+        "Não foi possível concluir sua inscrição como profissional.";
+      setLocalError(message);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const displayError = localError || authError;
 
   return (
     <div className="card-surface p-8">
@@ -23,6 +70,11 @@ export default function ProviderRegisterPage() {
         <h1 className="font-heading text-h2 text-text-primary mb-2">Cadastro de Profissional</h1>
         <p className="text-body text-text-secondary">Ofereça seus serviços no marketplace verificado</p>
       </div>
+      {displayError && (
+        <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-body-sm text-red-700">
+          {displayError}
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-body-sm font-medium text-text-primary mb-1.5">Nome completo</label>
@@ -63,7 +115,7 @@ export default function ProviderRegisterPage() {
           </div>
         </div>
         <button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-clay-500 text-white font-heading font-semibold hover:bg-clay-600 disabled:opacity-50 transition-colors">
-          {loading ? "Criando conta..." : "Criar Conta de Profissional"}
+          {loading ? "Criando conta e enviando candidatura..." : "Criar Conta de Profissional"}
           {!loading && <ArrowRight className="w-4 h-4" />}
         </button>
       </form>

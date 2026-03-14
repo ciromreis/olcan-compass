@@ -40,11 +40,9 @@ export default function NewApplicationPage() {
     if (nextCountry) setCountry(nextCountry);
   }, []);
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!selected || !program.trim() || !deadline) return;
     setCreating(true);
-
-    const id = `a${Date.now()}`;
     const fullProgram = institution.trim()
       ? `${program.trim()} — ${institution.trim()}`
       : program.trim();
@@ -56,7 +54,7 @@ export default function NewApplicationPage() {
     }));
 
     const app: UserApplication = {
-      id,
+      id: "",
       program: fullProgram,
       type: selected,
       country: country || "—",
@@ -72,8 +70,11 @@ export default function NewApplicationPage() {
       createdAt: new Date().toISOString().slice(0, 10),
     };
 
-    addApplication(app);
-    router.push(`/applications/${id}`);
+    const created = await addApplication(app);
+    setCreating(false);
+
+    if (!created) return;
+    router.push(`/applications/${created.id}`);
   };
 
   return (

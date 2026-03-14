@@ -29,7 +29,7 @@ export default function RegisterPage() {
 
     try {
       await register(form.email, form.password, form.name);
-      router.push("/dashboard");
+      router.push("/verify-email");
     } catch {
       // error is set in the store
     }

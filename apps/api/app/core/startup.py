@@ -17,6 +17,14 @@ async def validate_environment() -> None:
     if not (os.getenv("JWT_SECRET_KEY") or settings.jwt_secret_key):
         errors.append("Missing required env var: JWT_SECRET_KEY")
 
+    if settings.env == "production":
+        if not settings.frontend_url:
+            errors.append("Missing required env var for production: FRONTEND_URL")
+        if not settings.email_from:
+            errors.append("Missing required env var for production: EMAIL_FROM")
+        if not settings.smtp_host:
+            errors.append("Missing required env var for production: SMTP_HOST")
+
     if errors:
         raise RuntimeError("Environment validation failed:\n" + "\n".join(errors))
 

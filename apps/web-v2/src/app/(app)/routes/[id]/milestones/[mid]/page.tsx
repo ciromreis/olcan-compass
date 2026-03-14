@@ -105,7 +105,7 @@ export default function MilestoneDetailPage() {
 
       {milestone.status !== "completed" && (
         <div className="flex gap-3">
-          <button onClick={() => setMilestoneStatus(id, mid, "completed")} className="flex-1 px-4 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors flex items-center justify-center gap-2">
+          <button onClick={() => void setMilestoneStatus(id, mid, "completed")} className="flex-1 px-4 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors flex items-center justify-center gap-2">
             <CheckCircle className="w-4 h-4" /> Marcar como Concluído
           </button>
         </div>

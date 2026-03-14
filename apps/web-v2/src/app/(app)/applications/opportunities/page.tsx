@@ -1,29 +1,80 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Filter, MapPin, Clock, Star, Eye, GraduationCap, Briefcase, Award, ArrowRight, CheckCircle } from "lucide-react";
 import { useApplicationStore, type UserApplication } from "@/stores/applications";
+import { applicationsApi } from "@/lib/api";
 import { EmptyState, Input, PageHeader } from "@/components/ui";
 import { formatDate, daysUntil } from "@/lib/format";
 
 type OppType = "Todos" | "Mestrado" | "Doutorado" | "Bolsa" | "Emprego";
 
-const OPPORTUNITIES = [
-  { id: "o1", title: "MSc Data Science — ETH Zurich", type: "Mestrado" as const, country: "Suíça", deadline: "2025-06-01", match: 72, icon: GraduationCap },
-  { id: "o2", title: "Chevening Scholarship 2025/26", type: "Bolsa" as const, country: "Reino Unido", deadline: "2025-11-05", match: 68, icon: Award },
-  { id: "o3", title: "Frontend Engineer — Spotify", type: "Emprego" as const, country: "Suécia", deadline: "2025-04-30", match: 80, icon: Briefcase },
-  { id: "o4", title: "PhD in AI — University of Amsterdam", type: "Doutorado" as const, country: "Holanda", deadline: "2025-07-15", match: 75, icon: GraduationCap },
-  { id: "o5", title: "Fulbright Scholar Program", type: "Bolsa" as const, country: "EUA", deadline: "2025-10-15", match: 62, icon: Award },
-  { id: "o6", title: "Backend Engineer — N26", type: "Emprego" as const, country: "Alemanha", deadline: "2025-05-20", match: 78, icon: Briefcase },
-];
+type OpportunityCard = {
+  id: string;
+  title: string;
+  type: OppType;
+  country: string;
+  deadline: string;
+  match: number;
+  icon: typeof GraduationCap;
+  opportunityId: string;
+};
+
+const TYPE_ICON_MAP: Record<Exclude<OppType, "Todos">, typeof GraduationCap> = {
+  Mestrado: GraduationCap,
+  Doutorado: GraduationCap,
+  Bolsa: Award,
+  Emprego: Briefcase,
+};
+
+const TYPE_LABEL_MAP: Record<string, Exclude<OppType, "Todos">> = {
+  scholarship: "Bolsa",
+  job: "Emprego",
+  research_position: "Doutorado",
+  exchange_program: "Mestrado",
+  grant: "Bolsa",
+  fellowship: "Bolsa",
+  internship: "Emprego",
+  conference: "Bolsa",
+};
 
 export default function OpportunitiesPage() {
   const router = useRouter();
   const { addApplication, applications } = useApplicationStore();
+  const [opportunities, setOpportunities] = useState<OpportunityCard[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<OppType>("Todos");
   const [search, setSearch] = useState("");
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    async function loadOpportunities() {
+      try {
+        const { data } = await applicationsApi.getOpportunities();
+        const items = (data?.items || []).map((opp: Record<string, unknown>) => {
+          const type = TYPE_LABEL_MAP[String(opp.opportunity_type || "")] || "Bolsa";
+          return {
+            id: String(opp.id),
+            opportunityId: String(opp.id),
+            title: String(opp.title || "Oportunidade Compass"),
+            type,
+            country: String(opp.location_country || opp.organization_country || "—"),
+            deadline: String(opp.application_deadline || "").slice(0, 10),
+            match: Number(opp.competitiveness_score || 0),
+            icon: TYPE_ICON_MAP[type],
+          } satisfies OpportunityCard;
+        });
+        setOpportunities(items);
+      } catch {
+        setOpportunities([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    void loadOpportunities();
+  }, []);
 
   const existingPrograms = useMemo(
     () => new Set(applications.map((a) => a.program)),
@@ -31,16 +82,16 @@ export default function OpportunitiesPage() {
   );
 
   const filtered = useMemo(() => {
-    let list = OPPORTUNITIES;
+    let list = opportunities;
     if (filter !== "Todos") list = list.filter((o) => o.type === filter);
     if (search.trim()) {
       const lc = search.toLowerCase();
       list = list.filter((o) => o.title.toLowerCase().includes(lc) || o.country.toLowerCase().includes(lc));
     }
     return list;
-  }, [filter, search]);
+  }, [filter, opportunities, search]);
 
-  const buildApp = (opp: typeof OPPORTUNITIES[0], notes: string): UserApplication => {
+  const buildApp = (opp: OpportunityCard, notes: string): UserApplication => {
     const id = `a${Date.now()}`;
     const now = new Date().toISOString().slice(0, 10);
     return {
@@ -58,23 +109,25 @@ export default function OpportunitiesPage() {
       ],
       notes,
       createdAt: now,
+      opportunityId: opp.opportunityId,
     };
   };
 
-  const handleAddToWatchlist = (opp: typeof OPPORTUNITIES[0]) => {
-    addApplication(buildApp(opp, "Adicionado via Explorar Oportunidades"));
+  const handleAddToWatchlist = async (opp: OpportunityCard) => {
+    const created = await addApplication(buildApp(opp, "Adicionado via Explorar Oportunidades"));
+    if (!created) return;
     setAddedIds((prev) => new Set(prev).add(opp.id));
   };
 
-  const handleApply = (opp: typeof OPPORTUNITIES[0]) => {
+  const handleApply = async (opp: OpportunityCard) => {
     if (existingPrograms.has(opp.title)) {
       const existing = applications.find((a) => a.program === opp.title);
       if (existing) router.push(`/applications/${existing.id}`);
       return;
     }
-    const app = buildApp(opp, "");
-    addApplication(app);
-    router.push(`/applications/${app.id}`);
+    const created = await addApplication(buildApp(opp, ""));
+    if (!created) return;
+    router.push(`/applications/${created.id}`);
   };
 
   return (
@@ -83,7 +136,7 @@ export default function OpportunitiesPage() {
 
       <div className="grid md:grid-cols-3 gap-4">
         <div className="card-surface p-4 text-center">
-          <p className="font-heading text-h3 text-text-primary">{filtered.length}</p>
+          <p className="font-heading text-h3 text-text-primary">{loading ? "…" : filtered.length}</p>
           <p className="text-caption text-text-muted">Resultados</p>
         </div>
         <div className="card-surface p-4 text-center">
@@ -115,7 +168,7 @@ export default function OpportunitiesPage() {
         ))}
       </div>
 
-      {filtered.length === 0 ? (
+      {!loading && filtered.length === 0 ? (
         <EmptyState icon={Search} title="Nenhuma oportunidade encontrada" description="Tente ajustar sua busca ou filtros." />
       ) : (
         <div className="grid md:grid-cols-2 gap-4">

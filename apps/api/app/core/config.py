@@ -34,6 +34,16 @@ class Settings(BaseSettings):
     max_login_attempts: int = 5
     lockout_duration_minutes: int = 30
 
+    # Frontend / transactional email
+    frontend_url: str = "http://localhost:3000"
+    email_from: str = "noreply@olcan.com"
+    smtp_host: str | None = None
+    smtp_port: int = 587
+    smtp_username: str | None = None
+    smtp_password: str | None = None
+    smtp_use_tls: bool = True
+    smtp_use_ssl: bool = False
+
     # Stripe Connect (for escrow)
     stripe_secret_key: str = "sk_test_your_stripe_secret_key"
     stripe_publishable_key: str = "pk_test_your_stripe_publishable_key"

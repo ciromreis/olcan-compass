@@ -17,6 +17,7 @@ import {
   Wrench,
   Zap,
 } from "lucide-react";
+import { normalizeUserRole } from "@/lib/roles";
 
 export type AppRole = "END_USER" | "PROVIDER" | "ORG_MEMBER" | "ORG_COORDINATOR" | "ORG_ADMIN" | "SUPER_ADMIN";
 
@@ -279,7 +280,7 @@ export const MOBILE_PRIMARY_ITEMS: AppNavItem[] = [
 ];
 
 export function getNavigationSectionsForRole(role?: string | null): AppNavSection[] {
-  switch (role) {
+  switch (normalizeUserRole(role)) {
     case "PROVIDER":
       return [...PROVIDER_NAV_SECTIONS, ...END_USER_NAV_SECTIONS];
     case "ORG_MEMBER":
@@ -295,7 +296,7 @@ export function getNavigationSectionsForRole(role?: string | null): AppNavSectio
 }
 
 export function getBottomItemsForRole(role?: string | null): AppNavItem[] {
-  switch (role) {
+  switch (normalizeUserRole(role)) {
     case "PROVIDER":
     case "ORG_MEMBER":
     case "ORG_COORDINATOR":

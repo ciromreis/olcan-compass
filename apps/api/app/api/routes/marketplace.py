@@ -16,6 +16,7 @@ from app.core.auth import get_current_user
 from app.db.session import get_db
 from app.db.models import (
     User,
+    UserRole,
     ProviderProfile,
     ProviderCredential,
     ServiceListing,
@@ -1231,6 +1232,9 @@ async def apply_as_provider(
         application_answers=application_data.get("answers"),
         status=ProviderStatus.PENDING
     )
+
+    if current_user.role == UserRole.USER:
+        current_user.role = UserRole.PROVIDER
     
     db.add(provider)
     await db.commit()

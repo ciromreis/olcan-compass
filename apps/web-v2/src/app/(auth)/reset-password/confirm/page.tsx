@@ -3,16 +3,41 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Lock, ArrowRight, CheckCircle } from "lucide-react";
+import { authApi } from "@/lib/api";
 
 export default function ResetPasswordConfirmPage() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [form, setForm] = useState({ password: "", confirmPassword: "" });
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const token =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("token")
+        : null;
+    if (!token) {
+      setError("Token de redefinição ausente.");
+      return;
+    }
+    if (form.password !== form.confirmPassword) {
+      setError("As senhas não coincidem.");
+      return;
+    }
     setLoading(true);
-    setTimeout(() => { setLoading(false); setDone(true); }, 1500);
+    setError(null);
+    try {
+      await authApi.resetPassword(token, form.password);
+      setDone(true);
+    } catch (err: unknown) {
+      const message =
+        (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ||
+        "Não foi possível redefinir sua senha.";
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (done) {
@@ -51,6 +76,7 @@ export default function ResetPasswordConfirmPage() {
             <input type="password" value={form.confirmPassword} onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })} placeholder="Repita a nova senha" className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent" required />
           </div>
         </div>
+        {error && <p className="text-body-sm text-clay-500">{error}</p>}
         <button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 disabled:opacity-50 transition-colors">
           {loading ? "Salvando..." : "Redefinir Senha"}
           {!loading && <ArrowRight className="w-4 h-4" />}

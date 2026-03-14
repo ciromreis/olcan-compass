@@ -31,9 +31,15 @@ api.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem("refresh_token");
         if (refreshToken) {
-          const { data } = await axios.post(`${API_BASE_URL}/api/auth/refresh`, {
-            refresh_token: refreshToken,
-          });
+          const { data } = await axios.post(
+            `${API_BASE_URL}/api/auth/refresh`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${refreshToken}`,
+              },
+            }
+          );
           const newToken = data.token?.access_token || data.access_token;
           if (newToken) {
             localStorage.setItem("access_token", newToken);
@@ -103,8 +109,21 @@ export const authApi = {
   resetPassword: (token: string, password: string) =>
     api.post("/auth/reset-password", { token, new_password: password }),
 
+  verifyEmail: (token: string) =>
+    api.post("/auth/verify-email", { token }),
+
+  resendVerification: (email: string) =>
+    api.post("/auth/resend-verification", { email }),
+
+  requestOrganizationAccess: (payload: { organization_name: string; requested_role: string }) =>
+    api.post("/auth/request-organization-access", payload),
+
   refresh: (refreshToken: string) =>
-    api.post<AuthResponse>("/auth/refresh", { refresh_token: refreshToken }),
+    api.post<AuthResponse>("/auth/refresh", {}, {
+      headers: {
+        Authorization: `Bearer ${refreshToken}`,
+      },
+    }),
 };
 
 // ── Psychology API ─────────────────────────────────────────
@@ -122,38 +141,57 @@ export const routesApi = {
   getTemplates: () => api.get("/routes/templates"),
   getUserRoutes: () => api.get("/routes"),
   getRoute: (id: string) => api.get(`/routes/${id}`),
-  createRoute: (templateId: string) =>
-    api.post("/routes", { template_id: templateId }),
-  updateMilestone: (routeId: string, milestoneId: string, status: string) =>
-    api.patch(`/routes/${routeId}/milestones/${milestoneId}`, { status }),
+  createRoute: (data: Record<string, unknown>) =>
+    api.post("/routes", data),
+  updateRoute: (id: string, data: Record<string, unknown>) =>
+    api.put(`/routes/${id}`, data),
+  deleteRoute: (id: string) => api.delete(`/routes/${id}`),
+  updateMilestone: (milestoneId: string, data: Record<string, unknown>) =>
+    api.patch(`/routes/milestones/${milestoneId}`, data),
 };
 
 // ── Narratives/Forge API ───────────────────────────────────
 export const forgeApi = {
   getDocuments: () => api.get("/narratives"),
-  getDocument: (id: string) => api.get(`/narratives/${id}`),
-  createDocument: (data: { title: string; document_type: string; content: string }) =>
+  getDocument: (id: string, params?: Record<string, unknown>) =>
+    api.get(`/narratives/${id}`, { params }),
+  createDocument: (data: Record<string, unknown>) =>
     api.post("/narratives", data),
-  updateDocument: (id: string, content: string) =>
-    api.patch(`/narratives/${id}`, { content }),
+  updateDocument: (id: string, data: Record<string, unknown>) =>
+    api.patch(`/narratives/${id}`, data),
+  updateContent: (id: string, content: string) =>
+    api.patch(`/narratives/${id}/content`, { content }),
+  deleteDocument: (id: string) =>
+    api.delete(`/narratives/${id}`),
   analyzeDocument: (id: string) =>
     api.post(`/narratives/${id}/analyze`),
   getVersions: (id: string) => api.get(`/narratives/${id}/versions`),
+  createVersion: (id: string, data: Record<string, unknown>) =>
+    api.post(`/narratives/${id}/versions`, data),
+  getAnalyses: (id: string) => api.get(`/narratives/${id}/analyses`),
 };
 
 // ── Interviews API ─────────────────────────────────────────
 export const interviewsApi = {
-  getQuestions: (type?: string) =>
-    api.get("/interviews/questions", { params: { type } }),
-  createSession: (type: string) =>
-    api.post("/interviews/sessions", { interview_type: type }),
-  submitAnswer: (sessionId: string, questionId: string, answer: string) =>
-    api.post(`/interviews/sessions/${sessionId}/answers`, {
-      question_id: questionId,
-      answer_text: answer,
-    }),
+  getQuestions: (params?: Record<string, unknown>) =>
+    api.get("/interviews/questions", { params }),
+  createSession: (data: Record<string, unknown>) =>
+    api.post("/interviews/sessions", data),
+  startSession: (sessionId: string, data: Record<string, unknown>) =>
+    api.post(`/interviews/sessions/${sessionId}/start`, data),
+  updateSession: (sessionId: string, data: Record<string, unknown>) =>
+    api.patch(`/interviews/sessions/${sessionId}`, data),
+  completeSession: (sessionId: string) =>
+    api.post(`/interviews/sessions/${sessionId}/complete`),
+  submitAnswer: (sessionId: string, data: Record<string, unknown>) =>
+    api.post(`/interviews/sessions/${sessionId}/answers`, data),
+  analyzeAnswer: (answerId: string, data: Record<string, unknown> = {}) =>
+    api.post(`/interviews/answers/${answerId}/analyze`, data),
+  getAnswers: (params?: Record<string, unknown>) =>
+    api.get("/interviews/answers", { params }),
   getSessions: () => api.get("/interviews/sessions"),
   getSession: (id: string) => api.get(`/interviews/sessions/${id}`),
+  getStats: () => api.get("/interviews/stats"),
 };
 
 // ── Applications API ───────────────────────────────────────
@@ -163,23 +201,49 @@ export const applicationsApi = {
   create: (data: Record<string, unknown>) => api.post("/applications", data),
   update: (id: string, data: Record<string, unknown>) =>
     api.patch(`/applications/${id}`, data),
+  submit: (id: string, data: Record<string, unknown> = {}) =>
+    api.post(`/applications/${id}/submit`, data),
+  remove: (id: string) => api.delete(`/applications/${id}`),
   getOpportunities: () => api.get("/applications/opportunities"),
+  getOpportunity: (id: string) => api.get(`/applications/opportunities/${id}`),
+  createOpportunity: (data: Record<string, unknown>) =>
+    api.post("/applications/opportunities", data),
+  updateOpportunity: (id: string, data: Record<string, unknown>) =>
+    api.patch(`/applications/opportunities/${id}`, data),
   getWatchlist: () => api.get("/applications/watchlist"),
+  addToWatchlist: (data: Record<string, unknown>) =>
+    api.post("/applications/watchlist", data),
+  removeFromWatchlist: (id: string) => api.delete(`/applications/watchlist/${id}`),
+  getStats: () => api.get("/applications/stats/dashboard"),
+  getDocuments: (applicationId: string) =>
+    api.get(`/applications/${applicationId}/documents`),
+  updateDocument: (applicationId: string, documentId: string, data: Record<string, unknown>) =>
+    api.patch(`/applications/${applicationId}/documents/${documentId}`, data),
 };
 
 // ── Sprints API ────────────────────────────────────────────
 export const sprintsApi = {
   getAll: () => api.get("/sprints"),
   get: (id: string) => api.get(`/sprints/${id}`),
-  create: (templateId: string) =>
-    api.post("/sprints", { template_id: templateId }),
-  updateTask: (sprintId: string, taskId: string, done: boolean) =>
-    api.patch(`/sprints/${sprintId}/tasks/${taskId}`, { is_completed: done }),
+  create: (data: Record<string, unknown>) => api.post("/sprints", data),
+  update: (id: string, data: Record<string, unknown>) =>
+    api.patch(`/sprints/${id}`, data),
+  remove: (id: string) => api.delete(`/sprints/${id}`),
+  start: (id: string, data: Record<string, unknown> = {}) =>
+    api.post(`/sprints/${id}/start`, data),
+  createTask: (sprintId: string, data: Record<string, unknown>) =>
+    api.post(`/sprints/${sprintId}/tasks`, data),
+  updateTask: (sprintId: string, taskId: string, data: Record<string, unknown>) =>
+    api.patch(`/sprints/${sprintId}/tasks/${taskId}`, data),
+  completeTask: (sprintId: string, taskId: string, data: Record<string, unknown> = {}) =>
+    api.post(`/sprints/${sprintId}/tasks/${taskId}/complete`, data),
   getTemplates: () => api.get("/sprints/templates"),
 };
 
 // ── Marketplace API ────────────────────────────────────────
 export const marketplaceApi = {
+  applyAsProvider: (data: Record<string, unknown>) =>
+    api.post("/marketplace/provider/apply", data),
   getProviders: (params?: Record<string, string>) =>
     api.get("/marketplace/providers", { params }),
   getProvider: (id: string) => api.get(`/marketplace/providers/${id}`),

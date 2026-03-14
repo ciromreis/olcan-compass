@@ -48,8 +48,8 @@ export default function RouteSettingsPage() {
     });
   };
 
-  const handleDelete = () => {
-    removeRoute(id);
+  const handleDelete = async () => {
+    await removeRoute(id);
     toast({
       title: "Rota removida",
       description: "A rota foi excluída da sua área de planejamento.",
@@ -199,7 +199,7 @@ export default function RouteSettingsPage() {
       <ConfirmationModal
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
-        onConfirm={handleDelete}
+        onConfirm={() => void handleDelete()}
         title="Excluir rota?"
         description="Esta ação remove a rota e todos os milestones persistidos localmente para ela. Não pode ser desfeita."
         confirmLabel="Excluir rota"

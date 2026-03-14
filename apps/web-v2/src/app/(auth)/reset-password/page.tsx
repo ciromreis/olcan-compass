@@ -3,16 +3,29 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Mail, ArrowRight, ArrowLeft, CheckCircle } from "lucide-react";
+import { authApi } from "@/lib/api";
 
 export default function ResetPasswordPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => { setLoading(false); setSent(true); }, 1500);
+    setError(null);
+    try {
+      await authApi.forgotPassword(email);
+      setSent(true);
+    } catch (err: unknown) {
+      const message =
+        (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ||
+        "Não foi possível enviar o link de recuperação.";
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (sent) {
@@ -46,6 +59,7 @@ export default function ResetPasswordPage() {
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="seu@email.com" className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent transition-colors" required />
           </div>
         </div>
+        {error && <p className="text-body-sm text-clay-500">{error}</p>}
         <button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 disabled:opacity-50 transition-colors">
           {loading ? "Enviando..." : "Enviar Link de Recuperação"}
           {!loading && <ArrowRight className="w-4 h-4" />}

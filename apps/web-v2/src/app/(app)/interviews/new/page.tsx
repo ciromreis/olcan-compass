@@ -49,15 +49,16 @@ export default function NewInterviewPage() {
 
   const selectedType = INTERVIEW_TYPES.find((t) => t.id === selected);
 
-  const handleStart = () => {
+  const handleStart = async () => {
     if (!selected || !selectedType) return;
-    const id = startSession({
+    const id = await startSession({
       type: selected,
       typeLabel: selectedType.label,
       target: target || selectedType.label,
       language,
       difficulty,
     });
+    if (!id) return;
     router.push(`/interviews/${id}/session`);
   };
 

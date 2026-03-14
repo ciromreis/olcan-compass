@@ -17,9 +17,9 @@ export default function WatchlistPage() {
     .filter((a) => a.status === "draft" || a.status === "waitlisted")
     .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
 
-  const handleRemove = () => {
+  const handleRemove = async () => {
     if (!pendingRemoveId) return;
-    removeApplication(pendingRemoveId);
+    await removeApplication(pendingRemoveId);
     toast({
       title: "Removido da watchlist",
       description: "A candidatura foi removida da sua lista de acompanhamento.",

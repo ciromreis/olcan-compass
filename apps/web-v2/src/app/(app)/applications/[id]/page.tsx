@@ -99,7 +99,7 @@ export default function ApplicationDetailPage() {
   const probabilityScore = Math.min(95, Math.round(app.match * 0.7 + docProgress * 0.3));
   const submissionEligibility = evaluateApplicationSubmissionEligibility(app, gate);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!submissionEligibility.eligible) {
       toast({
         title: "Submissão bloqueada",
@@ -109,19 +109,17 @@ export default function ApplicationDetailPage() {
       return;
     }
     setSubmitting(true);
-    setTimeout(() => {
-      setStatus(appId, "submitted");
-      setSubmitting(false);
-      toast({
-        title: "Candidatura enviada",
-        description: "Sua candidatura foi marcada como enviada com sucesso.",
-        variant: "success",
-      });
-    }, 1500);
+    await setStatus(appId, "submitted");
+    setSubmitting(false);
+    toast({
+      title: "Candidatura enviada",
+      description: "Sua candidatura foi marcada como enviada com sucesso.",
+      variant: "success",
+    });
   };
 
-  const handleToggleDocument = (docId: string, docName: string) => {
-    toggleDocument(appId, docId);
+  const handleToggleDocument = async (docId: string, docName: string) => {
+    await toggleDocument(appId, docId);
     toast({
       title: "Status do documento atualizado",
       description: `${docName} foi atualizado na sua checklist.`,
@@ -210,7 +208,7 @@ export default function ApplicationDetailPage() {
             <div key={doc.id} className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
               doc.status === "ready" ? "bg-brand-50/50" : doc.status === "in_progress" ? "bg-cream-100" : "bg-cream-50"
             }`}>
-              <button onClick={() => handleToggleDocument(doc.id, doc.name)} className="flex-shrink-0 hover:scale-110 transition-transform">
+              <button onClick={() => void handleToggleDocument(doc.id, doc.name)} className="flex-shrink-0 hover:scale-110 transition-transform">
                 {doc.status === "ready" ? (
                   <CheckCircle className="w-5 h-5 text-brand-500" />
                 ) : doc.status === "in_progress" ? (
@@ -284,7 +282,7 @@ export default function ApplicationDetailPage() {
             <AlertTriangle className="w-4 h-4" /> Verificar Gate
           </Link>
           <button
-            onClick={handleSubmit}
+            onClick={() => void handleSubmit()}
             disabled={!submissionEligibility.eligible || submitting}
             className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-heading font-semibold transition-colors ${
               submissionEligibility.eligible

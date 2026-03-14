@@ -36,15 +36,19 @@ export default function NewDocumentPage() {
     if (nextTargetProgram) setTargetProgram(nextTargetProgram);
   }, []);
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!selected || !title.trim()) return;
     setCreating(true);
-    const docId = createDocument({
+    const docId = await createDocument({
       title: title.trim(),
       type: selected,
       targetProgram: targetProgram.trim() || undefined,
       language: LANG_MAP[language] || "en",
     });
+    if (!docId) {
+      setCreating(false);
+      return;
+    }
     router.push(`/forge/${docId}`);
   };
 

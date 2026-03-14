@@ -66,6 +66,10 @@ class NarrativeVersionCreate(BaseModel):
     change_summary: Optional[str] = Field(None, max_length=500)
 
 
+class NarrativeContentUpdate(BaseModel):
+    content: str = Field(..., min_length=0)
+
+
 class AnalyzeRequest(BaseModel):
     """Request AI analysis of a narrative version"""
     ai_model: Optional[str] = "gpt-4"  # Model to use for analysis

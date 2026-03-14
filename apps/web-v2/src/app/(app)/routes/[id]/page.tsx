@@ -87,8 +87,8 @@ export default function RouteOverviewPage() {
 
   const groups = Array.from(new Set(route.milestones.map((m) => m.group)));
 
-  const handleToggle = (milestoneId: string) => {
-    toggleMilestone(routeId, milestoneId);
+  const handleToggle = async (milestoneId: string) => {
+    await toggleMilestone(routeId, milestoneId);
     setJustToggled(milestoneId);
     setTimeout(() => setJustToggled(null), 500);
   };
@@ -169,7 +169,7 @@ export default function RouteOverviewPage() {
                 </span>
               </div>
             </div>
-            <button onClick={() => handleToggle(nextMilestone.id)} className="inline-flex items-center gap-2 self-start rounded-xl bg-brand-500 px-5 py-3 text-body-sm font-semibold text-white transition-colors hover:bg-brand-600">
+            <button onClick={() => void handleToggle(nextMilestone.id)} className="inline-flex items-center gap-2 self-start rounded-xl bg-brand-500 px-5 py-3 text-body-sm font-semibold text-white transition-colors hover:bg-brand-600">
               Avançar milestone
               <ArrowRight className="w-4 h-4" />
             </button>
@@ -236,7 +236,7 @@ export default function RouteOverviewPage() {
                   {groupMilestones.map((m) => (
                     <button
                       key={m.id}
-                      onClick={() => handleToggle(m.id)}
+                      onClick={() => void handleToggle(m.id)}
                       className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all duration-200 ${
                         m.status === "completed"
                           ? "bg-brand-50/50"

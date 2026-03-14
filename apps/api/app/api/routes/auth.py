@@ -30,11 +30,26 @@ from app.schemas.token import (
     ForgotPasswordRequest,
     ResetPasswordRequest,
     PasswordResetResponse,
+    OrganizationAccessRequest,
+)
+from app.services.email import (
+    EmailDeliveryError,
+    send_organization_access_request_email,
+    send_password_reset_email,
+    send_verification_email,
 )
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 settings = get_settings()
 security = HTTPBearer()
+
+
+def build_verification_url(token: str) -> str:
+    return f"{settings.frontend_url.rstrip('/')}/verify-email?token={token}"
+
+
+def build_password_reset_url(token: str) -> str:
+    return f"{settings.frontend_url.rstrip('/')}/reset-password/confirm?token={token}"
 
 
 @router.post("/register", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
@@ -65,15 +80,31 @@ async def register(
         )
     
     # Create new user
+    verification_token, verification_expires = generate_verification_token()
     new_user = User(
         email=normalized_email,
         hashed_password=hash_password(request.password),
         full_name=request.full_name,
+        verification_token=verification_token,
+        verification_token_expires=verification_expires,
     )
     
     db.add(new_user)
     await db.commit()
     await db.refresh(new_user)
+
+    try:
+        await send_verification_email(
+            to_email=new_user.email,
+            full_name=new_user.full_name,
+            verification_url=build_verification_url(verification_token),
+        )
+    except EmailDeliveryError as exc:
+        if settings.env == "production":
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=str(exc),
+            )
     
     # Create tokens
     access_token, refresh_token = create_token_pair(
@@ -344,10 +375,45 @@ async def resend_verification(
     
     await db.commit()
     
-    # TODO: Send verification email (integrate with Resend/SendGrid)
-    # For now, just return success
-    
+    try:
+        await send_verification_email(
+            to_email=user.email,
+            full_name=user.full_name,
+            verification_url=build_verification_url(token),
+        )
+    except EmailDeliveryError as exc:
+        if settings.env == "production":
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=str(exc),
+            )
+
     return {"message": "Link de verificação enviado"}
+
+
+@router.post("/request-organization-access", response_model=dict)
+async def request_organization_access(
+    request: OrganizationAccessRequest,
+    current_user: User = Depends(get_current_user),
+):
+    """Registrar pedido de onboarding institucional"""
+    try:
+        await send_organization_access_request_email(
+            requester_email=current_user.email,
+            requester_name=current_user.full_name,
+            organization_name=request.organization_name.strip(),
+            requested_role=request.requested_role.strip(),
+        )
+    except EmailDeliveryError as exc:
+        if settings.env == "production":
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=str(exc),
+            )
+
+    return {
+        "message": "Pedido institucional registrado. Nossa equipe fará o onboarding manual."
+    }
 
 
 # --- Password Reset Endpoints ---
@@ -389,14 +455,26 @@ async def forgot_password(
     
     await db.commit()
     
-    # TODO: Send password reset email (integrate with Resend/SendGrid)
+    reset_url = build_password_reset_url(token)
+    try:
+        await send_password_reset_email(
+            to_email=user.email,
+            full_name=user.full_name,
+            reset_url=reset_url,
+        )
+    except EmailDeliveryError as exc:
+        if settings.env == "production":
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=str(exc),
+            )
 
     settings = get_settings()
     if settings.env != "production":
         return {
             "message": "Link de recuperação gerado (modo desenvolvimento)",
             "token": token,
-            "reset_url": f"http://localhost:3000/reset-password/{token}",
+            "reset_url": reset_url,
         }
 
     return {"message": "Link de recuperação enviado"}

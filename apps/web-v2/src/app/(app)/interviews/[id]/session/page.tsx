@@ -10,8 +10,6 @@ import {
 import {
   useInterviewStore,
   getQuestionsForType,
-  generateScore,
-  generateFeedback,
   type InterviewAnswer,
 } from "@/stores/interviews";
 
@@ -69,32 +67,32 @@ export default function InterviewSessionPage() {
   useEffect(() => {
     if (!session || session.status !== "in_progress") return;
     if (session.answers.length < questions.length || questions.length === 0) return;
-    completeSession(sessionId);
+    void completeSession(sessionId);
     setIsFinished(true);
   }, [completeSession, questions.length, session, sessionId]);
 
   const handleSubmitAnswer = useCallback(() => {
     if (!answer.trim() || !session) return;
 
-    const score = generateScore(answer.length, timer);
-    const feedback = generateFeedback(score);
-
     const answerObj: InterviewAnswer = {
       questionIndex: currentQ,
       question: questions[currentQ],
       answer: answer.trim(),
-      score,
-      feedback,
+      score: 0,
+      feedback: "",
       timeSpent: timer,
     };
 
-    submitAnswer(sessionId, answerObj);
-    setAllAnswers((prev) => [...prev, answerObj]);
-    setLastFeedback(answerObj);
-    setSubmitted(true);
+    void (async () => {
+      const analyzedAnswer = await submitAnswer(sessionId, answerObj);
+      if (!analyzedAnswer) return;
+      setAllAnswers((prev) => [...prev, analyzedAnswer]);
+      setLastFeedback(analyzedAnswer);
+      setSubmitted(true);
+    })();
   }, [answer, timer, currentQ, questions, session, sessionId, submitAnswer]);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentQ < questions.length - 1) {
       setCurrentQ((q) => q + 1);
       setAnswer("");
@@ -102,13 +100,13 @@ export default function InterviewSessionPage() {
       setSubmitted(false);
       setLastFeedback(null);
     } else {
-      completeSession(sessionId);
+      await completeSession(sessionId);
       setIsFinished(true);
     }
   };
 
-  const handleEndEarly = () => {
-    completeSession(sessionId);
+  const handleEndEarly = async () => {
+    await completeSession(sessionId);
     router.push(`/interviews/${sessionId}`);
   };
 

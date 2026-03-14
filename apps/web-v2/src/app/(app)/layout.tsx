@@ -17,7 +17,12 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth";
+import { useApplicationStore } from "@/stores/applications";
 import { useMarketplaceStore } from "@/stores/marketplace";
+import { useRouteStore } from "@/stores/routes";
+import { useSprintStore } from "@/stores/sprints";
+import { useInterviewStore } from "@/stores/interviews";
+import { useForgeStore } from "@/stores/forge";
 import { Avatar, Input } from "@/components/ui";
 import { ErrorBoundary } from "@/components/enterprise/ErrorBoundary";
 import { useHydration } from "@/hooks";
@@ -63,7 +68,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout, fetchProfile } = useAuthStore();
+  const syncApplications = useApplicationStore((state) => state.syncFromApi);
   const syncMarketplace = useMarketplaceStore((state) => state.syncFromApi);
+  const syncRoutes = useRouteStore((state) => state.syncFromApi);
+  const syncSprints = useSprintStore((state) => state.syncFromApi);
+  const syncInterviews = useInterviewStore((state) => state.syncFromApi);
+  const syncForge = useForgeStore((state) => state.syncFromApi);
   const navSections = getNavigationSectionsForRole(user?.role);
   const bottomItems = getBottomItemsForRole(user?.role);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -72,6 +82,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [authBootstrapDone, setAuthBootstrapDone] = useState(false);
   const authBootstrapStarted = useRef(false);
   const marketplaceSyncStarted = useRef(false);
+  const applicationsSyncStarted = useRef(false);
+  const routesSyncStarted = useRef(false);
+  const sprintsSyncStarted = useRef(false);
+  const interviewsSyncStarted = useRef(false);
+  const forgeSyncStarted = useRef(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   // Close user menu on outside click
@@ -108,10 +123,40 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }, [fetchProfile, hydrated, pathname, router]);
 
   useEffect(() => {
+    if (!hydrated || !authBootstrapDone || applicationsSyncStarted.current) return;
+    applicationsSyncStarted.current = true;
+    void syncApplications();
+  }, [authBootstrapDone, hydrated, syncApplications]);
+
+  useEffect(() => {
+    if (!hydrated || !authBootstrapDone || routesSyncStarted.current) return;
+    routesSyncStarted.current = true;
+    void syncRoutes();
+  }, [authBootstrapDone, hydrated, syncRoutes]);
+
+  useEffect(() => {
     if (!hydrated || !authBootstrapDone || marketplaceSyncStarted.current) return;
     marketplaceSyncStarted.current = true;
     void syncMarketplace();
   }, [authBootstrapDone, hydrated, syncMarketplace]);
+
+  useEffect(() => {
+    if (!hydrated || !authBootstrapDone || sprintsSyncStarted.current) return;
+    sprintsSyncStarted.current = true;
+    void syncSprints();
+  }, [authBootstrapDone, hydrated, syncSprints]);
+
+  useEffect(() => {
+    if (!hydrated || !authBootstrapDone || interviewsSyncStarted.current) return;
+    interviewsSyncStarted.current = true;
+    void syncInterviews();
+  }, [authBootstrapDone, hydrated, syncInterviews]);
+
+  useEffect(() => {
+    if (!hydrated || !authBootstrapDone || forgeSyncStarted.current) return;
+    forgeSyncStarted.current = true;
+    void syncForge();
+  }, [authBootstrapDone, hydrated, syncForge]);
 
   // Production health monitoring
   useEffect(() => {

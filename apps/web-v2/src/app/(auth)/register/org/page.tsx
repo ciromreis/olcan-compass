@@ -2,17 +2,41 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Mail, Lock, User, Building2, ArrowRight } from "lucide-react";
+import { authApi } from "@/lib/api";
+import { useAuthStore } from "@/stores/auth";
 
 export default function OrgRegisterPage() {
+  const router = useRouter();
+  const { register, clearError, error: authError } = useAuthStore();
   const [loading, setLoading] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", orgName: "", email: "", password: "", role: "" });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    clearError();
+    setLocalError(null);
     setLoading(true);
-    setTimeout(() => setLoading(false), 1500);
+    try {
+      await register(form.email, form.password, form.name);
+      await authApi.requestOrganizationAccess({
+        organization_name: form.orgName.trim(),
+        requested_role: form.role.trim(),
+      });
+      router.push("/verify-email?org=1");
+    } catch (err: unknown) {
+      const message =
+        (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ||
+        "Não foi possível registrar seu pedido institucional.";
+      setLocalError(message);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const displayError = localError || authError;
 
   return (
     <div className="card-surface p-8">
@@ -21,8 +45,13 @@ export default function OrgRegisterPage() {
           <Building2 className="w-6 h-6 text-sage-500" />
         </div>
         <h1 className="font-heading text-h2 text-text-primary mb-2">Cadastro Institucional</h1>
-        <p className="text-body text-text-secondary">Gerencie a mobilidade da sua organização</p>
+        <p className="text-body text-text-secondary">Crie sua conta base e envie um pedido real de onboarding institucional</p>
       </div>
+      {displayError && (
+        <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-body-sm text-red-700">
+          {displayError}
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-body-sm font-medium text-text-primary mb-1.5">Seu nome</label>
@@ -64,10 +93,13 @@ export default function OrgRegisterPage() {
           </div>
         </div>
         <button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-sage-500 text-white font-heading font-semibold hover:bg-sage-600 disabled:opacity-50 transition-colors">
-          {loading ? "Criando conta..." : "Criar Conta Institucional"}
+          {loading ? "Criando conta e enviando pedido..." : "Criar Conta e Solicitar Onboarding"}
           {!loading && <ArrowRight className="w-4 h-4" />}
         </button>
       </form>
+      <p className="mt-4 text-caption text-text-muted">
+        O workspace institucional ainda é habilitado manualmente pela equipe após o recebimento do pedido.
+      </p>
       <div className="mt-6 text-center">
         <Link href="/register" className="text-body-sm text-text-secondary hover:text-brand-500 transition-colors">← Voltar para cadastro padrão</Link>
       </div>

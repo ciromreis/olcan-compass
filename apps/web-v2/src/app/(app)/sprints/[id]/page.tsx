@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
-  Zap, CheckCircle, Circle, Plus, Trash2,
+  Zap, CheckCircle, Circle, Plus,
   Pause, Play, AlertTriangle, TrendingUp, CalendarDays,
 } from "lucide-react";
 import { useSprintStore } from "@/stores/sprints";
@@ -30,7 +30,7 @@ export default function SprintDetailPage() {
   const hydrated = useHydration();
   const { toast } = useToast();
 
-  const { getSprintById, getSprintProgress, toggleTask, addTask, removeTask, pauseSprint, resumeSprint } = useSprintStore();
+  const { getSprintById, getSprintProgress, toggleTask, addTask, pauseSprint, resumeSprint } = useSprintStore();
   const sprint = hydrated ? getSprintById(sprintId) : undefined;
   const progress = getSprintProgress(sprintId);
 
@@ -71,9 +71,9 @@ export default function SprintDetailPage() {
   const completedCount = sprint.tasks.filter((t) => t.done).length;
   const overdue = sprint.tasks.filter((t) => !t.done && new Date(t.dueDate) < new Date()).length;
 
-  const handleToggle = (taskId: string) => {
+  const handleToggle = async (taskId: string) => {
     const task = sprint.tasks.find((item) => item.id === taskId);
-    toggleTask(sprintId, taskId);
+    await toggleTask(sprintId, taskId);
     setJustToggled(taskId);
     if (task) {
       toast({
@@ -85,12 +85,12 @@ export default function SprintDetailPage() {
     setTimeout(() => setJustToggled(null), 600);
   };
 
-  const handleAddTask = () => {
+  const handleAddTask = async () => {
     if (!newTaskName.trim()) return;
     const taskName = newTaskName.trim();
     const id = `t_${Date.now()}`;
     const dueDate = sprint.targetDate;
-    addTask(sprintId, { id, name: taskName, done: false, dueDate });
+    await addTask(sprintId, { id, name: taskName, done: false, dueDate });
     setNewTaskName("");
     setShowAddTask(false);
     toast({
@@ -100,8 +100,8 @@ export default function SprintDetailPage() {
     });
   };
 
-  const handlePause = () => {
-    pauseSprint(sprintId);
+  const handlePause = async () => {
+    await pauseSprint(sprintId);
     toast({
       title: "Sprint pausado",
       description: "Você pode retomar este sprint quando quiser.",
@@ -109,8 +109,8 @@ export default function SprintDetailPage() {
     });
   };
 
-  const handleResume = () => {
-    resumeSprint(sprintId);
+  const handleResume = async () => {
+    await resumeSprint(sprintId);
     toast({
       title: "Sprint retomado",
       description: "O sprint voltou para acompanhamento ativo.",
@@ -118,16 +118,7 @@ export default function SprintDetailPage() {
     });
   };
 
-  const handleRemoveTask = (taskId: string, taskName: string) => {
-    removeTask(sprintId, taskId);
-    toast({
-      title: "Tarefa removida",
-      description: `${taskName} foi removida deste sprint.`,
-      variant: "warning",
-    });
-  };
-
-  const statusLabel = sprint.status === "completed" ? "Concluído" : sprint.status === "paused" ? "Pausado" : "Ativo";
+  const statusLabel = sprint.status === "completed" ? "Concluído" : sprint.status === "paused" ? "Planejado" : "Ativo";
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -239,12 +230,6 @@ export default function SprintDetailPage() {
                     <CalendarDays className="w-3 h-3" />
                     {new Date(task.dueDate).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}
                   </span>
-                  <button
-                    onClick={() => handleRemoveTask(task.id, task.name)}
-                    className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-cream-200 transition-all"
-                  >
-                    <Trash2 className="w-3.5 h-3.5 text-text-muted hover:text-clay-500" />
-                  </button>
                 </div>
               </div>
             );

@@ -45,13 +45,17 @@ export default function NewSprintPage() {
     setError(null);
   };
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!selected) { setError("Escolha um template para continuar."); return; }
     if (!name.trim()) { setError("Dê um nome ao seu sprint."); return; }
 
     const sprint = buildSprintPlan({ templateId: selected, name: name.trim(), durationWeeks });
-    addSprint(sprint);
-    router.push(`/sprints/${sprint.id}`);
+    const created = await addSprint({ ...sprint, routeId: routeId || undefined });
+    if (!created) {
+      setError("Não foi possível criar o sprint agora.");
+      return;
+    }
+    router.push(`/sprints/${created.id}`);
   };
 
   if (!hydrated) {

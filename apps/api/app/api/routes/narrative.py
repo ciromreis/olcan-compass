@@ -21,6 +21,7 @@ from app.db.models import (
 from app.schemas.narrative import (
     NarrativeCreate,
     NarrativeUpdate,
+    NarrativeContentUpdate,
     NarrativeDetailResponse,
     NarrativeListResponse,
     NarrativeListItem,
@@ -239,6 +240,68 @@ async def delete_narrative(
     await db.commit()
     
     return None
+
+
+@router.patch("/{narrative_id}/content", response_model=NarrativeDetailResponse)
+async def update_narrative_content(
+    narrative_id: UUID,
+    request: NarrativeContentUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Update the current draft content without creating a new version"""
+    result = await db.execute(
+        select(Narrative).where(
+            Narrative.id == narrative_id,
+            Narrative.user_id == current_user.id
+        )
+    )
+    narrative = result.scalar_one_or_none()
+
+    if not narrative:
+        raise HTTPException(status_code=404, detail="Narrative not found")
+
+    current_version = None
+    if narrative.current_version_id:
+        version_result = await db.execute(
+            select(NarrativeVersion).where(
+                NarrativeVersion.id == narrative.current_version_id,
+                NarrativeVersion.narrative_id == narrative_id
+            )
+        )
+        current_version = version_result.scalar_one_or_none()
+
+    if current_version is None:
+        current_version = NarrativeVersion(
+            narrative_id=narrative_id,
+            version_number=max(1, narrative.version_count or 0),
+            content=request.content,
+            content_plain=request.content,
+            word_count=len(request.content.split()) if request.content.strip() else 0,
+            change_summary="Draft updated",
+        )
+        db.add(current_version)
+        await db.flush()
+        narrative.current_version_id = current_version.id
+        narrative.version_count = max(1, narrative.version_count or 0)
+    else:
+        current_version.content = request.content
+        current_version.content_plain = request.content
+        current_version.word_count = len(request.content.split()) if request.content.strip() else 0
+        current_version.change_summary = "Draft updated"
+
+    narrative.updated_at = datetime.now(timezone.utc)
+
+    await db.commit()
+    await db.refresh(narrative)
+    await db.refresh(current_version)
+
+    response = NarrativeDetailResponse.model_validate(narrative)
+    response.current_version = NarrativeVersionResponse.model_validate(current_version)
+    response.versions = [NarrativeVersionResponse.model_validate(current_version)]
+    response.analyses = []
+
+    return response
 
 
 # === VERSION MANAGEMENT ===

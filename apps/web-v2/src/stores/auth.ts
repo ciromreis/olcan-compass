@@ -1,6 +1,14 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { authApi, type UserProfile } from "@/lib/api";
+import { normalizeUserRole } from "@/lib/roles";
+
+function normalizeProfile(profile: UserProfile): UserProfile {
+  return {
+    ...profile,
+    role: normalizeUserRole(profile.role) || profile.role,
+  };
+}
 
 interface AuthState {
   user: UserProfile | null;
@@ -34,7 +42,7 @@ export const useAuthStore = create<AuthState>()(
 
           // Fetch full profile
           const { data: profile } = await authApi.me();
-          set({ user: profile, isAuthenticated: true, isLoading: false });
+          set({ user: normalizeProfile(profile), isAuthenticated: true, isLoading: false });
         } catch (err: unknown) {
           const message =
             (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ||
@@ -57,7 +65,7 @@ export const useAuthStore = create<AuthState>()(
           localStorage.setItem("refresh_token", token.refresh_token);
 
           const { data: profile } = await authApi.me();
-          set({ user: profile, isAuthenticated: true, isLoading: false });
+          set({ user: normalizeProfile(profile), isAuthenticated: true, isLoading: false });
         } catch (err: unknown) {
           const message =
             (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ||
@@ -76,7 +84,7 @@ export const useAuthStore = create<AuthState>()(
       fetchProfile: async () => {
         try {
           const { data: profile } = await authApi.me();
-          set({ user: profile, isAuthenticated: true });
+          set({ user: normalizeProfile(profile), isAuthenticated: true });
           return true;
         } catch {
           set({ user: null, isAuthenticated: false });

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { interviewsApi } from "@/lib/api";
 
 export type InterviewType = "academic" | "visa" | "job" | "scholarship" | "panel";
 
@@ -27,12 +28,59 @@ export interface InterviewSession {
   overallScore?: number;
 }
 
+interface RemoteInterviewQuestion {
+  id: string;
+  question_text_en: string;
+  question_text_pt: string;
+  question_text_es: string;
+  question_type: string;
+  route_types?: string[];
+  difficulty?: string;
+}
+
+interface RemoteInterviewAnswer {
+  id: string;
+  transcript?: string | null;
+  duration_seconds?: number | null;
+  overall_score?: number | null;
+  content_feedback?: string | null;
+  delivery_feedback?: string | null;
+  improvement_suggestions?: string[];
+  question?: RemoteInterviewQuestion | null;
+}
+
+interface RemoteInterviewSession {
+  id: string;
+  session_type: string;
+  target_institution?: string | null;
+  status: string;
+  total_questions: number;
+  current_question_index: number;
+  overall_score?: number | null;
+  created_at: string;
+  started_at?: string | null;
+  completed_at?: string | null;
+  current_question?: RemoteInterviewQuestion | null;
+  answers?: RemoteInterviewAnswer[];
+}
+
+interface StartSessionConfig {
+  type: InterviewType;
+  typeLabel: string;
+  target: string;
+  language: string;
+  difficulty: string;
+}
+
 interface InterviewState {
   sessions: InterviewSession[];
   activeSessionId: string | null;
-  startSession: (config: { type: InterviewType; typeLabel: string; target: string; language: string; difficulty: string }) => string;
-  submitAnswer: (sessionId: string, answer: InterviewAnswer) => void;
-  completeSession: (sessionId: string) => void;
+  isSyncing: boolean;
+  syncError: string | null;
+  syncFromApi: () => Promise<void>;
+  startSession: (config: StartSessionConfig) => Promise<string | null>;
+  submitAnswer: (sessionId: string, answer: InterviewAnswer) => Promise<InterviewAnswer | null>;
+  completeSession: (sessionId: string) => Promise<void>;
   getSessionById: (id: string) => InterviewSession | undefined;
   getActiveSession: () => InterviewSession | undefined;
   getStats: () => { totalSessions: number; avgScore: number; totalTime: string; bestScore: number };
@@ -46,38 +94,26 @@ const QUESTION_BANK: Record<InterviewType, string[]> = {
     "How does this program fit into your long-term career goals?",
     "Can you describe a challenging academic project you've completed?",
     "What unique perspective or experience would you bring to this program?",
-    "How do you handle working under pressure or tight deadlines?",
-    "Where do you see yourself in 5 years after completing this program?",
-    "Do you have any questions for us about the program?",
   ],
   visa: [
     "What is the purpose of your trip?",
     "How will you finance your stay abroad?",
     "Do you have ties to your home country that will ensure your return?",
     "Where will you be living during your stay?",
-    "Have you traveled internationally before? Where?",
-    "What is your current occupation?",
     "How long do you plan to stay?",
-    "Do you have family or friends in the destination country?",
   ],
   job: [
     "Tell me about yourself and your professional background.",
     "Why are you interested in this role and our company?",
     "Describe a technical challenge you solved recently.",
     "How do you approach working in a multicultural team?",
-    "What are your salary expectations for this role?",
-    "Describe a situation where you had to lead a project with ambiguous requirements.",
     "What motivates you to relocate internationally for this position?",
-    "Do you have any questions about the role or the team?",
   ],
   scholarship: [
     "Why did you choose this specific scholarship program?",
     "How will this scholarship contribute to your country's development?",
     "Describe your most significant academic achievement.",
     "What challenges do you expect to face and how will you overcome them?",
-    "How do you plan to give back to your community after the scholarship?",
-    "What makes you a strong candidate compared to others?",
-    "Describe your research or study plan in detail.",
     "How does this opportunity align with your long-term goals?",
   ],
   panel: [
@@ -85,192 +121,372 @@ const QUESTION_BANK: Record<InterviewType, string[]> = {
     "What is your strongest qualification for this opportunity?",
     "How would your colleagues describe your work style?",
     "Give an example of how you've handled disagreement in a team.",
-    "What is the most innovative project you've contributed to?",
-    "How do you stay updated with developments in your field?",
     "What would you do in your first 90 days if selected?",
-    "Is there anything else you'd like the panel to know?",
   ],
 };
 
-const FEEDBACK_TEMPLATES = {
-  excellent: [
-    "Excelente resposta! Clara, estruturada e convincente.",
-    "Muito bem articulado. Demonstra maturidade e autoconhecimento.",
-    "Resposta forte com exemplos concretos. Impressionante.",
-  ],
-  good: [
-    "Boa resposta. Poderia ser mais específica com exemplos concretos.",
-    "Sólida, mas tente conectar mais com o contexto da vaga/programa.",
-    "Boa estrutura. Adicione mais detalhes sobre resultados quantificáveis.",
-  ],
-  average: [
-    "Resposta adequada, mas genérica. Personalize mais para o contexto.",
-    "Faltou profundidade. Tente usar a estrutura STAR (Situação, Tarefa, Ação, Resultado).",
-    "A ideia está lá, mas a comunicação pode ser mais direta e confiante.",
-  ],
-  weak: [
-    "Resposta curta demais. Desenvolva mais com exemplos específicos.",
-    "Faltou clareza. Reestruture sua resposta com um começo, meio e fim claros.",
-    "Precisa de mais preparação neste tópico. Pratique com a estrutura STAR.",
-  ],
+const SEED_SESSIONS: InterviewSession[] = [];
+
+const TYPE_LABELS: Record<InterviewType, string> = {
+  academic: "Admissão Acadêmica",
+  visa: "Entrevista de Visto",
+  job: "Entrevista de Emprego",
+  scholarship: "Entrevista de Bolsa",
+  panel: "Painel/Comitê",
 };
 
-function generateScore(answerLength: number, timeSpent: number): number {
-  const lengthScore = Math.min(40, answerLength / 3);
-  const timeBonus = timeSpent > 10 && timeSpent < 120 ? 20 : timeSpent >= 120 ? 10 : 5;
-  const randomVariance = Math.floor(Math.random() * 20) + 10;
-  return Math.min(98, Math.max(30, Math.round(lengthScore + timeBonus + randomVariance)));
+const SESSION_QUESTION_CACHE: Record<string, string[]> = {};
+const SESSION_META_CACHE: Record<string, { language: string; difficulty: string; type: InterviewType }> = {};
+let REMOTE_QUESTION_BANK: Record<InterviewType, string[]> = { ...QUESTION_BANK };
+
+function normalizeType(value: string): InterviewType {
+  if (value.includes("visa")) return "visa";
+  if (value.includes("job") || value.includes("work") || value.includes("employment")) return "job";
+  if (value.includes("scholarship") || value.includes("grant") || value.includes("fellowship")) return "scholarship";
+  if (value.includes("panel") || value.includes("committee")) return "panel";
+  return "academic";
 }
 
-function generateFeedback(score: number): string {
-  let pool: string[];
-  if (score >= 80) pool = FEEDBACK_TEMPLATES.excellent;
-  else if (score >= 65) pool = FEEDBACK_TEMPLATES.good;
-  else if (score >= 50) pool = FEEDBACK_TEMPLATES.average;
-  else pool = FEEDBACK_TEMPLATES.weak;
-  return pool[Math.floor(Math.random() * pool.length)];
+function normalizeQuestionType(question: RemoteInterviewQuestion): InterviewType {
+  const routeTypes = question.route_types || [];
+  if (routeTypes.includes("job_relocation")) return "job";
+  if (routeTypes.includes("scholarship")) return "scholarship";
+  if (question.question_type === "technical" || question.question_type === "cultural_fit") return "job";
+  if (question.question_type === "question_for_panel") return "panel";
+  const text = `${question.question_text_en} ${question.question_text_pt}`.toLowerCase();
+  if (text.includes("visa") || text.includes("consular") || text.includes("trip")) return "visa";
+  if (text.includes("scholarship") || text.includes("bolsa")) return "scholarship";
+  return "academic";
 }
 
-export function getQuestionsForType(type: InterviewType, count: number = 5): string[] {
-  const bank = QUESTION_BANK[type] || QUESTION_BANK.academic;
-  const shuffled = [...bank].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, Math.min(count, bank.length));
+function updateRemoteQuestionBank(questions: RemoteInterviewQuestion[]) {
+  const nextBank: Record<InterviewType, string[]> = {
+    academic: [],
+    visa: [],
+    job: [],
+    scholarship: [],
+    panel: [],
+  };
+
+  for (const question of questions) {
+    const type = normalizeQuestionType(question);
+    nextBank[type].push(question.question_text_pt || question.question_text_en);
+  }
+
+  REMOTE_QUESTION_BANK = {
+    academic: nextBank.academic.length > 0 ? nextBank.academic : QUESTION_BANK.academic,
+    visa: nextBank.visa.length > 0 ? nextBank.visa : QUESTION_BANK.visa,
+    job: nextBank.job.length > 0 ? nextBank.job : QUESTION_BANK.job,
+    scholarship: nextBank.scholarship.length > 0 ? nextBank.scholarship : QUESTION_BANK.scholarship,
+    panel: nextBank.panel.length > 0 ? nextBank.panel : QUESTION_BANK.panel,
+  };
+}
+
+function getCachedQuestions(type: InterviewType, count = 5): string[] {
+  const bank = REMOTE_QUESTION_BANK[type] || QUESTION_BANK[type];
+  return [...bank].slice(0, Math.min(count, bank.length));
+}
+
+export function getQuestionsForType(type: InterviewType, count = 5): string[] {
+  return getCachedQuestions(type, count);
 }
 
 export function getQuestionBank(type?: InterviewType): string[] | Record<InterviewType, string[]> {
   if (type) {
-    return [...(QUESTION_BANK[type] || QUESTION_BANK.academic)];
+    return [...(REMOTE_QUESTION_BANK[type] || QUESTION_BANK[type])];
   }
 
-  return Object.fromEntries(
-    (Object.entries(QUESTION_BANK) as Array<[InterviewType, string[]]>).map(([key, value]) => [key, [...value]])
-  ) as Record<InterviewType, string[]>;
+  return {
+    academic: [...REMOTE_QUESTION_BANK.academic],
+    visa: [...REMOTE_QUESTION_BANK.visa],
+    job: [...REMOTE_QUESTION_BANK.job],
+    scholarship: [...REMOTE_QUESTION_BANK.scholarship],
+    panel: [...REMOTE_QUESTION_BANK.panel],
+  };
 }
 
-export { generateScore, generateFeedback };
+function mapFeedback(answer: RemoteInterviewAnswer): string {
+  if (answer.content_feedback) return answer.content_feedback;
+  if (answer.delivery_feedback) return answer.delivery_feedback;
+  if ((answer.improvement_suggestions || []).length > 0) {
+    return answer.improvement_suggestions![0];
+  }
+  return "Resposta registrada e analisada.";
+}
 
-const SEED_SESSIONS: InterviewSession[] = [
-  {
-    id: "s1",
-    type: "academic",
-    typeLabel: "Admissão Acadêmica",
-    target: "TU Berlin — MSc Computer Science",
-    language: "en",
-    difficulty: "Intermediário",
-    status: "completed",
-    questions: [
-      "Tell me about yourself and why you're interested in this program.",
-      "What research area interests you the most?",
-      "How do you handle working under pressure?",
-      "Where do you see yourself in 5 years?",
-      "Do you have any questions for us about the program?",
-    ],
-    startedAt: "2025-03-01T10:00:00Z",
-    completedAt: "2025-03-01T10:18:00Z",
-    overallScore: 74,
-    answers: [
-      { questionIndex: 0, question: "Tell me about yourself and why you're interested in this program.", answer: "I'm a software engineer with 3 years of experience in backend systems...", score: 82, feedback: "Boa estrutura. Faltou mencionar experiência específica com distributed systems.", timeSpent: 65 },
-      { questionIndex: 1, question: "What research area interests you the most?", answer: "I'm interested in distributed systems and cloud computing...", score: 75, feedback: "Resposta válida mas genérica. Mencione o grupo de pesquisa do Prof. Schmidt.", timeSpent: 45 },
-      { questionIndex: 2, question: "How do you handle working under pressure?", answer: "I try to stay organized and break tasks down...", score: 68, feedback: "Resposta hesitante no início. Pratique o opening statement.", timeSpent: 38 },
-      { questionIndex: 3, question: "Where do you see yourself in 5 years?", answer: "I want to work in the European tech industry...", score: 60, feedback: "Falta de clareza nos objetivos pós-mestrado. Seja mais específico.", timeSpent: 30 },
-    ],
-  },
-  {
-    id: "s2",
-    type: "visa",
-    typeLabel: "Visto de Estudante",
-    target: "Consulado Alemão — São Paulo",
-    language: "en",
-    difficulty: "Iniciante",
-    status: "completed",
-    questions: [
-      "What is the purpose of your trip?",
-      "How will you finance your stay abroad?",
-      "Do you have ties to your home country?",
-      "Where will you be living during your stay?",
-      "How long do you plan to stay?",
-    ],
-    startedAt: "2025-02-22T14:00:00Z",
-    completedAt: "2025-02-22T14:12:00Z",
-    overallScore: 68,
-    answers: [
-      { questionIndex: 0, question: "What is the purpose of your trip?", answer: "I'm going to study at TU Berlin...", score: 78, feedback: "Clara e direta. Boa resposta para entrevista consular.", timeSpent: 20 },
-      { questionIndex: 1, question: "How will you finance your stay abroad?", answer: "I have a blocked account (Sperrkonto) and savings...", score: 72, feedback: "Boa menção ao Sperrkonto. Inclua valores específicos.", timeSpent: 25 },
-      { questionIndex: 2, question: "Do you have ties to your home country?", answer: "Yes, my family is here...", score: 55, feedback: "Resposta fraca. Mencione propriedade, emprego garantido de retorno, ou outros vínculos concretos.", timeSpent: 15 },
-    ],
-  },
-];
+function mapAnswer(
+  answer: RemoteInterviewAnswer,
+  questionIndex: number,
+  questionLabel: string
+): InterviewAnswer {
+  return {
+    questionIndex,
+    question: answer.question?.question_text_pt || answer.question?.question_text_en || questionLabel,
+    answer: answer.transcript || "",
+    score: Math.round(answer.overall_score || 0),
+    feedback: mapFeedback(answer),
+    timeSpent: answer.duration_seconds || 0,
+  };
+}
+
+function buildQuestions(
+  remote: RemoteInterviewSession,
+  previous?: InterviewSession
+): string[] {
+  const cached = SESSION_QUESTION_CACHE[remote.id] || previous?.questions || [];
+  const size = Math.max(remote.total_questions || 0, cached.length, remote.answers?.length || 0);
+  const questions = Array.from({ length: size }, (_, index) => cached[index] || `Pergunta ${index + 1}`);
+
+  (remote.answers || []).forEach((answer, index) => {
+    const text = answer.question?.question_text_pt || answer.question?.question_text_en;
+    if (text) questions[index] = text;
+  });
+
+  if (remote.current_question && remote.current_question_index < questions.length) {
+    questions[remote.current_question_index] =
+      remote.current_question.question_text_pt || remote.current_question.question_text_en;
+  }
+
+  if (questions.length === 0) {
+    return previous?.questions || getCachedQuestions(normalizeType(remote.session_type), 5);
+  }
+
+  SESSION_QUESTION_CACHE[remote.id] = questions;
+  return questions;
+}
+
+function mapRemoteSession(
+  remote: RemoteInterviewSession,
+  previous?: InterviewSession
+): InterviewSession {
+  const type = previous?.type || SESSION_META_CACHE[remote.id]?.type || normalizeType(remote.session_type);
+  const questions = buildQuestions(remote, previous);
+  const answers = (remote.answers || []).map((answer, index) =>
+    mapAnswer(answer, index, questions[index] || `Pergunta ${index + 1}`)
+  );
+
+  return {
+    id: remote.id,
+    type,
+    typeLabel: TYPE_LABELS[type],
+    target: remote.target_institution || previous?.target || TYPE_LABELS[type],
+    language: previous?.language || SESSION_META_CACHE[remote.id]?.language || "en",
+    difficulty: previous?.difficulty || SESSION_META_CACHE[remote.id]?.difficulty || "Intermediário",
+    status: remote.status === "completed" ? "completed" : "in_progress",
+    questions,
+    answers,
+    startedAt: remote.started_at || remote.created_at,
+    completedAt: remote.completed_at || undefined,
+    overallScore: remote.overall_score ? Math.round(remote.overall_score) : undefined,
+  };
+}
+
+async function loadDetailedSessions(previousSessions: InterviewSession[]): Promise<InterviewSession[]> {
+  const { data } = await interviewsApi.getSessions();
+  const items: RemoteInterviewSession[] = data?.items || [];
+
+  const details = await Promise.allSettled(
+    items.map(async (item) => {
+      const detailResponse = await interviewsApi.getSession(item.id);
+      const previous = previousSessions.find((session) => session.id === item.id);
+      return mapRemoteSession(detailResponse.data as RemoteInterviewSession, previous);
+    })
+  );
+
+  return details.flatMap((result, index) => {
+    const previous = previousSessions.find((session) => session.id === items[index].id);
+    if (result.status === "fulfilled") return [result.value];
+    return [mapRemoteSession(items[index], previous)];
+  });
+}
+
+function getFocusTypes(type: InterviewType): string[] | undefined {
+  switch (type) {
+    case "job":
+      return ["background", "technical", "challenge", "cultural_fit"];
+    case "visa":
+      return ["background", "goals", "scenario"];
+    case "scholarship":
+      return ["motivation", "goals", "challenge", "background"];
+    case "panel":
+      return ["background", "challenge", "goals", "cultural_fit"];
+    case "academic":
+    default:
+      return ["motivation", "background", "goals", "challenge"];
+  }
+}
 
 export const useInterviewStore = create<InterviewState>()(
   persist(
     (set, get) => ({
       sessions: SEED_SESSIONS,
       activeSessionId: null,
+      isSyncing: false,
+      syncError: null,
 
-      startSession: (config) => {
-        const id = `s_${Date.now()}`;
-        const questions = getQuestionsForType(config.type, 5);
-        const session: InterviewSession = {
-          id,
-          ...config,
-          status: "in_progress",
-          questions,
-          answers: [],
-          startedAt: new Date().toISOString(),
-        };
-        set((state) => ({
-          sessions: [session, ...state.sessions],
-          activeSessionId: id,
-        }));
-        return id;
+      syncFromApi: async () => {
+        set({ isSyncing: true, syncError: null });
+        try {
+          const [questionsResponse, sessions] = await Promise.all([
+            interviewsApi.getQuestions(),
+            loadDetailedSessions(get().sessions),
+          ]);
+
+          updateRemoteQuestionBank((questionsResponse.data?.items || []) as RemoteInterviewQuestion[]);
+
+          const activeSession = sessions.find((session) => session.status === "in_progress");
+          set({
+            sessions,
+            activeSessionId: activeSession?.id || null,
+            isSyncing: false,
+            syncError: null,
+          });
+        } catch {
+          set({
+            isSyncing: false,
+            syncError: "Não foi possível sincronizar as entrevistas com a API.",
+          });
+        }
       },
 
-      submitAnswer: (sessionId, answer) =>
-        set((state) => ({
-          sessions: state.sessions.map((s) =>
-            s.id === sessionId
-              ? { ...s, answers: [...s.answers, answer] }
-              : s
-          ),
-        })),
+      startSession: async (config) => {
+        try {
+          const createResponse = await interviewsApi.createSession({
+            session_type: config.type,
+            target_institution: config.target,
+            estimated_duration_minutes: config.difficulty === "Avançado" ? 45 : 30,
+          });
+          const created = createResponse.data as RemoteInterviewSession;
 
-      completeSession: (sessionId) =>
-        set((state) => ({
-          sessions: state.sessions.map((s) => {
-            if (s.id !== sessionId) return s;
-            const avg = s.answers.length > 0
-              ? Math.round(s.answers.reduce((sum, a) => sum + a.score, 0) / s.answers.length)
-              : 0;
-            return {
-              ...s,
-              status: "completed" as const,
-              completedAt: new Date().toISOString(),
-              overallScore: avg,
-            };
-          }),
-          activeSessionId: null,
-        })),
+          SESSION_META_CACHE[created.id] = {
+            type: config.type,
+            language: config.language,
+            difficulty: config.difficulty,
+          };
 
-      getSessionById: (id) => get().sessions.find((s) => s.id === id),
+          const startResponse = await interviewsApi.startSession(created.id, {
+            question_count: 5,
+            focus_types: getFocusTypes(config.type),
+          });
+
+          const selectedQuestions = ((startResponse.data?.questions || []) as RemoteInterviewQuestion[]).map(
+            (question) => question.question_text_pt || question.question_text_en
+          );
+          SESSION_QUESTION_CACHE[created.id] = selectedQuestions;
+
+          const detailResponse = await interviewsApi.getSession(created.id);
+          const mapped = mapRemoteSession(detailResponse.data as RemoteInterviewSession, {
+            id: created.id,
+            type: config.type,
+            typeLabel: config.typeLabel,
+            target: config.target,
+            language: config.language,
+            difficulty: config.difficulty,
+            status: "in_progress",
+            questions: selectedQuestions,
+            answers: [],
+            startedAt: created.started_at || created.created_at,
+          });
+
+          set((state) => ({
+            sessions: [mapped, ...state.sessions.filter((session) => session.id !== mapped.id)],
+            activeSessionId: mapped.id,
+            syncError: null,
+          }));
+
+          return mapped.id;
+        } catch {
+          set({ syncError: "Não foi possível iniciar a sessão de entrevista." });
+          return null;
+        }
+      },
+
+      submitAnswer: async (sessionId, answer) => {
+        const previousSessions = get().sessions;
+        try {
+          const submitResponse = await interviewsApi.submitAnswer(sessionId, {
+            transcript: answer.answer,
+            duration_seconds: answer.timeSpent,
+          });
+
+          const recorded = submitResponse.data as RemoteInterviewAnswer;
+          const analyzeResponse = await interviewsApi.analyzeAnswer(recorded.id, {
+            ai_model: "placeholder",
+          });
+          const analyzed = analyzeResponse.data as RemoteInterviewAnswer;
+
+          const detailResponse = await interviewsApi.getSession(sessionId);
+          const previous = previousSessions.find((session) => session.id === sessionId);
+          const mapped = mapRemoteSession(detailResponse.data as RemoteInterviewSession, previous);
+          const latestAnswer =
+            mapped.answers[mapped.answers.length - 1] ||
+            mapAnswer(analyzed, answer.questionIndex, answer.question);
+
+          set((state) => ({
+            sessions: state.sessions.map((session) => (session.id === sessionId ? mapped : session)),
+            activeSessionId: mapped.status === "in_progress" ? mapped.id : null,
+            syncError: null,
+          }));
+
+          return latestAnswer;
+        } catch {
+          set({
+            sessions: previousSessions,
+            syncError: "Não foi possível enviar a resposta da entrevista.",
+          });
+          return null;
+        }
+      },
+
+      completeSession: async (sessionId) => {
+        const previousSessions = get().sessions;
+        try {
+          await interviewsApi.completeSession(sessionId);
+          const detailResponse = await interviewsApi.getSession(sessionId);
+          const previous = previousSessions.find((session) => session.id === sessionId);
+          const mapped = mapRemoteSession(detailResponse.data as RemoteInterviewSession, previous);
+
+          set((state) => ({
+            sessions: state.sessions.map((session) => (session.id === sessionId ? mapped : session)),
+            activeSessionId: state.activeSessionId === sessionId ? null : state.activeSessionId,
+            syncError: null,
+          }));
+        } catch {
+          set({
+            sessions: previousSessions,
+            syncError: "Não foi possível concluir a sessão de entrevista.",
+          });
+        }
+      },
+
+      getSessionById: (id) => get().sessions.find((session) => session.id === id),
 
       getActiveSession: () => {
         const id = get().activeSessionId;
-        return id ? get().sessions.find((s) => s.id === id) : undefined;
+        return id ? get().sessions.find((session) => session.id === id) : undefined;
       },
 
       getStats: () => {
-        const completed = get().sessions.filter((s) => s.status === "completed");
-        const totalTime = completed.reduce((sum, s) => {
-          if (s.startedAt && s.completedAt) {
-            return sum + (new Date(s.completedAt).getTime() - new Date(s.startedAt).getTime());
+        const completed = get().sessions.filter((session) => session.status === "completed");
+        const totalTime = completed.reduce((sum, session) => {
+          if (session.startedAt && session.completedAt) {
+            return sum + (new Date(session.completedAt).getTime() - new Date(session.startedAt).getTime());
           }
           return sum;
         }, 0);
         const minutes = Math.round(totalTime / 60000);
-        const avgScore = completed.length > 0
-          ? Math.round(completed.reduce((sum, s) => sum + (s.overallScore || 0), 0) / completed.length)
-          : 0;
-        const bestScore = completed.reduce((best, s) => Math.max(best, s.overallScore || 0), 0);
+        const avgScore =
+          completed.length > 0
+            ? Math.round(
+                completed.reduce((sum, session) => sum + (session.overallScore || 0), 0) /
+                  completed.length
+              )
+            : 0;
+        const bestScore = completed.reduce(
+          (best, session) => Math.max(best, session.overallScore || 0),
+          0
+        );
+
         return {
           totalSessions: completed.length,
           avgScore,
@@ -279,7 +495,7 @@ export const useInterviewStore = create<InterviewState>()(
         };
       },
 
-      reset: () => set({ sessions: SEED_SESSIONS, activeSessionId: null }),
+      reset: () => set({ sessions: SEED_SESSIONS, activeSessionId: null, isSyncing: false, syncError: null }),
     }),
     { name: "olcan-interviews" }
   )

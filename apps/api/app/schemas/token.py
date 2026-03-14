@@ -109,3 +109,9 @@ class ResetPasswordRequest(BaseModel):
 class PasswordResetResponse(BaseModel):
     """Response after password reset"""
     message: str
+
+
+class OrganizationAccessRequest(BaseModel):
+    """Request organization onboarding after account creation"""
+    organization_name: str = Field(..., min_length=2, max_length=200)
+    requested_role: str = Field(..., min_length=2, max_length=100)

@@ -67,7 +67,7 @@ export default function SubmissionGatePage() {
   const completionRate = (metCount / Math.max(criteria.length, 1)) * 100;
   const remainingCount = criteria.length - metCount;
 
-  const handleGateSubmission = () => {
+  const handleGateSubmission = async () => {
     const missing = summarizeMissing(criteria);
     recordAttempt({
       appId,
@@ -89,7 +89,7 @@ export default function SubmissionGatePage() {
     }
 
     if (appId && app && app.status !== "submitted" && app.status !== "accepted" && app.status !== "rejected") {
-      setStatus(appId, "submitted");
+      await setStatus(appId, "submitted");
       toast({
         title: "Candidatura submetida",
         description: `${app.program} foi marcada como enviada.`,
@@ -165,7 +165,7 @@ export default function SubmissionGatePage() {
         <Link href="/readiness/gaps" className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-cream-500 text-text-secondary font-medium hover:bg-cream-200 transition-colors">
           <AlertTriangle className="w-4 h-4" /> Ver Gaps
         </Link>
-        <button onClick={handleGateSubmission} className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 transition-colors">
+        <button onClick={() => void handleGateSubmission()} className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 transition-colors">
           {canSubmit ? "Submeter Candidatura" : "Registrar Tentativa"} <ArrowRight className="w-4 h-4" />
         </button>
       </div>

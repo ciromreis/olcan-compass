@@ -80,7 +80,7 @@ export default function ApplicationSettingsPage() {
     return <div className="max-w-3xl mx-auto"><EmptyState icon={Settings} title="Candidatura não encontrada" description="Verifique o ID da candidatura." /></div>;
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (status === "submitted" && app.status !== "submitted") {
       const eligibility = evaluateApplicationSubmissionEligibility(app, gate);
       if (!eligibility.eligible) {
@@ -92,7 +92,7 @@ export default function ApplicationSettingsPage() {
         return;
       }
     }
-    updateApplication(id, { program: name.trim() || app.program, status, notes: notes.trim() || undefined });
+    await updateApplication(id, { program: name.trim() || app.program, status, notes: notes.trim() || undefined });
     toast({
       title: "Candidatura atualizada",
       description: "As alterações foram salvas com sucesso.",
@@ -100,8 +100,8 @@ export default function ApplicationSettingsPage() {
     });
   };
 
-  const handleDelete = () => {
-    removeApplication(id);
+  const handleDelete = async () => {
+    await removeApplication(id);
     toast({
       title: "Candidatura removida",
       description: "A candidatura foi excluída da sua lista.",
@@ -110,8 +110,8 @@ export default function ApplicationSettingsPage() {
     router.push("/applications");
   };
 
-  const handleArchive = () => {
-    updateApplication(id, { status: "waitlisted" });
+  const handleArchive = async () => {
+    await updateApplication(id, { status: "waitlisted" });
     setStatus("waitlisted");
     toast({
       title: "Candidatura arquivada",
@@ -174,7 +174,7 @@ export default function ApplicationSettingsPage() {
             placeholder="Registre riscos, follow-ups, dependências, observações sobre documentos ou próximos passos desta candidatura."
           />
         </div>
-        <button onClick={handleSave} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
+        <button onClick={() => void handleSave()} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
           <Save className="w-4 h-4" /> Salvar
         </button>
       </div>
@@ -251,7 +251,7 @@ export default function ApplicationSettingsPage() {
       <div className="card-surface p-6 border border-clay-200">
         <h3 className="font-heading text-h4 text-text-primary mb-3">Zona de Perigo</h3>
         <div className="flex flex-wrap gap-3">
-          <button onClick={handleArchive} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-cream-500 text-text-secondary text-body-sm font-medium hover:bg-cream-200 transition-colors">
+          <button onClick={() => void handleArchive()} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-cream-500 text-text-secondary text-body-sm font-medium hover:bg-cream-200 transition-colors">
             <Archive className="w-4 h-4" /> Arquivar
           </button>
           <button onClick={() => setDeleteOpen(true)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-clay-300 text-clay-500 text-body-sm font-medium hover:bg-clay-50 transition-colors">
@@ -263,7 +263,7 @@ export default function ApplicationSettingsPage() {
       <ConfirmationModal
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
-        onConfirm={handleDelete}
+        onConfirm={() => void handleDelete()}
         title="Excluir candidatura?"
         description="Esta ação remove a candidatura da sua lista e não pode ser desfeita."
         confirmLabel="Excluir candidatura"
