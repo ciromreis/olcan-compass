@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { monitor } from "@/lib/monitoring";
+import { performHealthCheck } from "@/lib/production-config";
 import {
   Settings,
   User,
@@ -17,7 +19,7 @@ import {
 import { useAuthStore } from "@/stores/auth";
 import { useMarketplaceStore } from "@/stores/marketplace";
 import { Avatar, Input } from "@/components/ui";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ErrorBoundary } from "@/components/enterprise/ErrorBoundary";
 import { useHydration } from "@/hooks";
 import { buildLoginRedirect } from "@/lib/auth-redirect";
 import {
@@ -110,6 +112,37 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     marketplaceSyncStarted.current = true;
     void syncMarketplace();
   }, [authBootstrapDone, hydrated, syncMarketplace]);
+
+  // Production health monitoring
+  useEffect(() => {
+    if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
+
+    const healthCheckInterval = setInterval(async () => {
+      try {
+        const health = await performHealthCheck();
+        monitor.trackPerformance('AppLayout', 'health_check', 1000, { status: health.status });
+        
+        if (health.status === 'unhealthy') {
+          console.warn('Health check failed:', health.checks);
+        }
+      } catch (error) {
+        monitor.trackError(error as Error, { component: 'AppLayout', action: 'health_check' });
+      }
+    }, 30000); // Every 30 seconds
+
+    return () => clearInterval(healthCheckInterval);
+  }, []);
+
+  // Track page navigation
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    monitor.trackUserAction('page_view', {
+      page: pathname,
+      timestamp: Date.now(),
+      userAgent: navigator.userAgent
+    });
+  }, [pathname]);
 
   const handleLogout = () => {
     logout();

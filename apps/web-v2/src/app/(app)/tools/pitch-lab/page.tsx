@@ -55,6 +55,9 @@ interface SpeechRecognition {
 declare global {
   interface Window {
     webkitSpeechRecognition: new () => SpeechRecognition;
+    Sentry?: {
+      captureException: (error: unknown, options?: { tags?: Record<string, string> }) => void;
+    };
   }
 }
 
@@ -212,7 +215,13 @@ export default function MockPitchLabPage() {
       }
 
     } catch (error) {
-      console.error("Error accessing media devices:", error);
+      // Log error for debugging (production monitoring)
+      if (typeof window !== 'undefined' && window.Sentry) {
+        window.Sentry.captureException(error, {
+          tags: { component: 'PitchLab', action: 'media_access' }
+        });
+      }
+      
       alert("Não foi possível acessar sua câmera/microfone. Verifique as permissões.");
     }
   }, [session.type]);
