@@ -154,6 +154,60 @@ export default function MockPitchLabPage() {
     };
   }, []);
 
+  const processRecording = useCallback(async () => {
+    // Simulate AI processing
+    await new Promise(resolve => setTimeout(resolve, 3000));
+
+    // Mock metrics calculation
+    const duration = session.endTime! - session.startTime!;
+    const words = transcript.split(/\s+/).length;
+    const hesitationCount = (transcript.match(/\b(um|é|tipo|assim|né)\b/gi) || []).length;
+    const confidenceScore = Math.max(0, Math.min(100, 100 - (hesitationCount * 5) - (words > 150 ? 10 : 0)));
+    const clarityScore = Math.max(0, Math.min(100, 100 - (words / 2) + (duration / 1000)));
+    const engagementScore = Math.max(0, Math.min(100, (words / duration) * 10000));
+
+    const metrics: PitchMetrics = {
+      duration,
+      wordCount: words,
+      hesitationCount,
+      confidenceScore,
+      clarityScore,
+      engagementScore,
+      feedback: [
+        {
+          type: confidenceScore > 70 ? "strength" : "improvement",
+          message: confidenceScore > 70
+            ? "Sua transmissão de confiança é excelente!"
+            : "Não deixe a busca pela bolsa &quot;perfeita&quot; te impedir de aplicar para as &quot;boas&quot;. Ação cria oportunidade.",
+          timestamp: 0
+        },
+        {
+          type: clarityScore > 70 ? "strength" : "improvement",
+          message: clarityScore > 70
+            ? "Muita clareza na sua comunicação!"
+            : "Fale um pouco mais devagar para melhorar a clareza.",
+          timestamp: 1
+        },
+        {
+          type: words > 80 && words < 120 ? "strength" : "improvement",
+          message: words > 80 && words < 120
+            ? "Duração perfeita para um pitch de 60 segundos!"
+            : words < 80
+              ? "Tente incluir mais detalhes para atingir 60 segundos."
+              : "Seu pitch está muito longo. Foque nos pontos essenciais.",
+          timestamp: 2
+        }
+      ]
+    };
+
+    setSession(prev => ({
+      ...prev,
+      status: "completed",
+      metrics,
+      transcript
+    }));
+  }, [session.endTime, session.startTime, transcript]);
+
   const startRecording = useCallback(async () => {
     try {
       let stream: MediaStream;
@@ -224,7 +278,7 @@ export default function MockPitchLabPage() {
       
       alert("Não foi possível acessar sua câmera/microfone. Verifique as permissões.");
     }
-  }, [session.type]);
+  }, [processRecording, session.type]);
 
   const stopRecording = useCallback(() => {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
@@ -240,60 +294,6 @@ export default function MockPitchLabPage() {
       clearInterval(timerRef.current);
     }
   }, []);
-
-  const processRecording = useCallback(async () => {
-    // Simulate AI processing
-    await new Promise(resolve => setTimeout(resolve, 3000));
-
-    // Mock metrics calculation
-    const duration = session.endTime! - session.startTime!;
-    const words = transcript.split(/\s+/).length;
-    const hesitationCount = (transcript.match(/\b(um|é|tipo|assim|né)\b/gi) || []).length;
-    const confidenceScore = Math.max(0, Math.min(100, 100 - (hesitationCount * 5) - (words > 150 ? 10 : 0)));
-    const clarityScore = Math.max(0, Math.min(100, 100 - (words / 2) + (duration / 1000)));
-    const engagementScore = Math.max(0, Math.min(100, (words / duration) * 10000));
-
-    const metrics: PitchMetrics = {
-      duration,
-      wordCount: words,
-      hesitationCount,
-      confidenceScore,
-      clarityScore,
-      engagementScore,
-      feedback: [
-        {
-          type: confidenceScore > 70 ? "strength" : "improvement",
-          message: confidenceScore > 70 
-            ? "Sua transmissão de confiança é excelente!" 
-            : "Não deixe a busca pela bolsa &quot;perfeita&quot; te impedir de aplicar para as &quot;boas&quot;. Ação cria oportunidade.",
-          timestamp: 0
-        },
-        {
-          type: clarityScore > 70 ? "strength" : "improvement", 
-          message: clarityScore > 70
-            ? "Muita clareza na sua comunicação!"
-            : "Fale um pouco mais devagar para melhorar a clareza.",
-          timestamp: 1
-        },
-        {
-          type: words > 80 && words < 120 ? "strength" : "improvement",
-          message: words > 80 && words < 120
-            ? "Duração perfeita para um pitch de 60 segundos!"
-            : words < 80 
-              ? "Tente incluir mais detalhes para atingir 60 segundos."
-              : "Seu pitch está muito longo. Foque nos pontos essenciais.",
-          timestamp: 2
-        }
-      ]
-    };
-
-    setSession(prev => ({
-      ...prev,
-      status: "completed",
-      metrics,
-      transcript
-    }));
-  }, [session.endTime, session.startTime, transcript]);
 
   const resetSession = useCallback(() => {
     setSession({

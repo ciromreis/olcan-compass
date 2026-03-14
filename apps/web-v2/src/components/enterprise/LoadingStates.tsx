@@ -431,7 +431,7 @@ export function LoadingOverlay({
   );
 }
 
-export default {
+const loadingStateComponents = {
   LoadingSpinner,
   Skeleton,
   CardSkeleton,
@@ -445,3 +445,5 @@ export default {
   SmartLoading,
   LoadingOverlay
 };
+
+export default loadingStateComponents;

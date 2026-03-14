@@ -60,3 +60,7 @@ compass-key.pem
 # MCP/secrets
 .mcp.json
 *.mcp.json
+
+# Local agent sandbox and browser test artifacts
+.agents/agency-agents-repo/
+.playwright-cli/

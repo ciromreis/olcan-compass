@@ -229,9 +229,11 @@ export function dynamicImport<T extends { default: React.ComponentType<Record<st
 // Cache for expensive computations
 export function useCache<T>(key: string, computeFn: () => T, deps: unknown[] = []) {
   const cache = useRef<Map<string, { value: T; timestamp: number }>>(new Map());
+  const depsKey = JSON.stringify(deps);
 
   return useMemo(() => {
-    const cached = cache.current.get(key);
+    const cacheKey = `${key}:${depsKey}`;
+    const cached = cache.current.get(cacheKey);
     const now = Date.now();
     
     // Cache for 5 minutes
@@ -240,9 +242,9 @@ export function useCache<T>(key: string, computeFn: () => T, deps: unknown[] = [
     }
 
     const value = computeFn();
-    cache.current.set(key, { value, timestamp: now });
+    cache.current.set(cacheKey, { value, timestamp: now });
     return value;
-  }, [key, computeFn, ...deps]);
+  }, [computeFn, depsKey, key]);
 }
 
 // Network request optimization
