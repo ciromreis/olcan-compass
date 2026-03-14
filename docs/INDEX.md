@@ -2,56 +2,39 @@
 
 Use this as the primary navigation for repository documentation.
 
-## Canonical Product Docs
+## 🏁 Critical Paths
+- **[README.md](../README.md)**: Project vision and MMXD philosophy.
+- **[SETUP.md](SETUP.md)**: Technical build and run instructions.
+- **[AGENTS.md](../AGENTS.md)**: AI Assistant workflows and coding standards.
 
-- `docs/main/PRD.md` (source of truth, read-only)
-- `docs/main/screen-structure.md`
+## 📖 Canonical Product Docs
+- `docs/main/PRD.md`: Master Product Requirements Document (Source of Truth).
+- `docs/main/screen-structure.md`: UI/UX layout and topology.
 
-## Operations and Deployment
+## 🌐 Operations and Deployment
+- `docs/operations/HANDOFF.md`: Build/run handoff status.
+- `docs/operations/STATUS.md`: Current development status snapshot.
+- `docs/operations/production-deployment-guide.md`: Step-by-step production setup.
+- `docs/operations/netlify-deployment-fix.md`: Historical deployment fixes.
+- `docs/operations/production-recovery-plan.md`: Disaster recovery protocols.
+- `docs/operations/2026-03-deployment-fixes-summary.md`: Recent deployment audit.
 
-- `docs/operations/quick-reference.md`
-- `docs/operations/deployment-readiness.md`
-- `docs/operations/integration-checklist.md`
-- `docs/operations/repository-governance.md`
-- `docs/deployment/economics-features-deployment.md`
+## 📊 Audits and Quality Reports
+- `docs/audit/2026-03-production-readiness.md`: 110% readiness report.
+- `docs/audit/2026-03-production-test-report.md`: Verification results.
+- `docs/audit/bugs-fixed-summary.md`: Technical debt resolution history.
+- `docs/audit/assessment-complete.md`: High-level quality audit.
 
-## Planning
+## 📝 Session and Working Notes
+- `docs/session/progress.md`: Active work tracking.
+- `docs/session/next-session.md`: Continuity notes for next turn.
+- `docs/session/task-plan.md`: Granular work breakdowns.
 
-- `docs/planning/implementation-plan.md`
-- `docs/planning/project-organization.md`
-- `docs/planning/next-steps.md`
+## 📚 Technical Reference
+- `docs/reference/PRD_V2_AI_HANDOVER.md`: Deep technical specifications for AI context.
+- `docs/reference/database-schema.md`: SQLAlchemy model relations.
+- `docs/reference/troubleshooting-sqlalchemy.md`: Common pitfalls and fixes.
+- `docs/reference/stitch-assets/`: Media assets for UI/UX mocks.
 
-## Audits and Quality Reports
-
-- `docs/audit/assessment-complete.md`
-- `docs/audit/codebase-assessment-2026-02-24.md`
-- `docs/audit/bugs-fixed-summary.md`
-- `docs/audit/metacognitive-assessment.md`
-- `docs/audit/honest-assessment.md`
-- `docs/audit/visual-status.md`
-- `docs/audit/work-complete-summary.md`
-
-## Session and Working Notes
-
-- `docs/session/next-session.md`
-- `docs/session/quick-start-next-session.md`
-- `docs/session/session-summary-2026-02-24.md`
-- `docs/session/progress.md`
-- `docs/session/task-plan.md`
-- `docs/session/findings.md`
-- `docs/session/gemini-notes.md`
-
-## Technical Reference
-
-- `docs/reference/troubleshooting-sqlalchemy.md`
-- `docs/reference/database-schema.md`
-- `docs/reference/project-assessment-2026-02-24.md`
-- `docs/reference/frontend-accessibility-audit.md`
-- `docs/reference/frontend-responsive-guidelines.md`
-
-## Root-Level Runtime Docs
-
-- `README.md`
-- `AGENTS.md`
-- `docs/operations/HANDOFF.md`
-- `docs/operations/STATUS.md`
+---
+*Note: This index is a living document and should be updated whenever a significant feature or audit is added.*

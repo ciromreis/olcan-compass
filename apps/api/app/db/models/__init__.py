@@ -1,4 +1,6 @@
 from app.db.models.user import User, UserRole
+from app.db.models.organization import Organization, OrganizationMember, OrganizationType, OrganizationMemberRole
+
 from app.db.models.psychology import (
     PsychProfile,
     PsychQuestion,
@@ -185,4 +187,8 @@ __all__ = [
     "OpportunityPruningLog",
     "ConstraintFeedback",
     "PruningReason",
+    "Organization",
+    "OrganizationMember",
+    "OrganizationType",
+    "OrganizationMemberRole",
 ]

@@ -4,7 +4,8 @@ import { useState, useMemo } from "react";
 import { Calendar, Clock, CheckCircle, Circle, AlertTriangle, User, CalendarDays, Upload } from "lucide-react";
 import { useMarketplaceStore, type BookingStatus } from "@/stores/marketplace";
 import { useHydration } from "@/hooks";
-import { Input, Modal, PageHeader, Skeleton, EmptyState, useToast } from "@/components/ui";
+import { Input, Modal, PageHeader, Skeleton, EmptyState } from "@/components/ui";
+import { BookingStatusManager } from "@/components/marketplace/BookingStatusManager";
 
 const STATUS_META: Record<BookingStatus, { label: string; color: string; icon: typeof CheckCircle }> = {
   pending: { label: "Aguardando", color: "text-text-muted", icon: Circle },
@@ -24,8 +25,7 @@ const FILTERS: { key: FilterKey; label: string }[] = [
 
 export default function ProviderBookingsPage() {
   const hydrated = useHydration();
-  const { toast } = useToast();
-  const { bookings, updateBookingStatus, shareDeliverable, getActiveProvider } = useMarketplaceStore();
+  const { bookings, myProviderProfile: provider, shareDeliverable } = useMarketplaceStore();
   const [filter, setFilter] = useState<FilterKey>("all");
   const [deliverableOpen, setDeliverableOpen] = useState(false);
   const [deliverableBookingId, setDeliverableBookingId] = useState<string | null>(null);
@@ -33,7 +33,6 @@ export default function ProviderBookingsPage() {
   const [deliverableType, setDeliverableType] = useState("application/pdf");
   const [deliverableSizeKb, setDeliverableSizeKb] = useState("180");
   const [deliverableNote, setDeliverableNote] = useState("");
-  const provider = getActiveProvider();
 
   const filtered = useMemo(() => {
     if (!hydrated) return [];
@@ -61,11 +60,6 @@ export default function ProviderBookingsPage() {
 
   const handleShareDeliverable = () => {
     if (!deliverableBookingId || !deliverableName.trim()) {
-      toast({
-        title: "Dados incompletos",
-        description: "Informe o nome do arquivo para compartilhar a entrega.",
-        variant: "warning",
-      });
       return;
     }
 
@@ -78,20 +72,10 @@ export default function ProviderBookingsPage() {
     });
 
     if (!ok) {
-      toast({
-        title: "Falha ao compartilhar",
-        description: "Não foi possível registrar a entrega na conversa da contratação.",
-        variant: "warning",
-      });
       return;
     }
 
     setDeliverableOpen(false);
-    toast({
-      title: "Entrega compartilhada",
-      description: "O anexo foi enviado para a conversa da contratação.",
-      variant: "success",
-    });
   };
 
   return (
@@ -124,26 +108,19 @@ export default function ProviderBookingsPage() {
                     <span className={`flex items-center gap-1 ${st.color}`}><st.icon className="w-3 h-3" />{st.label}</span>
                   </div>
                 </div>
-                {b.status === "pending" && (
-                  <div className="flex gap-2">
-                    <button onClick={() => {
-                      updateBookingStatus(b.id, "confirmed");
-                      toast({ title: "Agendamento confirmado", description: "O cliente já pode prosseguir com o atendimento.", variant: "success" });
-                    }} className="px-3 py-1.5 rounded-lg bg-brand-500 text-white text-caption font-medium hover:bg-brand-600 transition-colors">Confirmar</button>
-                    <button onClick={() => {
-                      updateBookingStatus(b.id, "cancelled");
-                      toast({ title: "Agendamento recusado", description: "O status foi marcado como cancelado.", variant: "warning" });
-                    }} className="px-3 py-1.5 rounded-lg border border-clay-300 text-clay-500 text-caption font-medium hover:bg-clay-50 transition-colors">Recusar</button>
-                  </div>
-                )}
-                {(b.status === "confirmed" || b.status === "completed") && (
-                  <button
-                    onClick={() => handleOpenDeliverable(b.id)}
-                    className="px-3 py-1.5 rounded-lg border border-cream-500 text-text-secondary text-caption font-medium hover:bg-cream-200 transition-colors inline-flex items-center gap-1"
-                  >
-                    <Upload className="w-3.5 h-3.5" /> Registrar entrega
-                  </button>
-                )}
+                
+                <div className="flex items-center gap-2">
+                  <BookingStatusManager booking={b} />
+                  
+                  {(b.status === "confirmed" || b.status === "completed") && (
+                    <button
+                      onClick={() => handleOpenDeliverable(b.id)}
+                      className="px-3 py-1.5 rounded-lg border border-cream-500 text-text-secondary text-caption font-medium hover:bg-cream-200 transition-colors inline-flex items-center gap-1"
+                    >
+                      <Upload className="w-3.5 h-3.5" /> Registrar entrega
+                    </button>
+                  )}
+                </div>
               </div>
             );
           })}

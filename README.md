@@ -1,72 +1,56 @@
 # Olcan Compass
 
-Mobility intelligence platform for international students and professionals.
+> **Mobility Intelligence for the Metamodern Era.**
 
-## Start Here
+Olcan Compass is a high-fidelity intelligence platform designed for international students and professionals navigating cross-border journeys. We move beyond simple "application trackers" by integrating psychological profiling, narrative synthesis, and strategic marketplace interventions.
 
-- Project map: `docs/INDEX.md`
-- Engineering guide (repo workflow): `AGENTS.md`
-- Build/run handoff: `docs/operations/HANDOFF.md`
-- Live status snapshot: `docs/operations/STATUS.md`
+---
 
-## Repository Layout
+## 🌌 The Vision
+
+We believe that professional and academic mobility is not just a logistical challenge, but a psychological and strategic one. Olcan Compass acts as a **Metamodern Navigator**, helping users:
+
+1.  **Understand Themselves**: Using the *Mirror* engine to map confidence, anxiety, and behavioral archetypes.
+2.  **Forge the Story**: Synthesizing raw experience into powerful professional narratives through the *Forge*.
+3.  **Plan the Route**: Constraint-based pathfinding to eliminate decision paralysis.
+4.  **Engage the Ecosystem**: Connecting with verified providers in our curated *Marketplace*.
+
+## 💠 MMXD Philosophy
+
+Our **Metamodern Experience Design (MMXD)** philosophy prioritizes visual excellence and depth. We utilize fluid interfaces, dark-mode aesthetics (Void, Lux, Lumina), and interactive data visualizations to lower cognitive load while capturing deep behavioral telemetry.
+
+- **Void**: Deep navy backgrounds for focus.
+- **Lux**: Silver and chrome accents for premium feel.
+- **Lumina**: Vibrant blue accents for calls to action.
+
+---
+
+## 📂 Repository Navigation
+
+- **[Master Setup Guide](docs/SETUP.md)**: Technical instructions for running the stack (Docker, API, Web).
+- **[Documentation Index](docs/INDEX.md)**: The map of all PRDs, audits, and reference material.
+- **[Backoffice & AI Guide](AGENTS.md)**: Workflow instructions for AI assistants and contributors.
+
+## 🏛️ Architecture & Layout
 
 ```text
 olcan-compass/
 ├── apps/
-│   ├── api/          FastAPI backend
-│   └── web/          React + Vite frontend
-├── docs/
-│   ├── main/         Canonical product docs (read-only)
-│   ├── operations/   Runbooks, deployment readiness, checklists
-│   ├── planning/     Implementation plans and roadmap docs
-│   ├── audit/        Assessment reports and quality snapshots
-│   ├── session/      Session artifacts and working notes
-│   └── reference/    Supporting technical references
-├── scripts/          Project and maintenance scripts
-└── archive/          Legacy prototypes and exports
+│   ├── api/          # FastAPI Backend (Python)
+│   └── web-v2/       # Next.js/React Frontend (The new standard)
+├── docs/             # Knowledge base, PRDs, and Runbooks
+├── .agents/          # Workspace Intelligence (Skills & Specs)
+├── archive/          # Legacy prototypes (Read-only)
+└── scripts/          # Maintenance & Deployment utility
 ```
 
-## What you can do today
+---
 
-- Reduce opportunity overload with constraint-based filtering.
-- Explore opportunities, routes, narratives, interviews, sprints, and marketplace.
-- Iterate on the “economic closure” slice (constraints + deterministic pruning + explanations).
+## 🚀 Future Roadmap
 
-## Quick Run
+- **Economic Closure**: Deterministic pruning of mobility routes based on financial constraints.
+- **AI-Driven Mock Interviews**: High-fidelity session analysis for interview prep.
+- **Organization Onboarding**: B2B tools for universities and relocation firms.
 
-```bash
-docker compose up --build
-docker compose run --rm api alembic upgrade head
-```
-
-Open:
-
-- Frontend: `http://localhost:3000`
-- API: `http://localhost:8000`
-- Health: `http://localhost:8000/api/health`
-
-### Frontend (monorepo convenience)
-
-From repo root:
-
-```bash
-npm run install:web
-npm run dev:web
-```
-
-You can also run these from repo root:
-
-```bash
-npm install
-npm run dev
-```
-
-## Documentation Policy
-
-- Canonical requirements stay in `docs/main/`.
-- Operational docs stay in `docs/operations/`.
-- Long-term plans stay in `docs/planning/`.
-- Audits and session outputs are archived under `docs/audit/` and `docs/session/`.
-
-This structure is intended to make audits, debugging, deployment, and iterative improvements easier.
+---
+© 2026 Olcan. All rights reserved.

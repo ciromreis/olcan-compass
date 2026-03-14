@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Olcan Compass - Readiness Radar</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@400;700&amp;family=JetBrains+Mono:wght@400;700&amp;family=Public+Sans:wght@300;400;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00f2ff",
+                        "background-dark": "#001338",
+                        "glass-border": "rgba(255, 255, 255, 0.15)",
+                        "cyan-accent": "#00f2ff",
+                        "silver-text": "#e2e8f0",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"],
+                        "merriweather": ["Merriweather Sans", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "1rem",
+                        "2xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .liquid-glass {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .radar-glow {
+            filter: drop-shadow(0 0 8px rgba(0, 242, 255, 0.5));
+        }
+        .grain-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        .glass-refraction {
+            position: relative;
+            overflow: hidden;
+        }
+        .glass-refraction::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(0, 242, 255, 0.2), transparent 40%);
+            animation: rotate 6s linear infinite;
+        }
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark font-display text-silver-text min-h-screen relative selection:bg-cyan-accent selection:text-background-dark">
+<div class="grain-overlay"></div>
+<div class="max-w-md mx-auto min-h-screen flex flex-col pb-24 border-x border-white/5 relative z-10">
+<header class="flex items-center justify-between p-6 sticky top-0 bg-background-dark/80 backdrop-blur-md z-30">
+<button class="size-10 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-silver-text">arrow_back</span>
+</button>
+<h1 class="font-merriweather text-xl font-bold tracking-tight text-white radar-glow">Readiness Radar™</h1>
+<button class="size-10 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-silver-text">more_vert</span>
+</button>
+</header>
+<main class="flex-1 px-6 space-y-8">
+<section class="relative aspect-square flex items-center justify-center py-4">
+<div class="absolute inset-0 flex items-center justify-center opacity-20">
+<div class="w-full h-full rounded-full border border-cyan-accent/30 animate-pulse"></div>
+<div class="absolute w-[80%] h-[80%] rounded-full border border-cyan-accent/20"></div>
+<div class="absolute w-[60%] h-[60%] rounded-full border border-cyan-accent/10"></div>
+</div>
+<svg class="w-full h-full radar-glow relative z-10 drop-shadow-[0_0_15px_rgba(0,242,255,0.3)]" viewbox="0 0 200 200">
+<polygon fill="none" points="100,20 180,75 150,165 50,165 20,75" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"></polygon>
+<line stroke="rgba(255,255,255,0.1)" stroke-width="0.5" x1="100" x2="100" y1="100" y2="20"></line>
+<line stroke="rgba(255,255,255,0.1)" stroke-width="0.5" x1="100" x2="180" y1="100" y2="75"></line>
+<line stroke="rgba(255,255,255,0.1)" stroke-width="0.5" x1="100" x2="150" y1="100" y2="165"></line>
+<line stroke="rgba(255,255,255,0.1)" stroke-width="0.5" x1="100" x2="50" y1="100" y2="165"></line>
+<line stroke="rgba(255,255,255,0.1)" stroke-width="0.5" x1="100" x2="20" y1="100" y2="75"></line>
+<polygon class="transition-all duration-700 ease-in-out" fill="rgba(0, 242, 255, 0.15)" points="100,45 160,85 135,145 70,150 40,90" stroke="#00f2ff" stroke-width="1.5"></polygon>
+<circle cx="100" cy="45" fill="#fff" r="2.5"></circle>
+<circle cx="160" cy="85" fill="#fff" r="2.5"></circle>
+<circle cx="135" cy="145" fill="#fff" r="2.5"></circle>
+<circle cx="70" cy="150" fill="#fff" r="2.5"></circle>
+<circle cx="40" cy="90" fill="#fff" r="2.5"></circle>
+</svg>
+<div class="absolute inset-0 font-mono text-[10px] uppercase tracking-widest text-cyan-accent/60 pointer-events-none">
+<span class="absolute top-2 left-1/2 -translate-x-1/2">Informacional</span>
+<span class="absolute top-[35%] right-0">Emocional</span>
+<span class="absolute bottom-[10%] right-[15%]">Operacional</span>
+<span class="absolute bottom-[10%] left-[15%]">Socio-Cultural</span>
+<span class="absolute top-[35%] left-0">Patrimonial</span>
+</div>
+</section>
+<section class="grid grid-cols-2 gap-4">
+<div class="liquid-glass rounded-2xl p-4 flex flex-col items-center justify-center space-y-2">
+<span class="text-[10px] font-mono text-white/50 uppercase tracking-tighter">Success Prob.</span>
+<div class="relative size-16">
+<svg class="size-full -rotate-90" viewbox="0 0 36 36">
+<circle cx="18" cy="18" fill="none" r="16" stroke="rgba(255,255,255,0.05)" stroke-width="3"></circle>
+<circle class="radar-glow" cx="18" cy="18" fill="none" r="16" stroke="#00f2ff" stroke-dasharray="82, 100" stroke-linecap="round" stroke-width="3"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center text-sm font-bold font-mono">82%</div>
+</div>
+</div>
+<div class="liquid-glass rounded-2xl p-4 flex flex-col items-center justify-center space-y-2">
+<span class="text-[10px] font-mono text-white/50 uppercase tracking-tighter">Risk Index</span>
+<div class="relative size-16">
+<svg class="size-full -rotate-90" viewbox="0 0 36 36">
+<circle cx="18" cy="18" fill="none" r="16" stroke="rgba(255,255,255,0.05)" stroke-width="3"></circle>
+<circle class="radar-glow opacity-50" cx="18" cy="18" fill="none" r="16" stroke="#00f2ff" stroke-dasharray="24, 100" stroke-linecap="round" stroke-width="3"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center text-sm font-bold font-mono">24%</div>
+</div>
+</div>
+</section>
+<section class="space-y-4">
+<h3 class="font-merriweather text-sm font-semibold text-white/70 uppercase tracking-widest pl-1">Dimensões em Detalhe</h3>
+<div class="liquid-glass rounded-xl p-4 group hover:bg-white/5 transition-all">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h4 class="text-white font-semibold">Informacional</h4>
+<p class="text-[10px] font-mono text-cyan-accent/80">PREP_INFO_01</p>
+</div>
+<span class="font-mono text-lg font-bold text-cyan-accent">68%</span>
+</div>
+<p class="text-xs text-silver-text/60 leading-relaxed mb-3">Requer atenção em Preparação Informacional para mitigar riscos de execução.</p>
+<a class="inline-flex items-center text-[10px] font-bold uppercase tracking-widest text-white hover:text-cyan-accent transition-colors" href="#">
+                        Ver detalhes <span class="material-symbols-outlined text-sm ml-1">chevron_right</span>
+</a>
+</div>
+<div class="liquid-glass rounded-xl p-4 group hover:bg-white/5 transition-all">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h4 class="text-white font-semibold">Operacional</h4>
+<p class="text-[10px] font-mono text-cyan-accent/80">OPS_SUSTAIN_04</p>
+</div>
+<span class="font-mono text-lg font-bold text-cyan-accent">92%</span>
+</div>
+<p class="text-xs text-silver-text/60 leading-relaxed mb-3">Sustento Operacional estável e acima da média do setor.</p>
+<a class="inline-flex items-center text-[10px] font-bold uppercase tracking-widest text-white hover:text-cyan-accent transition-colors" href="#">
+                        Ver detalhes <span class="material-symbols-outlined text-sm ml-1">chevron_right</span>
+</a>
+</div>
+<div class="liquid-glass rounded-xl p-4 group hover:bg-white/5 transition-all opacity-80">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h4 class="text-white font-semibold">Sócio-Cultural</h4>
+<p class="text-[10px] font-mono text-cyan-accent/80">SOCIAL_ALIGN_02</p>
+</div>
+<span class="font-mono text-lg font-bold text-cyan-accent">75%</span>
+</div>
+<p class="text-xs text-silver-text/60 leading-relaxed mb-3">Alinhamento cultural satisfatório, recomenda-se monitoramento.</p>
+<a class="inline-flex items-center text-[10px] font-bold uppercase tracking-widest text-white hover:text-cyan-accent transition-colors" href="#">
+                        Ver detalhes <span class="material-symbols-outlined text-sm ml-1">chevron_right</span>
+</a>
+</div>
+</section>
+<div class="pt-6 pb-12">
+<button class="w-full glass-refraction rounded-full p-[2px] overflow-hidden group">
+<div class="relative bg-background-dark/90 rounded-full py-4 px-6 flex items-center justify-center transition-colors group-hover:bg-cyan-accent/10">
+<span class="font-merriweather font-bold text-sm tracking-[0.2em] text-white uppercase flex items-center gap-2">
+<span class="material-symbols-outlined text-cyan-accent">refresh</span>
+                            Recalibrar Perfil
+                        </span>
+</div>
+</button>
+</div>
+</main>
+<nav class="fixed bottom-6 left-6 right-6 z-50">
+<div class="liquid-glass rounded-full px-6 py-4 flex justify-between items-center max-w-sm mx-auto shadow-2xl">
+<a class="text-cyan-accent" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">radar</span>
+</a>
+<a class="text-white/40 hover:text-cyan-accent transition-colors" href="#">
+<span class="material-symbols-outlined">explore</span>
+</a>
+<a class="text-white/40 hover:text-cyan-accent transition-colors" href="#">
+<span class="material-symbols-outlined">lightbulb</span>
+</a>
+<a class="text-white/40 hover:text-cyan-accent transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+</a>
+</div>
+</nav>
+</div>
+<div class="fixed top-0 right-0 w-96 h-96 bg-cyan-accent/5 rounded-full blur-[120px] -z-10 translate-x-1/2 -translate-y-1/2"></div>
+<div class="fixed bottom-0 left-0 w-[500px] h-[500px] bg-background-dark/50 rounded-full blur-[120px] -z-10 -translate-x-1/2 translate-y-1/2"></div>
+</body></html>

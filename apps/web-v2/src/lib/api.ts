@@ -240,6 +240,20 @@ export const sprintsApi = {
   getTemplates: () => api.get("/sprints/templates"),
 };
 
+// ── Organizations API ──────────────────────────────────────
+export const orgApi = {
+  getMe: () => api.get("/org/me"),
+  updateMe: (data: Record<string, unknown>) => api.patch("/org/me", data),
+  getMembers: () => api.get("/org/members"),
+  inviteMember: (data: { email: string; role: string }) =>
+    api.post("/org/invite", data),
+  removeMember: (memberId: string) =>
+    api.delete(`/org/members/${memberId}`),
+  updateMember: (memberId: string, data: { role?: string; status?: string }) =>
+    api.patch(`/org/members/${memberId}`, data),
+  getStats: () => api.get("/org/stats"),
+};
+
 // ── Marketplace API ────────────────────────────────────────
 export const marketplaceApi = {
   applyAsProvider: (data: Record<string, unknown>) =>
@@ -262,6 +276,20 @@ export const marketplaceApi = {
     api.post(`/marketplace/conversations/${conversationId}/messages`, { content }),
   createReview: (bookingId: string, data: { rating: number; comment: string }) =>
     api.post(`/marketplace/bookings/${bookingId}/review`, data),
+
+  // Provider Management
+  getProfileMe: () => api.get("/marketplace/providers/me"),
+  updateProfileMe: (data: Record<string, unknown>) =>
+    api.patch("/marketplace/providers/me", data),
+  getServicesMe: () => api.get("/marketplace/services/me"),
+  createService: (data: Record<string, unknown>) =>
+    api.post("/marketplace/services", data),
+  updateService: (id: string, data: Record<string, unknown>) =>
+    api.patch(`/marketplace/services/${id}`, data),
+  deleteService: (id: string) =>
+    api.delete(`/marketplace/services/${id}`),
+  updateBooking: (id: string, data: { status: string; reason?: string; summary?: string }) =>
+    api.patch(`/marketplace/bookings/${id}`, data),
 };
 
 export default api;

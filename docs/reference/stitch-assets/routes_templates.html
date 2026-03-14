@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Discovery - Templates de Rotas</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2194f2",
+                        "accent-cyan": "#00F2FF",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#001338",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(0, 242, 255, 0.15);
+        }
+        .liquid-glass-header {
+            background: rgba(0, 19, 56, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<!-- Sticky Header -->
+<header class="sticky top-0 z-50 liquid-glass-header px-4 pt-12 pb-4">
+<div class="flex items-center justify-between mb-4">
+<h1 class="text-2xl font-bold tracking-tight">Templates</h1>
+<button class="p-2 rounded-full hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-primary">tune</span>
+</button>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-slate-500 transition-all text-sm" placeholder="Buscar rota..." type="text"/>
+</div>
+</header>
+<main class="px-4 pb-32">
+<!-- Category Chips -->
+<div class="flex gap-2 overflow-x-auto py-4 -mx-4 px-4 no-scrollbar">
+<button class="px-5 py-2 rounded-full bg-primary text-white text-sm font-semibold whitespace-nowrap shadow-lg shadow-primary/20">Todos</button>
+<button class="px-5 py-2 rounded-full bg-white/5 border border-white/10 text-slate-300 text-sm font-medium whitespace-nowrap hover:bg-white/10 transition-colors">Bolsas</button>
+<button class="px-5 py-2 rounded-full bg-white/5 border border-white/10 text-slate-300 text-sm font-medium whitespace-nowrap hover:bg-white/10 transition-colors">Trabalho</button>
+<button class="px-5 py-2 rounded-full bg-white/5 border border-white/10 text-slate-300 text-sm font-medium whitespace-nowrap hover:bg-white/10 transition-colors">Pesquisa</button>
+<button class="px-5 py-2 rounded-full bg-white/5 border border-white/10 text-slate-300 text-sm font-medium whitespace-nowrap hover:bg-white/10 transition-colors">Visto</button>
+<button class="px-5 py-2 rounded-full bg-white/5 border border-white/10 text-slate-300 text-sm font-medium whitespace-nowrap hover:bg-white/10 transition-colors">Intercâmbio</button>
+</div>
+<!-- Recommended Section -->
+<section class="mt-4 mb-8">
+<h2 class="text-sm font-bold uppercase tracking-widest text-primary mb-4">Recomendado para você</h2>
+<div class="liquid-glass rounded-2xl p-5 relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/20 blur-3xl rounded-full -mr-16 -mt-16"></div>
+<div class="flex justify-between items-start mb-3">
+<span class="px-2 py-1 rounded bg-accent-cyan/10 text-accent-cyan text-[10px] font-bold uppercase tracking-wider border border-accent-cyan/20">Destaque</span>
+<div class="flex gap-0.5">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-2 h-2 rounded-full bg-white/20"></div>
+</div>
+</div>
+<h3 class="text-xl font-bold mb-1">Startup Visa — Portugal</h3>
+<p class="font-mono text-xs text-slate-400 mb-4">Duração: 6–12 meses</p>
+<div class="p-3 rounded-lg bg-primary/10 border border-primary/20 mb-5">
+<p class="text-xs leading-relaxed text-slate-200 flex items-start gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary mt-0.5">insights</span>
+                        Baseado no seu perfil de empreendedorismo e readiness score atual.
+                    </p>
+</div>
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-xl transition-all active:scale-[0.98]">Escolher Rota</button>
+</div>
+</section>
+<!-- Template Grid -->
+<section class="space-y-4">
+<h2 class="text-lg font-bold">Explorar Rotas</h2>
+<!-- Card 1 -->
+<div class="liquid-glass rounded-2xl p-5">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-bold text-lg">Scholarship — Alemanha</h3>
+<p class="font-mono text-xs text-slate-400 mt-1">4–6 meses</p>
+</div>
+<div class="flex gap-0.5">
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-white/20"></div>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-2 py-1 rounded bg-white/5 text-[10px] font-medium text-slate-300 border border-white/10">Documentos</span>
+<span class="px-2 py-1 rounded bg-white/5 text-[10px] font-medium text-slate-300 border border-white/10">Narrativa</span>
+<span class="px-2 py-1 rounded bg-white/5 text-[10px] font-medium text-slate-300 border border-white/10">Entrevista</span>
+</div>
+<button class="w-full bg-white/5 hover:bg-primary hover:text-white border border-white/10 text-primary font-bold py-3 rounded-xl transition-all">Escolher</button>
+</div>
+<!-- Card 2 -->
+<div class="liquid-glass rounded-2xl p-5">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-bold text-lg">Job Relocation — Tech (EU)</h3>
+<p class="font-mono text-xs text-slate-400 mt-1">3–5 meses</p>
+</div>
+<div class="flex gap-0.5">
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-white/20"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-white/20"></div>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-2 py-1 rounded bg-white/5 text-[10px] font-medium text-slate-300 border border-white/10">LinkedIn</span>
+<span class="px-2 py-1 rounded bg-white/5 text-[10px] font-medium text-slate-300 border border-white/10">Pitch</span>
+<span class="px-2 py-1 rounded bg-white/5 text-[10px] font-medium text-slate-300 border border-white/10">Visto</span>
+</div>
+<button class="w-full bg-white/5 hover:bg-primary hover:text-white border border-white/10 text-primary font-bold py-3 rounded-xl transition-all">Escolher</button>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 z-50 liquid-glass-header border-t-0 px-6 pb-8 pt-3 flex justify-between items-center rounded-t-3xl">
+<a class="flex flex-col items-center gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined text-[24px] fill-current" style="font-variation-settings: 'FILL' 1">route</span>
+<span class="text-[10px] font-bold">Rotas</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined text-[24px]">school</span>
+<span class="text-[10px] font-medium">Prática</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined text-[24px]">check_circle</span>
+<span class="text-[10px] font-medium">Candidaturas</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined text-[24px]">more_horiz</span>
+<span class="text-[10px] font-medium">Mais</span>
+</a>
+</nav>
+</body></html>

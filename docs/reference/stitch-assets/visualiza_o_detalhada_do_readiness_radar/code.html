@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bússola Olcan - Radar de Prontidão</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;family=Merriweather+Sans:wght@400;700&amp;family=Source+Sans+Pro:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00d4ff",
+                        "accent-silver": "#e2e8f0",
+                        "background-light": "#f8faff",
+                        "background-dark": "#001338",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"],
+                        "heading": ["Merriweather Sans", "sans-serif"],
+                        "data": ["Source Sans Pro", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.05;
+            z-index: 50;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        .radar-gradient {
+            stop-color: #00d4ff;
+        }
+        .cyan-glow {
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark font-display text-slate-100 overflow-x-hidden selection:bg-primary/30">
+<div class="noise-overlay"></div>
+<!-- Header -->
+<header class="sticky top-0 z-40 glass border-b border-white/10 px-4 py-4 flex items-center justify-between">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-accent-silver">arrow_back</span>
+</button>
+<h1 class="font-heading font-bold text-lg tracking-tight text-accent-silver">Bússola Olcan</h1>
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-primary">info</span>
+</button>
+</header>
+<main class="max-w-md mx-auto pb-24 px-4">
+<!-- Main Radar Section -->
+<section class="py-8">
+<div class="text-center mb-6">
+<h2 class="font-heading text-2xl font-bold text-white mb-1">Radar de Prontidão</h2>
+<p class="text-slate-400 text-sm font-data">Análise de Mobilidade Global em Tempo Real</p>
+</div>
+<!-- 3D Style Radar Chart Container -->
+<div class="relative aspect-square w-full max-w-[320px] mx-auto flex items-center justify-center mb-8">
+<!-- Background Rings -->
+<div class="absolute inset-0 border border-white/5 rounded-full"></div>
+<div class="absolute inset-[15%] border border-white/5 rounded-full"></div>
+<div class="absolute inset-[30%] border border-white/5 rounded-full"></div>
+<div class="absolute inset-[45%] border border-white/10 rounded-full"></div>
+<!-- Spider Chart SVG -->
+<svg class="w-full h-full drop-shadow-[0_0_10px_rgba(0,212,255,0.3)]" viewbox="0 0 200 200">
+<!-- Axes -->
+<line stroke="rgba(255,255,255,0.1)" stroke-width="0.5" x1="100" x2="100" y1="100" y2="10"></line>
+<line stroke="rgba(255,255,255,0.1)" stroke-width="0.5" x1="100" x2="185" y1="100" y2="70"></line>
+<line stroke="rgba(255,255,255,0.1)" stroke-width="0.5" x1="100" x2="155" y1="100" y2="175"></line>
+<line stroke="rgba(255,255,255,0.1)" stroke-width="0.5" x1="100" x2="45" y1="100" y2="175"></line>
+<line stroke="rgba(255,255,255,0.1)" stroke-width="0.5" x1="100" x2="15" y1="100" y2="70"></line>
+<!-- Radar Area -->
+<polygon fill="rgba(0, 212, 255, 0.15)" points="100,25 170,80 140,160 60,155 30,75" stroke="#00d4ff" stroke-width="2"></polygon>
+<!-- Nodes -->
+<circle class="cyan-glow" cx="100" cy="25" fill="#00d4ff" r="3"></circle>
+<circle class="cyan-glow" cx="170" cy="80" fill="#00d4ff" r="3"></circle>
+<circle class="cyan-glow" cx="140" cy="160" fill="#00d4ff" r="3"></circle>
+<circle class="cyan-glow" cx="60" cy="155" fill="#00d4ff" r="3"></circle>
+<circle class="cyan-glow" cx="30" cy="75" fill="#00d4ff" r="3"></circle>
+</svg>
+<!-- Labels -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 text-[10px] font-bold text-accent-silver uppercase tracking-widest">Informacional</div>
+<div class="absolute top-[35%] -right-4 text-[10px] font-bold text-accent-silver uppercase tracking-widest rotate-90 origin-left">Emocional</div>
+<div class="absolute bottom-4 right-4 text-[10px] font-bold text-accent-silver uppercase tracking-widest">Operacional</div>
+<div class="absolute bottom-4 left-4 text-[10px] font-bold text-accent-silver uppercase tracking-widest">Socio-Cultural</div>
+<div class="absolute top-[35%] -left-6 text-[10px] font-bold text-accent-silver uppercase tracking-widest -rotate-90 origin-right">Patrimonial</div>
+</div>
+<!-- Global Score Card -->
+<div class="glass rounded-xl p-6 border-l-4 border-primary">
+<div class="flex justify-between items-end">
+<div>
+<p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Índice Geral de Prontidão</p>
+<h3 class="font-data text-4xl font-bold text-white leading-none">82<span class="text-xl text-slate-500">/100</span></h3>
+</div>
+<div class="text-right">
+<span class="text-xs font-medium text-emerald-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">trending_up</span> +5.2%
+                        </span>
+<p class="text-[10px] text-slate-500 uppercase">Últimos 30 dias</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Dimension Breakdown -->
+<section class="space-y-4">
+<h3 class="font-heading text-lg font-bold text-accent-silver px-1">Detalhamento por Dimensão</h3>
+<!-- Card 1: Informacional -->
+<div class="glass rounded-xl p-5 group hover:border-primary/50 transition-all duration-300">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary">database</span>
+</div>
+<div>
+<h4 class="font-heading font-bold text-white text-base">Informacional</h4>
+<p class="text-xs text-slate-400">Documentação e Vistos</p>
+</div>
+</div>
+<span class="font-data font-bold text-lg text-primary">92%</span>
+</div>
+<div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[92%] cyan-glow"></div>
+</div>
+</div>
+<!-- Card 2: Emocional -->
+<div class="glass rounded-xl p-5 group hover:border-primary/50 transition-all duration-300">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary">psychology</span>
+</div>
+<div>
+<h4 class="font-heading font-bold text-white text-base">Emocional</h4>
+<p class="text-xs text-slate-400">Estabilidade e Mindset</p>
+</div>
+</div>
+<span class="font-data font-bold text-lg text-primary">78%</span>
+</div>
+<div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[78%] cyan-glow"></div>
+</div>
+</div>
+<!-- Card 3: Operacional -->
+<div class="glass rounded-xl p-5 group hover:border-primary/50 transition-all duration-300">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary">settings_suggest</span>
+</div>
+<div>
+<h4 class="font-heading font-bold text-white text-base">Operacional</h4>
+<p class="text-xs text-slate-400">Logística e Moradia</p>
+</div>
+</div>
+<span class="font-data font-bold text-lg text-primary">65%</span>
+</div>
+<div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[65%] cyan-glow"></div>
+</div>
+</div>
+<!-- Card 4: Socio-Cultural -->
+<div class="glass rounded-xl p-5 group hover:border-primary/50 transition-all duration-300">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary">public</span>
+</div>
+<div>
+<h4 class="font-heading font-bold text-white text-base">Socio-Cultural</h4>
+<p class="text-xs text-slate-400">Integração e Idioma</p>
+</div>
+</div>
+<span class="font-data font-bold text-lg text-primary">88%</span>
+</div>
+<div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[88%] cyan-glow"></div>
+</div>
+</div>
+<!-- Card 5: Patrimonial -->
+<div class="glass rounded-xl p-5 group hover:border-primary/50 transition-all duration-300">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary">account_balance</span>
+</div>
+<div>
+<h4 class="font-heading font-bold text-white text-base">Patrimonial</h4>
+<p class="text-xs text-slate-400">Gestão de Ativos</p>
+</div>
+</div>
+<span class="font-data font-bold text-lg text-primary">74%</span>
+</div>
+<div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[74%] cyan-glow"></div>
+</div>
+</div>
+</section>
+<!-- CTA Action -->
+<div class="mt-12 mb-8">
+<button class="w-full py-4 bg-primary text-background-dark font-heading font-bold rounded-xl shadow-[0_0_20px_rgba(0,212,255,0.4)] flex items-center justify-center gap-2 group transition-transform active:scale-95">
+                Otimizar Minha Prontidão
+                <span class="material-symbols-outlined transition-transform group-hover:translate-x-1">bolt</span>
+</button>
+</div>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 inset-x-0 glass border-t border-white/10 px-6 py-3 flex justify-between items-center z-40">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined fill-1">explore</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Radar</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">map</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Explorar</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Perfil</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Ajustes</span>
+</a>
+</nav>
+</body></html>

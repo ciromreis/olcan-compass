@@ -1,15 +1,25 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { ShieldAlert } from "lucide-react";
 import { useHydration } from "@/hooks";
 import { useAuthStore } from "@/stores/auth";
+import { useMarketplaceStore } from "@/stores/marketplace";
 import { Skeleton } from "@/components/ui";
 import { isProviderAreaRole } from "@/lib/roles";
 
 export default function ProviderAreaLayout({ children }: { children: React.ReactNode }) {
   const hydrated = useHydration();
   const userRole = useAuthStore((state) => state.user?.role);
+  const { fetchMyProviderProfile, fetchMyServices } = useMarketplaceStore();
+
+  useEffect(() => {
+    if (hydrated && isProviderAreaRole(userRole)) {
+      fetchMyProviderProfile();
+      fetchMyServices();
+    }
+  }, [hydrated, userRole, fetchMyProviderProfile, fetchMyServices]);
 
   if (!hydrated) {
     return (

@@ -1,15 +1,26 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { ShieldAlert } from "lucide-react";
 import { useHydration } from "@/hooks";
 import { useAuthStore } from "@/stores/auth";
+import { useOrgStore } from "@/stores/org";
 import { Skeleton } from "@/components/ui";
 import { isOrgAreaRole } from "@/lib/roles";
 
 export default function OrgAreaLayout({ children }: { children: React.ReactNode }) {
   const hydrated = useHydration();
   const userRole = useAuthStore((state) => state.user?.role);
+  const { fetchOrg, fetchMembers, fetchStats } = useOrgStore();
+
+  useEffect(() => {
+    if (hydrated && isOrgAreaRole(userRole)) {
+      fetchOrg();
+      fetchMembers();
+      fetchStats();
+    }
+  }, [hydrated, userRole, fetchOrg, fetchMembers, fetchStats]);
 
   if (!hydrated) {
     return (

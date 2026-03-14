@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Olcan Compass | Dashboard</title>
+<!-- BEGIN: External Scripts -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&amp;display=swap" rel="stylesheet"/>
+<!-- END: External Scripts -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'olcan-blue': '#001338',
+            'cyan-glow': '#00f2ff',
+            'glass-border': 'rgba(255, 255, 255, 0.1)',
+          },
+          fontFamily: {
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+<style data-purpose="global-styles">
+    body {
+      background-color: #001338;
+      color: #e2e8f0;
+      font-family: 'JetBrains Mono', monospace;
+      overflow-x: hidden;
+    }
+    
+    .glass-card {
+      background: rgba(0, 19, 56, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+    }
+
+    .glow-border {
+      border: 1px solid #00f2ff;
+      box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+    }
+
+    .radar-circle {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation: dash 3s linear infinite;
+    }
+
+    @keyframes dash {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    .sparkline-animate {
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      animation: draw 2s ease-out forwards;
+    }
+
+    @keyframes draw {
+      to { stroke-dashoffset: 0; }
+    }
+  </style>
+</head>
+<body class="min-h-screen p-4 md:p-6 lg:p-8 flex flex-col gap-6">
+<!-- BEGIN: MainHeader -->
+<header class="w-full max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4 py-4" data-purpose="header-section">
+<div class="space-y-1">
+<h1 class="text-xl md:text-2xl font-bold tracking-tight text-white">
+        Bom dia. Estado: <span class="text-cyan-glow">ESTRUTURANDO</span>.
+      </h1>
+<p class="text-xs md:text-sm text-slate-400 opacity-80">
+        Clareza primeiro. Depois ação.
+      </p>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex flex-col items-end">
+<span class="text-[10px] uppercase tracking-widest text-slate-500">System Time</span>
+<span class="text-sm font-bold text-cyan-glow" id="digital-clock">09:42:12</span>
+</div>
+<div class="w-10 h-10 rounded-full glass-card flex items-center justify-center border-glass-border">
+<div class="w-2 h-2 rounded-full bg-cyan-glow animate-pulse"></div>
+</div>
+</div>
+</header>
+<!-- END: MainHeader -->
+<main class="w-full max-w-7xl mx-auto flex flex-col lg:grid lg:grid-cols-12 gap-6" data-purpose="dashboard-grid">
+<!-- BEGIN: LeftSidebar -->
+<aside class="lg:col-span-3 space-y-6" data-purpose="narrative-intelligence">
+<div class="glass-card p-5 h-full flex flex-col gap-6">
+<h2 class="text-xs font-bold uppercase tracking-widest text-slate-400 border-b border-glass-border pb-3">Narrative Intelligence</h2>
+<div class="space-y-8 py-4">
+<!-- Progress Ring 1 -->
+<div class="flex items-center gap-4">
+<div class="relative w-14 h-14">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-slate-800" cx="28" cy="28" fill="transparent" r="24" stroke="currentColor" stroke-width="3"></circle>
+<circle class="text-cyan-glow" cx="28" cy="28" fill="transparent" r="24" stroke="currentColor" stroke-dasharray="150" stroke-dashoffset="40" stroke-width="3"></circle>
+</svg>
+<span class="absolute inset-0 flex items-center justify-center text-[10px] font-bold">72%</span>
+</div>
+<div>
+<p class="text-[10px] text-slate-500 uppercase">Contexto</p>
+<p class="text-xs font-semibold">Mapeamento</p>
+</div>
+</div>
+<!-- Progress Ring 2 -->
+<div class="flex items-center gap-4">
+<div class="relative w-14 h-14">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-slate-800" cx="28" cy="28" fill="transparent" r="24" stroke="currentColor" stroke-width="3"></circle>
+<circle class="text-cyan-glow" cx="28" cy="28" fill="transparent" r="24" stroke="currentColor" stroke-dasharray="150" stroke-dashoffset="90" stroke-width="3"></circle>
+</svg>
+<span class="absolute inset-0 flex items-center justify-center text-[10px] font-bold">40%</span>
+</div>
+<div>
+<p class="text-[10px] text-slate-500 uppercase">Foco</p>
+<p class="text-xs font-semibold">Priorização</p>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-6 border-t border-glass-border">
+<p class="text-[10px] text-slate-500 italic">"O mapa não é o território, mas é como o navegamos."</p>
+</div>
+</div>
+</aside>
+<!-- END: LeftSidebar -->
+<!-- BEGIN: MainGridContent -->
+<div class="lg:col-span-9 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-purpose="bento-grid">
+<!-- Readiness Radar -->
+<div class="md:col-span-2 glass-card p-6 min-h-[300px] flex flex-col" data-purpose="readiness-radar">
+<div class="flex justify-between items-start mb-4">
+<h3 class="text-sm font-bold uppercase tracking-widest text-slate-300">Readiness Radar</h3>
+<span class="text-[10px] px-2 py-1 bg-cyan-glow/10 text-cyan-glow rounded border border-cyan-glow/30">ACTIVE SCAN</span>
+</div>
+<div class="flex-1 flex items-center justify-center relative overflow-hidden">
+<!-- Cybernetic Radar Mockup -->
+<div class="relative w-64 h-64 border border-cyan-glow/20 rounded-full flex items-center justify-center">
+<div class="absolute inset-0 border border-cyan-glow/10 rounded-full scale-75"></div>
+<div class="absolute inset-0 border border-cyan-glow/5 rounded-full scale-50"></div>
+<div class="w-[1px] h-32 bg-gradient-to-t from-cyan-glow to-transparent origin-bottom animate-[spin_4s_linear_infinite]"></div>
+<!-- Radar Data Points -->
+<div class="absolute top-1/4 left-1/3 w-1 h-1 bg-cyan-glow rounded-full shadow-[0_0_8px_#00f2ff]"></div>
+<div class="absolute bottom-1/3 right-1/4 w-1 h-1 bg-cyan-glow rounded-full shadow-[0_0_8px_#00f2ff]"></div>
+<div class="absolute top-1/2 right-1/2 w-1.5 h-1.5 bg-white rounded-full"></div>
+</div>
+<div class="absolute bottom-0 right-0 text-[10px] text-slate-500 font-mono">
+            SYS_SCAN_V.2.04<br/>LAT: -23.5505 | LONG: -46.6333
+          </div>
+</div>
+</div>
+<!-- Momentum Indicator -->
+<div class="glass-card p-6 flex flex-col justify-between" data-purpose="momentum-indicator">
+<h3 class="text-sm font-bold uppercase tracking-widest text-slate-300">Momentum</h3>
+<div class="py-4">
+<div class="text-4xl font-bold text-white mb-2">0.84<span class="text-xs text-cyan-glow ml-1">↑</span></div>
+<svg class="w-full h-16 overflow-visible" viewbox="0 0 100 40">
+<polyline class="sparkline-animate" fill="none" points="0,35 15,30 30,38 45,20 60,25 75,5 90,12 100,2" stroke="#00f2ff" stroke-width="2"></polyline>
+</svg>
+</div>
+<p class="text-[10px] text-slate-400">Tendência de alta na última sessão de 4h.</p>
+</div>
+<!-- Atomic Action Card -->
+<div class="md:col-span-2 glass-card glow-border p-6 flex flex-col md:flex-row gap-6 items-center" data-purpose="atomic-action">
+<div class="flex-1">
+<h3 class="text-sm font-bold uppercase tracking-widest text-cyan-glow mb-4">Próxima Ação Atômica</h3>
+<p class="text-lg md:text-xl font-medium text-white mb-2">Finalizar arquitetura do banco de dados vetorial</p>
+<div class="flex gap-4">
+<span class="text-[10px] text-slate-400 flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-slate-600"></span> Estimativa: 45min
+            </span>
+<span class="text-[10px] text-slate-400 flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-slate-600"></span> Prioridade: Crítica
+            </span>
+</div>
+</div>
+<button class="w-full md:w-auto px-8 py-3 bg-cyan-glow text-olcan-blue font-bold rounded text-sm hover:bg-white transition-colors uppercase tracking-widest">
+          INICIAR
+        </button>
+</div>
+<!-- Fear Reframe Injector -->
+<div class="glass-card p-6 border-l-2 border-l-slate-600" data-purpose="fear-reframe">
+<h3 class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-3">Reframed Insight</h3>
+<p class="text-sm text-slate-300 leading-relaxed italic">
+          "A incerteza que você sente não é falta de direção, é o sinal de que você está operando na fronteira do seu conhecimento."
+        </p>
+<div class="mt-4 flex items-center gap-2">
+<div class="w-4 h-[1px] bg-slate-700"></div>
+<span class="text-[9px] text-slate-500 uppercase">Protocolo de Empatia</span>
+</div>
+</div>
+</div>
+<!-- END: MainGridContent -->
+</main>
+<!-- BEGIN: FooterStatus -->
+<footer class="w-full max-w-7xl mx-auto mt-auto py-6 border-t border-glass-border flex justify-between items-center" data-purpose="footer">
+<div class="text-[10px] text-slate-500 font-mono">
+      OLCAN_OS v.0.1.0-alpha // MOD: METAMODERN_MAP
+    </div>
+<div class="flex gap-6">
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+<span class="text-[10px] text-slate-400 uppercase">Sync OK</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-cyan-glow"></div>
+<span class="text-[10px] text-slate-400 uppercase">Neural Link Stable</span>
+</div>
+</div>
+</footer>
+<!-- END: FooterStatus -->
+<!-- BEGIN: LogicScripts -->
+<script data-purpose="clock-handler">
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('digital-clock').textContent = `${h}:${m}:${s}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+<!-- END: LogicScripts -->
+</body></html>

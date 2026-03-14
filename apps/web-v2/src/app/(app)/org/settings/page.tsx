@@ -25,10 +25,11 @@ export default function OrgSettingsPage() {
   const [domainsText, setDomainsText] = useState("");
 
   useEffect(() => {
-    setName(organization.name);
-    setType(organization.type);
-    setCountry(organization.country);
-    setContactEmail(organization.contactEmail);
+    if (!organization) return;
+    setName(organization.name || "");
+    setType(organization.type || "");
+    setCountry(organization.country || "");
+    setContactEmail(organization.contactEmail || "");
     setDomainsText(allowedDomains.join(", "));
   }, [allowedDomains, organization]);
 

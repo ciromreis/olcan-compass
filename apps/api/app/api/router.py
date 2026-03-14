@@ -11,6 +11,7 @@ from app.api.routes.application import router as application_router
 from app.api.routes.sprint import router as sprint_router
 from app.api.routes.ai import router as ai_router
 from app.api.routes.marketplace import router as marketplace_router
+from app.api.routes.org import router as org_router
 from app.api.routes.constraints import router as constraints_router
 
 # Economics-driven intelligence routes
@@ -34,6 +35,7 @@ def _mount_all_routes(router: APIRouter) -> None:
     router.include_router(sprint_router, tags=["Readiness Engine"])
     router.include_router(ai_router, tags=["AI Service Layer"])
     router.include_router(marketplace_router, tags=["Marketplace"])
+    router.include_router(org_router, tags=["Organizations"])
     router.include_router(constraints_router, tags=["User Constraints"])
 
     # Economics Intelligence

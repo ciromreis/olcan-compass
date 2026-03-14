@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Olcan Compass | Liquid Glass Experience</title>
+<!-- Fonts: Syne for headers, Merriweather Sans for body -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@300;400;700&amp;family=Syne:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- GSAP for animations -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<!-- Paper.js for liquid blobs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.17/paper-full.min.js"></script>
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'deep-blue': '#001338',
+            'liquid-silver': '#E2E8F0',
+          },
+          fontFamily: {
+            syne: ['Syne', 'sans-serif'],
+            merriweather: ['Merriweather Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="global-styles">
+    body {
+      background-color: #000;
+      color: white;
+      overflow-x: hidden;
+      font-family: 'Merriweather Sans', sans-serif;
+    }
+
+    /* SVG Grain Overlay */
+    .noise-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.05;
+      z-index: 50;
+    }
+
+    .glassmorphic-pill {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .metallic-text {
+      background: linear-gradient(135deg, #fff 0%, #a5a5a5 50%, #fff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  </style>
+<style data-purpose="button-effects">
+    /* Liquid Glass Button with Chromatic Aberration & Conic Border */
+    .liquid-glass-btn {
+      position: relative;
+      padding: 2px;
+      border-radius: 9999px;
+      overflow: hidden;
+      display: inline-block;
+      transition: transform 0.3s ease;
+    }
+
+    .liquid-glass-btn:active {
+      transform: scale(0.95);
+    }
+
+    .conic-border {
+      position: absolute;
+      inset: -50%;
+      background: conic-gradient(from 0deg, transparent 0%, #ffffff 25%, transparent 50%, #ffffff 75%, transparent 100%);
+      animation: spin 3s linear infinite;
+      z-index: 1;
+    }
+
+    .btn-inner {
+      position: relative;
+      background: rgba(0, 19, 56, 0.8);
+      backdrop-filter: blur(12px);
+      padding: 1rem 2.5rem;
+      border-radius: 9999px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: #fff;
+      text-shadow: 1px 1px 2px rgba(255,0,255,0.3), -1px -1px 2px rgba(0,255,255,0.3); /* Chromatic aberration feel */
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    canvas#blob-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body class="bg-black">
+<!-- BEGIN: Grain Filter -->
+<svg class="noise-overlay">
+<filter id="noise">
+<feturbulence basefrequency="0.65" numoctaves="3" stitchtiles="stitch" type="fractalNoise"></feturbulence>
+<fecolormatrix type="saturate" values="0"></fecolormatrix>
+</filter>
+<rect filter="url(#noise)" height="100%" width="100%"></rect>
+</svg>
+<!-- END: Grain Filter -->
+<!-- BEGIN: Navigation -->
+<nav class="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-md">
+<div class="glassmorphic-pill flex items-center justify-between px-6 py-4 rounded-full">
+<div class="font-syne font-bold text-lg tracking-tighter metallic-text">OLCAN</div>
+<div class="flex gap-6 text-xs font-medium uppercase tracking-widest text-white/70">
+<a class="hover:text-white transition-colors" href="#">Início</a>
+<a class="hover:text-white transition-colors" href="#">Método</a>
+<a class="hover:text-white transition-colors" href="#">Fale Conosco</a>
+</div>
+</div>
+</nav>
+<!-- END: Navigation -->
+<!-- BEGIN: Hero Section -->
+<main class="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden pt-20">
+<!-- Liquid Sea-Glass Blob Background -->
+<canvas id="blob-canvas" resize=""></canvas>
+<div class="absolute inset-0 bg-gradient-to-b from-deep-blue/40 via-transparent to-black pointer-events-none"></div>
+<!-- Hero Content -->
+<div class="relative z-10 text-center max-w-2xl">
+<h1 class="font-syne text-5xl md:text-7xl font-extrabold leading-tight metallic-text mb-8" id="hero-title">
+        De Aspirante Incerto a Realizador Internacional Estruturado
+      </h1>
+<p class="text-white/60 text-lg md:text-xl font-light mb-12 max-w-lg mx-auto leading-relaxed" id="hero-sub">
+        Navegue pelas complexidades do mercado global com a precisão do Olcan Compass. 
+        Transforme visão em infraestrutura.
+      </p>
+<!-- Liquid Button -->
+<a class="liquid-glass-btn" href="#">
+<div class="conic-border"></div>
+<div class="btn-inner font-syne">
+          Iniciar Jornada
+        </div>
+</a>
+</div>
+<!-- Abstract 3D Chrome Object (Visual Representation) -->
+<div class="absolute bottom-[-10%] right-[-5%] w-64 h-64 md:w-96 md:h-96 opacity-30 pointer-events-none">
+<svg viewbox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<lineargradient id="chrome-grad" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#ffffff;stop-opacity:1"></stop>
+<stop offset="50%" style="stop-color:#71717a;stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:#ffffff;stop-opacity:1"></stop>
+</lineargradient>
+</defs>
+<path d="M44.7,-76.4C58.1,-69.2,69.5,-57.4,77.3,-43.8C85.1,-30.2,89.2,-15.1,88.4,-0.4C87.6,14.3,81.9,28.6,73.5,41.4C65.1,54.2,54,65.5,40.7,73.2C27.3,80.9,13.7,85,-0.2,85.4C-14.1,85.8,-28.2,82.4,-41.2,74.5C-54.2,66.6,-66,54.1,-73.9,40.1C-81.8,26.1,-85.7,10.5,-84.9,-4.6C-84.2,-19.7,-78.7,-34.3,-69.5,-46.3C-60.3,-58.3,-47.4,-67.7,-33.9,-74.8C-20.4,-81.9,-10.2,-86.7,2.6,-91.2C15.4,-95.7,31.3,-83.6,44.7,-76.4Z" fill="url(#chrome-grad)" transform="translate(100 100)"></path>
+</svg>
+</div>
+</main>
+<!-- END: Hero Section -->
+<!-- BEGIN: Floating Footer Info -->
+<footer class="fixed bottom-8 left-0 w-full px-8 pointer-events-none flex justify-between items-end">
+<div class="text-[10px] uppercase tracking-[0.3em] text-white/30 font-bold">
+      © 2024 OLCAN COMPASS
+    </div>
+<div class="text-[10px] uppercase tracking-[0.3em] text-white/30 font-bold text-right">
+      PRECISÃO EM <br/> ESTRUTURAÇÃO
+    </div>
+</footer>
+<!-- END: Floating Footer Info -->
+<!-- Scripts -->
+<script data-purpose="canvas-blob-setup">
+    paper.install(window);
+    window.onload = function() {
+      paper.setup('blob-canvas');
+      
+      const blobColor = new Color('#001338');
+      blobColor.alpha = 0.6;
+
+      const path = new Path();
+      path.fillColor = {
+        gradient: {
+          stops: [['#001338', 0], ['#000', 1]],
+          radial: true
+        },
+        origin: [view.center.x, view.center.y],
+        destination: [view.center.x + 300, view.center.y + 300]
+      };
+      
+      path.closed = true;
+      const points = 6;
+      const radius = Math.min(view.size.width, view.size.height) * 0.4;
+      
+      for (let i = 0; i < points; i++) {
+        const delta = 360 / points;
+        const angle = i * delta;
+        const x = view.center.x + radius * Math.cos(angle * Math.PI / 180);
+        const y = view.center.y + radius * Math.sin(angle * Math.PI / 180);
+        path.add(new Point(x, y));
+      }
+      path.smooth();
+
+      const speed = [];
+      for (let i = 0; i < points; i++) {
+        speed.push(Math.random() * 0.02 + 0.01);
+      }
+
+      view.onFrame = function(event) {
+        for (let i = 0; i < points; i++) {
+          const segment = path.segments[i];
+          const angle = (event.time * speed[i]) + i;
+          const sinValue = Math.sin(angle);
+          const offset = sinValue * 40;
+          
+          const originalAngle = i * (360 / points);
+          const x = view.center.x + (radius + offset) * Math.cos(originalAngle * Math.PI / 180);
+          const y = view.center.y + (radius + offset) * Math.sin(originalAngle * Math.PI / 180);
+          
+          segment.point.x += (x - segment.point.x) * 0.05;
+          segment.point.y += (y - segment.point.y) * 0.05;
+        }
+        path.smooth();
+      };
+    }
+  </script>
+<script data-purpose="gsap-animations">
+    document.addEventListener('DOMContentLoaded', () => {
+      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+
+      tl.from("#hero-title", {
+        y: 100,
+        opacity: 0,
+        duration: 1.5,
+        stagger: 0.2
+      })
+      .from("#hero-sub", {
+        y: 20,
+        opacity: 0,
+        duration: 1
+      }, "-=0.8")
+      .from(".liquid-glass-btn", {
+        scale: 0.8,
+        opacity: 0,
+        duration: 1
+      }, "-=0.5")
+      .from("nav", {
+        y: -50,
+        opacity: 0,
+        duration: 1
+      }, "-=1");
+    });
+  </script>
+</body></html>

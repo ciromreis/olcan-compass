@@ -9,9 +9,12 @@ import { PageHeader, Skeleton } from "@/components/ui";
 
 export default function ProviderDashboardPage() {
   const hydrated = useHydration();
-  const { providers, bookings, conversations, setActiveProvider, getActiveProvider } = useMarketplaceStore();
-
-  const provider = getActiveProvider() ?? null;
+  const { 
+    myProviderProfile: provider, 
+    myServices, 
+    bookings, 
+    conversations,
+  } = useMarketplaceStore();
 
   const stats = useMemo(() => {
     if (!hydrated || !provider) return null;
@@ -56,20 +59,7 @@ export default function ProviderDashboardPage() {
         }
       />
 
-      {providers.length > 1 && (
-        <div className="card-surface p-4">
-          <label className="block text-caption text-text-muted mb-1">Perfil ativo</label>
-          <select
-            value={provider?.id || ""}
-            onChange={(event) => setActiveProvider(event.target.value)}
-            className="w-full md:w-[360px] px-3 py-2 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-400"
-          >
-            {providers.map((item) => (
-              <option key={item.id} value={item.id}>{item.name}</option>
-            ))}
-          </select>
-        </div>
-      )}
+      {/* Profile summary removed switch for single profile context */}
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="card-surface p-5">
@@ -99,11 +89,11 @@ export default function ProviderDashboardPage() {
       </div>
 
       {/* Services */}
-      {provider && provider.services.length > 0 && (
+      {myServices.length > 0 && (
         <div className="card-surface p-6">
           <h3 className="font-heading text-h4 text-text-primary mb-4">Meus Serviços</h3>
           <div className="space-y-3">
-            {provider.services.map((s) => (
+            {myServices.map((s) => (
               <div key={s.id} className="flex items-center gap-4 p-3 rounded-lg bg-cream-50">
                 <div className="flex-1 min-w-0">
                   <p className="text-body-sm font-medium text-text-primary truncate">{s.title}</p>

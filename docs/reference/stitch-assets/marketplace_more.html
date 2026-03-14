@@ -1,0 +1,208 @@
+<html class="dark"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#2094f3",
+                "background-light": "#f5f7f8",
+                "background-dark": "#001338",
+                "glass": "rgba(255, 255, 255, 0.08)",
+                "glass-border": "rgba(255, 255, 255, 0.12)",
+              },
+              fontFamily: {
+                "display": ["Manrope", "sans-serif"]
+              },
+              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden pb-24">
+<header class="sticky top-0 z-50 liquid-glass px-4 pt-12 pb-4">
+<div class="flex items-center justify-between mb-2">
+<span class="text-sm font-medium text-primary uppercase tracking-widest">Mais</span>
+<button class="p-2 rounded-full hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-slate-100">notifications</span>
+</button>
+</div>
+<h1 class="text-3xl font-bold text-slate-100">Marketplace</h1>
+</header>
+<div class="px-4 py-4 space-y-4">
+<div class="flex gap-2">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full bg-slate-800/50 border-none rounded-xl py-3 pl-10 pr-4 text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-primary/50 outline-none transition-all" placeholder="Buscar especialistas..." type="text"/>
+</div>
+<button class="liquid-glass p-3 rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-100">tune</span>
+</button>
+</div>
+<div class="flex gap-2 overflow-x-auto hide-scrollbar -mx-4 px-4 py-1">
+<button class="bg-primary text-white px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap shadow-lg shadow-primary/20">Entrevista</button>
+<button class="liquid-glass text-slate-300 px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap">Narrativa</button>
+<button class="liquid-glass text-slate-300 px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap">Visto</button>
+<button class="liquid-glass text-slate-300 px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap">Bolsa</button>
+<button class="liquid-glass text-slate-300 px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap">Carreira</button>
+</div>
+</div>
+<section class="px-4 py-6">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-lg font-bold text-slate-100">Recomendado para você</h2>
+</div>
+<div class="liquid-glass rounded-2xl p-5 border-primary/30 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-3">
+<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-tight border border-primary/30">Match Perfeito</span>
+</div>
+<div class="flex gap-4 items-start mb-4">
+<img class="w-16 h-16 rounded-xl object-cover" data-alt="Portrait of a smiling professional man with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMMuB59WZCEGGnVo_EzTi1XwUh0hl4oPFiOzOnOVj6B2axk8BZFoGl9dRt8GoDmgfAy-UQGeYIye9PxXMdIw_Sc6QyRz5J-DTncXpzekkrs4kq0kfRQvSwqURkbUNyBbTqPesBDWuLs5-xsuaYncofnMPpeUWQiIj32V9PIwfzBshna9pm_R8Vn-x3vNqzN-cLzrT47eD-vN--mZ_WmU6xFxDzodsnJdgXs7u2I3WbzcCuuZp8gI3vbqtQWdWBPv9gmJ8aveJV8ZzW"/>
+<div>
+<h3 class="font-bold text-lg text-slate-100">Lucas Brandt</h3>
+<p class="text-xs text-slate-400">Especialista em Bolsas DAAD</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-yellow-500 text-sm fill-1">star</span>
+<span class="text-xs font-bold text-slate-200">5.0</span>
+</div>
+</div>
+</div>
+<div class="bg-primary/10 border-l-2 border-primary p-3 rounded-r-lg mb-4">
+<p class="text-xs leading-relaxed text-slate-300">
+                        Sua rota ativa é <span class="text-primary font-bold">Scholarship Alemanha</span>. Lucas é expert em DAAD e processos seletivos para mestrado.
+                    </p>
+</div>
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-primary/20">Ver perfil</button>
+</div>
+</section>
+<section class="px-4 py-2 space-y-4">
+<h2 class="text-lg font-bold text-slate-100">Destaques</h2>
+<div class="liquid-glass rounded-2xl p-4 flex flex-col gap-4">
+<div class="flex gap-4">
+<img class="w-14 h-14 rounded-xl object-cover" data-alt="Portrait of a professional woman looking confident" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDj6JSGOOPZn3xNggUfVv1CLNuCjOq2FU03m2SEE-csjFh62hLvKOLqv292zF0T5SA-84PhTkRPYVbN5ORDdmq4lp4PZyKxFpv6awPKVJMIOmq7_sfQ3o50s0oPO5Pm4VFUKwwA4bL0nk5GUM81v59k-CH2QiBQDOXInDYf8MIu6Hy9c9gVjnMTfnRU5-ay-J9TyE1NIJshAk_4B9AB_52Gw4-Y4f444bSktOsUFlfeyCh9cY0Gv5BdbKQ8Ju9p8w-1BF72Y6uLWprM"/>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<h3 class="font-bold text-slate-100">Dra. Helena Souza</h3>
+<span class="bg-cyan-500/20 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-cyan-500/30 flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">verified</span> Verificado
+                            </span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-yellow-500 text-xs fill-1">star</span>
+<span class="text-xs font-bold text-slate-300">4.9</span>
+</div>
+<div class="flex gap-2 mt-2">
+<span class="bg-slate-700/50 text-slate-300 text-[10px] px-2 py-0.5 rounded-md">Visto EU</span>
+<span class="bg-slate-700/50 text-slate-300 text-[10px] px-2 py-0.5 rounded-md">Espanha</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-white/5">
+<p class="text-sm font-bold text-slate-200">R$ 280 <span class="text-[10px] font-normal text-slate-400">/ sessão</span></p>
+<button class="text-primary text-sm font-bold px-4 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-all">Ver perfil</button>
+</div>
+</div>
+<div class="liquid-glass rounded-2xl p-4 flex flex-col gap-4">
+<div class="flex gap-4">
+<img class="w-14 h-14 rounded-xl object-cover" data-alt="Portrait of a young professional male specialist" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDprjlBzipfh0fTwdUeiL_oKrDHu83EAcVfQTpA-TVKqEOB9lk5PtnVcp-vvtZV12DC2ggB3KDSfpKHUFsTe9Niu3WGKERYLbCOM-TTyGh5GeACb4rXOEpN4sJ_ZyNFOqZkC7Bu8W3SYrcojehUNt-wfCJZZVnDDXvR0yfVa1YnUB9w7in9WQUtai04avLYoWDg-OmwOj1vhGZ79el0xBpXiNdoTYkNm9UQQIgrGEwFDzSw_5AV0MM8XhcVrCBRqWRZNZ-h5Jz1_IsP"/>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<h3 class="font-bold text-slate-100">Marcus Miller</h3>
+<span class="bg-cyan-500/20 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-cyan-500/30 flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">verified</span> Verificado
+                            </span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-yellow-500 text-xs fill-1">star</span>
+<span class="text-xs font-bold text-slate-300">4.8</span>
+</div>
+<div class="flex gap-2 mt-2">
+<span class="bg-slate-700/50 text-slate-300 text-[10px] px-2 py-0.5 rounded-md">Narrativa</span>
+<span class="bg-slate-700/50 text-slate-300 text-[10px] px-2 py-0.5 rounded-md">Pitching</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-white/5">
+<p class="text-sm font-bold text-slate-200">R$ 250 <span class="text-[10px] font-normal text-slate-400">/ sessão</span></p>
+<button class="text-primary text-sm font-bold px-4 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-all">Ver perfil</button>
+</div>
+</div>
+<div class="liquid-glass rounded-2xl p-4 flex flex-col gap-4">
+<div class="flex gap-4">
+<img class="w-14 h-14 rounded-xl object-cover" data-alt="Portrait of a friendly looking female career coach" src="https://lh3.googleusercontent.com/aida-public/AB6AXuATGA2iZvBoDO3gJYXz3Vz2Q9totZVqRS4kQ0y5_BnS-4zMmIaTXBb59qSD4Rc16VfieKOMvj2yJTezNhjc60L8kwDu71MyJbBLzjhCDpV7jKKpl5ACDFsRY2koDiEqbTGMG6Eg3ZAfo74rJo0XxXgGWEUBJX8C-PrXvx6zTKVShgb_eu3kTjHmgvIy7JicKXEsyAfB-flAPz4eoRRKJRAozF6GQAMiuB0yHmA0UCn9QR6WpFjR3_23gym5ZtkSBeIJWkrnXyV52Ih5"/>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<h3 class="font-bold text-slate-100">Ana Paula Reis</h3>
+<span class="bg-cyan-500/20 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-cyan-500/30 flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">verified</span> Verificado
+                            </span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-yellow-500 text-xs fill-1">star</span>
+<span class="text-xs font-bold text-slate-300">5.0</span>
+</div>
+<div class="flex gap-2 mt-2">
+<span class="bg-slate-700/50 text-slate-300 text-[10px] px-2 py-0.5 rounded-md">Carreira Tech</span>
+<span class="bg-slate-700/50 text-slate-300 text-[10px] px-2 py-0.5 rounded-md">Alemanha</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-white/5">
+<p class="text-sm font-bold text-slate-200">R$ 320 <span class="text-[10px] font-normal text-slate-400">/ sessão</span></p>
+<button class="text-primary text-sm font-bold px-4 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-all">Ver perfil</button>
+</div>
+</div>
+</section>
+<nav class="fixed bottom-0 left-0 right-0 z-50 liquid-glass border-t border-white/10 px-4 pb-6 pt-2">
+<div class="flex justify-between items-center max-w-md mx-auto">
+<a class="flex flex-col items-center gap-1 text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">explore</span>
+<span class="text-[10px] font-medium">Rotas</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">task_alt</span>
+<span class="text-[10px] font-medium">Prática</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">send</span>
+<span class="text-[10px] font-medium">Candidaturas</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined fill-1">grid_view</span>
+<span class="text-[10px] font-bold">Mais</span>
+</a>
+</div>
+</nav>
+</div>
+</body></html>

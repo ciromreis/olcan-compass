@@ -1,31 +1,34 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { orgApi } from "@/lib/api";
 
-export type OrgMemberRole = "Membro" | "Coordenador" | "Admin";
+export type OrgMemberRole = "owner" | "admin" | "coordinator" | "member";
 export type OrgMemberStatus = "active" | "invited" | "inactive";
 
 export interface OrganizationProfile {
+  id?: string;
   name: string;
   type: string;
+  slug: string;
   country: string;
-  contactEmail: string;
-}
-
-export interface OrgPermissions {
-  coordinatorsCanInvite: boolean;
-  membersCanViewScores: boolean;
-  exportAggregates: boolean;
-  marketplaceEnabled: boolean;
+  city?: string;
+  description?: string;
+  website_url?: string;
+  logo_url?: string;
+  contactEmail?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  settings: Record<string, any>;
 }
 
 export interface OrgMember {
   id: string;
+  user_id: string;
   name: string;
   email: string;
   role: OrgMemberRole;
   score: number | null;
   route: string | null;
-  status: OrgMemberStatus;
+  status: string;
   joinedAt: string;
 }
 
@@ -35,130 +38,169 @@ export interface OrgActivity {
   time: string;
 }
 
+export interface OrgStats {
+  total_members: number;
+  active_members: number;
+  pending_invites: number;
+  total_applications: number;
+  total_routes: number;
+  average_score: number;
+}
+
+interface RemoteMember {
+  id: string;
+  user_id: string;
+  user_name?: string | null;
+  user_email?: string | null;
+  role: string;
+  status: string;
+  joined_at: string;
+}
+
 interface OrgState {
-  organization: OrganizationProfile;
-  permissions: OrgPermissions;
-  allowedDomains: string[];
+  organization: OrganizationProfile | null;
   members: OrgMember[];
   activity: OrgActivity[];
-  updateOrganization: (updates: Partial<OrganizationProfile>) => void;
-  togglePermission: (key: keyof OrgPermissions, value: boolean) => void;
+  stats: OrgStats | null;
+  permissions: Record<string, boolean>;
+  allowedDomains: string[];
+  isLoading: boolean;
+  error: string | null;
+
+  fetchOrg: () => Promise<void>;
+  updateOrganization: (updates: Partial<OrganizationProfile> & { contactEmail?: string }) => Promise<void>;
+  togglePermission: (key: string, value: boolean) => void;
   setAllowedDomains: (domains: string[]) => void;
-  inviteMember: (email: string, role?: OrgMemberRole) => "invited" | "exists" | "invalid";
-  updateMemberRole: (id: string, role: OrgMemberRole) => void;
-  setMemberStatus: (id: string, status: OrgMemberStatus) => void;
-  removeMember: (id: string) => void;
+  fetchMembers: () => Promise<void>;
+  inviteMember: (email: string, role: OrgMemberRole) => Promise<void>;
+  updateMemberRole: (id: string, role: OrgMemberRole) => Promise<void>;
+  setMemberStatus: (id: string, status: OrgMemberStatus) => Promise<void>;
+  removeMember: (id: string) => Promise<void>;
+  fetchStats: () => Promise<void>;
   logActivity: (event: string, time?: string) => void;
   reset: () => void;
 }
 
-const SEED_ORG: OrganizationProfile = {
-  name: "Universidade Federal XYZ",
-  type: "Universidade",
-  country: "Brasil",
-  contactEmail: "international@uni.edu.br",
-};
-
-const SEED_PERMISSIONS: OrgPermissions = {
-  coordinatorsCanInvite: true,
-  membersCanViewScores: true,
-  exportAggregates: true,
-  marketplaceEnabled: true,
-};
-
-const SEED_MEMBERS: OrgMember[] = [
-  { id: "m1", name: "Maria Santos", email: "maria@uni.edu.br", role: "Membro", score: 78, route: "MSc Toronto", status: "active", joinedAt: "2025-01-10" },
-  { id: "m2", name: "Pedro Oliveira", email: "pedro@uni.edu.br", role: "Membro", score: 65, route: "MSc Berlim", status: "active", joinedAt: "2025-01-18" },
-  { id: "m3", name: "Ana Costa", email: "ana@uni.edu.br", role: "Membro", score: 82, route: "PhD Dublin", status: "active", joinedAt: "2025-02-04" },
-  { id: "m4", name: "Lucas Ferreira", email: "lucas@uni.edu.br", role: "Coordenador", score: null, route: null, status: "active", joinedAt: "2024-11-20" },
-  { id: "m5", name: "Juliana Ribeiro", email: "juliana@uni.edu.br", role: "Membro", score: 45, route: null, status: "invited", joinedAt: "2025-03-01" },
-];
-
-const SEED_ACTIVITY: OrgActivity[] = [
-  { id: "oa1", event: "Maria Santos completou Sprint Documental", time: "2025-03-09T14:30:00.000Z" },
-  { id: "oa2", event: "Pedro Oliveira criou nova rota: MSc Berlim", time: "2025-03-09T10:00:00.000Z" },
-  { id: "oa3", event: "Ana Costa recebeu aceite: University of Toronto", time: "2025-03-08T17:20:00.000Z" },
-  { id: "oa4", event: "15 novos diagnósticos completos esta semana", time: "2025-03-07T09:00:00.000Z" },
-];
-
 export const useOrgStore = create<OrgState>()(
   persist(
     (set, get) => ({
-      organization: SEED_ORG,
-      permissions: SEED_PERMISSIONS,
-      allowedDomains: ["uni.edu.br"],
-      members: SEED_MEMBERS,
-      activity: SEED_ACTIVITY,
+      organization: null,
+      members: [],
+      activity: [],
+      stats: null,
+      permissions: {
+        coordinatorsCanInvite: true,
+        membersCanViewScores: false,
+        exportAggregates: true,
+        marketplaceEnabled: true,
+      },
+      allowedDomains: [],
+      isLoading: false,
+      error: null,
 
-      updateOrganization: (updates) =>
-        set((state) => ({ organization: { ...state.organization, ...updates } })),
-
-      togglePermission: (key, value) =>
-        set((state) => ({
-          permissions: { ...state.permissions, [key]: value },
-        })),
-
-      setAllowedDomains: (domains) =>
-        set({
-          allowedDomains: Array.from(new Set(domains.map((item) => item.trim().toLowerCase()).filter(Boolean))),
-        }),
-
-      inviteMember: (email, role = "Membro") => {
-        const normalized = email.trim().toLowerCase();
-        if (!normalized || !normalized.includes("@")) return "invalid";
-
-        const existing = get().members.find((member) => member.email.toLowerCase() === normalized);
-        if (existing) return "exists";
-
-        const inferredName = normalized.split("@")[0]
-          .split(/[._-]/)
-          .filter(Boolean)
-          .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1))
-          .join(" ");
-
-        const newMember: OrgMember = {
-          id: `m_${Date.now()}`,
-          name: inferredName || "Novo membro",
-          email: normalized,
-          role,
-          score: null,
-          route: null,
-          status: "invited",
-          joinedAt: new Date().toISOString(),
-        };
-
-        set((state) => ({
-          members: [newMember, ...state.members],
-          activity: [
-            {
-              id: `oa_${Date.now()}`,
-              event: `Convite enviado para ${normalized}`,
-              time: new Date().toISOString(),
-            },
-            ...state.activity,
-          ].slice(0, 100),
-        }));
-        return "invited";
+      fetchOrg: async () => {
+        set({ isLoading: true, error: null });
+        try {
+          const { data } = await orgApi.getMe();
+          set({ organization: data, isLoading: false });
+        } catch (err: unknown) {
+          set({ error: (err as Error).message || "Failed to fetch organization", isLoading: false });
+        }
       },
 
-      updateMemberRole: (id, role) =>
-        set((state) => ({
-          members: state.members.map((member) =>
-            member.id === id ? { ...member, role } : member
-          ),
-        })),
+      updateOrganization: async (updates) => {
+        try {
+          const { data } = await orgApi.updateMe(updates as Record<string, unknown>);
+          set({ organization: data });
+        } catch (err: unknown) {
+          set({ error: (err as Error).message || "Failed to update organization" });
+          throw err;
+        }
+      },
 
-      setMemberStatus: (id, status) =>
+      togglePermission: (key, value) => {
         set((state) => ({
-          members: state.members.map((member) =>
-            member.id === id ? { ...member, status } : member
-          ),
-        })),
+          permissions: { ...state.permissions, [key]: value },
+        }));
+      },
 
-      removeMember: (id) =>
-        set((state) => ({
-          members: state.members.filter((member) => member.id !== id),
-        })),
+      setAllowedDomains: (allowedDomains) => set({ allowedDomains }),
+
+      fetchMembers: async () => {
+        set({ isLoading: true });
+        try {
+          const { data } = await orgApi.getMembers();
+          const mappedMembers: OrgMember[] = (data as RemoteMember[]).map((m) => ({
+            id: m.id,
+            user_id: m.user_id,
+            name: m.user_name || "Desconhecido",
+            email: m.user_email || "",
+            role: m.role as OrgMemberRole,
+            score: null, 
+            route: null,
+            status: m.status,
+            joinedAt: m.joined_at,
+          }));
+          set({ members: mappedMembers, isLoading: false });
+        } catch (err: unknown) {
+          set({ error: (err as Error).message || "Failed to fetch members", isLoading: false });
+        }
+      },
+
+      inviteMember: async (email, role) => {
+        try {
+          await orgApi.inviteMember({ email, role });
+          await get().fetchMembers();
+          get().logActivity(`Convite enviado para ${email}`);
+        } catch (err: unknown) {
+          set({ error: (err as Error).message || "Failed to invite member" });
+          throw err;
+        }
+      },
+
+      updateMemberRole: async (id, role) => {
+        try {
+          await orgApi.updateMember(id, { role });
+          set((state) => ({
+            members: state.members.map((m) => (m.id === id ? { ...m, role } : m)),
+          }));
+        } catch (err: unknown) {
+          set({ error: (err as Error).message || "Failed to update member role" });
+        }
+      },
+
+      setMemberStatus: async (id, status) => {
+        try {
+          await orgApi.updateMember(id, { status });
+          set((state) => ({
+            members: state.members.map((m) => (m.id === id ? { ...m, status } : m)),
+          }));
+        } catch (err: unknown) {
+          set({ error: (err as Error).message || "Failed to update member status" });
+        }
+      },
+
+      removeMember: async (id) => {
+        try {
+          await orgApi.removeMember(id);
+          set((state) => ({
+            members: state.members.filter((m) => m.id !== id),
+          }));
+          get().logActivity(`Membro removido`);
+        } catch (err: unknown) {
+          set({ error: (err as Error).message || "Failed to remove member" });
+          throw err;
+        }
+      },
+
+      fetchStats: async () => {
+        try {
+          const { data } = await orgApi.getStats();
+          set({ stats: data });
+        } catch (err) {
+          console.error("Failed to fetch stats", err);
+        }
+      },
 
       logActivity: (event, time) =>
         set((state) => ({
@@ -174,13 +216,13 @@ export const useOrgStore = create<OrgState>()(
 
       reset: () =>
         set({
-          organization: SEED_ORG,
-          permissions: SEED_PERMISSIONS,
-          allowedDomains: ["uni.edu.br"],
-          members: SEED_MEMBERS,
-          activity: SEED_ACTIVITY,
+          organization: null,
+          members: [],
+          activity: [],
+          stats: null,
+          error: null,
         }),
     }),
-    { name: "olcan-org" }
+    { name: "olcan-org-v2" }
   )
 );

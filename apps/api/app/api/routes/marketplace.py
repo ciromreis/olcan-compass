@@ -30,6 +30,14 @@ from app.db.models import (
     BookingStatus,
     PaymentStatus,
 )
+from app.schemas.marketplace import (
+    ProviderProfileResponse,
+    ProviderProfileUpdate,
+    ServiceListingResponse,
+    ServiceListingCreate,
+    ServiceListingUpdate,
+    BookingResponse,
+)
 
 router = APIRouter(prefix="/marketplace", tags=["Marketplace"])
 
@@ -1245,3 +1253,207 @@ async def apply_as_provider(
         "status": provider.status.value,
         "message": "Application submitted for review"
     }
+
+
+# === PROVIDER MANAGEMENT ===
+
+@router.get("/providers/me", response_model=ProviderProfileResponse)
+async def get_my_provider_profile(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Obter perfil de provedor do usuário atual"""
+    result = await db.execute(
+        select(ProviderProfile).where(ProviderProfile.user_id == current_user.id)
+    )
+    provider = result.scalar_one_or_none()
+    
+    if not provider:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Perfil de provedor não encontrado"
+        )
+    
+    return provider
+
+
+@router.patch("/providers/me", response_model=ProviderProfileResponse)
+async def update_my_provider_profile(
+    request: ProviderProfileUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Atualizar perfil de provedor"""
+    result = await db.execute(
+        select(ProviderProfile).where(ProviderProfile.user_id == current_user.id)
+    )
+    provider = result.scalar_one_or_none()
+    
+    if not provider:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Perfil de provedor não encontrado"
+        )
+    
+    # Update fields
+    if request.headline is not None:
+        provider.headline = request.headline
+    if request.bio is not None:
+        provider.bio = request.bio
+    if request.current_title is not None:
+        provider.current_title = request.current_title
+    if request.current_organization is not None:
+        provider.current_organization = request.current_organization
+    if request.years_experience is not None:
+        provider.years_experience = request.years_experience
+    if request.education is not None:
+        provider.education = request.education
+    if request.specializations is not None:
+        provider.specializations = request.specializations
+    if request.target_regions is not None:
+        provider.target_regions = request.target_regions
+    if request.target_institutions is not None:
+        provider.target_institutions = request.target_institutions
+    if request.languages_spoken is not None:
+        provider.languages_spoken = request.languages_spoken
+    if request.timezone is not None:
+        provider.timezone = request.timezone
+    if request.profile_settings is not None:
+        provider.profile_settings = {**provider.profile_settings, **request.profile_settings}
+        
+    await db.commit()
+    await db.refresh(provider)
+    
+    return provider
+
+
+@router.get("/services/me", response_model=List[ServiceListingResponse])
+async def list_my_services(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Listar serviços do provedor atual"""
+    # Get provider profile first
+    result = await db.execute(
+        select(ProviderProfile.id).where(ProviderProfile.user_id == current_user.id)
+    )
+    provider_id = result.scalar_one_or_none()
+    
+    if not provider_id:
+        raise HTTPException(status_code=403, detail="Você não é um provedor")
+        
+    result = await db.execute(
+        select(ServiceListing).where(ServiceListing.provider_id == provider_id)
+    )
+    return result.scalars().all()
+
+
+@router.post("/services", response_model=ServiceListingResponse, status_code=status.HTTP_201_CREATED)
+async def create_service(
+    request: ServiceListingCreate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Criar novo serviço"""
+    result = await db.execute(
+        select(ProviderProfile.id).where(ProviderProfile.user_id == current_user.id)
+    )
+    provider_id = result.scalar_one_or_none()
+    
+    if not provider_id:
+        raise HTTPException(status_code=403, detail="Apenas provedores podem criar serviços")
+        
+    service = ServiceListing(
+        provider_id=provider_id,
+        title=request.title,
+        description=request.description,
+        service_type=request.service_type,
+        price_amount=request.price,
+        duration_minutes=request.duration_minutes,
+        is_active=request.is_active
+    )
+    
+    db.add(service)
+    await db.commit()
+    await db.refresh(service)
+    
+    return service
+
+
+@router.patch("/services/{service_id}", response_model=ServiceListingResponse)
+async def update_service(
+    service_id: UUID,
+    request: ServiceListingUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Atualizar serviço existente"""
+    # Get provider profile
+    result = await db.execute(
+        select(ProviderProfile.id).where(ProviderProfile.user_id == current_user.id)
+    )
+    provider_id = result.scalar_one_or_none()
+    
+    if not provider_id:
+        raise HTTPException(status_code=403, detail="Apenas provedores podem atualizar serviços")
+        
+    # Get service
+    result = await db.execute(
+        select(ServiceListing).where(
+            ServiceListing.id == service_id,
+            ServiceListing.provider_id == provider_id
+        )
+    )
+    service = result.scalar_one_or_none()
+    
+    if not service:
+        raise HTTPException(status_code=404, detail="Serviço não encontrado")
+        
+    # Update fields
+    if request.title is not None:
+        service.title = request.title
+    if request.description is not None:
+        service.description = request.description
+    if request.service_type is not None:
+        service.service_type = request.service_type
+    if request.price is not None:
+        service.price_amount = request.price
+    if request.duration_minutes is not None:
+        service.duration_minutes = request.duration_minutes
+    if request.is_active is not None:
+        service.is_active = request.is_active
+        
+    await db.commit()
+    await db.refresh(service)
+    
+    return service
+
+
+@router.delete("/services/{service_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_service(
+    service_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Excluir serviço"""
+    result = await db.execute(
+        select(ProviderProfile.id).where(ProviderProfile.user_id == current_user.id)
+    )
+    provider_id = result.scalar_one_or_none()
+    
+    if not provider_id:
+        raise HTTPException(status_code=403, detail="Não autorizado")
+        
+    result = await db.execute(
+        select(ServiceListing).where(
+            ServiceListing.id == service_id,
+            ServiceListing.provider_id == provider_id
+        )
+    )
+    service = result.scalar_one_or_none()
+    
+    if not service:
+        raise HTTPException(status_code=404, detail="Serviço não encontrado")
+        
+    await db.delete(service)
+    await db.commit()

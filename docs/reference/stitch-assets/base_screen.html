@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Olcan Compass | Metal Líquido</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&amp;family=Syne:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.17/paper-full.min.js"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              900: '#001338',
+              950: '#000A1A',
+            },
+            platinum: '#E5E4E2',
+          },
+          fontFamily: {
+            syne: ['Syne', 'sans-serif'],
+            inter: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-animations">:root {
+    --liquid-silver: linear-gradient(135deg, #f5f7fa 0%, #b8c6db 50%, #8e9eab 100%)
+    }
+body {
+    background-color: #000A1A;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0
+    }
+/* Grainy Texture Overlay */
+.grain-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuDdog1xOhTJqa9nvmJgxIhk3oX3NVqjbUwOA0LI0E-8aFfZgk2LdsN3JmxGbpaN5kis4ViZMgpdChs87tsPXm5mKPCTW_OTb9hsyxbbdyqdemzGRaYDcmZqkP83xXsdjrSaYQwJuXvw1t5Yx7e3rZ0sQEkTcdXlyviLd_r2VQzp5pLAIZudlLRMfIEXZg3F3FtEVADp7CTVBESEZDv1nZPUo1ZKsVf1dCCypAHOvzGxvWlpPmaNZEuYHavo3ybfofJBMu9DxiRGn0zs);
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 50
+    }
+/* Liquid Metal Gradient Text */
+.metallic-text {
+    background: linear-gradient(to bottom, #FFF 0%, #B8C6DB 45%, #8E9EAB 55%, #FFF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))
+    }
+/* Chrome Border Animation */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+        } to {
+        transform: rotate(360deg);
+        }
+    }
+.chrome-border-container {
+    position: relative;
+    padding: 3px;
+    border-radius: 9999px;
+    overflow: hidden;
+    display: inline-block
+    }
+.chrome-border-bg {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg, #fff 0%, #888 15%, #fff 30%, #444 45%, #fff 60%, #888 75%, #fff 90%, #fff 100%);
+    animation: spin 3s linear infinite
+    }
+/* Chromatic Aberration Simulation */
+.btn-inner {
+    position: relative;
+    background: #000;
+    border-radius: 9999px;
+    padding: 1rem 2.5rem;
+    z-index: 1;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center
+    }
+.btn-inner:hover {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2)
+    }
+/* Glassmorphism */
+.glass-nav {
+    background: rgba(0, 19, 56, 0.4);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.1)
+    }
+.glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px
+    }
+canvas#liquid-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0
+    }
+.mask-reveal {
+    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0)
+    }</style>
+</head>
+<body class="text-white font-inter antialiased">
+<!-- BEGIN: Noise Layer -->
+<div class="grain-overlay" data-purpose="background-texture"></div>
+<!-- END: Noise Layer -->
+<!-- BEGIN: Background Canvas -->
+<canvas data-purpose="liquid-metal-background" id="liquid-canvas"></canvas>
+<!-- END: Background Canvas -->
+<!-- BEGIN: Navigation -->
+<nav class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-md">
+<div class="glass-nav rounded-full px-6 py-3 flex justify-between items-center">
+<div class="font-syne font-bold text-lg tracking-tighter metallic-text">OLCAN</div>
+<div class="flex gap-6 text-sm uppercase tracking-widest font-medium opacity-80">
+<a class="hover:opacity-100 transition-opacity" href="#">Menu</a>
+<a class="hover:opacity-100 transition-opacity" href="#">Explorar</a>
+</div>
+</div>
+</nav>
+<!-- END: Navigation -->
+<!-- BEGIN: Hero Section -->
+<main class="relative z-10 min-h-screen flex flex-col justify-center px-6 pt-20 pb-12 overflow-hidden">
+<!-- Floating Glass Elements -->
+<div class="absolute top-[15%] right-[-10%] w-40 h-40 glass-card flex items-center justify-center rotate-12 parallax-el" data-speed="0.05">
+<div class="w-20 h-20 rounded-full bg-gradient-to-br from-white/20 to-transparent border border-white/20"></div>
+</div>
+<div class="absolute bottom-[20%] left-[-5%] w-32 h-32 glass-card flex items-center justify-center -rotate-6 parallax-el" data-speed="0.08">
+<div class="w-16 h-16 bg-white/10 blur-xl rounded-full"></div>
+</div>
+<!-- Content Wrapper -->
+<div class="max-w-xl mx-auto text-center">
+<div class="overflow-hidden">
+<h1 class="font-syne text-5xl md:text-7xl font-extrabold leading-[1.1] mb-6 metallic-text mask-reveal" id="hero-title">
+          O Futuro da Navegação: Metal Líquido
+        </h1>
+</div>
+<div class="overflow-hidden">
+<p class="text-lg md:text-xl text-platinum/70 leading-relaxed mb-10 mask-reveal" id="hero-subtext">
+          Experimente a fusão de fluidez orgânica e precisão estrutural. Olcan Compass redefine a cartografia digital minimalista para o explorador moderno.
+        </p>
+</div>
+<!-- Main Button -->
+<div class="opacity-0 translate-y-8" id="hero-cta">
+<a class="chrome-border-container group" href="#">
+<div class="chrome-border-bg"></div>
+<div class="btn-inner">
+<span class="text-white uppercase tracking-[0.2em] font-bold text-sm">O Único Papel</span>
+</div>
+</a>
+</div>
+</div>
+<!-- Scroll Indicator -->
+<div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
+<div class="w-px h-12 bg-gradient-to-b from-white to-transparent"></div>
+<span class="text-[10px] uppercase tracking-widest">Deslize</span>
+</div>
+</main>
+<!-- END: Hero Section -->
+<!-- Scripts -->
+<script data-purpose="canvas-liquid-logic">
+    // Paper.js logic for liquid blob
+    paper.install(window);
+    window.onload = function() {
+      paper.setup('liquid-canvas');
+      
+      const width = view.size.width;
+      const height = view.size.height;
+      const center = view.center;
+      
+      const points = 8;
+      const radius = Math.min(width, height) * 0.4;
+      const path = new Path({
+        fillColor: {
+          gradient: {
+            stops: [['#444', 0], ['#111', 0.5], ['#000', 1]],
+            radial: true
+          },
+          origin: center,
+          destination: center.add(new Point(radius, radius))
+        },
+        closed: true,
+        opacity: 0.6
+      });
+
+      for (let i = 0; i < points; i++) {
+        const delta = new Point({
+          length: radius,
+          angle: (360 / points) * i
+        });
+        path.add(center.add(delta));
+      }
+      path.smooth();
+
+      let mousePos = view.center;
+
+      view.onMouseMove = (event) => {
+        mousePos = event.point;
+      };
+
+      view.onFrame = (event) => {
+        for (let i = 0; i < points; i++) {
+          const sinus = Math.sin(event.time * 2 + i);
+          const segment = path.segments[i];
+          const factor = 20;
+          
+          // Organic movement
+          segment.point.x += sinus * 0.5;
+          segment.point.y += Math.cos(event.time * 1.5 + i) * 0.5;
+
+          // React to mouse
+          const dist = segment.point.getDistance(mousePos);
+          if (dist < 200) {
+            const diff = segment.point.subtract(mousePos).normalize().multiply((200 - dist) * 0.1);
+            segment.point = segment.point.add(diff);
+          }
+        }
+        path.smooth();
+      };
+    };
+  </script>
+<script data-purpose="gsap-animations">
+    document.addEventListener('DOMContentLoaded', () => {
+      const tl = gsap.timeline({ defaults: { ease: "power4.out", duration: 1.5 } });
+
+      // Reveal Animations
+      tl.to("#hero-title", {
+        clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+        y: 0,
+        stagger: 0.2
+      })
+      .to("#hero-subtext", {
+        clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+        y: 0,
+      }, "-=1.2")
+      .to("#hero-cta", {
+        opacity: 1,
+        y: 0,
+      }, "-=1");
+
+      // Parallax effect
+      window.addEventListener('mousemove', (e) => {
+        const { clientX, clientY } = e;
+        const xPos = (clientX / window.innerWidth) - 0.5;
+        const yPos = (clientY / window.innerHeight) - 0.5;
+
+        gsap.to(".parallax-el", {
+          x: (i, target) => xPos * 100 * target.dataset.speed * 10,
+          y: (i, target) => yPos * 100 * target.dataset.speed * 10,
+          rotate: (i, target) => xPos * 20,
+          duration: 1,
+          ease: "power2.out"
+        });
+      });
+    });
+  </script>
+</body></html>

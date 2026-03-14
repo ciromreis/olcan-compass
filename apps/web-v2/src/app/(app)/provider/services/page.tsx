@@ -1,24 +1,37 @@
 "use client";
 
-import { useMemo } from "react";
-import { Settings, DollarSign, FileText, CheckCircle } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Settings, DollarSign, FileText, CheckCircle, Plus } from "lucide-react";
 import { useHydration } from "@/hooks";
 import { PageHeader, Skeleton, EmptyState, Button } from "@/components/ui";
-import { CATEGORY_LABELS, useMarketplaceStore } from "@/stores/marketplace";
+import { CATEGORY_LABELS, useMarketplaceStore, ServiceListing } from "@/stores/marketplace";
+import { ServiceModal } from "@/components/marketplace/ServiceModal";
 
 export default function ProviderServicesPage() {
   const hydrated = useHydration();
-  const { bookings, getActiveProvider } = useMarketplaceStore();
+  const { bookings, myProviderProfile: provider, myServices } = useMarketplaceStore();
+  
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<ServiceListing | undefined>();
 
-  const provider = getActiveProvider();
   const services = useMemo(() => {
-    if (!provider) return [];
+    if (!myServices) return [];
 
-    return provider.services.map((service) => ({
+    return myServices.map((service) => ({
       ...service,
-      bookings: bookings.filter((booking) => booking.serviceId === service.id).length,
+      bookingCount: bookings.filter((booking) => booking.serviceId === service.id).length,
     }));
-  }, [bookings, provider]);
+  }, [bookings, myServices]);
+
+  const handleCreate = () => {
+    setSelectedService(undefined);
+    setModalOpen(true);
+  };
+
+  const handleEdit = (service: ServiceListing) => {
+    setSelectedService(service);
+    setModalOpen(true);
+  };
 
   if (!hydrated || !provider) {
     return <div className="max-w-6xl mx-auto space-y-6"><Skeleton className="h-10 w-64" /><Skeleton className="h-48" /></div>;
@@ -27,7 +40,9 @@ export default function ProviderServicesPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <PageHeader backHref="/provider" title="Meus Serviços" subtitle={`${services.length} serviços cadastrados no Marketplace`} actions={
-        <Button disabled className="flex items-center gap-1 bg-brand-500 text-white disabled:opacity-60">Cadastro manual por enquanto</Button>
+        <Button onClick={handleCreate} className="flex items-center gap-2 bg-brand-500 text-white">
+          <Plus className="w-4 h-4" /> Novo Serviço
+        </Button>
       }/>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -37,7 +52,12 @@ export default function ProviderServicesPage() {
               <span className={`text-caption px-3 py-1 rounded-full font-medium ${s.isActive ? 'bg-brand-50 text-brand-600' : 'bg-clay-50 text-clay-600'}`}>
                 {s.isActive ? 'Ativo' : 'Pausado'}
               </span>
-              <button className="text-text-muted hover:text-brand-500 transition-colors p-1"><Settings className="w-5 h-5" /></button>
+              <button 
+                onClick={() => handleEdit(s)}
+                className="text-text-muted hover:text-brand-500 transition-colors p-1"
+              >
+                <Settings className="w-5 h-5" />
+              </button>
             </div>
             
             <h3 className="font-heading text-h4 text-text-primary mb-1">{s.title}</h3>
@@ -50,7 +70,7 @@ export default function ProviderServicesPage() {
               </div>
               <div className="flex items-center justify-between text-body-sm text-text-primary">
                 <span className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-text-muted" /> Vendas Realizadas</span>
-                <span>{s.bookings} contratos</span>
+                <span>{s.bookingCount} contratos</span>
               </div>
             </div>
           </div>
@@ -60,6 +80,12 @@ export default function ProviderServicesPage() {
           </div>
         )}
       </div>
+
+      <ServiceModal 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        service={selectedService} 
+      />
     </div>
   );
 }

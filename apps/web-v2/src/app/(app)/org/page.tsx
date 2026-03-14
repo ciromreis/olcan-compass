@@ -45,7 +45,7 @@ export default function OrgDashboardPage() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      <PageHeader title="Portal Organizacional" subtitle={organization.name} actions={
+      <PageHeader title="Portal Organizacional" subtitle={organization?.name || "Carregando..."} actions={
         <Link href="/org/settings" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-cream-500 text-text-secondary text-body-sm font-medium hover:bg-cream-200 transition-colors">
           <Settings className="w-4 h-4" /> Configurações
         </Link>

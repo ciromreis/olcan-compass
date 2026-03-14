@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Olcan Compass - Preparação para Entrevistas</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600&amp;family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2094f3",
+                        "deep-blue": "#001338",
+                        "cyan-accent": "#00ffff",
+                        "slate-custom": "#94A3B8",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "body": ["Source Sans 3", "sans-serif"],
+                        "manrope": ["Manrope", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .nav-glass {
+            background: rgba(0, 19, 56, 0.8);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .liquid-glass-btn {
+            background: conic-gradient(from 180deg at 50% 50%, #001338 0deg, #2094f3 140deg, #00ffff 220deg, #001338 360deg);
+            position: relative;
+            overflow: hidden;
+        }
+        .liquid-glass-btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+        }
+        .svg-noise {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        body {
+            cursor: none;
+        }
+        .custom-cursor {
+            width: 8px;
+            height: 8px;
+            background: #00ffff;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            box-shadow: 0 0 15px #00ffff;
+        }
+        .custom-cursor-outline {
+            width: 30px;
+            height: 30px;
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            transition: transform 0.1s ease;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-deep-blue font-body text-slate-100 selection:bg-cyan-accent/30 overflow-x-hidden">
+<div class="custom-cursor hidden md:block" id="cursor"></div>
+<div class="custom-cursor-outline hidden md:block" id="cursor-outline"></div>
+<div class="relative flex min-h-screen w-full flex-col bg-deep-blue overflow-hidden">
+<div class="fixed inset-0 svg-noise z-0"></div>
+<div class="absolute -top-40 -right-40 w-96 h-96 bg-primary/20 rounded-full blur-[120px] z-0"></div>
+<div class="absolute top-1/2 -left-40 w-80 h-80 bg-cyan-accent/10 rounded-full blur-[100px] z-0"></div>
+<header class="relative z-10 flex items-center justify-between p-6 glass-panel border-b border-white/10">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-cyan-accent text-3xl">navigation</span>
+<h1 class="font-display text-xl font-bold tracking-tight text-white uppercase">Olcan Compass</h1>
+</div>
+<div class="flex items-center gap-6">
+<button class="material-symbols-outlined text-slate-400 hover:text-white transition-colors">info</button>
+<div class="h-8 w-8 rounded-full border border-white/20 bg-white/5 flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-sm">person</span>
+</div>
+</div>
+</header>
+<main class="relative z-10 flex-1 flex flex-col items-center justify-start px-6 pt-12 pb-24 max-w-4xl mx-auto w-full">
+<div class="text-center mb-12">
+<h2 class="font-display text-4xl md:text-5xl font-extrabold text-white mb-4 leading-tight">
+                    Preparação para <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-accent to-primary">Entrevistas</span>
+</h2>
+<p class="text-slate-400 text-lg max-w-xl mx-auto font-light leading-relaxed">
+                    Treine sua narrativa com nossa IA e ganhe confiança para seus processos globais de mobilidade.
+                </p>
+</div>
+<div class="w-full grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+<div class="glass-panel group relative overflow-hidden p-6 rounded-xl cursor-pointer hover:border-cyan-accent/50 transition-all duration-300">
+<div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-cyan-accent">terminal</span>
+</div>
+<h3 class="font-display text-lg font-bold text-white mb-4">Simulação Técnica</h3>
+<div class="space-y-3">
+<div class="flex items-center gap-2 text-xs text-slate-400">
+<span class="material-symbols-outlined text-sm">equalizer</span>
+<span>Dificuldade: Alta</span>
+</div>
+<div class="flex items-center gap-2 text-xs text-slate-400">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>Duração: 45 min</span>
+</div>
+</div>
+<div class="mt-6 flex justify-end">
+<span class="material-symbols-outlined text-cyan-accent group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</div>
+<div class="glass-panel group relative overflow-hidden p-6 rounded-xl border-cyan-accent/30 ring-1 ring-cyan-accent/20 cursor-pointer hover:border-cyan-accent/50 transition-all duration-300">
+<div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-cyan-accent">public</span>
+</div>
+<div class="absolute -top-1 -left-1 px-2 py-0.5 bg-cyan-accent text-deep-blue text-[10px] font-bold uppercase rounded-br-lg">Recomendado</div>
+<h3 class="font-display text-lg font-bold text-white mb-4">Entrevista Cultural</h3>
+<div class="space-y-3">
+<div class="flex items-center gap-2 text-xs text-slate-400">
+<span class="material-symbols-outlined text-sm">equalizer</span>
+<span>Dificuldade: Média</span>
+</div>
+<div class="flex items-center gap-2 text-xs text-slate-400">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>Duração: 30 min</span>
+</div>
+</div>
+<div class="mt-6 flex justify-end">
+<span class="material-symbols-outlined text-cyan-accent group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</div>
+<div class="glass-panel group relative overflow-hidden p-6 rounded-xl cursor-pointer hover:border-cyan-accent/50 transition-all duration-300">
+<div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-cyan-accent">record_voice_over</span>
+</div>
+<h3 class="font-display text-lg font-bold text-white mb-4">Pitch de Carreira</h3>
+<div class="space-y-3">
+<div class="flex items-center gap-2 text-xs text-slate-400">
+<span class="material-symbols-outlined text-sm">equalizer</span>
+<span>Dificuldade: Variável</span>
+</div>
+<div class="flex items-center gap-2 text-xs text-slate-400">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>Duração: 15 min</span>
+</div>
+</div>
+<div class="mt-6 flex justify-end">
+<span class="material-symbols-outlined text-cyan-accent group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</div>
+</div>
+<div class="w-full glass-panel p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-8 border-white/5 shadow-2xl">
+<div class="flex-1">
+<div class="flex items-center gap-3 mb-2">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-accent opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-accent"></span>
+</span>
+<p class="text-xs font-bold text-cyan-accent uppercase tracking-widest">Sessão Pronta</p>
+</div>
+<h4 class="text-white font-display text-xl font-bold mb-2">Treinamento Personalizado IA</h4>
+<p class="text-slate-400 text-sm">Analise sua performance, entonação e escolha de vocabulário em tempo real com nossa tecnologia proprietária.</p>
+</div>
+<button class="liquid-glass-btn group relative px-10 py-5 rounded-full overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(32,148,243,0.3)]">
+<div class="relative z-20 flex items-center gap-3 text-white font-display font-bold text-lg uppercase tracking-wider">
+                        Iniciar Simulação
+                        <span class="material-symbols-outlined">play_arrow</span>
+</div>
+</button>
+</div>
+<div class="mt-12 w-full grid grid-cols-2 md:grid-cols-4 gap-4 pb-24">
+<div class="flex flex-col items-center p-4 glass-panel rounded-lg">
+<span class="text-cyan-accent text-2xl font-display font-bold">98%</span>
+<span class="text-[10px] text-slate-400 uppercase tracking-tighter">Taxa de Sucesso</span>
+</div>
+<div class="flex flex-col items-center p-4 glass-panel rounded-lg">
+<span class="text-white text-2xl font-display font-bold">120+</span>
+<span class="text-[10px] text-slate-400 uppercase tracking-tighter">Cenários Globais</span>
+</div>
+<div class="flex flex-col items-center p-4 glass-panel rounded-lg">
+<span class="text-white text-2xl font-display font-bold">IA</span>
+<span class="text-[10px] text-slate-400 uppercase tracking-tighter">Feedback Instantâneo</span>
+</div>
+<div class="flex flex-col items-center p-4 glass-panel rounded-lg">
+<span class="text-white text-2xl font-display font-bold">24/7</span>
+<span class="text-[10px] text-slate-400 uppercase tracking-tighter">Disponibilidade</span>
+</div>
+</div>
+</main>
+<nav class="fixed bottom-0 left-0 right-0 z-50 nav-glass px-4 pb-8 pt-3">
+<div class="max-w-4xl mx-auto flex justify-around items-end">
+<a class="flex flex-col items-center gap-1 w-16" href="#">
+<span class="material-symbols-outlined text-slate-custom">home</span>
+<span class="text-[10px] font-manrope font-medium text-slate-custom uppercase tracking-wide">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 w-16" href="#">
+<span class="material-symbols-outlined text-slate-custom">route</span>
+<span class="text-[10px] font-manrope font-medium text-slate-custom uppercase tracking-wide">Rotas</span>
+</a>
+<a class="flex flex-col items-center gap-1 w-16 relative" href="#">
+<span class="material-symbols-outlined text-primary scale-110">psychology_alt</span>
+<span class="text-[10px] font-manrope font-bold text-primary uppercase tracking-wide">Prática</span>
+<div class="absolute -bottom-2 w-1 h-1 bg-primary rounded-full"></div>
+</a>
+<a class="flex flex-col items-center gap-1 w-16" href="#">
+<span class="material-symbols-outlined text-slate-custom">work</span>
+<span class="text-[10px] font-manrope font-medium text-slate-custom uppercase tracking-wide">Candidaturas</span>
+</a>
+<a class="flex flex-col items-center gap-1 w-16" href="#">
+<span class="material-symbols-outlined text-slate-custom">more_horiz</span>
+<span class="text-[10px] font-manrope font-medium text-slate-custom uppercase tracking-wide">Mais</span>
+</a>
+</div>
+</nav>
+</div>
+<script>
+        const cursor = document.getElementById('cursor');
+        const cursorOutline = document.getElementById('cursor-outline');
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+            cursor.style.left = `${posX}px`;
+            cursor.style.top = `${posY}px`;
+            cursorOutline.animate({
+                left: `${posX - 11}px`,
+                top: `${posY - 11}px`
+            }, { duration: 500, fill: "forwards" });
+        });
+    </script>
+
+</body></html>

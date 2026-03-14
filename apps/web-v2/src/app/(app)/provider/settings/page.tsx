@@ -9,8 +9,8 @@ import { EmptyState, Input, PageHeader, Skeleton, Textarea, useToast } from "@/c
 export default function ProviderSettingsPage() {
   const hydrated = useHydration();
   const { toast } = useToast();
-  const { getActiveProvider, updateProviderProfile } = useMarketplaceStore();
-  const provider = getActiveProvider();
+  const { fetchMyProviderProfile, updateMyProviderProfile } = useMarketplaceStore();
+  const provider = useMarketplaceStore((state) => state.myProviderProfile);
 
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
@@ -18,6 +18,10 @@ export default function ProviderSettingsPage() {
   const [languagesText, setLanguagesText] = useState("");
   const [yearsExperience, setYearsExperience] = useState("0");
   const [specialties, setSpecialties] = useState<ServiceCategory[]>([]);
+
+  useEffect(() => {
+    fetchMyProviderProfile();
+  }, [fetchMyProviderProfile]);
 
   useEffect(() => {
     if (!provider) return;
@@ -56,13 +60,13 @@ export default function ProviderSettingsPage() {
       .map((item) => item.trim())
       .filter(Boolean);
 
-    updateProviderProfile(provider.id, {
+    updateMyProviderProfile({
       name: name.trim() || provider.name,
       bio: bio.trim() || provider.bio,
       country: country.trim() || provider.country,
-      languages: languages.length > 0 ? languages : provider.languages,
-      yearsExperience: Number(yearsExperience) || 0,
-      specialties: specialties.length > 0 ? specialties : provider.specialties,
+      languages,
+      yearsExperience: parseInt(yearsExperience) || 0,
+      specialties,
     });
 
     toast({

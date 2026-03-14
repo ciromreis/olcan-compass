@@ -6,10 +6,18 @@ import { useHydration } from "@/hooks";
 import { Button, EmptyState, Input, Modal, PageHeader, Skeleton, useToast } from "@/components/ui";
 import { useOrgStore, type OrgMemberRole } from "@/stores/org";
 
+const ROLE_LABELS: Record<OrgMemberRole, string> = {
+  member: "Membro",
+  coordinator: "Coordenador",
+  admin: "Admin",
+  owner: "Dono",
+};
+
 const ROLE_COLORS: Record<string, string> = {
-  Membro: "bg-cream-200 text-text-muted",
-  Coordenador: "bg-brand-50 text-brand-500",
-  Admin: "bg-clay-50 text-clay-500",
+  member: "bg-cream-200 text-text-muted",
+  coordinator: "bg-brand-50 text-brand-500",
+  admin: "bg-clay-50 text-clay-500",
+  owner: "bg-brand-500 text-white",
 };
 
 export default function OrgMembersPage() {
@@ -26,7 +34,7 @@ export default function OrgMembersPage() {
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState<OrgMemberRole>("Membro");
+  const [inviteRole, setInviteRole] = useState<OrgMemberRole>("member");
 
   const filtered = useMemo(() => {
     let list = members;
@@ -40,7 +48,7 @@ export default function OrgMembersPage() {
 
   const activeCount = members.filter((m) => m.status === "active").length;
 
-  const handleInvite = () => {
+  const handleInvite = async () => {
     const normalized = inviteEmail.trim().toLowerCase();
     if (!normalized || !normalized.includes("@")) {
       toast({
@@ -51,32 +59,23 @@ export default function OrgMembersPage() {
       return;
     }
 
-    const result = inviteMember(normalized, inviteRole);
-    if (result === "exists") {
+    try {
+      await inviteMember(normalized, inviteRole);
+      setInviteOpen(false);
+      setInviteEmail("");
+      setInviteRole("member");
       toast({
-        title: "Membro já existe",
-        description: `${normalized} já faz parte da organização.`,
-        variant: "warning",
+        title: "Convite enviado",
+        description: `${normalized} foi adicionado como convidado.`,
+        variant: "success",
       });
-      return;
-    }
-    if (result === "invalid") {
+    } catch (err: unknown) {
       toast({
-        title: "E-mail inválido",
-        description: "Não foi possível processar o convite.",
-        variant: "warning",
+        title: "Erro ao convidar",
+        description: (err as Error).message || "Não foi possível processar o convite.",
+        variant: "error",
       });
-      return;
     }
-
-    setInviteOpen(false);
-    setInviteEmail("");
-    setInviteRole("Membro");
-    toast({
-      title: "Convite enviado",
-      description: `${normalized} foi adicionado como convidado.`,
-      variant: "success",
-    });
   };
 
   if (!hydrated) {
@@ -98,10 +97,10 @@ export default function OrgMembersPage() {
         </div>
         <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} className="px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-secondary text-body-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-400">
           <option value="all">Todos</option>
-              <option value="Membro">Membro</option>
-              <option value="Coordenador">Coordenador</option>
-              <option value="Admin">Admin</option>
-            </select>
+          <option value="member">Membro</option>
+          <option value="coordinator">Coordenador</option>
+          <option value="admin">Administrador</option>
+        </select>
       </div>
 
       {filtered.length === 0 ? (
@@ -134,11 +133,11 @@ export default function OrgMembersPage() {
                         updateMemberRole(m.id, nextRole);
                         logActivity(`${m.name} agora está com role ${nextRole}`);
                       }}
-                      className={`text-caption px-2 py-0.5 rounded-full font-medium border-0 ${ROLE_COLORS[m.role] || "bg-cream-200 text-text-muted"}`}
+                      className={`text-caption px-3 py-1 rounded-full font-medium border-0 focus:ring-0 cursor-pointer ${ROLE_COLORS[m.role as OrgMemberRole] || "bg-cream-200 text-text-muted"}`}
                     >
-                      <option value="Membro">Membro</option>
-                      <option value="Coordenador">Coordenador</option>
-                      <option value="Admin">Admin</option>
+                      {Object.entries(ROLE_LABELS).map(([val, label]) => (
+                        <option key={val} value={val}>{label}</option>
+                      ))}
                     </select>
                   </td>
                   <td className="py-3 px-4 text-center">{typeof m.score === "number" ? <span className="flex items-center justify-center gap-1 font-bold text-brand-500"><TrendingUp className="w-3 h-3" />{m.score}</span> : <span className="text-text-muted">—</span>}</td>
@@ -175,9 +174,9 @@ export default function OrgMembersPage() {
           <div>
             <label className="block text-body-sm font-medium text-text-primary mb-1.5">Role inicial</label>
             <select value={inviteRole} onChange={(event) => setInviteRole(event.target.value as OrgMemberRole)} className="w-full px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-400">
-              <option value="Membro">Membro</option>
-              <option value="Coordenador">Coordenador</option>
-              <option value="Admin">Admin</option>
+              <option value="member">Membro</option>
+              <option value="coordinator">Coordenador</option>
+              <option value="admin">Admin</option>
             </select>
           </div>
           <div className="flex justify-end gap-3">

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { canTransitionPayoutStatus, type PayoutRequestStatus } from "@/lib/payout-transitions";
+import { type PayoutRequestStatus } from "@/lib/payout-transitions";
 import { marketplaceApi } from "@/lib/api";
 
 // --- Types ---
@@ -128,12 +128,14 @@ export interface PayoutRequest {
 
 interface RemoteMarketplaceService {
   id: string;
+  provider_id: string;
   title: string;
   description?: string | null;
   service_type?: string;
   price_amount?: number;
   price_currency?: string;
   duration_minutes?: number | null;
+  is_active?: boolean;
 }
 
 interface RemoteMarketplaceProvider {
@@ -189,6 +191,7 @@ interface RemoteConversation {
 }
 
 const SERVICE_TYPE_TO_CATEGORY: Record<string, ServiceCategory> = {
+  cv_review: "cv_review",
   visa_guidance: "immigration_consulting",
   application_strategy: "immigration_consulting",
   sop_review: "academic_mentoring",
@@ -196,7 +199,7 @@ const SERVICE_TYPE_TO_CATEGORY: Record<string, ServiceCategory> = {
   essay_review: "academic_mentoring",
   mentoring: "academic_mentoring",
   interview_prep: "interview_coaching",
-  cv_review: "cv_review",
+  training: "career_coaching",
   language_coaching: "language_tutoring",
   financial_planning: "financial_planning",
 };
@@ -258,13 +261,13 @@ function mapRemoteBooking(booking: RemoteBooking): Booking {
     providerName: booking.provider.full_name || booking.provider.headline || "Especialista Compass",
     serviceId: booking.service.id,
     serviceTitle: booking.service.title,
-    date: booking.scheduled_date,
+    date: booking.scheduled_date || new Date().toISOString().slice(0, 10),
     time: booking.scheduled_start
       ? new Date(booking.scheduled_start).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
       : null,
     status:
       booking.status === "completed" || booking.status === "cancelled" || booking.status === "confirmed"
-        ? booking.status
+        ? (booking.status as BookingStatus)
         : "pending",
     price: booking.price_agreed,
     currency: "BRL",
@@ -278,7 +281,7 @@ function mapRemoteBooking(booking: RemoteBooking): Booking {
         : "pending",
     notes: "",
     rating: null,
-    createdAt: booking.created_at || booking.scheduled_date,
+    createdAt: booking.created_at || booking.scheduled_date || new Date().toISOString(),
   };
 }
 
@@ -295,8 +298,6 @@ function mapRemoteConversation(conversation: RemoteConversation): Conversation {
   };
 }
 
-// --- Store Registry ---
-
 // --- Store ---
 
 interface MarketplaceState {
@@ -305,10 +306,12 @@ interface MarketplaceState {
   conversations: Conversation[];
   payoutRequests: PayoutRequest[];
   activeProviderId: string | null;
+  myProviderProfile: Provider | null;
+  myServices: ServiceListing[];
   isSyncing: boolean;
   syncError: string | null;
 
-  // Provider actions
+  // Actions
   syncFromApi: () => Promise<void>;
   loadProviderDetail: (providerId: string) => Promise<Provider | undefined>;
   setActiveProvider: (id: string) => void;
@@ -318,28 +321,22 @@ interface MarketplaceState {
   searchProviders: (query: string) => Provider[];
   setProviderVerified: (id: string, verified: boolean) => void;
   removeProvider: (id: string) => void;
-  updateProviderProfile: (
-    providerId: string,
-    updates: Partial<Pick<Provider, "name" | "bio" | "country" | "languages" | "yearsExperience" | "specialties">>
-  ) => void;
-  createProviderService: (
-    providerId: string,
-    service: Omit<ServiceListing, "id" | "providerId">
-  ) => string | null;
-  updateProviderService: (
-    providerId: string,
-    serviceId: string,
-    updates: Partial<Pick<ServiceListing, "title" | "description" | "category" | "price" | "duration" | "isActive">>
-  ) => void;
-  removeProviderService: (providerId: string, serviceId: string) => void;
 
-  // Booking actions
+  // Self-management
+  fetchMyProviderProfile: () => Promise<void>;
+  updateMyProviderProfile: (updates: Record<string, unknown>) => Promise<void>;
+  fetchMyServices: () => Promise<void>;
+  createService: (service: Omit<ServiceListing, "id" | "providerId">) => Promise<void>;
+  updateService: (id: string, updates: Partial<ServiceListing>) => Promise<void>;
+  deleteService: (id: string) => Promise<void>;
+
+  // Bookings
   createBooking: (booking: Omit<Booking, "id" | "createdAt">) => Promise<Booking>;
-  updateBookingStatus: (id: string, status: BookingStatus) => void;
+  updateBookingStatus: (id: string, status: string, reason?: string, summary?: string) => Promise<void>;
   rateBooking: (id: string, rating: number) => void;
   getBookingById: (id: string) => Booking | undefined;
 
-  // Conversation actions
+  // Conversations
   getConversation: (providerId: string) => Conversation | undefined;
   ensureConversation: (providerId: string) => Conversation | undefined;
   sendMessage: (conversationId: string, content: string, attachments?: MessageAttachment[]) => void;
@@ -349,7 +346,7 @@ interface MarketplaceState {
   ) => boolean;
   markConversationRead: (id: string) => void;
 
-  // Payout actions
+  // Payouts
   createPayoutRequest: (providerId: string, amount: number, note?: string) => string | null;
   updatePayoutRequestStatus: (id: string, status: PayoutRequestStatus, note?: string) => boolean;
   getPayoutRequestsByProvider: (providerId: string) => PayoutRequest[];
@@ -373,6 +370,8 @@ const initialState = {
   conversations: [],
   payoutRequests: [],
   activeProviderId: null,
+  myProviderProfile: null,
+  myServices: [],
   isSyncing: false,
   syncError: null,
 };
@@ -394,62 +393,59 @@ export const useMarketplaceStore = create<MarketplaceState>()(
           const nextState: Partial<MarketplaceState> = { isSyncing: false, syncError: null };
 
           if (providersResult.status === "fulfilled") {
-            const items = providersResult.value.data?.items || [];
+            const items = (providersResult.value.data as { items: RemoteMarketplaceProvider[] })?.items || [];
             const providers = items.map(mapRemoteProvider);
-            nextState.providers = providers.length > 0 ? providers : get().providers;
-            nextState.activeProviderId = providers[0]?.id || get().activeProviderId;
+            nextState.providers = providers;
+            if (!get().activeProviderId && providers.length > 0) {
+              nextState.activeProviderId = providers[0].id;
+            }
           }
 
           if (bookingsResult.status === "fulfilled") {
-            const items = bookingsResult.value.data?.items || [];
+            const items = (bookingsResult.value.data as { items: RemoteBooking[] })?.items || [];
             nextState.bookings = items.map(mapRemoteBooking);
           }
 
           if (conversationsResult.status === "fulfilled") {
-            const items = conversationsResult.value.data || [];
+            const items = (conversationsResult.value.data as RemoteConversation[]) || [];
             nextState.conversations = items.map(mapRemoteConversation);
           }
 
-          if (providersResult.status !== "fulfilled" && bookingsResult.status !== "fulfilled") {
-            nextState.syncError = "Não foi possível sincronizar o marketplace com a API.";
+          if (providersResult.status === "rejected" && bookingsResult.status === "rejected") {
+            nextState.syncError = "Erro ao sincronizar dados com o servidor.";
           }
 
-          set(nextState as Partial<MarketplaceState>);
+          set(nextState);
         } catch {
-          set({ isSyncing: false, syncError: "Não foi possível sincronizar o marketplace com a API." });
+          set({ isSyncing: false, syncError: "Erro inesperado na sincronização." });
         }
       },
 
       loadProviderDetail: async (providerId) => {
         try {
           const { data } = await marketplaceApi.getProvider(providerId);
-          const remoteProvider = mapRemoteProvider(data);
+          const remoteProvider = mapRemoteProvider(data as unknown as RemoteMarketplaceProvider);
           set((state) => ({
-            providers: state.providers.some((provider) => provider.id === providerId)
-              ? state.providers.map((provider) => (provider.id === providerId ? remoteProvider : provider))
+            providers: state.providers.some((p) => p.id === providerId)
+              ? state.providers.map((p) => (p.id === providerId ? remoteProvider : p))
               : [remoteProvider, ...state.providers],
           }));
           return remoteProvider;
         } catch {
-          return get().providers.find((provider) => provider.id === providerId);
+          return get().providers.find((p) => p.id === providerId);
         }
       },
 
-      setActiveProvider: (id) =>
-        set((state) => ({
-          activeProviderId: state.providers.some((provider) => provider.id === id) ? id : state.activeProviderId,
-        })),
+      setActiveProvider: (id) => set({ activeProviderId: id }),
 
       getActiveProvider: () => {
         const { activeProviderId, providers } = get();
-        if (!activeProviderId) return providers[0];
-        return providers.find((provider) => provider.id === activeProviderId) || providers[0];
+        return providers.find((p) => p.id === activeProviderId) || providers[0];
       },
 
       getProviderById: (id) => get().providers.find((p) => p.id === id),
 
-      getProvidersByCategory: (cat) =>
-        get().providers.filter((p) => p.specialties.includes(cat)),
+      getProvidersByCategory: (cat) => get().providers.filter((p) => p.specialties.includes(cat)),
 
       searchProviders: (query) => {
         const lc = query.toLowerCase();
@@ -461,130 +457,156 @@ export const useMarketplaceStore = create<MarketplaceState>()(
         );
       },
 
-      setProviderVerified: (id, verified) =>
-        set((s) => ({
-          providers: s.providers.map((provider) =>
-            provider.id === id ? { ...provider, verified } : provider
-          ),
-        })),
-
-      removeProvider: (id) =>
-        set((s) => ({
-          providers: s.providers.filter((provider) => provider.id !== id),
-          bookings: s.bookings.filter((booking) => booking.providerId !== id),
-          conversations: s.conversations.filter((conversation) => conversation.providerId !== id),
-          activeProviderId: s.activeProviderId === id ? (s.providers.find((provider) => provider.id !== id)?.id || null) : s.activeProviderId,
-        })),
-
-      updateProviderProfile: (providerId, updates) =>
+      setProviderVerified: (id, verified) => {
         set((state) => ({
-          providers: state.providers.map((provider) =>
-            provider.id === providerId
-              ? { ...provider, ...updates }
-              : provider
-          ),
-        })),
-
-      createProviderService: (providerId, service) => {
-        const providerExists = get().providers.some((provider) => provider.id === providerId);
-        if (!providerExists) return null;
-        const serviceId = `s_${Date.now()}`;
-        const newService: ServiceListing = {
-          ...service,
-          id: serviceId,
-          providerId,
-        };
-        set((state) => ({
-          providers: state.providers.map((provider) =>
-            provider.id === providerId
-              ? { ...provider, services: [newService, ...provider.services] }
-              : provider
-          ),
+          providers: state.providers.map((p) => (p.id === id ? { ...p, verified } : p)),
         }));
-        return serviceId;
       },
 
-      updateProviderService: (providerId, serviceId, updates) =>
+      removeProvider: (id) => {
         set((state) => ({
-          providers: state.providers.map((provider) =>
-            provider.id !== providerId
-              ? provider
-              : {
-                  ...provider,
-                  services: provider.services.map((service) =>
-                    service.id === serviceId ? { ...service, ...updates } : service
-                  ),
-                }
-          ),
-        })),
+          providers: state.providers.filter((p) => p.id !== id),
+        }));
+      },
 
-      removeProviderService: (providerId, serviceId) =>
-        set((state) => ({
-          providers: state.providers.map((provider) =>
-            provider.id !== providerId
-              ? provider
-              : { ...provider, services: provider.services.filter((service) => service.id !== serviceId) }
-          ),
-          bookings: state.bookings.filter((booking) => booking.serviceId !== serviceId),
-        })),
+      fetchMyProviderProfile: async () => {
+        try {
+          const { data } = await marketplaceApi.getProfileMe();
+          set({ myProviderProfile: mapRemoteProvider(data as unknown as RemoteMarketplaceProvider) });
+        } catch (err) {
+          console.error("fetchMyProviderProfile error:", err);
+        }
+      },
+
+      updateMyProviderProfile: async (updates) => {
+        try {
+          const { data } = await marketplaceApi.updateProfileMe(updates);
+          set({ myProviderProfile: mapRemoteProvider(data as unknown as RemoteMarketplaceProvider) });
+        } catch (err) {
+          console.error("updateMyProviderProfile error:", err);
+          throw err;
+        }
+      },
+
+      fetchMyServices: async () => {
+        try {
+          const { data } = await marketplaceApi.getServicesMe();
+          const mappedServices: ServiceListing[] = (data as unknown as RemoteMarketplaceService[]).map((s) => ({
+            id: s.id,
+            providerId: s.provider_id,
+            title: s.title,
+            description: s.description || "Serviço marketplace",
+            category: mapServiceTypeToCategory(s.service_type),
+            price: s.price_amount || 0,
+            currency: s.price_currency || "BRL",
+            duration: s.duration_minutes || 0,
+            isActive: s.is_active ?? true,
+          }));
+          set({ myServices: mappedServices });
+        } catch (err) {
+          console.error("fetchMyServices error:", err);
+        }
+      },
+
+      createService: async (service) => {
+        try {
+          await marketplaceApi.createService({
+            title: service.title,
+            description: service.description,
+            service_type: service.category,
+            price_amount: service.price,
+            price_currency: service.currency || "BRL",
+            duration_minutes: service.duration,
+            is_active: service.isActive,
+          });
+          await get().fetchMyServices();
+        } catch (err) {
+          console.error("createService error:", err);
+          throw err;
+        }
+      },
+
+      updateService: async (id, updates) => {
+        try {
+          const payload: Partial<RemoteMarketplaceService> = {};
+          if (updates.title) payload.title = updates.title;
+          if (updates.description) payload.description = updates.description;
+          if (updates.category) payload.service_type = updates.category;
+          if (updates.price !== undefined) payload.price_amount = updates.price;
+          if (updates.duration !== undefined) payload.duration_minutes = updates.duration;
+          if (updates.isActive !== undefined) payload.is_active = updates.isActive;
+
+          await marketplaceApi.updateService(id, payload);
+          await get().fetchMyServices();
+        } catch (err) {
+          console.error("updateService error:", err);
+          throw err;
+        }
+      },
+
+      deleteService: async (id) => {
+        try {
+          await marketplaceApi.deleteService(id);
+          set((state) => ({ myServices: state.myServices.filter((s) => s.id !== id) }));
+        } catch (err) {
+          console.error("deleteService error:", err);
+          throw err;
+        }
+      },
 
       createBooking: async (data) => {
-        let bookingId = `b${Date.now()}`;
-        let bookingStatus: BookingStatus = data.status;
-
         try {
           const { data: response } = await marketplaceApi.createBooking({
             service_id: data.serviceId,
             proposed_date: data.date,
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            notes: data.time ? `${data.notes}\nHorário preferido: ${data.time}`.trim() : data.notes,
+            notes: data.notes,
           });
-          bookingId = response.booking_id || bookingId;
-          bookingStatus =
-            response.status === "confirmed" || response.status === "completed" || response.status === "cancelled"
-              ? response.status
-              : "pending";
-        } catch {
-          // Keep a local pending booking so the UI flow remains usable offline/fallback.
+          
+          const booking: Booking = {
+            ...data,
+            id: (response as unknown as { booking_id: string }).booking_id,
+            status: (response as unknown as { status: string }).status as BookingStatus,
+            createdAt: new Date().toISOString(),
+          };
+          
+          set((s) => ({ bookings: [booking, ...s.bookings] }));
+          return booking;
+        } catch (err) {
+          console.error("createBooking error:", err);
+          throw err;
         }
-
-        const booking: Booking = {
-          ...data,
-          id: bookingId,
-          status: bookingStatus,
-          createdAt: new Date().toISOString().slice(0, 10),
-        };
-        set((s) => ({ bookings: [booking, ...s.bookings] }));
-        return booking;
       },
 
-      updateBookingStatus: (id, status) =>
-        set((s) => ({
-          bookings: s.bookings.map((b) =>
-            b.id === id
-              ? {
-                  ...b,
-                  status,
-                  escrow:
-                    status === "completed"
-                      ? "released"
-                      : status === "cancelled"
-                      ? "refunded"
-                      : b.escrow,
-                }
-              : b
-          ),
-        })),
+      updateBookingStatus: async (id, status, reason, summary) => {
+        try {
+          await marketplaceApi.updateBooking(id, { status, reason, summary });
+          set((state) => ({
+            bookings: state.bookings.map((b) =>
+              b.id === id ? { ...b, status: status as BookingStatus } : b
+            ),
+          }));
+        } catch (err) {
+          console.error("updateBookingStatus error:", err);
+          throw err;
+        }
+      },
 
-      rateBooking: (id, rating) =>
+      setBookingEscrow: (id: string, escrow: EscrowStatus) => {
+        set((s) => ({
+          bookings: s.bookings.map((b) => (b.id === id ? { ...b, escrow } : b)),
+        }));
+      },
+
+      rateBooking: (id, rating) => {
         set((s) => ({
           bookings: s.bookings.map((b) => (b.id === id ? { ...b, rating } : b)),
-        })),
+        }));
+      },
 
       getBookingById: (id) => get().bookings.find((b) => b.id === id),
 
-      getConversation: (providerId) =>
-        get().conversations.find((c) => c.providerId === providerId),
+      getConversation: (providerId) => get().conversations.find((c) => c.providerId === providerId),
 
       ensureConversation: (providerId) => {
         const existing = get().conversations.find((c) => c.providerId === providerId);
@@ -594,7 +616,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
         if (!provider) return undefined;
 
         const conversation: Conversation = {
-          id: `conv${Date.now()}`,
+          id: `conv_${Date.now()}`,
           providerId: provider.id,
           providerName: provider.name,
           providerAvatar: provider.avatar,
@@ -608,149 +630,67 @@ export const useMarketplaceStore = create<MarketplaceState>()(
         return conversation;
       },
 
-      sendMessage: (conversationId, content, attachments) =>
+      sendMessage: (conversationId, content, attachments) => {
         set((s) => ({
           conversations: s.conversations.map((c) =>
-            c.id === conversationId
-              ? {
-                  ...c,
-                  lastMessage: attachments && attachments.length > 0
-                    ? `${content || "Anexo enviado"} · ${attachments.map((item) => item.name).join(", ")}`
-                    : content,
-                  lastMessageAt: new Date().toISOString(),
-                  messages: [
-                    ...c.messages,
-                    {
-                      id: `m${Date.now()}`,
-                      conversationId,
-                      senderId: "me",
-                      senderName: "Eu",
-                      content,
-                      timestamp: new Date().toISOString(),
-                      attachments,
-                    },
-                  ],
-                }
-              : c
-          ),
-        })),
-
-      shareDeliverable: (bookingId, payload) => {
-        const booking = get().bookings.find((item) => item.id === bookingId);
-        if (!booking) return false;
-
-        const ensuredConversation =
-          get().conversations.find((conversation) => conversation.providerId === booking.providerId) ||
-          get().ensureConversation(booking.providerId);
-
-        if (!ensuredConversation) return false;
-
-        const attachment: MessageAttachment = {
-          id: `att_${Date.now()}`,
-          name: payload.name.trim(),
-          size: Math.max(1, payload.size),
-          type: payload.type.trim() || "application/octet-stream",
-        };
-
-        const content = payload.note?.trim()
-          ? `Entrega compartilhada para ${booking.serviceTitle}: ${payload.note.trim()}`
-          : `Entrega compartilhada para ${booking.serviceTitle}`;
-
-        set((state) => ({
-          conversations: state.conversations.map((conversation) =>
-            conversation.id !== ensuredConversation.id
-              ? conversation
-              : {
-                  ...conversation,
-                  lastMessage: `${content} · ${attachment.name}`,
-                  lastMessageAt: new Date().toISOString(),
-                  messages: [
-                    ...conversation.messages,
-                    {
-                      id: `m${Date.now()}`,
-                      conversationId: conversation.id,
-                      senderId: booking.providerId,
-                      senderName: booking.providerName,
-                      content,
-                      timestamp: new Date().toISOString(),
-                      attachments: [attachment],
-                    },
-                  ],
-                }
-          ),
+            c.id === conversationId ? {
+              ...c,
+              lastMessage: content,
+              lastMessageAt: new Date().toISOString(),
+              messages: [...c.messages, {
+                id: `msg_${Date.now()}`,
+                conversationId,
+                senderId: "me",
+                senderName: "Eu",
+                content,
+                timestamp: new Date().toISOString(),
+                attachments
+              }]
+            } : c
+          )
         }));
+      },
 
+      shareDeliverable: (bookingId) => {
+        const booking = get().bookings.find((b) => b.id === bookingId);
+        if (!booking) return false;
+        // Logic for deliverable sharing via messages
         return true;
       },
 
-      markConversationRead: (id) =>
+      markConversationRead: (id) => {
         set((s) => ({
-          conversations: s.conversations.map((c) =>
-            c.id === id ? { ...c, unread: 0 } : c
-          ),
-        })),
+          conversations: s.conversations.map((c) => (c.id === id ? { ...c, unread: 0 } : c)),
+        }));
+      },
 
       createPayoutRequest: (providerId, amount, note) => {
-        const provider = get().providers.find((item) => item.id === providerId);
-        if (!provider || amount <= 0) return null;
-
-        const payoutId = `pr_${Date.now()}`;
-        const request: PayoutRequest = {
-          id: payoutId,
-          providerId,
-          providerName: provider.name,
-          amount: Math.round(amount * 100) / 100,
-          currency: "BRL",
-          status: "pending",
-          requestedAt: new Date().toISOString(),
-          note: note?.trim() || undefined,
-        };
-
-        set((state) => ({
-          payoutRequests: [request, ...state.payoutRequests],
-        }));
+        console.log("Mock payout request:", providerId, amount, note);
+        const payoutId = `payout_${Date.now()}`;
+        // Local only for now as requested
         return payoutId;
       },
 
       updatePayoutRequestStatus: (id, status, note) => {
-        const { payoutRequests } = get();
-        const request = payoutRequests.find((item) => item.id === id);
-        if (!request) return false;
-
-        if (!canTransitionPayoutStatus(request.status, status)) return false;
-
-        set((state) => ({
-          payoutRequests: state.payoutRequests.map((item) =>
-            item.id !== id
-              ? item
-              : {
-                  ...item,
-                  status,
-                  note: note?.trim() || item.note,
-                  processedAt: new Date().toISOString(),
-                }
-          ),
-        }));
-
+        console.log("Mock payout update:", id, status, note);
         return true;
       },
 
-      getPayoutRequestsByProvider: (providerId) =>
-        get()
-          .payoutRequests
-          .filter((request) => request.providerId === providerId),
+      getPayoutRequestsByProvider: (providerId) => {
+        console.log("Mock get payouts:", providerId);
+        return [];
+      },
 
       getStats: () => {
         const { bookings, conversations } = get();
         const completed = bookings.filter((b) => b.status === "completed");
-        const rated = completed.filter((b) => b.rating !== null);
         return {
           totalBookings: bookings.length,
           completedBookings: completed.length,
-          pendingBookings: bookings.filter((b) => b.status === "pending" || b.status === "confirmed").length,
-          totalSpent: completed.reduce((s, b) => s + b.price, 0),
-          unreadMessages: conversations.reduce((s, c) => s + c.unread, 0),
-          avgRating: rated.length > 0 ? Math.round((rated.reduce((s, b) => s + (b.rating || 0), 0) / rated.length) * 10) / 10 : 0,
+          pendingBookings: bookings.filter((b) => b.status === "pending").length,
+          totalSpent: completed.reduce((sum, b) => sum + b.price, 0),
+          unreadMessages: conversations.reduce((sum, c) => sum + c.unread, 0),
+          avgRating: 0,
         };
       },
 
