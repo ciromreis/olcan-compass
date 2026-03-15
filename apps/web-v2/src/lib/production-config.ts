@@ -338,7 +338,7 @@ export async function performHealthCheck(): Promise<{
       localStorage.setItem('health-check', 'test');
       localStorage.removeItem('health-check');
       checks.storage = { status: 'pass' };
-    } catch (error) {
+    } catch {
       checks.storage = { status: 'fail', message: 'LocalStorage not available' };
     }
   } else {

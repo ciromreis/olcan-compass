@@ -103,7 +103,7 @@ export class ErrorBoundary extends Component<Props, State> {
       }).catch(() => {
         // Silently fail if error service is unavailable
       });
-    } catch (error) {
+    } catch {
       // Silently fail if error service is unavailable
     }
   };
