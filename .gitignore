@@ -64,3 +64,5 @@ compass-key.pem
 # Local agent sandbox and browser test artifacts
 .agents/agency-agents-repo/
 .playwright-cli/
+.vercel
+.env*.local
