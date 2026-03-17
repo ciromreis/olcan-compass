@@ -1,5 +1,5 @@
 [build]
-  command = "pnpm install --no-frozen-lockfile --shamefully-hoist && pnpm build:v2"
+  command = "pnpm build:v2"
   publish = "apps/web-v2/.next"
 
 [[plugins]]
