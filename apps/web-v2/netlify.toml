@@ -1,6 +1,6 @@
 [build]
   # When Netlify Base directory is `apps/web-v2`, paths are relative to it.
-  command = "pnpm install --shamefully-hoist && pnpm --filter @olcan/web-v2 build"
+  command = "pnpm --filter @olcan/web-v2 build"
   publish = ".next"
 
 [[plugins]]
@@ -13,7 +13,5 @@
   NODE_VERSION = "20"
   PNPM_VERSION = "10.15.1"
   NETLIFY_USE_PNPM = "true"
-  NPM_CONFIG_NODE_LINKER = "hoisted"
-  PNPM_FLAGS = "--shamefully-hoist"
   NEXT_PUBLIC_API_URL = "https://olcan-compass-api.onrender.com"
   NEXT_PUBLIC_APP_URL = "https://compass.olcan.com.br"
