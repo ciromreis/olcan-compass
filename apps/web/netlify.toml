@@ -1,13 +1,6 @@
-[build]
-  command = "npm run build"
-  publish = "dist"
-
-[build.environment]
-  VITE_API_URL = "https://olcan-compass-api.onrender.com"
-  NODE_VERSION = "18"
-
-# SPA redirect — all routes to index.html
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+## LEGACY (v1)
+##
+## This file previously configured a Vite SPA deploy for `apps/web`.
+## Production is now `apps/web-v2` (Next.js) and Netlify should not use this config.
+##
+## If you intentionally want to deploy v1 again, restore the previous contents.

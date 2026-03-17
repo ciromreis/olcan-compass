@@ -1,6 +1,7 @@
 [build]
-  command = "pnpm install --shamefully-hoist && pnpm build:v2"
-  publish = "apps/web-v2/.next"
+  # When Netlify Base directory is `apps/web-v2`, paths are relative to it.
+  command = "pnpm install --shamefully-hoist && pnpm --filter @olcan/web-v2 build"
+  publish = ".next"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
