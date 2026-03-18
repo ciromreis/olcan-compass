@@ -7,18 +7,16 @@ This is the core economic closure slice that reduces opportunity overload.
 import time
 from datetime import datetime, timezone
 from typing import List, Dict, Tuple, Optional
-from decimal import Decimal
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_
+from sqlalchemy import select
 
 from app.db.models.constraints import (
     UserConstraintProfile, 
     OpportunityPruningLog, 
     PruningReason
 )
-from app.db.models.application import Opportunity, UserApplication, ApplicationStatus
-from app.db.models.user import User
+from app.db.models.application import Opportunity, UserApplication
 
 
 class ConstraintViolation:

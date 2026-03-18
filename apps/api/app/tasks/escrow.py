@@ -7,8 +7,7 @@ Este módulo contém tarefas assíncronas para:
 """
 import uuid
 import logging
-from typing import Dict, Any, List
-from datetime import datetime, timezone, timedelta
+from typing import Dict, Any
 
 from celery import Task
 from sqlalchemy import select

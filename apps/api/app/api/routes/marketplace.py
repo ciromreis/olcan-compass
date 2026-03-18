@@ -10,7 +10,7 @@ from decimal import Decimal
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, desc, and_, or_
+from sqlalchemy import select, func, desc
 
 from app.core.auth import get_current_user
 from app.db.session import get_db
@@ -36,7 +36,6 @@ from app.schemas.marketplace import (
     ServiceListingResponse,
     ServiceListingCreate,
     ServiceListingUpdate,
-    BookingResponse,
 )
 
 router = APIRouter(prefix="/marketplace", tags=["Marketplace"])
@@ -65,7 +64,7 @@ async def list_providers(
         # Join with services to filter by type
         query = query.join(ServiceListing).where(
             ServiceListing.service_type == service_type,
-            ServiceListing.is_active == True
+            ServiceListing.is_active
         )
     
     if specialization:
@@ -120,7 +119,7 @@ async def list_providers(
         services_result = await db.execute(
             select(ServiceListing).where(
                 ServiceListing.provider_id == provider.id,
-                ServiceListing.is_active == True
+                ServiceListing.is_active
             )
         )
         services = services_result.scalars().all()
@@ -194,7 +193,7 @@ async def get_provider(
     services_result = await db.execute(
         select(ServiceListing).where(
             ServiceListing.provider_id == provider.id,
-            ServiceListing.is_active == True
+            ServiceListing.is_active
         ).order_by(desc(ServiceListing.is_featured))
     )
     services = services_result.scalars().all()
@@ -212,7 +211,7 @@ async def get_provider(
     reviews_result = await db.execute(
         select(Review).where(
             Review.provider_id == provider.id,
-            Review.is_public == True
+            Review.is_public
         ).order_by(desc(Review.created_at)).limit(5)
     )
     reviews = reviews_result.scalars().all()
@@ -304,7 +303,7 @@ async def list_services(
 ):
     """List available services"""
     query = select(ServiceListing).where(
-        ServiceListing.is_active == True,
+        ServiceListing.is_active,
         ServiceListing.provider_id.in_(
             select(ProviderProfile.id).where(ProviderProfile.status == ProviderStatus.APPROVED)
         )
@@ -399,7 +398,7 @@ async def get_service(
     result = await db.execute(
         select(ServiceListing).where(
             ServiceListing.id == service_id,
-            ServiceListing.is_active == True
+            ServiceListing.is_active
         )
     )
     service = result.scalar_one_or_none()
@@ -417,7 +416,7 @@ async def get_service(
     availability_result = await db.execute(
         select(ServiceAvailability).where(
             ServiceAvailability.service_id == service.id,
-            ServiceAvailability.is_available == True,
+            ServiceAvailability.is_available,
             ServiceAvailability.date >= date.today(),
             ServiceAvailability.date <= date.today() + timedelta(days=30)
         ).order_by(ServiceAvailability.date, ServiceAvailability.start_time)
@@ -478,7 +477,7 @@ async def create_booking(
     service_result = await db.execute(
         select(ServiceListing).where(
             ServiceListing.id == service_id,
-            ServiceListing.is_active == True
+            ServiceListing.is_active
         )
     )
     service = service_result.scalar_one_or_none()
@@ -502,7 +501,7 @@ async def create_booking(
             select(ServiceAvailability).where(
                 ServiceAvailability.id == UUID(availability_id),
                 ServiceAvailability.service_id == service.id,
-                ServiceAvailability.is_available == True
+                ServiceAvailability.is_available
             )
         )
         availability = avail_result.scalar_one_or_none()
@@ -829,7 +828,7 @@ async def list_reviews(
     db: AsyncSession = Depends(get_db)
 ):
     """List reviews"""
-    query = select(Review).where(Review.is_public == True)
+    query = select(Review).where(Review.is_public)
     
     if provider_id:
         query = query.where(Review.provider_id == provider_id)
@@ -892,16 +891,16 @@ async def list_conversations(
         # Provider sees conversations with them
         query = select(Conversation).where(
             Conversation.provider_id == provider.id,
-            Conversation.provider_archived == False
+            not Conversation.provider_archived
         )
     else:
         # Client sees their conversations
         query = select(Conversation).where(
             Conversation.client_id == current_user.id,
-            Conversation.client_archived == False
+            not Conversation.client_archived
         )
     
-    query = query.where(Conversation.is_active == True)
+    query = query.where(Conversation.is_active)
     query = query.order_by(desc(Conversation.last_message_at))
     
     result = await db.execute(query)
@@ -933,7 +932,7 @@ async def list_conversations(
         last_msg_result = await db.execute(
             select(Message).where(
                 Message.conversation_id == conv.id,
-                Message.is_deleted == False
+                not Message.is_deleted
             ).order_by(desc(Message.created_at)).limit(1)
         )
         last_msg = last_msg_result.scalar_one_or_none()
@@ -1050,7 +1049,7 @@ async def get_messages(
     # Get messages
     query = select(Message).where(
         Message.conversation_id == conversation_id,
-        Message.is_deleted == False
+        not Message.is_deleted
     ).order_by(desc(Message.created_at))
     
     query = query.offset((page - 1) * page_size).limit(page_size)

@@ -13,9 +13,8 @@ from sqlalchemy import select, update, func
 from sqlalchemy.orm import selectinload
 
 from app.db.models.economics import EscrowTransaction, EscrowStatus
-from app.db.models.marketplace import Booking, ServiceListing, ProviderProfile
+from app.db.models.marketplace import Booking, ProviderProfile
 from app.db.models.sprint import ReadinessAssessment
-from app.db.models.user import User
 
 
 async def create_escrow(
@@ -287,7 +286,7 @@ async def release_to_provider(
                 EscrowTransaction.status == EscrowStatus.RELEASED.value
             )
         )
-        released_count = result.scalar() or 0
+        result.scalar() or 0
         
         result = await db.execute(
             select(func.count(EscrowTransaction.id))

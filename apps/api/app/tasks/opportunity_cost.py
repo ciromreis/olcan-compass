@@ -7,8 +7,7 @@ Este módulo contém tarefas assíncronas para:
 """
 import uuid
 import logging
-from typing import Dict, Any, List
-from decimal import Decimal
+from typing import Dict, Any
 
 from celery import Task
 from sqlalchemy import select
@@ -69,7 +68,7 @@ def calculate_opportunity_costs_daily_task(self: Task) -> Dict[str, Any]:
                     for user_id in user_ids:
                         try:
                             # Calcular momentum do usuário
-                            momentum = await calculate_user_momentum(user_id, db)
+                            await calculate_user_momentum(user_id, db)
                             
                             # Atualizar momentum_score na tabela users
                             # (assumindo que a coluna foi adicionada via migration)
@@ -103,7 +102,7 @@ def calculate_opportunity_costs_daily_task(self: Task) -> Dict[str, Any]:
                             # Calcular custo de oportunidade para cada oportunidade
                             for opp_id in opportunity_ids:
                                 try:
-                                    cost = await calculate_opportunity_cost(opp_id, user_id, db)
+                                    await calculate_opportunity_cost(opp_id, user_id, db)
                                     total_opportunities += 1
                                 except Exception as e:
                                     logger.warning(

@@ -8,7 +8,6 @@ import enum
 from datetime import datetime, timezone
 from sqlalchemy import DateTime, String, Text, ForeignKey, JSON, Enum, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
-from typing import List
 
 from app.db.base import Base
 

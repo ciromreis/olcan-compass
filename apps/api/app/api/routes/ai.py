@@ -8,7 +8,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, desc, and_
+from sqlalchemy import select, desc
 
 from app.core.auth import get_current_user
 from app.db.session import get_db
@@ -416,20 +416,20 @@ async def list_execution_logs(
     
     return [
         {
-            "id": str(l.id),
-            "template_id": str(l.template_id) if l.template_id else None,
-            "related_entity_type": l.related_entity_type,
-            "response_status": l.response_status,
-            "latency_ms": l.latency_ms,
-            "prompt_tokens": l.prompt_tokens,
-            "completion_tokens": l.completion_tokens,
-            "total_tokens": l.total_tokens,
-            "model_used": l.model_used,
-            "provider_used": l.provider_used,
-            "user_rating": l.user_rating,
-            "created_at": l.created_at.isoformat() if l.created_at else None
+            "id": str(log_item.id),
+            "template_id": str(log_item.template_id) if log_item.template_id else None,
+            "related_entity_type": log_item.related_entity_type,
+            "response_status": log_item.response_status,
+            "latency_ms": log_item.latency_ms,
+            "prompt_tokens": log_item.prompt_tokens,
+            "completion_tokens": log_item.completion_tokens,
+            "total_tokens": log_item.total_tokens,
+            "model_used": log_item.model_used,
+            "provider_used": log_item.provider_used,
+            "user_rating": log_item.user_rating,
+            "created_at": log_item.created_at.isoformat() if log_item.created_at else None
         }
-        for l in logs
+        for log_item in logs
     ]
 
 

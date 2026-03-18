@@ -1,12 +1,12 @@
 """Readiness Engine and Sprint Management API Routes"""
 
 from datetime import datetime, timezone, date, timedelta
-from typing import List, Optional
+from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, desc, and_
+from sqlalchemy import select, func, desc
 
 from app.core.auth import get_current_user
 from app.db.session import get_db
@@ -63,7 +63,7 @@ async def list_sprint_templates(
     db: AsyncSession = Depends(get_db)
 ):
     """List available sprint templates"""
-    query = select(SprintTemplate).where(SprintTemplate.is_active == True)
+    query = select(SprintTemplate).where(SprintTemplate.is_active)
     
     if gap_category:
         query = query.where(SprintTemplate.target_gap_category == gap_category)
@@ -87,7 +87,7 @@ async def get_sprint_template(
     result = await db.execute(
         select(SprintTemplate).where(
             SprintTemplate.id == template_id,
-            SprintTemplate.is_active == True
+            SprintTemplate.is_active
         )
     )
     template = result.scalar_one_or_none()
@@ -596,7 +596,7 @@ async def complete_task(
                 .where(
                     VerificationCredential.user_id == current_user.id,
                     VerificationCredential.credential_type == "readiness",
-                    VerificationCredential.is_active == True
+                    VerificationCredential.is_active
                 )
                 .order_by(desc(VerificationCredential.issued_at))
                 .limit(1)
@@ -732,7 +732,7 @@ async def list_gaps(
         query = query.where(GapAnalysis.route_id == route_id)
     
     if not include_resolved:
-        query = query.where(GapAnalysis.is_resolved == False)
+        query = query.where(not GapAnalysis.is_resolved)
     
     query = query.order_by(
         desc(GapAnalysis.severity == "critical"),
@@ -776,7 +776,7 @@ async def generate_sprint_recommendations(
     
     # Get active templates
     templates_result = await db.execute(
-        select(SprintTemplate).where(SprintTemplate.is_active == True)
+        select(SprintTemplate).where(SprintTemplate.is_active)
     )
     templates = templates_result.scalars().all()
     
@@ -923,7 +923,7 @@ async def get_readiness_overview(
     # Gap summary
     gaps_query = select(GapAnalysis).where(
         GapAnalysis.user_id == current_user.id,
-        GapAnalysis.is_resolved == False
+        not GapAnalysis.is_resolved
     )
     if route_id:
         gaps_query = gaps_query.where(GapAnalysis.route_id == route_id)
@@ -937,7 +937,7 @@ async def get_readiness_overview(
     resolved_result = await db.execute(
         select(func.count()).where(
             GapAnalysis.user_id == current_user.id,
-            GapAnalysis.is_resolved == True
+            GapAnalysis.is_resolved
         )
     )
     resolved_gaps = resolved_result.scalar()
@@ -1016,6 +1016,6 @@ async def get_sprint_activity(
     logs = result.scalars().all()
     
     return SprintActivityLogListResponse(
-        items=[SprintActivityLogResponse.model_validate(l) for l in logs],
+        items=[SprintActivityLogResponse.model_validate(log_item) for log_item in logs],
         total=len(logs)
     )

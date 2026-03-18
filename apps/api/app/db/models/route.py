@@ -3,8 +3,7 @@ import enum
 from datetime import datetime
 
 from sqlalchemy import DateTime, String, Boolean, Integer, Text, ForeignKey, JSON, Enum
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects import postgresql
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
 

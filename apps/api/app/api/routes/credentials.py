@@ -4,7 +4,6 @@ Endpoints para gerenciar credenciais de verificação criptográficas.
 """
 
 import uuid
-from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from slowapi import Limiter

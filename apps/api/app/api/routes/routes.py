@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -19,7 +18,6 @@ from app.db.models import (
 )
 from app.schemas.route import (
     RouteTemplateResponse,
-    RouteTemplateListResponse,
     RouteCreateRequest,
     RouteUpdateRequest,
     RouteResponse,
@@ -43,7 +41,7 @@ async def get_available_templates(
     """Obter modelos de rotas disponíveis"""
     result = await db.execute(
         select(RouteTemplate)
-        .where(RouteTemplate.is_active == True)
+        .where(RouteTemplate.is_active)
         .order_by(RouteTemplate.name_en)
     )
     templates = result.scalars().all()

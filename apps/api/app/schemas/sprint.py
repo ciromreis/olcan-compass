@@ -1,6 +1,6 @@
 """Readiness Engine and Sprint Management Schemas"""
 
-from datetime import datetime, date, timedelta
+from datetime import datetime, date
 from typing import Optional, List
 from uuid import UUID
 from enum import Enum

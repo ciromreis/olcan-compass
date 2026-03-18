@@ -13,7 +13,7 @@ import logging
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import AIJobQueue, PromptTemplate
+from app.db.models import AIJobQueue
 from app.core.ai_engines import (
     NarrativeAnalysisEngine,
     InterviewFeedbackEngine,
@@ -405,7 +405,7 @@ class AIJobProcessor:
         
         # Find matching templates
         templates_result = await self.db.execute(
-            select(SprintTemplate).where(SprintTemplate.is_active == True)
+            select(SprintTemplate).where(SprintTemplate.is_active)
         )
         templates = templates_result.scalars().all()
         
@@ -488,6 +488,6 @@ class AIJobWorker:
                         # Small delay between batches
                         await asyncio.sleep(1)
                         
-            except Exception as e:
+            except Exception:
                 logger.exception("Error in worker loop")
                 await asyncio.sleep(10)  # Back off on error

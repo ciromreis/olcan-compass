@@ -5,15 +5,14 @@ Calcula preferências temporais e recomenda rotas alinhadas com o ritmo do usuá
 
 import uuid
 from datetime import datetime, timezone, timedelta
-from typing import Optional, List, Dict, Any
+from typing import List, Dict, Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, func
 from sqlalchemy.orm import selectinload
 
-from app.db.models.psychology import PsychProfile, PsychAnswer, PsychQuestion, PsychCategory
+from app.db.models.psychology import PsychProfile
 from app.db.models.route import RouteTemplate, Route, RouteMilestone
-from app.db.models.user import User
 
 
 async def calculate_temporal_preference(
@@ -125,7 +124,7 @@ async def get_matched_routes(
     
     # Buscar todos os templates de rota ativos
     result = await db.execute(
-        select(RouteTemplate).where(RouteTemplate.is_active == True)
+        select(RouteTemplate).where(RouteTemplate.is_active)
     )
     templates = result.scalars().all()
     

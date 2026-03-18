@@ -2,10 +2,10 @@
 
 import uuid
 import enum
-from datetime import datetime, timezone, date, timedelta
+from datetime import datetime, timezone, date
 
-from sqlalchemy import DateTime, String, Text, ForeignKey, JSON, Enum, Float, Integer, Boolean, Date, Interval
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import DateTime, String, Text, ForeignKey, JSON, Enum, Float, Integer, Boolean, Date
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
 

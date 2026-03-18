@@ -9,12 +9,10 @@ from typing import List, Dict, Any, Optional
 from decimal import Decimal
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
-from sqlalchemy.orm import selectinload
+from sqlalchemy import select
 
 from app.db.models.application import Opportunity, UserApplication
 from app.db.models.economics import ScenarioSimulation
-from app.db.models.user import User
 
 
 class OpportunityScore:
@@ -49,11 +47,11 @@ async def calculate_feasible_frontier(
         Dict com simulation_id e pareto_opportunities
     """
     # Extrair constraints
-    budget_max = Decimal(str(constraints.get('budget_max', 100000)))
-    time_available_months = constraints.get('time_available_months', 12)
-    skill_level = constraints.get('skill_level', 50)
+    Decimal(str(constraints.get('budget_max', 100000)))
+    constraints.get('time_available_months', 12)
+    constraints.get('skill_level', 50)
     target_locations = constraints.get('target_locations', [])
-    preferred_industries = constraints.get('preferred_industries', [])
+    constraints.get('preferred_industries', [])
     
     # Buscar oportunidades que atendem constraints básicos
     query = select(Opportunity).where(Opportunity.status == 'published')

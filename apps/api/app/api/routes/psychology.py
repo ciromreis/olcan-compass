@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
@@ -20,15 +19,11 @@ from app.schemas.psychology import (
     PsychProfileResponse,
     PsychProfileUpdate,
     PsychQuestionResponse,
-    PsychQuestionListResponse,
     PsychSessionStartResponse,
-    PsychSessionProgressResponse,
-    PsychSessionCompleteResponse,
     PsychScoreHistoryResponse,
     PsychScoreHistoryListResponse,
     StartAssessmentRequest,
     SubmitAnswerRequest,
-    AssessmentSummaryResponse,
     PsychQuestionOption,
 )
 
@@ -97,7 +92,7 @@ async def start_assessment(
     """Iniciar uma nova sessão de avaliação psicológica"""
     # Count active questions
     result = await db.execute(
-        select(func.count(PsychQuestion.id)).where(PsychQuestion.is_active == True)
+        select(func.count(PsychQuestion.id)).where(PsychQuestion.is_active)
     )
     total_questions = result.scalar() or 0
     
@@ -158,7 +153,7 @@ async def get_next_question(
     # Get next question
     result = await db.execute(
         select(PsychQuestion)
-        .where(PsychQuestion.is_active == True)
+        .where(PsychQuestion.is_active)
         .order_by(PsychQuestion.display_order)
         .offset(session.current_question_index)
         .limit(1)

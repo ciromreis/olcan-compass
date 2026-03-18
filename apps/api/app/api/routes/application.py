@@ -6,7 +6,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, desc, and_, or_
+from sqlalchemy import select, func, desc, or_
 
 from app.core.auth import get_current_user
 from app.db.session import get_db
@@ -20,7 +20,6 @@ from app.db.models import (
     OpportunityType,
     OpportunityStatus,
     ApplicationStatus,
-    ApplicationDocumentType,
 )
 from app.schemas.application import (
     OpportunityCreate,
@@ -423,7 +422,7 @@ async def get_matches(
         select(OpportunityMatch)
         .where(
             OpportunityMatch.user_id == current_user.id,
-            OpportunityMatch.is_dismissed == False
+            not OpportunityMatch.is_dismissed
         )
         .order_by(desc(OpportunityMatch.match_score))
         .limit(limit)
@@ -514,14 +513,14 @@ async def get_dashboard_stats(
     
     # Count by status
     status_counts = {}
-    for status in ApplicationStatus:
+    for app_status in ApplicationStatus:
         count_result = await db.execute(
             select(func.count()).where(
                 UserApplication.user_id == current_user.id,
-                UserApplication.status == status
+                UserApplication.status == app_status
             )
         )
-        status_counts[status.value] = count_result.scalar()
+        status_counts[app_status.value] = count_result.scalar()
     
     total = sum(status_counts.values())
     

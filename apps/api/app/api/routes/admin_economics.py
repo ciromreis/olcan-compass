@@ -3,7 +3,7 @@
 Endpoints de analytics para administradores monitorarem métricas de negócio.
 """
 
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,7 +13,6 @@ from app.core.auth import get_current_user
 from app.db.session import get_db
 from app.db.models.user import User, UserRole
 from app.services import (
-    credentials as credentials_service,
     opportunity_cost as opp_cost_service,
     escrow as escrow_service,
     scenario_optimization as scenario_service,
@@ -65,7 +64,7 @@ async def get_credentials_dashboard(
     
     # Buscar credenciais com paginação
     from sqlalchemy import select, func
-    from app.db.models.economics import VerificationCredential, CredentialUsageTracking
+    from app.db.models.economics import VerificationCredential
     
     # Query base
     query = select(VerificationCredential)
@@ -77,7 +76,7 @@ async def get_credentials_dashboard(
     # Contar total antes da paginação
     count_query = select(func.count()).select_from(query.subquery())
     total_result = await db.execute(count_query)
-    total_count = total_result.scalar()
+    total_result.scalar()
     
     # Aplicar paginação
     offset = (page - 1) * page_size

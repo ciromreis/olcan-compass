@@ -12,7 +12,6 @@ from app.core.config import get_settings
 from app.core.security import verify_password
 from app.db.session import get_db
 from app.db.models.user import User
-from app.schemas.token import TokenData
 
 settings = get_settings()
 security = HTTPBearer()

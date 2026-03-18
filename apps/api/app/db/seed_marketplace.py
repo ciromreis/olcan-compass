@@ -15,7 +15,7 @@ from app.db.models.marketplace import (
     ServiceDeliveryMethod,
     PricingType,
 )
-from app.core.security.password import get_password_hash
+from app.core.security.password import hash_password
 
 
 SEED_PROVIDERS = [
@@ -213,8 +213,8 @@ async def seed_marketplace(db: AsyncSession) -> None:
     if count > 0:
         return
 
-    now = datetime.now(timezone.utc)
-    hashed = get_password_hash("DemoProvider123!")
+    datetime.now(timezone.utc)
+    hashed = hash_password("DemoProvider123!")
 
     for p in SEED_PROVIDERS:
         # Create provider user

@@ -469,7 +469,6 @@ async def forgot_password(
                 detail=str(exc),
             )
 
-    settings = get_settings()
     if settings.env != "production":
         return {
             "message": "Link de recuperação gerado (modo desenvolvimento)",

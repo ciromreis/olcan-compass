@@ -2,7 +2,7 @@
 
 import random
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
@@ -16,7 +16,6 @@ from app.db.models import (
     InterviewQuestion,
     InterviewSession,
     InterviewAnswer,
-    InterviewFeedbackTemplate,
     InterviewQuestionType,
     InterviewSessionStatus,
     InterviewAnswerStatus,
@@ -55,7 +54,7 @@ async def list_questions(
     db: AsyncSession = Depends(get_db)
 ):
     """List interview questions from the question bank"""
-    query = select(InterviewQuestion).where(InterviewQuestion.is_active == True)
+    query = select(InterviewQuestion).where(InterviewQuestion.is_active)
     
     if question_type:
         query = query.where(InterviewQuestion.question_type == question_type)
@@ -193,7 +192,7 @@ async def start_session(
     # Select questions
     query = select(InterviewQuestion).where(
         and_(
-            InterviewQuestion.is_active == True,
+            InterviewQuestion.is_active,
             InterviewQuestion.question_type != InterviewQuestionType.QUESTION_FOR_PANEL
         )
     )

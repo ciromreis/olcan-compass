@@ -3,10 +3,9 @@
 Endpoints para exportação e exclusão de dados do usuário conforme LGPD.
 """
 
-import uuid
 from datetime import datetime, timezone
 from typing import Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
 

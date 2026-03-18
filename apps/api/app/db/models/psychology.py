@@ -4,7 +4,6 @@ from datetime import datetime, timezone
 
 from sqlalchemy import DateTime, String, Boolean, Integer, Float, Text, ForeignKey, JSON, Enum
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.dialects import postgresql
 
 from app.db.base import Base
 

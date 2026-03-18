@@ -10,7 +10,6 @@ import logging
 from typing import Dict, Any
 
 from celery import Task
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.celery_app import celery_app
 from app.db.session import get_sessionmaker

@@ -10,10 +10,8 @@ from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
-from sqlalchemy.orm import selectinload
 
 from app.db.models.economics import VerificationCredential, CredentialUsageTracking
-from app.db.models.user import User
 from app.core.security.hashing import hash_user_identifier, hash_verification_data
 
 
@@ -248,7 +246,7 @@ async def get_user_credentials(
     if not include_expired:
         now = datetime.now(timezone.utc)
         query = query.where(
-            VerificationCredential.is_active == True,
+            VerificationCredential.is_active,
             VerificationCredential.revoked_at.is_(None),
             (VerificationCredential.expires_at.is_(None) | (VerificationCredential.expires_at > now))
         )
@@ -279,7 +277,7 @@ async def has_active_credential(
     
     query = select(VerificationCredential).where(
         VerificationCredential.user_id == user_id,
-        VerificationCredential.is_active == True,
+        VerificationCredential.is_active,
         VerificationCredential.revoked_at.is_(None),
         (VerificationCredential.expires_at.is_(None) | (VerificationCredential.expires_at > now))
     )
@@ -330,7 +328,7 @@ async def expire_old_credentials(db: AsyncSession) -> int:
     result = await db.execute(
         update(VerificationCredential)
         .where(
-            VerificationCredential.is_active == True,
+            VerificationCredential.is_active,
             VerificationCredential.expires_at <= now
         )
         .values(is_active=False)

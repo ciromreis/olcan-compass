@@ -13,7 +13,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.core.ai_service import (
-    get_ai_service,
     AICompletionRequest,
     AIMessage,
     AIProvider,

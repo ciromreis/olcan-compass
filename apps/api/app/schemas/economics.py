@@ -3,7 +3,7 @@
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional, List, Dict, Any
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 
 
 # ============================================================================

@@ -6,10 +6,10 @@ Configura logging estruturado usando structlog para melhor observabilidade.
 
 import logging
 import sys
-from typing import Any, Dict
+from typing import Any
 
 import structlog
-from structlog.types import EventDict, Processor
+from structlog.types import EventDict
 
 
 def add_app_context(logger: Any, method_name: str, event_dict: EventDict) -> EventDict:

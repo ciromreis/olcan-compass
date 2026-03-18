@@ -5,10 +5,10 @@ Provider profiles, service listings, booking system, and reviews.
 
 import uuid
 import enum
-from datetime import datetime, timezone, date, timedelta
+from datetime import datetime, timezone, date
 from decimal import Decimal
 
-from sqlalchemy import DateTime, String, Text, ForeignKey, JSON, Enum, Float, Integer, Boolean, Date, Numeric, Interval
+from sqlalchemy import DateTime, String, Text, ForeignKey, JSON, Enum, Float, Integer, Boolean, Date, Numeric
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
