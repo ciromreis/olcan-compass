@@ -20,10 +20,14 @@ async def validate_environment() -> None:
     if settings.env == "production":
         if not settings.frontend_url:
             errors.append("Missing required env var for production: FRONTEND_URL")
+        
+        email_warnings = []
         if not settings.email_from:
-            errors.append("Missing required env var for production: EMAIL_FROM")
+            email_warnings.append("EMAIL_FROM")
         if not settings.smtp_host:
-            errors.append("Missing required env var for production: SMTP_HOST")
+            email_warnings.append("SMTP_HOST")
+        if email_warnings:
+            print(f"Warning: email features may not work. Missing: {', '.join(email_warnings)}")
 
     if errors:
         raise RuntimeError("Environment validation failed:\n" + "\n".join(errors))
