@@ -1,0 +1,177 @@
+{
+  "colors": {
+    "void": {
+      "primary": "#001338",
+      "light": "#001A4D",
+      "lighter": "#002266",
+      "50": "#E6E8F0",
+      "100": "#B3B9D4",
+      "200": "#8089B8",
+      "300": "#4D5A9C",
+      "400": "#263A86",
+      "500": "#001A70",
+      "600": "#001766",
+      "700": "#001359",
+      "800": "#000F4D",
+      "900": "#000833"
+    },
+    "lux": {
+      "50": "#F5F5F7",
+      "100": "#E6E6EA",
+      "200": "#CCCCDB",
+      "300": "#B3B3CC",
+      "400": "#9999BD",
+      "500": "#8080AE",
+      "600": "#66669F",
+      "700": "#4D4D90",
+      "800": "#333381",
+      "900": "#1A1A72"
+    },
+    "lumina": {
+      "50": "#E3F2FD",
+      "100": "#BBDEFB",
+      "200": "#90CAF9",
+      "300": "#64B5F6",
+      "400": "#42A5F5",
+      "500": "#2196F3",
+      "600": "#1E88E5",
+      "700": "#1976D2",
+      "800": "#1565C0",
+      "900": "#0D47A1"
+    },
+    "ignis": {
+      "50": "#FFF3E0",
+      "100": "#FFE0B2",
+      "200": "#FFCC80",
+      "300": "#FFB74D",
+      "400": "#FFA726",
+      "500": "#FF9800",
+      "600": "#FB8C00",
+      "700": "#F57C00",
+      "800": "#EF6C00",
+      "900": "#E65100"
+    },
+    "neutral": {
+      "50": "#FAFAFA",
+      "100": "#F5F5F5",
+      "200": "#EEEEEE",
+      "300": "#E0E0E0",
+      "400": "#BDBDBD",
+      "500": "#9E9E9E",
+      "600": "#757575",
+      "700": "#616161",
+      "800": "#424242",
+      "900": "#212121"
+    },
+    "semantic": {
+      "success": "#4CAF50",
+      "warning": "#FFC107",
+      "error": "#F44336",
+      "info": "#2196F3",
+      "mirror": "#9C27B0"
+    }
+  },
+  "typography": {
+    "fonts": {
+      "heading": "'Merriweather Sans', sans-serif",
+      "body": "'Source Sans 3', sans-serif",
+      "mono": "'JetBrains Mono', monospace"
+    },
+    "scale": {
+      "h1": {
+        "desktop": "48px",
+        "mobile": "36px",
+        "lineHeight": "1.2",
+        "fontWeight": "700"
+      },
+      "h2": {
+        "desktop": "36px",
+        "mobile": "28px",
+        "lineHeight": "1.3",
+        "fontWeight": "600"
+      },
+      "h3": {
+        "desktop": "28px",
+        "mobile": "24px",
+        "lineHeight": "1.4",
+        "fontWeight": "600"
+      },
+      "h4": {
+        "desktop": "24px",
+        "mobile": "20px",
+        "lineHeight": "1.4",
+        "fontWeight": "600"
+      },
+      "body-large": {
+        "desktop": "18px",
+        "mobile": "16px",
+        "lineHeight": "1.6",
+        "fontWeight": "400"
+      },
+      "body": {
+        "desktop": "16px",
+        "mobile": "14px",
+        "lineHeight": "1.6",
+        "fontWeight": "400"
+      },
+      "body-sm": {
+        "desktop": "14px",
+        "mobile": "13px",
+        "lineHeight": "1.5",
+        "fontWeight": "400"
+      },
+      "caption": {
+        "desktop": "12px",
+        "mobile": "11px",
+        "lineHeight": "1.4",
+        "fontWeight": "400"
+      }
+    }
+  },
+  "spacing": {
+    "0": "0px",
+    "1": "4px",
+    "2": "8px",
+    "3": "12px",
+    "4": "16px",
+    "5": "20px",
+    "6": "24px",
+    "8": "32px",
+    "10": "40px",
+    "12": "48px",
+    "16": "64px",
+    "20": "80px",
+    "24": "96px",
+    "32": "128px"
+  },
+  "borderRadius": {
+    "none": "0px",
+    "sm": "4px",
+    "md": "8px",
+    "lg": "12px",
+    "xl": "16px",
+    "2xl": "24px",
+    "full": "9999px"
+  },
+  "shadows": {
+    "sm": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+    "md": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+    "lg": "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+    "xl": "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+    "glow": "0 0 20px rgba(33, 150, 243, 0.3)",
+    "card": "0 4px 12px rgba(0, 19, 56, 0.15)"
+  },
+  "transitions": {
+    "fast": "150ms",
+    "base": "250ms",
+    "slow": "350ms",
+    "slower": "500ms"
+  },
+  "breakpoints": {
+    "sm": "640px",
+    "md": "768px",
+    "lg": "1024px",
+    "xl": "1280px",
+    "2xl": "1536px"
+  }
+}

@@ -1,0 +1,355 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Olcan Brand Colors */
+  --olcan-navy-50: #E8E9EE;
+  --olcan-navy-100: #C5C8D4;
+  --olcan-navy-200: #9FA3B8;
+  --olcan-navy-300: #6B7097;
+  --olcan-navy-400: #4A507A;
+  --olcan-navy-500: #2C335A;
+  --olcan-navy-600: #21264D;
+  --olcan-navy-700: #151A33;
+  --olcan-navy-800: #0A0D1A;
+  --olcan-navy-900: #05060D;
+  
+  --olcan-brand-50: #E6EAF0;
+  --olcan-brand-100: #B3BFCE;
+  --olcan-brand-500: #001338;
+  --olcan-brand-700: #000D28;
+  
+  --olcan-silver-100: #F5F4F3;
+  --olcan-silver-500: #B3B3B3;
+  --olcan-cream-500: #E8E3D7;
+  
+  /* Semantic Colors */
+  --olcan-success: #3D8B5E;
+  --olcan-warning: #D4A026;
+  --olcan-error: #C4402A;
+  --olcan-info: #2E6B9E;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@300;400;500;600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@layer base {
+  :root {
+    /* Olcan brand surface tokens */
+    --surface-bg: #F2F0E9;
+    --surface-card: #FFFFFF;
+    --surface-elevated: #FFFFFF;
+    --surface-overlay: rgba(0, 19, 56, 0.5);
+    --surface-glass: rgba(255, 255, 255, 0.7);
+
+    /* Olcan brand text tokens */
+    --text-primary: #0A0D1A;
+    --text-secondary: #4A507A;
+    --text-muted: #8A8A8A;
+
+    /* Spring easing */
+    --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* Olcan brand accent */
+    --brand-primary: #001338;
+    --brand-accent: #21264D;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    color: var(--text-primary);
+    background-color: var(--surface-bg);
+    font-family: 'Source Sans 3', var(--font-body), sans-serif;
+  }
+
+  /* Olcan brand heading typography */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Merriweather Sans', var(--font-heading), sans-serif;
+    color: var(--text-primary);
+  }
+
+  /* Selection color matching brand palette */
+  ::selection {
+    background-color: rgba(0, 19, 56, 0.15);
+    color: #0A0D1A;
+  }
+}
+
+@layer components {
+  /* Animated Orbs Background */
+  .orbs-background {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.3;
+    animation: float 20s infinite ease-in-out;
+  }
+  
+  .orb-1 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--olcan-navy-500), transparent);
+    top: -200px;
+    left: -200px;
+    animation-delay: 0s;
+  }
+  
+  .orb-2 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, var(--olcan-brand-500), transparent);
+    bottom: -150px;
+    right: -150px;
+    animation-delay: 7s;
+  }
+  
+  .orb-3 {
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, var(--olcan-sage-500), transparent);
+    top: 50%;
+    right: 10%;
+    animation-delay: 14s;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -30px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+  }
+  
+  /* Enhanced Liquid Glass */
+  .liquid-glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+      0 8px 32px rgba(10, 13, 26, 0.1),
+      0 2px 8px rgba(10, 13, 26, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8),
+      inset 0 -1px 0 rgba(10, 13, 26, 0.05);
+    position: relative;
+  }
+  
+  .liquid-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, transparent 50%, rgba(10, 13, 26, 0.02) 100%);
+    pointer-events: none;
+  }
+  
+  .liquid-glass-hover {
+    transition: all 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  .liquid-glass-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 
+      0 16px 48px rgba(10, 13, 26, 0.15),
+      0 4px 16px rgba(10, 13, 26, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      inset 0 -1px 0 rgba(10, 13, 26, 0.08);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+  
+  /* Deep Glass Effect */
+  .glass-deep {
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.85) 0%, 
+      rgba(242, 240, 233, 0.75) 100%);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 
+      0 20px 60px rgba(10, 13, 26, 0.12),
+      0 8px 24px rgba(10, 13, 26, 0.08),
+      inset 0 2px 0 rgba(255, 255, 255, 0.9),
+      inset 0 -2px 0 rgba(10, 13, 26, 0.05);
+  }
+  /* Noise texture overlay for tactile magazine feel */
+  .noise-overlay {
+    position: relative;
+  }
+  .noise-overlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+    border-radius: inherit;
+  }
+
+  /* Liquid Glass Panel - Enhanced glassmorphism */
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 
+      0 8px 32px rgba(0, 19, 56, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6),
+      inset 0 -1px 0 rgba(0, 19, 56, 0.05);
+  }
+
+  /* Dark Glass Panel - For dark sections */
+  .glass-panel-dark {
+    background: rgba(0, 19, 56, 0.85);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  /* Liquid Glass Card - Enhanced with edge highlights */
+  .card-surface {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 16px;
+    border: 1px solid rgba(0, 19, 56, 0.08);
+    box-shadow: 
+      0 2px 8px rgba(0, 19, 56, 0.04),
+      0 1px 3px rgba(0, 19, 56, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    transition: all 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+  }
+  
+  .card-surface::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(0, 19, 56, 0.05));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 250ms ease;
+  }
+  
+  .card-surface:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 8px 24px rgba(0, 19, 56, 0.08),
+      0 4px 8px rgba(0, 19, 56, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    border-color: rgba(0, 19, 56, 0.12);
+  }
+  
+  .card-surface:hover::before {
+    opacity: 1;
+  }
+
+  /* Frosted Glass Overlay */
+  .frosted-overlay {
+    background: rgba(242, 240, 233, 0.8);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+  }
+
+  /* Focus ring consistent with brand palette */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2 focus-visible:ring-offset-bone-500;
+  }
+
+  /* Liquid button effect */
+  .btn-liquid {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--olcan-navy-600) 0%, var(--olcan-brand-500) 100%);
+    backdrop-filter: blur(10px);
+    box-shadow: 
+      0 4px 16px rgba(33, 38, 77, 0.3),
+      0 2px 8px rgba(0, 19, 56, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+    transition: all 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .btn-liquid:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 8px 24px rgba(33, 38, 77, 0.4),
+      0 4px 12px rgba(0, 19, 56, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+  
+  .btn-liquid:active {
+    transform: translateY(0);
+    box-shadow: 
+      0 2px 8px rgba(33, 38, 77, 0.3),
+      inset 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+  
+  .btn-liquid::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 250ms ease;
+  }
+  
+  .btn-liquid:hover::before {
+    opacity: 1;
+  }
+  
+  .btn-liquid:hover {
+    transform: translateY(-1px);
+    box-shadow: 
+      0 6px 20px rgba(0, 19, 56, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  /* Shimmer effect for loading states */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Emphasis text for editorial moments */
+  .text-emphasis {
+    font-family: 'Source Sans 3', var(--font-emphasis), sans-serif;
+    font-style: italic;
+  }
+}

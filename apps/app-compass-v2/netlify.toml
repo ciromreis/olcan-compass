@@ -1,0 +1,17 @@
+[build]
+  # When Netlify Base directory is `apps/web-v2`, paths are relative to it.
+  command = "pnpm --filter @olcan/web-v2 build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[functions]
+  included_files = ["node_modules/styled-jsx/**"]
+
+[build.environment]
+  NODE_VERSION = "20"
+  PNPM_VERSION = "10.15.1"
+  NETLIFY_USE_PNPM = "true"
+  NEXT_PUBLIC_API_URL = "https://olcan-compass-api.onrender.com"
+  NEXT_PUBLIC_APP_URL = "https://compass.olcan.com.br"

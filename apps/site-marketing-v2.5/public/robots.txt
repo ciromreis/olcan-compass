@@ -1,0 +1,5 @@
+# Olcan - Marketing Site
+User-agent: *
+Allow: /
+
+Sitemap: https://olcan.com/sitemap.xml

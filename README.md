@@ -1,56 +1,48 @@
-# Olcan Compass
+# 🧭 Olcan Compass Monorepo
 
-> **Mobility Intelligence for the Metamodern Era.**
+Welcome to the central repository for the **Olcan Compass Ecosystem**. This monorepo is organized to separate production stability from active growth, following a high-signal "Intelligence Hub" structure.
 
-Olcan Compass is a high-fidelity intelligence platform designed for international students and professionals navigating cross-border journeys. We move beyond simple "application trackers" by integrating psychological profiling, narrative synthesis, and strategic marketplace interventions.
+## 🚀 Mission Status: v2.5 Transition
+We are currently in the middle of a major transition from the stable v2 environment to the consolidated v2.5 platform (Marketplace + Career Companions).
 
----
-
-## 🌌 The Vision
-
-We believe that professional and academic mobility is not just a logistical challenge, but a psychological and strategic one. Olcan Compass acts as a **Metamodern Navigator**, helping users:
-
-1.  **Understand Themselves**: Using the *Mirror* engine to map confidence, anxiety, and behavioral archetypes.
-2.  **Forge the Story**: Synthesizing raw experience into powerful professional narratives through the *Forge*.
-3.  **Plan the Route**: Constraint-based pathfinding to eliminate decision paralysis.
-4.  **Engage the Ecosystem**: Connecting with verified providers in our curated *Marketplace*.
-
-## 💠 MMXD Philosophy
-
-Our **Metamodern Experience Design (MMXD)** philosophy prioritizes visual excellence and depth. We utilize fluid interfaces, dark-mode aesthetics (Void, Lux, Lumina), and interactive data visualizations to lower cognitive load while capturing deep behavioral telemetry.
-
-- **Void**: Deep navy backgrounds for focus.
-- **Lux**: Silver and chrome accents for premium feel.
-- **Lumina**: Vibrant blue accents for calls to action.
+- **Production (v2)**: `apps/app-compass-v2` | `apps/api-core-v2` -> **Stable / Leave Unchanged**
+- **Active Development (v2.5)**: `apps/site-marketing-v2.5` -> **High Activity**
 
 ---
 
-## 📂 Repository Navigation
+## 📂 Knowledge Vault (The Intelligence Layer)
 
-- **[Master Setup Guide](docs/SETUP.md)**: Technical instructions for running the stack (Docker, API, Web).
-- **[Documentation Index](docs/INDEX.md)**: The map of all PRDs, audits, and reference material.
-- **[Backoffice & AI Guide](AGENTS.md)**: Workflow instructions for AI assistants and contributors.
+All session history and "consolidations of consolidations" have been moved to prioritize the **Active Mission**.
 
-## 🏛️ Architecture & Layout
-
-```text
-olcan-compass/
-├── apps/
-│   ├── api/          # FastAPI Backend (Python)
-│   └── web-v2/       # Next.js/React Frontend (The new standard)
-├── docs/             # Knowledge base, PRDs, and Runbooks
-├── .agents/          # Workspace Intelligence (Skills & Specs)
-├── archive/          # Legacy prototypes (Read-only)
-└── scripts/          # Maintenance & Deployment utility
-```
+| Category | Purpose | Key Document |
+| :--- | :--- | :--- |
+| **`00_Mission_Control`** | Current state, tasks, and audit. | [ULTIMATE_TRUTH_V2.5.md](./00_Mission_Control/ULTIMATE_TRUTH_V2.5.md) |
+| **`01_Business_Strategy`** | Marketing, Copywriting, and Architecture. | [MARKETING_ARCHITECTURE.md](./01_Business_Strategy/MARKETING_WEBSITE_ARCHITECTURE.md) |
+| **`02_Tech_Orientation`** | Dev guides and implementation logs. | [DEVELOPMENT_GUIDE.md](./02_Tech_Orientation/DEVELOPMENT_GUIDE.md) |
+| **`90_Archive_Logs`** | Session history and past handoff reports. | [SESSION_CHRONICLE.md](./90_Archive_Logs/Session_History/CONSOLIDATED_CHRONICLE.md) |
 
 ---
 
-## 🚀 Future Roadmap
+## 🛠️ Quick Start
 
-- **Economic Closure**: Deterministic pruning of mobility routes based on financial constraints.
-- **AI-Driven Mock Interviews**: High-fidelity session analysis for interview prep.
-- **Organization Onboarding**: B2B tools for universities and relocation firms.
+### For Developers
+1. **Explore the Mission**: Read `00_Mission_Control/ULTIMATE_TRUTH_V2.5.md`.
+2. **Setup**: Run `pnpm install` at root.
+3. **Launch**: Use the scripts below to start specific environments.
+
+### Operational Scripts
+- `./START_APPLICATION.sh`: Standard development boot.
+- `./BUILD_AND_RUN.sh`: Full build and local serve.
+- `./QUICK_DEPLOY.sh`: Push to production/staging.
 
 ---
-© 2026 Olcan. All rights reserved.
+
+## 🛡️ Guidelines
+1. **Context Preservation**: Always update `00_Mission_Control/CURRENT_STATUS.md` at the end of each session.
+2. **Pillar Integrity**: Do not create new documentation in the root. Use the designated Pillars.
+3. **Production Safety**: Verify any changes to the Shared UI library (`packages/ui-components`) against the v2 production app.
+
+---
+
+**Last Organized**: March 28, 2026  
+**Identity**: Olcan Catalyst AI
