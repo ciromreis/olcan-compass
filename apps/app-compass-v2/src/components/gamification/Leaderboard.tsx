@@ -144,7 +144,7 @@ export function Leaderboard({
                 <div className="w-24 h-24 rounded-[1.5rem] bg-white border-2 border-slate-200 shadow-glass flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform duration-500">
                   <AuraVisual 
                     evolutionStage={podium[1].companionStage} 
-                    archetype="global_citizen" 
+                    archetype="global_nomad"
                     name={podium[1].companionName}
                     level={podium[1].level}
                     stats={{ power: 5, wisdom: 5, charisma: 5, agility: 5, battlesWon: 0, battlesLost: 0 }}
@@ -178,7 +178,7 @@ export function Leaderboard({
                 >
                   <AuraVisual 
                     evolutionStage={podium[0].companionStage} 
-                    archetype="global_citizen" 
+                    archetype="global_nomad"
                     name={podium[0].companionName}
                     level={podium[0].level}
                     stats={{ power: 5, wisdom: 5, charisma: 5, agility: 5, battlesWon: 0, battlesLost: 0 }}
@@ -214,7 +214,7 @@ export function Leaderboard({
                 <div className="w-20 h-20 rounded-2xl bg-white border-2 border-amber-100 shadow-glass flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform duration-500">
                   <AuraVisual 
                     evolutionStage={podium[2].companionStage} 
-                    archetype="global_citizen" 
+                    archetype="global_nomad"
                     name={podium[2].companionName}
                     level={podium[2].level}
                     stats={{ power: 5, wisdom: 5, charisma: 5, agility: 5, battlesWon: 0, battlesLost: 0 }}
@@ -257,7 +257,7 @@ export function Leaderboard({
               <div className="w-14 h-14 rounded-xl bg-ink-950/5 flex items-center justify-center overflow-hidden border border-bone-500/10 shadow-sm group-hover:scale-110 transition-transform duration-500">
                 <AuraVisual 
                   evolutionStage={entry.companionStage} 
-                  archetype="global_citizen" 
+                  archetype="global_nomad"
                   name={entry.companionName}
                   level={entry.level}
                   stats={{ power: 5, wisdom: 5, charisma: 5, agility: 5, battlesWon: 0, battlesLost: 0 }}
@@ -308,7 +308,7 @@ export function Leaderboard({
               <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center overflow-hidden border border-white/10">
                 <AuraVisual 
                   evolutionStage={currentUserEntry.companionStage} 
-                  archetype="global_citizen" 
+                  archetype="global_nomad"
                   name={currentUserEntry.companionName}
                   level={currentUserEntry.level}
                   stats={{ power: 5, wisdom: 5, charisma: 5, agility: 5, battlesWon: 0, battlesLost: 0 }}
@@ -372,7 +372,7 @@ export function LeaderboardPreview({
             <div className="w-10 h-10 rounded-lg bg-ink-950/5 flex items-center justify-center overflow-hidden border border-bone-500/10">
               <AuraVisual 
                 evolutionStage={entry.companionStage} 
-                archetype="global_citizen" 
+                archetype="global_nomad"
                 name={entry.companionName}
                 level={entry.level}
                 stats={{ power: 5, wisdom: 5, charisma: 5, agility: 5, battlesWon: 0, battlesLost: 0 }}

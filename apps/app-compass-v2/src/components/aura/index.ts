@@ -7,4 +7,4 @@
 // Core Components
 export { EvolutionCheck } from './EvolutionCheck'
 export { EvolutionCeremony, EvolutionNotification } from './EvolutionCeremony'
-export { CompanionVisual, CompanionAvatar, EvolutionBadge } from './CompanionVisual'
+export { AuraVisual } from './AuraVisual'

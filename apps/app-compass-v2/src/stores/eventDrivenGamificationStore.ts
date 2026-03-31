@@ -23,7 +23,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import type { CompanionEvent } from './canonicalCompanionStore'
+import type { AuraEvent as CompanionEvent } from './canonicalCompanionStore'
 
 // ============================================================================
 // TYPES - Achievement and Quest System

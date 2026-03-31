@@ -214,7 +214,6 @@ export const useErrorStore = create<ErrorState>()(
 )
 
 // Hooks for easier usage
-export const useErrorStore = () => useErrorStore()
 export const useErrorActions = () => useErrorStore(state => state)
 
 // Utility functions

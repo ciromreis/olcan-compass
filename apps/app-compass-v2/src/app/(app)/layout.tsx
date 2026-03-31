@@ -35,6 +35,7 @@ import {
   History,
   MessageSquare,
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { useAuthStore } from "@/stores/auth";
 import { useApplicationStore } from "@/stores/applications";
 import { useMarketplaceStore } from "@/stores/canonicalMarketplaceProviderStore";
