@@ -15,6 +15,11 @@ const config: Config = {
         gold: tokens.colors.gold,
         silver: tokens.colors.silver,
         slate: tokens.colors.slate,
+
+        // v2 component palette (Button, Badge, Input, etc.)
+        brand: tokens.colors.brand,
+        cream: tokens.colors.cream,
+        clay: tokens.colors.clay,
         
         // Semantic
         success: tokens.colors.semantic.success,
@@ -126,6 +131,7 @@ const config: Config = {
         "slide-up": "slideUp 350ms cubic-bezier(0.23, 1, 0.32, 1)",
         "scale-in": "scaleIn 250ms cubic-bezier(0.23, 1, 0.32, 1)",
         "glass-reveal": "glassReveal 500ms ease-out",
+        reveal: "reveal 400ms cubic-bezier(0.23, 1, 0.32, 1) both",
       },
       keyframes: {
         fadeIn: {
@@ -143,6 +149,10 @@ const config: Config = {
         glassReveal: {
           "0%": { opacity: "0", backdropFilter: "blur(0px)" },
           "100%": { opacity: "1", backdropFilter: "blur(24px)" },
+        },
+        reveal: {
+          "0%": { opacity: "0", transform: "translateY(8px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
       },
     },
