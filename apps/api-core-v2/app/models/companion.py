@@ -13,21 +13,24 @@ class Companion(Base):
     
     # Basic Info
     name = Column(String(100), nullable=False)
-    type = Column(String(50), nullable=False)  # strategist, innovator, creator, etc.
-    
+    # archetype stores the canonical slug (e.g. 'institutional_escapee', 'scholarship_cartographer')
+    archetype = Column(String(50), nullable=False, server_default="institutional_escapee")
+    type = Column(String(50), nullable=True)  # legacy field, kept for backward compat
+
     # Progression
     level = Column(Integer, default=1, nullable=False)
     xp = Column(Integer, default=0, nullable=False)
     xp_to_next = Column(Integer, default=500, nullable=False)
     evolution_stage = Column(String(20), default="egg", nullable=False)  # egg, sprout, young, mature, master, legendary
-    
+
     # Stats & Abilities
     abilities = Column(JSON, default=list)  # List of ability objects
     stats = Column(JSON, default=dict)  # power, wisdom, charisma, agility
-    
-    # Health & Energy
+
+    # Health, Happiness & Energy
     current_health = Column(Float, default=100.0, nullable=False)
     max_health = Column(Float, default=100.0, nullable=False)
+    happiness = Column(Float, default=100.0, nullable=False)
     energy = Column(Float, default=100.0, nullable=False)
     max_energy = Column(Float, default=100.0, nullable=False)
     

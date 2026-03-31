@@ -54,22 +54,23 @@ async def register(
     db: AsyncSession = Depends(get_db)
 ):
     """Register a new user"""
-    # Check if username exists
-    existing_user = await get_user_by_username(db, user_data.username)
-    if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username already registered"
-        )
-    
-    # Check if email exists
+    # Check if email exists (primary uniqueness check)
     existing_email = await get_user_by_email(db, user_data.email)
     if existing_email:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered"
         )
-    
+
+    # Ensure derived username is unique — append random suffix if collision
+    import uuid as _uuid
+    derived = user_data.get_username()
+    existing_user = await get_user_by_username(db, derived)
+    if existing_user:
+        derived = f"{derived}_{_uuid.uuid4().hex[:6]}"
+        # inject into user_data so create_user picks it up
+        user_data = user_data.model_copy(update={"username": derived})
+
     # Create user
     user = await create_user(db, user_data)
     return user

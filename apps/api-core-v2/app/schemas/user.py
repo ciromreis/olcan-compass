@@ -9,12 +9,18 @@ from datetime import datetime
 
 class UserBase(BaseModel):
     email: EmailStr
-    username: str
+    username: Optional[str] = None  # auto-derived from email if not provided
     full_name: Optional[str] = None
 
 
 class UserCreate(UserBase):
     password: str = Field(..., min_length=8)
+
+    def get_username(self) -> str:
+        """Return provided username or derive one from the email prefix."""
+        if self.username:
+            return self.username
+        return self.email.split("@")[0]
 
 
 class UserUpdate(BaseModel):

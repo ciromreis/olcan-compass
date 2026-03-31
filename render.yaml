@@ -2,7 +2,7 @@ services:
   - type: web
     name: olcan-compass-api
     env: docker
-    rootDir: apps/api
+    rootDir: apps/api-core-v2
     plan: free
     autoDeploy: true
     envVars:
