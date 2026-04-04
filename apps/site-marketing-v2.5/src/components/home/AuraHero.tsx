@@ -41,7 +41,7 @@ export default function AuraHero() {
           >
             <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-ink-500/5 border border-ink-500/10">
               <Orbit className="w-4 h-4 text-gold-600 animate-spin-slow" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-ink-400">Arquiteto de Prontidão Global</span>
+              <span className="text-[10px] font-bold uppercase tracking-wide text-ink-400">Arquiteto de Prontidão Global</span>
             </div>
             
             <h1 className="font-display text-7xl sm:text-8xl lg:text-9xl text-ink-500 leading-[0.85] tracking-tighter">
@@ -111,8 +111,8 @@ export default function AuraHero() {
                     <Fingerprint className="w-8 h-8 text-gold-500" />
                   </div>
                   <div>
-                    <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-ink-300 mb-1">PROTOCOLO ATIVO</div>
-                    <div className="text-sm font-bold text-ink-500 uppercase tracking-[0.2em]">Olcan Global Passport</div>
+                    <div className="text-[10px] font-bold uppercase tracking-wide text-ink-300 mb-1">PROTOCOLO ATIVO</div>
+                    <div className="text-sm font-bold text-ink-500 uppercase tracking-wide">Olcan Global Passport</div>
                   </div>
                 </div>
                 <Zap className="w-6 h-6 text-gold-500 fill-gold-500 opacity-20" />
@@ -121,14 +121,14 @@ export default function AuraHero() {
               {/* Archetype Data */}
               <div className="space-y-10 flex-1">
                 <div className="space-y-2">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.4em] text-ink-300">ARQUÉTIPO</div>
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-ink-300">ARQUÉTIPO</div>
                   <div className="text-5xl font-display text-ink-500 tracking-tight italic">Soberania</div>
                 </div>
 
                 <div className="p-8 rounded-[2.5rem] bg-ink-500 text-white shadow-2xl relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-gold-400/20 rounded-full blur-3xl" />
                   <div className="relative z-10 flex justify-between items-center mb-6">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold-400">Densidade de Prontidão</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wide text-gold-400">Densidade de Prontidão</span>
                     <span className="text-sm font-bold">92%</span>
                   </div>
                   <div className="h-1 bg-white/10 rounded-full overflow-hidden mb-6">
@@ -141,11 +141,11 @@ export default function AuraHero() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
-                      <div className="text-[9px] font-bold uppercase tracking-widest text-white/40 mb-1">Status de Visto</div>
+                      <div className="text-caption font-bold uppercase tracking-widest text-white/40 mb-1">Status de Visto</div>
                       <div className="text-[11px] font-bold">D8 Digital Nomad</div>
                     </div>
                     <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
-                      <div className="text-[9px] font-bold uppercase tracking-widest text-white/40 mb-1">Jurisdição</div>
+                      <div className="text-caption font-bold uppercase tracking-widest text-white/40 mb-1">Jurisdição</div>
                       <div className="text-[11px] font-bold">Portugal 🇵🇹</div>
                     </div>
                   </div>
@@ -160,8 +160,8 @@ export default function AuraHero() {
                   ))}
                 </div>
                 <div className="text-right">
-                  <div className="text-[9px] font-bold uppercase tracking-widest mb-1">IDENTITY HASH</div>
-                  <div className="text-[9px] font-mono font-bold">AURA-X-992-MMXD-2026</div>
+                  <div className="text-caption font-bold uppercase tracking-widest mb-1">IDENTITY HASH</div>
+                  <div className="text-caption font-mono font-bold">AURA-X-992-MMXD-2026</div>
                 </div>
               </div>
             </motion.div>

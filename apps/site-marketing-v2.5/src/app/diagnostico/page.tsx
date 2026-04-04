@@ -134,7 +134,7 @@ export default function DiagnosticoPage() {
                     <div className="p-2 rounded-xl bg-olcan-navy/5 border border-olcan-navy/10">
                       <Compass className="w-5 h-5 text-olcan-navy" />
                     </div>
-                    <span className="text-olcan-navy/40 text-[10px] font-bold uppercase tracking-[0.2em]">Intelligência de Posicionamento</span>
+                    <span className="text-olcan-navy/40 text-[10px] font-bold uppercase tracking-wide">Intelligência de Posicionamento</span>
                   </div>
                   <div className="px-3 py-1 rounded-lg bg-olcan-navy/5 border border-olcan-navy/10 text-olcan-navy/40 text-[10px] font-mono tracking-tighter">
                     STEP {current + 1} / {questions.length}

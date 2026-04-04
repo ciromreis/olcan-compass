@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import EnhancedNavbar from '@/components/layout/EnhancedNavbar';
 import EnhancedFooter from '@/components/layout/EnhancedFooter';
 import { Compass, Globe, Users, Award, Heart, Zap, Target, Shield, ArrowRight } from 'lucide-react';
@@ -89,17 +90,32 @@ export default function SobrePage() {
               </h2>
               <div className="space-y-6 text-lg text-olcan-navy/70 font-medium leading-relaxed">
                 <p>
-                  Através da Metodologia Olcan, construímos pontes entre o potencial local e as 
-                  necessidades globais. Não acreditamos em sorte — acreditamos em 
-                  estratégia, rigor técnico e inteligência de rede.
+                  Todo profissional brasileiro que já quis trabalhar fora sabe a sensação:
+                  talento sobra, estratégia falta. A Olcan nasceu para preencher esse espaço —
+                  não com promessas de vida fácil no exterior, mas com método real, orientação
+                  honesta e uma rede de pessoas que já fizeram a travessia.
                 </p>
                 <p>
-                  Garantimos que brasileiros qualificados tenham acesso às mesmas ferramentas 
-                  e diagnósticos utilizados pela elite global para construir carreiras sem fronteiras.
+                  Fundada por quem viveu essa frustração na pele, democratizamos o conhecimento
+                  que antes só chegava a quem tinha sorte de conhecer a pessoa certa. Aqui,
+                  você encontra o mapa que ninguém te deu.
                 </p>
               </div>
             </div>
             
+            <div className="space-y-6">
+              {/* Mission image */}
+              <div className="rounded-[2rem] overflow-hidden aspect-video relative shadow-2xl shadow-olcan-navy/10">
+                <Image
+                  src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&q=80"
+                  alt="Profissionais internacionais colaborando"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 45vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-olcan-navy/20 to-transparent" />
+              </div>
+
             <div className="grid grid-cols-2 gap-6">
               {[
                 { label: 'Vidas transformadas', value: '500+' },
@@ -113,6 +129,7 @@ export default function SobrePage() {
                 </div>
               ))}
             </div>
+            </div> {/* end space-y-6 */}
           </div>
         </div>
       </section>
@@ -174,10 +191,86 @@ export default function SobrePage() {
         </div>
       </section>
 
+      {/* CEO Section */}
+      <section className="py-32 bg-cream-50 relative overflow-hidden">
+        <div className="absolute inset-0 bg-hero-grain opacity-40 mix-blend-multiply pointer-events-none" />
+        <div className="container-site relative z-10 mx-auto px-6 lg:px-12 w-full max-w-7xl">
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
+            <div className="space-y-8">
+              <div className="liquid-glass px-5 py-2 inline-flex items-center gap-3">
+                <Users className="w-4 h-4 text-olcan-navy" />
+                <span className="label-xs text-olcan-navy/60">Fundador & CEO</span>
+              </div>
+              <h2 className="font-display text-5xl md:text-6xl text-olcan-navy leading-[1.1] tracking-tight">
+                Conheça <br />
+                <span className="italic font-light text-brand-600 font-serif">Ciro Moraes.</span>
+              </h2>
+              <div className="space-y-6 text-lg text-olcan-navy/70 font-medium leading-relaxed">
+                <p>
+                  A Olcan nasceu da jornada pessoal de Ciro Moraes — um profissional brasileiro 
+                  que enfrentou as barreiras invisíveis do mercado global e decidiu transformar 
+                  esse conhecimento em uma plataforma acessível para todos.
+                </p>
+                <p>
+                  De 2018 até hoje, Ciro construiu um ecossistema completo de ferramentas, 
+                  cursos e mentorias que já ajudaram mais de 500 profissionais a cruzarem 
+                  fronteiras com método e estratégia real.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-4 pt-4">
+                <Link href="/sobre/ceo" className="btn-primary group">
+                  Conhecer a história completa
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <a
+                  href="https://zenklub.com.br/coaches/ciro-moraes/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-secondary"
+                >
+                  Agendar mentoria
+                </a>
+              </div>
+            </div>
+            
+            <div className="card-olcan p-10 border-white/60">
+              <div className="space-y-8">
+                <div className="text-center pb-8 border-b border-olcan-navy/5">
+                  <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-6 ring-4 ring-brand-500/20 shadow-xl">
+                    <Image
+                      src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&q=80"
+                      alt="Ciro Moraes"
+                      width={96}
+                      height={96}
+                      className="object-cover object-top w-full h-full"
+                    />
+                  </div>
+                  <h3 className="font-display text-3xl text-olcan-navy italic mb-2">Ciro Moraes dos Reis</h3>
+                  <p className="text-sm text-olcan-navy/50 font-bold uppercase tracking-widest">Fundador & CEO · Olcan</p>
+                </div>
+                <div className="space-y-4">
+                  {[
+                    { label: "Profissionais impactados", value: "500+" },
+                    { label: "Países alcançados", value: "30+" },
+                    { label: "Anos de experiência", value: "6+" },
+                    { label: "Taxa de sucesso", value: "85%" },
+                  ].map((stat, i) => (
+                    <div key={i} className="flex items-center justify-between py-3 border-b border-olcan-navy/5 last:border-0">
+                      <span className="text-sm text-olcan-navy/60 font-medium">{stat.label}</span>
+                      <span className="text-2xl font-bold text-olcan-navy tracking-tight">{stat.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-32">
         <div className="container-site mx-auto px-6 lg:px-12 w-full max-w-7xl">
-          <div className="liquid-glass-strong rounded-[3rem] p-12 md:p-24 text-center relative overflow-hidden bg-olcan-navy">
+          <div className="rounded-[3rem] p-12 md:p-24 text-center relative overflow-hidden" style={{ background: 'linear-gradient(145deg, #001338 0%, #001a4d 50%, #001338 100%)' }}>
             <div className="absolute inset-0 bg-hero-grain opacity-20 mix-blend-overlay pointer-events-none" />
             <div className="absolute -top-24 -right-24 w-96 h-96 bg-brand-500/10 rounded-full blur-[120px] pointer-events-none" />
             

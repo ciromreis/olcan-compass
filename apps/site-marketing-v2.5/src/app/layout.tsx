@@ -35,7 +35,7 @@ export const metadata: Metadata = {
       "Cursos, mentorias e ferramentas para sua mobilidade internacional. Transforme seu sonho de carreira global em realidade.",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/og?title=Olcan+%7C+Capacita%C3%A7%C3%A3o+Internacional&subtitle=Sua+Carreira+Sem+Fronteiras",
         width: 1200,
         height: 630,
         alt: "Olcan - Capacitação Internacional",
@@ -72,6 +72,8 @@ export default function RootLayout({
 }) {
   const gaId = process.env.NEXT_PUBLIC_GA_ID || '';
   const mauticUrl = process.env.NEXT_PUBLIC_MAUTIC_URL || '';
+  const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID || '';
+  const googleAdsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || '';
 
   return (
     <html lang="pt-BR">
@@ -96,6 +98,42 @@ export default function RootLayout({
           </>
         )}
         
+        {/* Meta Pixel */}
+        {metaPixelId && (
+          <Script id="meta-pixel" strategy="afterInteractive">
+            {`
+              !function(f,b,e,v,n,t,s)
+              {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+              n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+              if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+              n.queue=[];t=b.createElement(e);t.async=!0;
+              t.src=v;s=b.getElementsByTagName(e)[0];
+              s.parentNode.insertBefore(t,s)}(window, document,'script',
+              'https://connect.facebook.net/en_US/fbevents.js');
+              fbq('init', '${metaPixelId}');
+              fbq('track', 'PageView');
+            `}
+          </Script>
+        )}
+
+        {/* Google Ads Conversion Tracking */}
+        {googleAdsId && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${googleAdsId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-ads" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${googleAdsId}');
+              `}
+            </Script>
+          </>
+        )}
+
         {/* Mautic Tracking Script */}
         {mauticUrl && (
           <Script

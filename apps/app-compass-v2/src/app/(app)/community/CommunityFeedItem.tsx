@@ -70,7 +70,7 @@ export function CommunityFeedItem({
             <div className="grid gap-3 rounded-2xl border border-[#001338]/5 bg-[#001338]/5 p-4 md:grid-cols-3">
               {workflowContext.map((entry) => (
                 <div key={entry.label} className="space-y-1">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#001338]/40">{entry.label}</p>
+                  <p className="text-caption font-bold uppercase tracking-wider text-[#001338]/40">{entry.label}</p>
                   <p className="text-caption text-[#001338] font-medium">{entry.value}</p>
                 </div>
               ))}

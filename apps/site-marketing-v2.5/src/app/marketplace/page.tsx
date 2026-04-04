@@ -3,7 +3,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import EnhancedNavbar from '@/components/layout/EnhancedNavbar';
 import EnhancedFooter from '@/components/layout/EnhancedFooter';
-import { Shield, FileText, Users, Globe, ShoppingBag, BookOpen, Layers, ArrowRight, Compass, Zap, Lock } from 'lucide-react';
+import { Shield, FileText, Users, Globe, ShoppingBag, BookOpen, Layers, ArrowRight, Compass, Zap, Lock, Tag, Database } from 'lucide-react';
+import { getProducts } from '@/lib/medusa';
+
 
 export const metadata: Metadata = {
   title: 'Marketplace Global Trailblazer | Olcan',
@@ -25,9 +27,9 @@ const digitalProducts = [
     image: '/images/products/course-cover.png'
   },
   {
-    title: 'OIOS Kit: Application',
+    title: 'Kit Application',
     slug: 'kit-application',
-    description: 'A fundação estrutural: templates e dossiês essenciais para comprovação narrativa e autoridade.',
+    description: 'Templates e documentos essenciais para sua candidatura internacional: currículo, carta de motivação e mais.',
     icon: Layers,
     price: 'R$ 997',
     badge: 'Essencial',
@@ -76,7 +78,7 @@ const physicalGear = [
     tag: 'Travel Gear'
   },
   {
-    name: 'OIOS Tech Pouch',
+    name: 'Organizador de Viagem Pro',
     description: 'Organizador impermeável para passaporte, carregadores e hard wallets.',
     price: 'R$ 380',
     tag: 'Everyday Carry'
@@ -89,7 +91,9 @@ const physicalGear = [
   }
 ];
 
-export default function MarketplacePage() {
+export default async function MarketplacePage() {
+  const dynamicProducts = await getProducts({ limit: 12 });
+
   return (
     <main className="min-h-screen bg-cream selection:bg-brand-500/30">
       <EnhancedNavbar />
@@ -129,7 +133,7 @@ export default function MarketplacePage() {
           <div className="flex items-center justify-between mb-12">
             <div>
               <h2 className="font-display text-4xl text-ink mb-2">Produtos Digitais</h2>
-              <p className="text-ink/60 font-light">Os frameworks fundamentais para a sua expansão OIOS.</p>
+              <p className="text-ink/60 font-light">As ferramentas essenciais para sua jornada internacional.</p>
             </div>
             <div className="hidden sm:flex items-center gap-2 text-brand-600 text-sm font-bold uppercase tracking-wider">
               Acesso Imediato <Zap className="w-4 h-4" />
@@ -170,12 +174,71 @@ export default function MarketplacePage() {
         </div>
       </section>
 
+      {/* Dynamic Products from Medusa Instance */}
+      {dynamicProducts.length > 0 && (
+        <section className="py-20 bg-cream-50 border-b border-cream-200">
+          <div className="container-site mx-auto px-6 lg:px-12 w-full max-w-7xl">
+            <div className="flex items-center justify-between mb-12">
+              <div>
+                <h2 className="font-display text-4xl text-ink mb-2">Catálogo Oficial</h2>
+                <p className="text-ink/60 font-light">Ecossistema Medusa: Itens sincronizados em tempo real.</p>
+              </div>
+              <div className="hidden sm:flex items-center gap-2 text-brand-600 text-sm font-bold uppercase tracking-wider">
+                Sincronizado <Database className="w-4 h-4 ml-1" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {dynamicProducts.map((prod: any) => (
+                <Link 
+                  key={prod.id} 
+                  href={`/marketplace/${prod.handle || prod.id}`}
+                  className="group flex flex-col bg-white border border-cream-200 rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-brand-900/5 transition-all duration-300"
+                >
+                  <div className="relative aspect-square bg-cream flex items-center justify-center p-4">
+                    {prod.thumbnail || prod.images?.[0]?.url ? (
+                      <Image 
+                        src={prod.thumbnail || prod.images[0].url} 
+                        alt={prod.title}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <Tag className="w-10 h-10 text-brand-300" />
+                    )}
+                    {prod.categories?.[0] && (
+                       <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-ink text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">
+                         {prod.categories[0].name}
+                       </div>
+                    )}
+                  </div>
+                  <div className="p-5 flex-1 flex flex-col">
+                    <h3 className="font-heading font-bold text-lg text-ink mb-2 line-clamp-1">{prod.title}</h3>
+                    <p className="text-ink/60 text-xs leading-relaxed mb-4 flex-1 line-clamp-2">{prod.description || 'Produto oficial do ecossistema Olcan.'}</p>
+                    <div className="flex items-center justify-between pt-4 border-t border-cream-100">
+                      <span className="font-display text-lg text-brand-600">
+                        {prod.variants?.[0]?.calculated_price?.calculated_amount 
+                          ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(prod.variants[0].calculated_price.calculated_amount)
+                          : 'R$ --'}
+                      </span>
+                      <div className="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center text-brand-600 group-hover:bg-brand-600 group-hover:text-white transition-colors">
+                        <ArrowRight className="w-4 h-4" />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Services (Marketplace / Vendors) */}
       <section className="py-20 bg-cream-50">
         <div className="container-site mx-auto px-6 lg:px-12 w-full max-w-7xl">
           <div className="mb-12">
             <h2 className="font-display text-4xl text-ink mb-2">Especialistas Parceiros</h2>
-            <p className="text-ink/60 font-light">Serviços auditados e homologados pela inteligência Olcan.</p>
+            <p className="text-ink/60 font-light">Serviços verificados e recomendados pela Olcan.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -54,7 +54,7 @@ export default function MarketplacePage() {
       <section className="relative overflow-hidden rounded-[32px] border border-white/70 bg-[linear-gradient(160deg,rgba(255,255,255,0.84),rgba(228,234,242,0.7))] p-8 shadow-[0_24px_80px_rgba(0,19,56,0.08)] backdrop-blur-2xl sm:p-10">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(95,111,140,0.22),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(0,19,56,0.1),transparent_30%)]" />
         <div className="relative z-10 max-w-3xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/65 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#5f6f8c]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/65 px-3 py-1.5 text-body-sm font-semibold uppercase tracking-[0.24em] text-[#5f6f8c]">
             <Sparkles className="h-4 w-4 text-[#001338]" />
             Rede de especialistas
           </div>
@@ -151,12 +151,12 @@ export default function MarketplacePage() {
               >
                 <div className="border-b border-white/70 bg-[linear-gradient(135deg,rgba(0,19,56,0.92),rgba(96,113,142,0.85))] px-5 py-4 text-white">
                   <div className="flex items-center justify-between gap-4">
-                    <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/88">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-caption font-semibold uppercase tracking-[0.18em] text-white/88">
                       <Sparkles className="h-3.5 w-3.5" />
                       {perfil}
                     </span>
                     {provider.verified && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-white/12 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/85">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-white/12 px-3 py-1 text-caption font-semibold uppercase tracking-[0.18em] text-white/85">
                         <Shield className="h-3.5 w-3.5" />
                         Verificado
                       </span>
@@ -185,7 +185,7 @@ export default function MarketplacePage() {
 
                     {primaryService && (
                       <div className="text-right">
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7f8899]">A partir de</p>
+                        <p className="text-caption font-semibold uppercase tracking-[0.18em] text-[#7f8899]">A partir de</p>
                         <p className="mt-1 font-heading text-xl text-[#001338]">R$ {primaryService.price.toLocaleString("pt-BR")}</p>
                       </div>
                     )}
@@ -197,7 +197,7 @@ export default function MarketplacePage() {
                     {provider.specialties.slice(0, 3).map((specialty) => (
                       <span
                         key={specialty}
-                        className="rounded-full border border-white/70 bg-white/75 px-3 py-1 text-[11px] font-medium text-[#46516c]"
+                        className="rounded-full border border-white/70 bg-white/75 px-3 py-1 text-body-sm font-medium text-[#46516c]"
                       >
                         {CATEGORY_LABELS[specialty]}
                       </span>

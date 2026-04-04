@@ -27,7 +27,8 @@ export default function RotaInternacionalizacaoPage() {
         duration="6 meses de acompanhamento"
         format="1:1 Personalizado"
         level="Profissionais sérios"
-        enrollmentLink="/checkout/rota-internacionalizacao"
+        enrollmentLink="https://pay.hotmart.com/K97966494E"
+        coverImage="/images/hero/nomad.png"
         
         benefits={[
           {

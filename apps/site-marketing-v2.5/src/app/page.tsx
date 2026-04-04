@@ -6,6 +6,7 @@ import AboutSection from "@/components/home/AboutSection";
 import InsightsSection from "@/components/home/InsightsSection";
 import { BlogFeedSection } from "@/components/home/BlogFeedSection";
 import MarketplaceSection from "@/components/home/MarketplaceSection";
+import ManifestoSection from "@/components/home/ManifestoSection";
 import EnhancedFooter from "@/components/layout/EnhancedFooter";
 
 export default function Home() {
@@ -14,9 +15,10 @@ export default function Home() {
       <EnhancedNavbar />
       
       {/* Homepage Sections */}
-<HeroSection />
+      <HeroSection />
       <ProductsSection />
       <AboutSection />
+      <ManifestoSection />
       <InsightsSection />
       <BlogFeedSection />
       <MarketplaceSection />

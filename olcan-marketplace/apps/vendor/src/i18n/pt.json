@@ -1,0 +1,12 @@
+{
+  "customFields": {
+    "title": "Campos Personalizados",
+    "description": "Gerencie seus campos e configurações personalizadas",
+    "noFields": "Nenhum campo personalizado configurado ainda"
+  },
+  "seller": {
+    "title": "Painel do Vendedor",
+    "description": "Gerencie seus serviços e produtos na Olcan Marketplace",
+    "products": "Produtos Digitais e Serviços"
+  }
+}

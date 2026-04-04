@@ -27,7 +27,8 @@ export default function CursoCidadaoMundoPage() {
         duration="12 semanas"
         format="Aulas ao vivo + Gravações"
         level="Todos os níveis"
-        enrollmentLink="/checkout/curso-cidadao-mundo"
+        enrollmentLink="https://pay.hotmart.com/N97314230U"
+        coverImage="/images/hero/scholarship.png"
         
         benefits={[
           {

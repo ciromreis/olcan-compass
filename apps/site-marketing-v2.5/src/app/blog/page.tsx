@@ -2,10 +2,11 @@ import { Metadata } from 'next';
 import EnhancedNavbar from '@/components/layout/EnhancedNavbar';
 import EnhancedFooter from '@/components/layout/EnhancedFooter';
 import { BlogGrid } from '@/components/blog/BlogGrid';
+import { MauticNewsletterForm } from '@/components/forms/MauticNewsletterForm';
 
 export const metadata: Metadata = {
-  title: 'Blog | Olcan',
-  description: 'Guias, dicas e insights sobre mobilidade internacional, vistos, carreira global e oportunidades no exterior.',
+  title: 'Blog | Olcan — Conteúdo sobre Internacionalização',
+  description: 'Guias, dicas e insights sobre mobilidade internacional, vistos, carreira global e oportunidades no exterior. Novos artigos toda semana.',
   openGraph: {
     title: 'Blog Olcan | Mobilidade Internacional',
     description: 'Conteúdo exclusivo sobre como construir sua carreira internacional',
@@ -18,22 +19,28 @@ export default function BlogPage() {
       <EnhancedNavbar />
       
       <section className="pt-32 pb-20 relative overflow-hidden">
-        {/* Binary Matrix Post-Modern Texture */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center opacity-5 mix-blend-multiply pointer-events-none" 
-          style={{ backgroundImage: "url('/images/binary_matrix_bg.png')" }} 
-        />
+        <div className="absolute inset-0 bg-hero-grain opacity-30 mix-blend-multiply pointer-events-none" />
         <div className="container-site relative z-10 mx-auto px-6 lg:px-12 w-full max-w-7xl">
           <div className="text-center mb-16">
+            <div className="liquid-glass px-5 py-2 inline-flex items-center gap-3 mb-8">
+              <span className="w-2 h-2 rounded-full bg-brand-500" />
+              <span className="label-xs text-olcan-navy/60">Publicado no Substack · Atualizado semanalmente</span>
+            </div>
             <h1 className="font-display text-5xl md:text-7xl text-ink leading-tight mb-6">
-              Acervo de <span className="italic font-light text-brand-600">Inteligência</span> OIOS
+              Conteúdo que <span className="italic font-light text-brand-600">abre fronteiras</span>
             </h1>
-            <p className="text-xl text-ink/70 font-light max-w-3xl mx-auto">
-              Sinais e insights hiper-focados para a arquitetura da sua Cidadania e Sustentabilidade Global.
+            <p className="text-xl text-ink/70 font-medium max-w-3xl mx-auto leading-relaxed">
+              Guias práticos, análises e estratégias para quem quer construir uma carreira 
+              internacional com método e clareza.
             </p>
           </div>
           
           <BlogGrid />
+
+          {/* Mautic Lead Capture */}
+          <div className="mt-24">
+            <MauticNewsletterForm />
+          </div>
         </div>
       </section>
       

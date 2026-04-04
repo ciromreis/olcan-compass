@@ -2,106 +2,115 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Map, FileText, Globe, Users, Brain, Briefcase, ArrowRight, Star, CheckCircle } from 'lucide-react';
+import { BookOpen, Map, FileText, Globe, Users, Brain, ArrowRight, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
 const PRODUCTS = [
   {
-    id: 'cidadao-mundo',
-    name: 'Curso Cidadão do Mundo',
-    tagline: 'Sua jornada internacional começa aqui',
-    description: 'Encontros ao vivo 3x por semana com orientação prática para processos seletivos internacionais. Acesso às gravações e materiais exclusivos.',
+    id: 'sem-fronteiras',
+    name: 'Sem Fronteiras',
+    tagline: 'Curso Online — A porta de entrada para o mundo',
+    description: 'Tudo o que você precisa saber para planejar, executar e conquistar sua vaga no mercado internacional. Do currículo ao visto, do LinkedIn à oferta de emprego.',
     icon: Globe,
-    color: 'from-blue-500 to-blue-600',
     features: [
-      'Aulas ao vivo e gravadas',
-      'Preparação de documentos',
-      'Networking global',
-      'Suporte especializado'
+      'Módulos completos de carreira global',
+      'Templates e materiais exclusivos',
+      'Preparação para entrevistas internacionais',
+      'Acesso vitalício ao conteúdo',
     ],
-    link: '/marketplace/curso-cidadao-mundo',
-    featured: true
+    link: 'https://pay.hotmart.com/N97314230U',
+    linkLabel: 'Conhecer o curso',
+    external: true,
+    featured: true,
+    badge: 'Mais Popular',
   },
   {
     id: 'rota-internacionalizacao',
     name: 'Rota da Internacionalização',
-    tagline: 'Seu caminho personalizado',
-    description: 'Planejamento estratégico completo para sua mobilidade internacional com roadmap detalhado e acompanhamento.',
+    tagline: 'Mapa estratégico — Seu caminho personalizado',
+    description: 'Um roadmap interativo e detalhado para sua jornada internacional. Planejamento mês a mês com todas as etapas que você precisa concluir antes de embarcar.',
     icon: Map,
-    color: 'from-emerald-500 to-emerald-600',
     features: [
-      'Diagnóstico personalizado',
-      'Roadmap detalhado',
-      'Acompanhamento mensal',
-      'Ajustes estratégicos'
+      'Mapa interativo (Miro Board)',
+      'Checklist por país-alvo',
+      'Cronograma realista e adaptável',
+      'Atualizações contínuas de conteúdo',
     ],
-    link: '/marketplace/rota-internacionalizacao',
-    featured: true
+    link: 'https://pay.hotmart.com/K97966494E',
+    linkLabel: 'Ver o mapa',
+    external: true,
+    featured: true,
+    badge: 'Prático',
   },
   {
     id: 'kit-application',
     name: 'Kit Application',
-    tagline: 'Documentos profissionais',
-    description: 'Preparação completa de currículo, carta de motivação e documentos para processos seletivos internacionais.',
+    tagline: 'Template Notion — Documentos profissionais',
+    description: 'Sistema completo em Notion para organizar, criar e revisar toda a documentação necessária para sua candidatura internacional. Currículo, carta de motivação e mais.',
     icon: FileText,
-    color: 'from-purple-500 to-purple-600',
     features: [
-      'Currículo internacional',
-      'Carta de motivação',
-      'Revisão profissional',
-      'Templates premium'
+      'Templates prontos em Notion',
+      'Currículo no padrão internacional',
+      'Carta de motivação estruturada',
+      'Guia de uso com exemplos reais',
     ],
-    link: '/marketplace/kit-application',
-    featured: true
+    link: 'https://pay.hotmart.com/X85073158P',
+    linkLabel: 'Ver o kit',
+    external: true,
+    featured: true,
+    badge: 'Essencial',
   },
   {
     id: 'mentoria',
-    name: 'Mentoria Individual',
-    tagline: 'Acompanhamento personalizado',
-    description: 'Sessões individuais com especialistas para acelerar sua jornada internacional com foco nos seus objetivos.',
+    name: 'Mentoria com Ciro',
+    tagline: 'Sessão 1:1 — Estratégia personalizada',
+    description: 'Sessão individual com Ciro Moraes, fundador da Olcan. Estratégia real baseada no seu perfil único — nada de fórmulas genéricas.',
     icon: Users,
-    color: 'from-orange-500 to-orange-600',
     features: [
-      'Sessões 1:1',
-      'Estratégia personalizada',
-      'Feedback direto',
-      'Aceleração de resultados'
+      'Sessão 1:1 de 60 min',
+      'Diagnóstico do seu perfil',
+      'Plano de ação personalizado',
+      'Feedback direto e honesto',
     ],
-    link: '/contato',
-    featured: false
+    link: 'https://zenklub.com.br/coaches/ciro-moraes/',
+    linkLabel: 'Agendar sessão',
+    external: true,
+    featured: false,
   },
   {
-    id: 'sem-fronteiras',
-    name: 'Sem Fronteiras',
-    tagline: 'Comunidade global',
-    description: 'Acesso à comunidade exclusiva de profissionais em mobilidade internacional com eventos e networking.',
-    icon: Briefcase,
-    color: 'from-pink-500 to-pink-600',
+    id: 'consultoria',
+    name: 'Consultoria Olcan',
+    tagline: 'Suporte especializado completo',
+    description: 'Acompanhamento estratégico completo para sua transição internacional. Para quem quer ir além dos cursos e ter suporte real do início ao fim.',
+    icon: BookOpen,
     features: [
-      'Comunidade exclusiva',
-      'Eventos mensais',
-      'Networking qualificado',
-      'Oportunidades compartilhadas'
+      'Acompanhamento personalizado',
+      'Suporte em todo o processo',
+      'Revisão de documentos',
+      'Estratégia de visto e carreira',
     ],
-    link: '/contato',
-    featured: false
+    link: 'https://go.hotmart.com/P85051099X',
+    linkLabel: 'Conhecer',
+    external: true,
+    featured: false,
   },
   {
     id: 'medmind-pro',
     name: 'MedMind Pro',
     tagline: 'Para profissionais da saúde',
-    description: 'Programa especializado para médicos e profissionais da saúde que buscam oportunidades internacionais.',
+    description: 'Programa especializado para médicos e profissionais da saúde que buscam revalidação e oportunidades internacionais.',
     icon: Brain,
-    color: 'from-red-500 to-red-600',
     features: [
-      'Foco em saúde',
-      'Processos específicos',
-      'Rede de médicos',
-      'Certificações internacionais'
+      'Foco em revalidação médica',
+      'Processos específicos por país',
+      'Rede de médicos no exterior',
+      'Cronograma realista',
     ],
     link: '/contato',
-    featured: false
-  }
+    linkLabel: 'Saiba mais',
+    external: false,
+    featured: false,
+  },
 ];
 
 export default function ProductsSection() {
@@ -122,17 +131,17 @@ export default function ProductsSection() {
         >
           <div className="liquid-glass px-5 py-2 inline-flex items-center gap-3 mb-8">
             <BookOpen className="w-4 h-4 text-olcan-navy" />
-            <span className="label-xs text-olcan-navy/60">Soluções Estratégicas</span>
+            <span className="label-xs text-olcan-navy/60">Nossos Produtos</span>
           </div>
           
           <h2 className="font-display text-5xl md:text-7xl text-olcan-navy leading-[1.1] mb-8 tracking-tight">
-            Arquitetura <br />
-            <span className="italic font-light text-brand-600">para sua evolução.</span>
+            Ferramentas para <br />
+            <span className="italic font-light text-brand-600">sua jornada global.</span>
           </h2>
           
           <p className="text-xl text-olcan-navy/70 max-w-3xl mx-auto leading-relaxed font-medium">
-            Do diagnóstico inicial à transição completa, nossas soluções aplicam 
-            inteligência estratégica para sua trajetória internacional.
+            Do primeiro passo ao destino final — cada produto foi criado para resolver 
+            uma etapa real da sua transição internacional.
           </p>
         </motion.div>
 
@@ -148,13 +157,22 @@ export default function ProductsSection() {
               className="group"
             >
               <div className="card-olcan p-10 h-full flex flex-col border-2 border-white/60 hover:border-brand-300 transition-all duration-500">
+                {/* Badge */}
+                {product.badge && (
+                  <div className="inline-flex self-start mb-6">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-brand-600 bg-brand-50 border border-brand-100 px-3 py-1 rounded-full">
+                      {product.badge}
+                    </span>
+                  </div>
+                )}
+
                 {/* Icon */}
-                <div className="w-16 h-16 rounded-2xl bg-white/40 flex items-center justify-center mb-8 border border-white/60 shadow-xl shadow-olcan-navy/5 group-hover:scale-110 group-hover:bg-white transition-all">
+                <div className="w-16 h-16 rounded-2xl bg-white/40 flex items-center justify-center mb-6 border border-white/60 shadow-xl shadow-olcan-navy/5 group-hover:scale-110 group-hover:bg-white transition-all">
                   <product.icon className="w-8 h-8 text-olcan-navy" />
                 </div>
                 
                 {/* Content */}
-                <div className="label-xs text-brand-600 mb-2 uppercase tracking-[0.2em]">{product.tagline}</div>
+                <div className="label-xs text-brand-600 mb-2 uppercase tracking-wide">{product.tagline}</div>
                 <h3 className="font-display text-3xl text-olcan-navy mb-4 italic leading-tight">{product.name}</h3>
                 <p className="text-olcan-navy/70 mb-8 leading-relaxed font-medium flex-1">{product.description}</p>
                 
@@ -169,13 +187,22 @@ export default function ProductsSection() {
                 </div>
                 
                 {/* CTA */}
-                <Link
-                  href={product.link}
-                  className="btn-primary w-full py-5 group/btn"
-                >
-                  Saiba Mais
-                  <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1.5 transition-transform" />
-                </Link>
+                {product.external ? (
+                  <a
+                    href={product.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-primary w-full py-5 group/btn"
+                  >
+                    {product.linkLabel}
+                    <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1.5 transition-transform" />
+                  </a>
+                ) : (
+                  <Link href={product.link} className="btn-primary w-full py-5 group/btn">
+                    {product.linkLabel}
+                    <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1.5 transition-transform" />
+                  </Link>
+                )}
               </div>
             </motion.div>
           ))}
@@ -215,20 +242,32 @@ export default function ProductsSection() {
                   <h4 className="font-bold text-xl text-olcan-navy mb-4 tracking-tight">{product.name}</h4>
                   <p className="text-sm text-olcan-navy/70 mb-8 leading-relaxed font-medium">{product.description}</p>
                   
-                  <Link
-                    href={product.link}
-                    className="inline-flex items-center gap-2 text-olcan-navy font-bold text-sm tracking-widest uppercase hover:text-brand-600 transition-colors group/link"
-                  >
-                    Explorar
-                    <ArrowRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
-                  </Link>
+                  {product.external ? (
+                    <a
+                      href={product.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-olcan-navy font-bold text-sm tracking-widest uppercase hover:text-brand-600 transition-colors group/link"
+                    >
+                      {product.linkLabel}
+                      <ArrowRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
+                    </a>
+                  ) : (
+                    <Link
+                      href={product.link}
+                      className="inline-flex items-center gap-2 text-olcan-navy font-bold text-sm tracking-widest uppercase hover:text-brand-600 transition-colors group/link"
+                    >
+                      {product.linkLabel}
+                      <ArrowRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
+                    </Link>
+                  )}
                 </div>
               </motion.div>
             ))}
           </div>
         </motion.div>
 
-        {/* CTA Section - Redeisgned as Intelligence Block */}
+        {/* CTA Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -236,10 +275,10 @@ export default function ProductsSection() {
           viewport={{ once: true }}
           className="mt-24"
         >
-          <div className="liquid-glass-strong rounded-[2.5rem] p-12 md:p-20 text-center relative overflow-hidden bg-olcan-navy">
+          <div className="rounded-[2.5rem] p-12 md:p-20 text-center relative overflow-hidden" style={{ background: 'linear-gradient(145deg, #001338 0%, #001a4d 50%, #001338 100%)' }}>
             <div className="absolute inset-0 bg-hero-grain opacity-20 mix-blend-overlay pointer-events-none" />
             <div className="relative z-10">
-              <div className="label-xs text-brand-400 mb-6 tracking-[0.3em]">Direct Consultation Unit</div>
+              <div className="label-xs text-brand-400 mb-6 tracking-wide">Consultoria Especializada</div>
               <h3 className="font-display text-4xl md:text-6xl text-white mb-8 italic tracking-tight">
                 Inicie sua transição estratégica hoje.
               </h3>
@@ -248,16 +287,13 @@ export default function ProductsSection() {
                 e receba um parecer preliminar sobre sua viabilidade global.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                <Link
-                  href="/contato"
-                  className="btn-primary py-5 px-10 text-lg w-full sm:w-auto"
-                >
+                <Link href="/contato" className="btn-primary py-5 px-10 text-lg w-full sm:w-auto">
                   Falar com Especialista
                   <Users className="w-5 h-5 ml-2" />
                 </Link>
                 <div className="flex items-center gap-3 text-white/40">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                  <span className="label-xs tracking-widest">Available for Q1 2026</span>
+                  <span className="label-xs tracking-widest">Vagas abertas para mentorias</span>
                 </div>
               </div>
             </div>

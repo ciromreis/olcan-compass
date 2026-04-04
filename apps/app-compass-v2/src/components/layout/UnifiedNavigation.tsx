@@ -213,7 +213,7 @@ export default function UnifiedNavigation() {
               </motion.div>
               <div className="flex flex-col">
                 <span className="text-xl font-bold tracking-tight text-bone-50">Olcan Compass</span>
-                <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-gold-500/80 -mt-1">Aura v2.5</span>
+                <span className="text-caption font-medium uppercase tracking-wide text-gold-500/80 -mt-1">Aura v2.5</span>
               </div>
             </Link>
 
@@ -239,7 +239,7 @@ export default function UnifiedNavigation() {
                     </div>
                     <span className="font-semibold text-sm">{item.label}</span>
                     {item.badge && item.badge > 0 && (
-                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-gold-500 text-ink-950 text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-ink-950">
+                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-gold-500 text-ink-950 text-caption font-bold rounded-full flex items-center justify-center border-2 border-ink-950">
                         {item.badge}
                       </span>
                     )}
@@ -253,7 +253,7 @@ export default function UnifiedNavigation() {
               {/* User Stats - Glass Card */}
               <div className="flex items-center bg-bone-50/5 border border-bone-50/10 rounded-2xl px-4 py-2 space-x-4">
                 <div className="flex flex-col items-end">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-gold-500/80">Nível {userStats.level}</span>
+                  <span className="text-caption uppercase font-bold tracking-wider text-gold-500/80">Nível {userStats.level}</span>
                   <div className="w-24 h-1.5 bg-ink-800 rounded-full mt-1 overflow-hidden">
                     <motion.div 
                       initial={{ width: 0 }}
@@ -278,7 +278,7 @@ export default function UnifiedNavigation() {
                   >
                     <Bell className="w-5 h-5 text-bone-300" />
                     {unreadCount > 0 && (
-                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-gold-500 text-ink-950 text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-ink-950">
+                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-gold-500 text-ink-950 text-caption font-bold rounded-full flex items-center justify-center border-2 border-ink-950">
                         {unreadCount}
                       </span>
                     )}
@@ -319,7 +319,7 @@ export default function UnifiedNavigation() {
                                     <p className="text-xs text-bone-400 mt-1 leading-relaxed">
                                       {notification.message}
                                     </p>
-                                    <p className="text-[10px] text-ink-500 font-medium mt-2 flex items-center">
+                                    <p className="text-caption text-ink-500 font-medium mt-2 flex items-center">
                                       <Activity className="w-3 h-3 mr-1" />
                                       {new Date(notification.timestamp).toLocaleTimeString()}
                                     </p>
@@ -400,10 +400,10 @@ export default function UnifiedNavigation() {
                   </div>
                   <div className="flex-1 text-left">
                     <div className="font-bold text-sm tracking-wide">{item.label}</div>
-                    <div className="text-[10px] opacity-60 font-medium uppercase tracking-wider">{item.description}</div>
+                    <div className="text-caption opacity-60 font-medium uppercase tracking-wider">{item.description}</div>
                   </div>
                   {item.badge && item.badge > 0 && (
-                    <span className="w-5 h-5 bg-gold-500 text-ink-950 text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-ink-950">
+                    <span className="w-5 h-5 bg-gold-500 text-ink-950 text-caption font-bold rounded-full flex items-center justify-center border-2 border-ink-950">
                       {item.badge}
                     </span>
                   )}

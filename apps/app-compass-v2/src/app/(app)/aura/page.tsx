@@ -51,7 +51,7 @@ export default function AuraPage() {
 
   if (!aura && !isLoading) {
     if (typeof window !== 'undefined') {
-      window.location.href = '/aura/discover'
+      window.location.href = '/companion/discover'
     }
     return null
   }
@@ -61,7 +61,7 @@ export default function AuraPage() {
       <div className="min-h-screen bg-surface-bg flex items-center justify-center p-8">
         <div className="flex flex-col items-center gap-4">
           <Orbit className="w-8 h-8 text-gold-500 animate-spin-slow" />
-          <div className="text-[10px] uppercase tracking-[0.3em] text-ink-300 font-bold animate-pulse">Sincronizando Aura...</div>
+          <div className="text-[10px] uppercase tracking-wide text-ink-300 font-bold animate-pulse">Sincronizando Aura...</div>
         </div>
       </div>
     )
@@ -88,25 +88,25 @@ export default function AuraPage() {
           className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6"
         >
           <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-[10px] font-black uppercase tracking-[0.25em] text-gold-600">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-[10px] font-semibold uppercase tracking-[0.25em] text-gold-600">
               <Orbit className="w-4 h-4" />
               Manifesto de Identidade Metamoderna
             </div>
             <h1 className="text-6xl md:text-8xl font-display text-ink-950 tracking-tighter leading-tight">{aura.name}</h1>
             <p className="text-xl text-ink-400 font-medium max-w-2xl">
-              Arquétipo: <span className="text-ink-950 font-black capitalize tracking-tight bg-gold-500/10 px-2 rounded-md">{aura.archetype.replace('_', ' ')}</span> • Estágio: <span className="text-ink-950 font-black capitalize tracking-tight">{aura.evolutionStage}</span>
+              Arquétipo: <span className="text-ink-950 font-semibold capitalize tracking-tight bg-gold-500/10 px-2 rounded-md">{aura.archetype.replace('_', ' ')}</span> • Estágio: <span className="text-ink-950 font-semibold capitalize tracking-tight">{aura.evolutionStage}</span>
             </p>
           </div>
           
           <div className="flex gap-4">
             <Link href="/aura/achievements">
-              <GlassButton className="min-w-[180px] h-16 rounded-[2rem] border border-bone-500/20 bg-bone-50/40 backdrop-blur-xl shadow-glass-sm font-black text-ink-900 hover:bg-gold-500 hover:text-ink-950 hover:border-gold-500 transition-all duration-500 group">
+              <GlassButton className="min-w-[180px] h-16 rounded-[2rem] border border-bone-500/20 bg-bone-50/40 backdrop-blur-xl shadow-glass-sm font-semibold text-ink-900 hover:bg-gold-500 hover:text-ink-950 hover:border-gold-500 transition-all duration-500 group">
                 <Trophy className="w-6 h-6 mr-3 text-gold-500 group-hover:text-ink-950 transition-colors" />
                 Conquistas
               </GlassButton>
             </Link>
             <Link href="/aura/quests">
-              <GlassButton className="min-w-[180px] h-16 rounded-[2rem] border border-bone-500/20 bg-bone-50/40 backdrop-blur-xl shadow-glass-sm font-black text-ink-900 hover:bg-gold-500 hover:text-ink-950 hover:border-gold-500 transition-all duration-500 group">
+              <GlassButton className="min-w-[180px] h-16 rounded-[2rem] border border-bone-500/20 bg-bone-50/40 backdrop-blur-xl shadow-glass-sm font-semibold text-ink-900 hover:bg-gold-500 hover:text-ink-950 hover:border-gold-500 transition-all duration-500 group">
                 <Target className="w-6 h-6 mr-3 text-gold-500 group-hover:text-ink-950 transition-colors" />
                 Missões
               </GlassButton>
@@ -144,12 +144,12 @@ export default function AuraPage() {
               <div className="w-full max-w-2xl space-y-6">
                 <div className="flex justify-between items-end px-2">
                   <div className="flex flex-col">
-                    <span className="text-[11px] font-black uppercase tracking-[0.3em] text-ink-300">Nível Operacional</span>
+                    <span className="text-body-sm font-semibold uppercase tracking-wide text-ink-300">Nível Operacional</span>
                     <span className="text-4xl font-display text-ink-950 leading-none mt-1">{aura.level}</span>
                   </div>
                   <div className="text-right flex flex-col">
-                    <span className="text-[11px] font-black uppercase tracking-[0.3em] text-ink-300">Sincronia XP</span>
-                    <span className="text-base font-black text-gold-600 mt-1">{aura.experiencePoints} / {aura.xpToNextLevel}</span>
+                    <span className="text-body-sm font-semibold uppercase tracking-wide text-ink-300">Sincronia XP</span>
+                    <span className="text-base font-semibold text-gold-600 mt-1">{aura.experiencePoints} / {aura.xpToNextLevel}</span>
                   </div>
                 </div>
                 <div className="h-2.5 bg-ink-950/5 rounded-full overflow-hidden p-0.5 border border-bone-500/10">
@@ -197,14 +197,14 @@ export default function AuraPage() {
               <div className="absolute -right-12 -bottom-12 w-48 h-48 bg-gold-400/15 rounded-full blur-[80px]" />
               <div className="relative z-10 space-y-8">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-gold-500/70">Potencial de Ação</h3>
+                  <h3 className="text-body-sm font-semibold uppercase tracking-wider text-gold-500/70">Potencial de Ação</h3>
                   <div className="p-2 rounded-xl bg-gold-500/10 border border-gold-500/20">
                     <Zap className="w-5 h-5 text-gold-500 fill-gold-500/30" />
                   </div>
                 </div>
                 <div className="flex items-baseline gap-3">
                   <span className="text-8xl font-display leading-none tracking-tighter text-gold-500">{Math.round(aura.energy)}</span>
-                  <span className="text-lg font-black opacity-30 uppercase tracking-widest">/ {aura.maxEnergy} EP</span>
+                  <span className="text-lg font-semibold opacity-30 uppercase tracking-widest">/ {aura.maxEnergy} EP</span>
                 </div>
                 <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
                   <motion.div 
@@ -214,7 +214,7 @@ export default function AuraPage() {
                     transition={{ duration: 1.5 }}
                   />
                 </div>
-                <div className="flex items-center gap-2 text-[11px] text-white/40 font-black uppercase tracking-widest">
+                <div className="flex items-center gap-2 text-body-sm text-white/40 font-semibold uppercase tracking-widest">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   Recuperação ativa: 1.5 por hora
                 </div>
@@ -237,17 +237,17 @@ export default function AuraPage() {
 
             {/* Quick Access Card */}
             <GlassCard className="p-10 rounded-[3rem] bg-bone-50/20 border border-bone-500/10 backdrop-blur-xl">
-              <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-ink-300 mb-8">Navegação Auxiliar</h3>
+              <h3 className="text-body-sm font-semibold uppercase tracking-wide text-ink-300 mb-8">Navegação Auxiliar</h3>
               <div className="space-y-4">
                 <Link href="/aura/achievements" className="block">
                   <GlassButton className="w-full justify-between h-16 px-6 rounded-2xl bg-white border border-bone-400/10 hover:bg-ink-950 hover:text-white group transition-all duration-300">
-                    <span className="font-black text-sm uppercase tracking-tight">Registro de Evolução</span>
+                    <span className="font-semibold text-sm uppercase tracking-tight">Registro de Evolução</span>
                     <Trophy className="w-5 h-5 text-gold-500 group-hover:rotate-12 transition-transform" />
                   </GlassButton>
                 </Link>
                 <Link href="/aura/quests" className="block">
                   <GlassButton className="w-full justify-between h-16 px-6 rounded-2xl bg-white border border-bone-400/10 hover:bg-ink-950 hover:text-white group transition-all duration-300">
-                    <span className="font-black text-sm uppercase tracking-tight">Missões Ativas</span>
+                    <span className="font-semibold text-sm uppercase tracking-tight">Missões Ativas</span>
                     <Target className="w-5 h-5 text-gold-500 group-hover:scale-125 transition-transform" />
                   </GlassButton>
                 </Link>
@@ -267,8 +267,8 @@ function StatItem({ icon, label, value }: { icon: any; label: string; value: num
         {icon}
       </div>
       <div>
-        <div className="text-[10px] font-black uppercase tracking-[0.2em] text-ink-300 leading-none mb-2">{label}</div>
-        <div className="text-2xl font-black text-ink-950 tracking-tighter">{value}</div>
+        <div className="text-[10px] font-semibold uppercase tracking-wide text-ink-300 leading-none mb-2">{label}</div>
+        <div className="text-2xl font-semibold text-ink-950 tracking-tighter">{value}</div>
       </div>
     </div>
   )
@@ -302,10 +302,10 @@ function ActivityButton({ activity, currentEnergy, onClick }: { activity: any; c
         </p>
       </div>
       <div className="text-right">
-        <div className={`text-sm font-black tracking-tighter ${canAfford ? 'text-ink-950 group-hover:text-white' : 'text-ink-400'}`}>
+        <div className={`text-sm font-semibold tracking-tighter ${canAfford ? 'text-ink-950 group-hover:text-white' : 'text-ink-400'}`}>
           -{activity.energyCost} EP
         </div>
-        <div className={`text-[10px] font-black uppercase tracking-[0.2em] mt-1 ${canAfford ? 'text-ink-300 group-hover:text-gold-500/50' : 'text-ink-200'}`}>
+        <div className={`text-[10px] font-semibold uppercase tracking-wide mt-1 ${canAfford ? 'text-ink-300 group-hover:text-gold-500/50' : 'text-ink-200'}`}>
           Cost
         </div>
       </div>

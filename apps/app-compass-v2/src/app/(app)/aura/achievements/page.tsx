@@ -38,12 +38,12 @@ export default function AchievementsPage() {
                 <Link href="/aura">
                   <GlassButton className="h-12 px-5 rounded-2xl bg-white border border-bone-500/20 text-ink-300 hover:text-ink-950 transition-all shadow-sm flex items-center gap-2 group">
                     <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Retornar à Aura</span>
+                    <span className="text-caption font-semibold uppercase tracking-widest">Retornar à Aura</span>
                   </GlassButton>
                 </Link>
                 
                 <div className="space-y-3">
-                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-[10px] font-black uppercase tracking-[0.2em] text-gold-600">
+                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-caption font-semibold uppercase tracking-wide text-gold-600">
                     <Trophy className="w-4 h-4" />
                     Galeria de Prestígio
                   </div>
@@ -51,7 +51,7 @@ export default function AchievementsPage() {
                     Conquistas
                   </h1>
                   <p className="text-xl text-ink-400 font-medium max-w-2xl leading-relaxed">
-                    Sua <span className="text-gold-500 font-black">Aura</span> e você em perfeita sincronia. Estes artefatos refletem seu caminho único na mobilidade global.
+                    Sua <span className="text-gold-500 font-semibold">Aura</span> e você em perfeita sincronia. Estes artefatos refletem seu caminho único na mobilidade global.
                   </p>
                 </div>
               </div>
@@ -60,13 +60,13 @@ export default function AchievementsPage() {
               <div className="flex gap-4 p-2 bg-bone-50/20 backdrop-blur-xl rounded-[2.5rem] border border-bone-500/10">
                 <div className="px-8 py-6 rounded-[2rem] bg-white shadow-glass-sm border border-bone-500/10 text-center min-w-[140px]">
                   <Star className="w-6 h-6 text-gold-500 mx-auto mb-2" />
-                  <div className="text-2xl font-black text-ink-950">12/48</div>
-                  <div className="text-[8px] font-black text-ink-300 uppercase tracking-widest mt-1">Artefatos</div>
+                  <div className="text-2xl font-semibold text-ink-950">12/48</div>
+                  <div className="text-[8px] font-semibold text-ink-300 uppercase tracking-widest mt-1">Artefatos</div>
                 </div>
                 <div className="px-8 py-6 rounded-[2rem] bg-white shadow-glass-sm border border-bone-500/10 text-center min-w-[140px]">
                   <Zap className="w-6 h-6 text-gold-500 mx-auto mb-2" />
-                  <div className="text-2xl font-black text-ink-950">Nível 8</div>
-                  <div className="text-[8px] font-black text-ink-300 uppercase tracking-widest mt-1">Status Aura</div>
+                  <div className="text-2xl font-semibold text-ink-950">Nível 8</div>
+                  <div className="text-[8px] font-semibold text-ink-300 uppercase tracking-widest mt-1">Status Aura</div>
                 </div>
               </div>
             </div>

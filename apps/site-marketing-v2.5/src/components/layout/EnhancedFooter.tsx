@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronUp, ChevronDown, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram, Compass, Briefcase, Shield, Users, Star, ArrowRight } from 'lucide-react';
+import { Instagram, Compass, Briefcase, Shield, Users, Star, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -29,25 +29,24 @@ const footerSections = [
     title: "Empresa",
     items: [
       { label: "Sobre Nós", href: "/sobre" },
+      { label: "CEO — Ciro Moraes", href: "/sobre/ceo" },
+      { label: "Mentoria com Ciro", href: "/ciro" },
       { label: "Blog", href: "/blog" },
-      { label: "Nosso Instagram", href: "https://instagram.com/olcancompass" },
+      { label: "Instagram", href: "https://instagram.com/olcancompass" },
     ]
   },
   {
     title: "Suporte",
     items: [
       { label: "Instagram", href: "https://instagram.com/olcancompass" },
-      { label: "Termos de Uso", href: "#" },
-      { label: "Privacidade", href: "#" },
+      { label: "Termos de Uso", href: "/termos" },
+      { label: "Privacidade", href: "/privacidade" },
     ]
   }
 ];
 
 const socialLinks = [
-  { icon: Facebook, href: "#", label: "Facebook" },
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Instagram, href: "#", label: "Instagram" },
+  { icon: Instagram, href: "https://instagram.com/olcancompass", label: "Instagram" },
 ];
 
 const trustBadges = [
@@ -80,13 +79,17 @@ export default function EnhancedFooter() {
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-16 mb-24">
             <div className="max-w-2xl">
               <Link href="/" className="inline-block mb-10 group">
-                <div className="w-48 h-12 relative group-hover:scale-110 group-hover:-rotate-2 transition-all duration-500">
-                  <Image src="/images/olcan-logo.png" alt="Olcan" fill className="object-contain brightness-[1.05] contrast-[1.05]" />
-                </div>
+                <Image
+                  src="/images/olcan-logo.png"
+                  alt="Olcan"
+                  width={192}
+                  height={48}
+                  className="h-12 w-auto object-contain brightness-[1.05] contrast-[1.05] group-hover:scale-110 group-hover:-rotate-2 transition-all duration-500"
+                />
               </Link>
               <p className="font-display text-2xl text-olcan-navy leading-relaxed tracking-tight italic font-light">
-                Transformamos a complexidade da internacionalização em um plano de ação claro, 
-                personalizado e <span className="text-brand-600">tecnicamente otimizado.</span> Do diagnóstico ao desembarque.
+                Conhecimento para construir seu futuro. Da decisão ao desembarque, a Olcan está com 
+                você em cada etapa da sua <span className="text-brand-600">jornada global.</span>
               </p>
             </div>
             
@@ -107,7 +110,7 @@ export default function EnhancedFooter() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-16 mb-32">
             {footerSections.map((section) => (
               <div key={section.title} className="space-y-10">
-                <h4 className="label-xs text-brand-600/60 transition-colors uppercase tracking-[0.2em]">{section.title}</h4>
+                <h4 className="label-xs text-brand-600/60 transition-colors uppercase tracking-wide">{section.title}</h4>
                 <ul className="space-y-5">
                   {section.items.map((item) => (
                     <li key={item.label}>
@@ -154,7 +157,7 @@ export default function EnhancedFooter() {
                   href="/diagnostico"
                   className="btn-primary py-6 px-12 text-lg shadow-2xl shadow-brand-500/30 group w-full sm:w-auto"
                 >
-                  Induzir Diagnóstico
+                  Iniciar Diagnóstico Gratuito
                   <ArrowRight className="w-5 h-5 ml-4 group-hover:translate-x-2 transition-transform" />
                 </Link>
                 <Link
@@ -171,8 +174,8 @@ export default function EnhancedFooter() {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12 pt-16 border-t border-olcan-navy/5">
             <div className="flex flex-wrap items-center justify-center gap-8 label-xs text-olcan-navy/40">
               <Link href="https://instagram.com/olcancompass" className="hover:text-olcan-navy transition-colors">Instagram</Link>
-              <Link href="#" className="hover:text-olcan-navy transition-colors">Termos de Uso</Link>
-              <Link href="#" className="hover:text-olcan-navy transition-colors">Privacidade</Link>
+              <Link href="/termos" className="hover:text-olcan-navy transition-colors">Termos de Uso</Link>
+              <Link href="/privacidade" className="hover:text-olcan-navy transition-colors">Privacidade</Link>
               <Link href="/contato" className="hover:text-olcan-navy transition-colors">Suporte</Link>
             </div>
 
@@ -189,8 +192,10 @@ export default function EnhancedFooter() {
               ))}
             </div>
 
-            <div className="label-xs text-olcan-navy/30" suppressHydrationWarning>
-              © {new Date().getFullYear()} Olcan — Todos os Direitos Reservados
+            <div className="flex flex-col items-center lg:items-start gap-2 label-xs text-olcan-navy/30" suppressHydrationWarning>
+              <div>© {new Date().getFullYear()} Olcan — Todos os Direitos Reservados</div>
+              <div className="text-olcan-navy/20">OLCAN DESENVOLVIMENTO PROFISSIONAL E INOVADOR LTDA</div>
+              <div className="text-olcan-navy/20">CNPJ: 32.928.227/0001-06 · Av. Paulista, 1636 — São Paulo/SP</div>
             </div>
           </div>
         </div>

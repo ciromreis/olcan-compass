@@ -15,6 +15,16 @@ const config: Config = {
         gold:      "#D4AF37",   // Premium accent
         silver:    "#ADB5BD",   // Secondary accent
         slate:     "#7E8CA3",   // Metadata/Muted
+
+        // ─── Cream Scale (maps to CSS vars) ───
+        cream: {
+          DEFAULT: "#FAF9F6",
+          50:  "#FDFCFB",
+          100: "#F7F4EF",
+        },
+
+        // ─── Olcan Navy (semantic alias) ───
+        "olcan-navy": "#001338",
         
         // ─── Olcan Brand - Navy ───
         brand: {
@@ -30,17 +40,17 @@ const config: Config = {
           900: "#00081D",
         },
 
-        // ─── Olcan Accent - Flame ───
+        // ─── Olcan Accent - Flame (uso reduzido, apenas para CTAs específicos) ───
         flame: {
-          DEFAULT: "#E8421A",
-          50:  "#FDECE8",
-          100: "#FADAD1",
-          200: "#F5B5A3",
-          300: "#F09075",
-          400: "#EB6B47",
-          500: "#E8421A",
-          600: "#BA3515",
-          700: "#8C2810",
+          DEFAULT: "#D4691E",
+          50:  "#FDF6F3",
+          100: "#FAEEE8",
+          200: "#F5DDD1",
+          300: "#EDBFA8",
+          400: "#E19A70",
+          500: "#D4691E",
+          600: "#B85818",
+          700: "#8F4513",
         },
 
         // ─── Semantic aliases ───

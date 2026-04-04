@@ -73,19 +73,19 @@ export default function InsightsSection() {
             <div className="space-y-10">
               <div className="liquid-glass px-5 py-2 inline-flex items-center gap-3">
                 <Monitor className="w-4 h-4 text-brand-600" />
-                <span className="label-xs text-brand-700">Painel de Posicionamento v2.5</span>
+                <span className="label-xs text-brand-700">Olcan Compass — Sua Plataforma</span>
               </div>
               
               <h2 className="font-display text-5xl md:text-6xl text-olcan-navy leading-[1.1] tracking-tight">
-                O centro de controle da sua <span className="italic font-light text-brand-600 font-serif">transição global.</span>
+                O painel que guia cada etapa da sua <span className="italic font-light text-brand-600 font-serif">jornada internacional.</span>
               </h2>
               
               <ul className="space-y-6">
                 {[
-                  "IA para estruturação de narrativa internacional.",
-                  "Simulador de Entrevistas com análise de performance.",
-                  "Radar de Prontidão (Gaps Acadêmicos e Migratórios).",
-                  "Marketplace de advogados especializados (Top 1%)."
+                  "Diagnóstico personalizado do seu perfil internacional.",
+                  "Simulação de entrevistas com feedback em tempo real.",
+                  "Mapa de prontidão: onde você está e o que falta para embarcar.",
+                  "Conexão com especialistas verificados em visto e carreira."
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-4 group">
                     <div className="w-6 h-6 rounded-full bg-brand-500/10 flex items-center justify-center mt-1 group-hover:bg-brand-500 transition-colors">
@@ -97,14 +97,14 @@ export default function InsightsSection() {
               </ul>
 
               <div className="pt-4">
-                <button className="btn-primary py-5 px-10 text-base shadow-xl shadow-brand-500/20 group">
-                  Explorar Plataforma
+                <a href="https://compass.olcan.com.br" target="_blank" rel="noopener noreferrer" className="btn-primary py-5 px-10 text-base shadow-xl shadow-brand-500/20 group">
+                  Acessar a Plataforma
                   <Zap className="w-5 h-5 ml-3 group-hover:fill-current transition-colors" />
-                </button>
+                </a>
               </div>
             </div>
 
-            {/* Dashboard Mockup Layered - Redesigned as Premium OIOS Card */}
+            {/* Dashboard Mockup - Visualização da Plataforma Compass */}
             <div className="relative perspective-1000 hidden lg:block">
               <motion.div 
                 initial={{ opacity: 0, rotateY: 20, x: 40 }}
@@ -153,13 +153,13 @@ export default function InsightsSection() {
                       <div className="w-full bg-olcan-navy/5 h-2 rounded-full overflow-hidden">
                         <div className="w-[75%] bg-brand-600 h-full rounded-full" />
                       </div>
-                      <div className="mt-4 label-xs text-brand-600">75% Complete</div>
+                      <div className="mt-4 label-xs text-brand-600">Trilha 75% concluída</div>
                     </div>
                   </div>
                 </div>
               </motion.div>
 
-              {/* Floating Elements - Standardized as OIOS Nodes */}
+              {/* Floating Elements - Indicadores de Progresso */}
               <motion.div 
                 animate={{ y: [0, -15, 0], rotateZ: [0, -2, 0] }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
@@ -170,8 +170,8 @@ export default function InsightsSection() {
                     <ShieldCheck className="text-white w-6 h-6" />
                   </div>
                   <div>
-                    <p className="label-xs text-brand-600 mb-0.5">Status Protocol</p>
-                    <p className="text-olcan-navy font-display font-bold text-lg italic">Champion Stage</p>
+                    <p className="label-xs text-brand-600 mb-0.5">Acompanhamento</p>
+                    <p className="text-olcan-navy font-display font-bold text-lg italic">Sua evolução</p>
                   </div>
                 </div>
               </motion.div>
@@ -186,8 +186,8 @@ export default function InsightsSection() {
                     <LineChart className="text-white w-6 h-6" />
                   </div>
                   <div>
-                    <p className="label-xs text-brand-600 mb-0.5">Performance</p>
-                    <p className="text-olcan-navy font-display font-bold text-lg italic">+45 pts today</p>
+                    <p className="label-xs text-brand-600 mb-0.5">Próximos passos</p>
+                    <p className="text-olcan-navy font-display font-bold text-lg italic">Planejamento claro</p>
                   </div>
                 </div>
               </motion.div>

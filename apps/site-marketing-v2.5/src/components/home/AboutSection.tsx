@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import createGlobe from 'cobe';
 import { Compass, Zap, Map, Shield, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import GlobeCanvas from '@/components/ui/GlobeCanvas';
 
 const pillars = [
   {
@@ -34,53 +34,6 @@ const pillars = [
 ];
 
 export default function AboutSection() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    let phi = 0;
-    let width = 0;
-    
-    const onResize = () => canvasRef.current && (width = canvasRef.current.offsetWidth);
-    window.addEventListener('resize', onResize);
-    onResize();
-
-    const globe = createGlobe(canvasRef.current!, {
-      devicePixelRatio: 2,
-      width: width * 2,
-      height: width * 2,
-      phi: 0,
-      theta: 0.3,
-      dark: 0,
-      diffuse: 1.2,
-      mapSamples: 16000,
-      mapBrightness: 6,
-      baseColor: [1, 0.98, 0.96], // Cream base
-      markerColor: [235 / 255, 126 / 255, 81 / 255], // Flame markers
-      glowColor: [1, 0.98, 0.96],
-      markers: [
-        // US (NY/SV)
-        { location: [37.7749, -122.4194], size: 0.08 },
-        { location: [40.7128, -74.0060], size: 0.06 },
-        // Europe (London/Berlin)
-        { location: [51.5074, -0.1278], size: 0.07 },
-        { location: [52.5200, 13.4050], size: 0.05 },
-        // Brazil (SP)
-        { location: [-23.5505, -46.6333], size: 0.1 },
-      ],
-      // @ts-expect-error onRender exists in cobe runtime
-      onRender: (state) => {
-        state.phi = phi;
-        phi += 0.005;
-        state.width = width * 2;
-        state.height = width * 2;
-      }
-    });
-
-    return () => {
-      globe.destroy();
-      window.removeEventListener('resize', onResize);
-    };
-  }, []);
 
   return (
     <section className="relative py-32 bg-cream-50 text-olcan-navy overflow-hidden noise border-y border-olcan-navy/5">
@@ -91,24 +44,39 @@ export default function AboutSection() {
         <div className="grid lg:grid-cols-2 gap-20 items-center">
           
           {/* Left: Interactive 3D Globe with Premium Framing */}
-          <div className="relative w-full aspect-square max-w-[600px] mx-auto lg:mx-0 flex items-center justify-center">
-            {/* Ambient Glow */}
-            <div className="absolute inset-0 bg-olcan-navy/5 rounded-full blur-[100px] animate-pulse" />
-            
-            {/* Globe Wrapper */}
-            <div className="w-full h-full opacity-90 scale-110 translate-x-[-5%] mix-blend-multiply relative z-10">
-              <canvas
-                ref={canvasRef}
-                style={{ width: '100%', height: '100%', contain: 'layout paint size', opacity: 1, transition: 'opacity 1s ease' }}
+          <div className="relative w-full aspect-square max-w-[560px] mx-auto lg:mx-0 flex items-center justify-center">
+            {/* Outer ambient glow */}
+            <div className="absolute inset-[5%] rounded-full bg-brand-600/10 blur-[80px]" />
+
+            {/* Dark sphere backdrop — makes land masses pop */}
+            <div
+              className="absolute inset-0 rounded-full overflow-hidden"
+              style={{
+                background: 'radial-gradient(circle at 42% 45%, #0a1535 0%, #001338 60%, #000b22 100%)',
+                boxShadow: '0 0 80px 20px rgba(0,19,56,0.15), inset 0 0 60px rgba(255,255,255,0.03)',
+              }}
+            />
+
+            {/* Globe canvas */}
+            <div className="absolute inset-0 z-10">
+              <GlobeCanvas
+                dark={1}
+                baseColor={[1, 1, 1]}
+                glowColor={[0.18, 0.35, 0.75]}
+                markerColor={[235 / 255, 126 / 255, 81 / 255]}
+                mapBrightness={9}
+                diffuse={1.5}
+                speed={0.004}
+                theta={0.25}
               />
             </div>
 
             {/* Floating Status Label */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="liquid-glass absolute bottom-10 right-10 px-6 py-3 shadow-2xl shadow-olcan-navy/10 border-white/60"
+              className="liquid-glass absolute bottom-10 right-10 px-6 py-3 shadow-2xl shadow-olcan-navy/10 border-white/60 z-20"
             >
               <div className="flex items-center gap-3">
                 <span className="w-2 h-2 rounded-full bg-brand-500 animate-pulse" />

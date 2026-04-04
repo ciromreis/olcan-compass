@@ -1,0 +1,1 @@
+{"version":3,"file":"useGlowEffect.d.ts","sourceRoot":"","sources":["../../src/hooks/useGlowEffect.ts"],"names":[],"mappings":"AAEA,UAAU,kBAAkB;IAC1B,QAAQ,EAAE,OAAO,CAAA;IACjB,KAAK,CAAC,EAAE,MAAM,CAAA;IACd,SAAS,CAAC,EAAE,KAAK,GAAG,QAAQ,GAAG,MAAM,CAAA;CACtC;AAED,eAAO,MAAM,aAAa,GAAI,gCAI3B,kBAAkB;;;;;;;;;;;;;;;;;;;;;CAsDpB,CAAA"}

@@ -1,0 +1,10 @@
+# Olcan Compass - App
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /settings/
+Disallow: /_next/
+Disallow: /static/
+
+Sitemap: https://app.olcan.com/sitemap.xml

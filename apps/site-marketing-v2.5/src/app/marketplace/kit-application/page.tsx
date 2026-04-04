@@ -23,7 +23,8 @@ export default function KitApplicationPage() {
         duration="Entrega em 7 dias"
         format="Revisão profissional"
         level="Todos os níveis"
-        enrollmentLink="/checkout/kit-application"
+        enrollmentLink="https://pay.hotmart.com/X85073158P"
+        coverImage="/images/hero/corporate.png"
         
         benefits={[
           {

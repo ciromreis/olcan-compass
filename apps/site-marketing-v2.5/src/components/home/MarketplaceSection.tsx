@@ -95,7 +95,7 @@ export default function MarketplaceSection() {
           </p>
         </motion.div>
 
-        {/* Waitlist Form - Redesigned as a Premium Card */}
+        {/* Marketplace Access CTA - Replacing Waitlist */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -103,38 +103,22 @@ export default function MarketplaceSection() {
           viewport={{ once: true }}
           className="max-w-3xl mx-auto mb-24"
         >
-          <div className="card-olcan p-10 md:p-14 border-2 border-white/60 relative overflow-hidden">
+          <div className="card-olcan p-10 md:p-14 border-2 border-brand-500/30 relative overflow-hidden bg-white/80 backdrop-blur-xl">
             <div className="absolute top-0 right-0 p-6 opacity-5">
               <Compass className="w-32 h-32 text-olcan-navy" />
             </div>
             
             <div className="relative z-10 text-center space-y-8">
               <div className="space-y-3">
-                <div className="label-xs text-brand-600 tracking-[0.2em]">Priority Access</div>
-                <h3 className="font-display text-3xl text-olcan-navy italic">Entre para a Lista de Espera</h3>
-                <p className="text-olcan-navy/60 font-medium">Seja notificado no lançamento e garanta condições preferenciais.</p>
+                <div className="label-xs text-brand-600 tracking-wide">Acesso Liberado</div>
+                <h3 className="font-display text-3xl text-olcan-navy italic">Explore o Novo Ecossistema</h3>
+                <p className="text-olcan-navy/60 font-medium">Os recursos, mentorias e equipamentos de alta performance que você precisa agora estão disponíveis nativamente.</p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto pt-4">
-                <input
-                  type="email"
-                  placeholder="Seu melhor e-mail institucional"
-                  className="flex-1 px-6 py-4 bg-white/60 backdrop-blur-md border border-white/80 rounded-2xl text-olcan-navy placeholder-olcan-navy/40 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent font-medium"
-                />
-                <button className="btn-primary px-10 py-4 shadow-xl shadow-brand-500/20">
-                  Cadastrar
-                </button>
-              </div>
-              
-              <div className="flex items-center justify-center gap-6 pt-4">
-                <div className="flex -space-x-3">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-cream-100 flex items-center justify-center overflow-hidden">
-                      <div className="w-full h-full bg-olcan-navy/10 flex items-center justify-center text-[10px] font-bold text-olcan-navy">U{i}</div>
-                    </div>
-                  ))}
-                </div>
-                <p className="text-xs font-bold text-olcan-navy/40 uppercase tracking-widest">+120 profissionais aguardando</p>
+              <div className="flex justify-center pt-4">
+                <Link href="/marketplace" className="btn-primary px-10 py-4 shadow-xl shadow-brand-500/20 text-lg flex items-center gap-2">
+                  Acessar Plataforma <ArrowRight className="w-5 h-5" />
+                </Link>
               </div>
             </div>
           </div>
@@ -167,7 +151,7 @@ export default function MarketplaceSection() {
                 
                 <div className="fear-pill bg-white/40 border-white text-olcan-navy/40">
                   <Calendar className="w-3.5 h-3.5 mr-2" />
-                  Coming Soon
+                  Em breve
                 </div>
               </div>
             </motion.div>
@@ -183,7 +167,7 @@ export default function MarketplaceSection() {
           className="mb-24"
         >
           <div className="text-center mb-16">
-            <div className="label-xs text-brand-600 mb-4 tracking-[0.2em]">Protocolo de Segurança Olcan</div>
+            <div className="label-xs text-brand-600 mb-4 tracking-wide">Protocolo de Segurança Olcan</div>
             <h3 className="font-display text-4xl text-olcan-navy italic">Transparência e Segurança</h3>
           </div>
           
@@ -223,8 +207,8 @@ export default function MarketplaceSection() {
                 <Shield className="w-6 h-6 text-white" />
               </div>
               <div className="text-left">
-                <p className="text-sm font-bold text-olcan-navy uppercase tracking-widest">Safe Passage</p>
-                <p className="label-xs text-olcan-navy/40">Escrow Protected</p>
+                <p className="text-sm font-bold text-olcan-navy uppercase tracking-widest">Pagamento Seguro</p>
+                <p className="label-xs text-olcan-navy/40">Protegido em escrow</p>
               </div>
             </div>
             <div className="hidden md:block w-px h-10 bg-olcan-navy/10" />
@@ -233,8 +217,8 @@ export default function MarketplaceSection() {
                 <CheckCircle className="w-6 h-6 text-white" />
               </div>
               <div className="text-left">
-                <p className="text-sm font-bold text-olcan-navy uppercase tracking-widest">Verified Assets</p>
-                <p className="label-xs text-olcan-navy/40">Manual Audit</p>
+                <p className="text-sm font-bold text-olcan-navy uppercase tracking-widest">Profissionais Verificados</p>
+                <p className="label-xs text-olcan-navy/40">Auditoria manual</p>
               </div>
             </div>
             <div className="hidden md:block w-px h-10 bg-olcan-navy/10" />
@@ -243,8 +227,8 @@ export default function MarketplaceSection() {
                 <MessageCircle className="w-6 h-6 text-white" />
               </div>
               <div className="text-left">
-                <p className="text-sm font-bold text-olcan-navy uppercase tracking-widest">Global Desk</p>
-                <p className="label-xs text-olcan-navy/40">Dedicated Support</p>
+                <p className="text-sm font-bold text-olcan-navy uppercase tracking-widest">Suporte Internacional</p>
+                <p className="label-xs text-olcan-navy/40">Atendimento dedicado</p>
               </div>
             </div>
           </div>

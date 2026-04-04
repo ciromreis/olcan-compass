@@ -85,9 +85,14 @@ export default function EnhancedNavbar() {
               href="/" 
               className="flex items-center gap-3 group mr-4"
             >
-              <div className="w-24 h-8 md:w-32 md:h-10 relative flex items-center justify-center group-hover:scale-110 group-hover:-rotate-2 transition-all duration-500">
-                <Image src="/images/olcan-logo.png" alt="Olcan" fill className="object-contain brightness-[1.05] contrast-[1.05]" priority />
-              </div>
+              <Image
+                src="/images/olcan-logo.png"
+                alt="Olcan"
+                width={128}
+                height={40}
+                className="h-8 md:h-10 w-auto object-contain brightness-[1.05] contrast-[1.05] group-hover:scale-110 group-hover:-rotate-2 transition-all duration-500"
+                priority
+              />
             </Link>
 
             {/* Desktop Navigation */}
@@ -208,9 +213,7 @@ export default function EnhancedNavbar() {
             >
               {/* Menu Header */}
               <div className="flex items-center justify-between p-6 border-b border-white/20">
-                <div className="w-24 h-8 relative flex items-center justify-center">
-                  <Image src="/images/olcan-logo.png" alt="Olcan" fill className="object-contain" />
-                </div>
+                <Image src="/images/olcan-logo.png" alt="Olcan" width={96} height={32} className="h-8 w-auto object-contain" />
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="p-2 rounded-xl text-olcan-navy/60 hover:text-olcan-navy hover:bg-white/40"

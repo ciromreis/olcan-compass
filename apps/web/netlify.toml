@@ -1,6 +1,0 @@
-## LEGACY (v1)
-##
-## This file previously configured a Vite SPA deploy for `apps/web`.
-## Production is now `apps/web-v2` (Next.js) and Netlify should not use this config.
-##
-## If you intentionally want to deploy v1 again, restore the previous contents.

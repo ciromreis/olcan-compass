@@ -2,5 +2,5 @@
   "buildCommand": "pnpm --filter @olcan/web-v2 build",
   "installCommand": "pnpm install",
   "framework": "nextjs",
-  "outputDirectory": "apps/web-v2/.next"
+  "outputDirectory": "apps/app-compass-v2/.next"
 }

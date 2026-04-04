@@ -105,7 +105,7 @@ const AuraShowcase = () => {
             viewport={{ once: true }}
             className="space-y-4"
           >
-            <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-gold-600">MANIFESTO DE PRONTIDÃO</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-gold-600">MANIFESTO DE PRONTIDÃO</span>
             <h2 className="text-6xl lg:text-7xl font-display text-ink-500 tracking-tight leading-none">
               Sua <span className="text-gold-500 italic">Aura</span> de Mobilidade
             </h2>

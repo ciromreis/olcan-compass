@@ -73,7 +73,7 @@ export function Leaderboard({
       <GlassCard className="p-8 rounded-[3rem] bg-bone-50/20 border border-bone-500/10 backdrop-blur-xl">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
           <div>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-[10px] font-black uppercase tracking-[0.2em] text-gold-600 mb-4">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-caption font-semibold uppercase tracking-wide text-gold-600 mb-4">
               <Trophy className="w-4 h-4" />
               Arena de Prestígio
             </div>
@@ -81,9 +81,9 @@ export function Leaderboard({
               {TYPE_LABELS[type]}
             </h2>
             <p className="text-sm text-ink-400 font-medium mt-3">
-              Período: <span className="text-ink-950 font-black uppercase tracking-tight">{PERIOD_LABELS[period]}</span>
+              Período: <span className="text-ink-950 font-semibold uppercase tracking-tight">{PERIOD_LABELS[period]}</span>
               {currentUserRank && (
-                <span className="ml-3 text-gold-600 font-black">
+                <span className="ml-3 text-gold-600 font-semibold">
                    • Sua Posição: #{currentUserRank}
                 </span>
               )}
@@ -96,7 +96,7 @@ export function Leaderboard({
                 <button
                   key={t}
                   onClick={() => onTypeChange?.(t)}
-                  className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-tight transition-all duration-300 ${
+                  className={`px-4 py-2.5 rounded-xl text-caption font-semibold uppercase tracking-tight transition-all duration-300 ${
                     type === t
                       ? 'bg-ink-950 text-white shadow-xl'
                       : 'text-ink-300 hover:text-ink-950'
@@ -112,7 +112,7 @@ export function Leaderboard({
                 <button
                   key={p}
                   onClick={() => onPeriodChange?.(p)}
-                  className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-tight transition-all duration-300 ${
+                  className={`px-4 py-2.5 rounded-xl text-caption font-semibold uppercase tracking-tight transition-all duration-300 ${
                     period === p
                       ? 'bg-gold-500 text-ink-950 shadow-xl'
                       : 'text-ink-300 hover:text-ink-950'
@@ -158,7 +158,7 @@ export function Leaderboard({
               </div>
               <div className="text-center">
                 <div className="text-xl font-display text-ink-950 group-hover:text-gold-500 transition-colors uppercase tracking-tight">{podium[1].username}</div>
-                <div className="text-[10px] font-black text-ink-300 uppercase tracking-widest mt-1">Nível {podium[1].level}</div>
+                <div className="text-caption font-semibold text-ink-300 uppercase tracking-widest mt-1">Nível {podium[1].level}</div>
               </div>
             </motion.div>
           )}
@@ -195,7 +195,7 @@ export function Leaderboard({
               </div>
               <div className="text-center">
                 <div className="text-3xl font-display text-ink-950 uppercase tracking-tighter leading-none">{podium[0].username}</div>
-                <div className="inline-flex items-center gap-2 mt-2 px-3 py-1 rounded-full bg-gold-500/10 border border-gold-500/20 text-[10px] font-black text-gold-600 uppercase tracking-widest">
+                <div className="inline-flex items-center gap-2 mt-2 px-3 py-1 rounded-full bg-gold-500/10 border border-gold-500/20 text-caption font-semibold text-gold-600 uppercase tracking-widest">
                   Campeão do Ciclo
                 </div>
               </div>
@@ -228,7 +228,7 @@ export function Leaderboard({
               </div>
               <div className="text-center">
                 <div className="text-lg font-display text-ink-950 group-hover:text-gold-500 transition-colors uppercase tracking-tight">{podium[2].username}</div>
-                <div className="text-[10px] font-black text-ink-300 uppercase tracking-widest mt-1">Nível {podium[2].level}</div>
+                <div className="text-caption font-semibold text-ink-300 uppercase tracking-widest mt-1">Nível {podium[2].level}</div>
               </div>
             </motion.div>
           )}
@@ -270,26 +270,26 @@ export function Leaderboard({
                 <div className="text-lg font-display text-ink-950 uppercase tracking-tight truncate flex items-center gap-3">
                   {entry.username}
                   {entry.isCurrentUser && (
-                    <span className="px-2 py-0.5 rounded bg-gold-500 text-ink-950 text-[8px] font-black uppercase tracking-tight">VOCÊ</span>
+                    <span className="px-2 py-0.5 rounded bg-gold-500 text-ink-950 text-[8px] font-semibold uppercase tracking-tight">VOCÊ</span>
                   )}
                 </div>
-                <div className="text-[10px] font-black text-ink-300 uppercase tracking-widest mt-1">
+                <div className="text-caption font-semibold text-ink-300 uppercase tracking-widest mt-1">
                   Manifestação {entry.companionName} • Nível {entry.level}
                 </div>
               </div>
 
               <div className="hidden md:flex items-center gap-10">
                 <div className="text-right">
-                  <div className="text-xs font-black text-ink-950 uppercase tracking-tight">{entry.xp.toLocaleString()}</div>
-                  <div className="text-[9px] font-black text-ink-300 uppercase tracking-widest">Sincronia</div>
+                  <div className="text-xs font-semibold text-ink-950 uppercase tracking-tight">{entry.xp.toLocaleString()}</div>
+                  <div className="text-caption font-semibold text-ink-300 uppercase tracking-widest">Sincronia</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xs font-black text-ink-950 uppercase tracking-tight">{entry.streak}d</div>
-                  <div className="text-[9px] font-black text-ink-300 uppercase tracking-widest">Frequência</div>
+                  <div className="text-xs font-semibold text-ink-950 uppercase tracking-tight">{entry.streak}d</div>
+                  <div className="text-caption font-semibold text-ink-300 uppercase tracking-widest">Frequência</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xs font-black text-ink-950 uppercase tracking-tight">{entry.achievements}</div>
-                  <div className="text-[9px] font-black text-ink-300 uppercase tracking-widest">Artefatos</div>
+                  <div className="text-xs font-semibold text-ink-950 uppercase tracking-tight">{entry.achievements}</div>
+                  <div className="text-caption font-semibold text-ink-300 uppercase tracking-widest">Artefatos</div>
                 </div>
               </div>
 
@@ -318,13 +318,13 @@ export function Leaderboard({
               </div>
               <div className="flex-1">
                 <div className="text-lg font-display uppercase tracking-tight">Recapitulação de Status</div>
-                <div className="text-[10px] font-medium text-white/50 uppercase tracking-widest mt-1">
+                <div className="text-caption font-medium text-white/50 uppercase tracking-widest mt-1">
                   Nível {currentUserEntry.level} • {currentUserEntry.xp.toLocaleString()} Sincronia TOTAL
                 </div>
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right hidden sm:block">
-                  <p className="text-[10px] font-black text-gold-500 uppercase tracking-widest">Em Ascensão</p>
+                  <p className="text-caption font-semibold text-gold-500 uppercase tracking-widest">Em Ascensão</p>
                 </div>
                 <Zap className="w-6 h-6 text-gold-500 animate-pulse" />
               </div>
@@ -355,7 +355,7 @@ export function LeaderboardPreview({
           <Trophy className="w-6 h-6 text-gold-500" />
           Mestres da Aura
         </h3>
-        <div className="px-3 py-1 rounded-lg bg-gold-500/10 text-gold-600 text-[10px] font-black uppercase tracking-widest">
+        <div className="px-3 py-1 rounded-lg bg-gold-500/10 text-gold-600 text-caption font-semibold uppercase tracking-widest">
           Sua Posição: #{currentUserRank}
         </div>
       </div>
@@ -381,8 +381,8 @@ export function LeaderboardPreview({
               />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-black text-ink-950 uppercase tracking-tight truncate">{entry.username}</div>
-              <div className="text-[9px] font-black text-ink-300 uppercase tracking-widest mt-0.5">
+              <div className="text-xs font-semibold text-ink-950 uppercase tracking-tight truncate">{entry.username}</div>
+              <div className="text-caption font-semibold text-ink-300 uppercase tracking-widest mt-0.5">
                 Lv.{entry.level} • {entry.xp.toLocaleString()} Sincronia
               </div>
             </div>
@@ -391,7 +391,7 @@ export function LeaderboardPreview({
       </div>
 
       <Link href="/aura/leaderboard">
-        <GlassButton className="w-full h-14 mt-8 rounded-2xl bg-ink-950 text-white font-black text-[10px] uppercase tracking-widest hover:bg-gold-500 hover:text-ink-950 transition-all shadow-lg group">
+        <GlassButton className="w-full h-14 mt-8 rounded-2xl bg-ink-950 text-white font-semibold text-caption uppercase tracking-widest hover:bg-gold-500 hover:text-ink-950 transition-all shadow-lg group">
           Ver Ranking Completo
           <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
         </GlassButton>

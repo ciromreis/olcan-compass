@@ -48,7 +48,7 @@ export const CompanionCard: React.FC<CompanionCardProps> = ({
           </div>
           <div className="text-right">
             <p className="text-caption font-bold text-[#001338]/40 uppercase tracking-tighter">Estágio</p>
-            <p className="text-body-sm font-black text-[#001338]">{stageInfo.name}</p>
+            <p className="text-body-sm font-semibold text-[#001338]">{stageInfo.name}</p>
           </div>
         </div>
 

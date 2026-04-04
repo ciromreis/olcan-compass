@@ -107,7 +107,7 @@ export default function DocumentsPage() {
       <div className="min-h-screen bg-surface-bg flex items-center justify-center p-8">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 rounded-full border-t-2 border-gold-500 animate-spin" />
-          <div className="text-[10px] uppercase tracking-widest text-ink-300 font-black">Forjando Documentos...</div>
+          <div className="text-caption uppercase tracking-widest text-ink-300 font-semibold">Forjando Documentos...</div>
         </div>
       </div>
     )
@@ -124,17 +124,17 @@ export default function DocumentsPage() {
       >
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10">
           <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-[10px] font-black uppercase tracking-[0.25em] text-gold-600">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-caption font-semibold uppercase tracking-[0.25em] text-gold-600">
               <FileText className="w-4 h-4" />
               Manifesto Executivo
             </div>
             <h1 className="text-6xl md:text-8xl font-display text-ink-950 tracking-tighter leading-tight">Document Forge</h1>
             <p className="text-xl text-ink-400 font-medium max-w-2xl">
-              Crie narrativas de carreira poderosas com assistência da sua <span className="text-gold-500 font-black">Aura</span>.
+              Crie narrativas de carreira poderosas com assistência da sua <span className="text-gold-500 font-semibold">Aura</span>.
             </p>
           </div>
           <Link href="/documents/new">
-            <GlassButton className="min-w-[220px] h-16 rounded-[2rem] bg-ink-950 text-white font-black text-sm uppercase tracking-tight hover:bg-gold-500 hover:text-ink-950 transition-all shadow-xl group">
+            <GlassButton className="min-w-[220px] h-16 rounded-[2rem] bg-ink-950 text-white font-semibold text-sm uppercase tracking-tight hover:bg-gold-500 hover:text-ink-950 transition-all shadow-xl group">
               <Plus className="w-6 h-6 mr-3 group-hover:rotate-90 transition-transform" />
               Novo Documento
             </GlassButton>
@@ -161,7 +161,7 @@ export default function DocumentsPage() {
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value as DocumentType | 'all')}
-                className="px-6 py-4 bg-white/40 border border-bone-500/10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gold-500/50 text-ink-950 font-black text-xs uppercase tracking-tight cursor-pointer"
+                className="px-6 py-4 bg-white/40 border border-bone-500/10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gold-500/50 text-ink-950 font-semibold text-xs uppercase tracking-tight cursor-pointer"
               >
                 <option value="all">TODOS OS TIPOS</option>
                 {Object.entries(DOCUMENT_TYPE_LABELS).map(([type, label]) => (
@@ -173,7 +173,7 @@ export default function DocumentsPage() {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value as DocumentStatus | 'all')}
-                className="px-6 py-4 bg-white/40 border border-bone-500/10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gold-500/50 text-ink-950 font-black text-xs uppercase tracking-tight cursor-pointer"
+                className="px-6 py-4 bg-white/40 border border-bone-500/10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gold-500/50 text-ink-950 font-semibold text-xs uppercase tracking-tight cursor-pointer"
               >
                 <option value="all">TODOS OS STATUS</option>
                 {Object.entries(STATUS_CONFIG).map(([status, config]) => (
@@ -228,7 +228,7 @@ export default function DocumentsPage() {
               : 'Seu inventário de carreira está vazio. Comece a forjar agora.'}
           </p>
           <Link href="/documents/new">
-            <GlassButton className="min-w-[200px] h-14 rounded-2xl bg-gold-500 text-ink-950 font-black uppercase text-xs tracking-widest hover:scale-105 transition-all">
+            <GlassButton className="min-w-[200px] h-14 rounded-2xl bg-gold-500 text-ink-950 font-semibold uppercase text-xs tracking-widest hover:scale-105 transition-all">
               <Plus className="w-5 h-5 mr-3" />
               Forjar Documento
             </GlassButton>
@@ -275,7 +275,7 @@ function DocumentCard({ document }: { document: Document }) {
           <div className="w-16 h-16 rounded-[1.5rem] bg-ink-950/5 flex items-center justify-center text-5xl group-hover:scale-110 transition-transform duration-500">
             {DOCUMENT_TYPE_ICONS[document.document_type]}
           </div>
-          <div className={`px-4 py-1.5 rounded-full border bg-white shadow-sm flex items-center gap-2 text-[10px] font-black uppercase tracking-tight ${statusConfig.color} border-current/20`}>
+          <div className={`px-4 py-1.5 rounded-full border bg-white shadow-sm flex items-center gap-2 text-caption font-semibold uppercase tracking-tight ${statusConfig.color} border-current/20`}>
             <StatusIcon className="w-3.5 h-3.5" />
             <span>{statusConfig.label}</span>
           </div>
@@ -286,7 +286,7 @@ function DocumentCard({ document }: { document: Document }) {
             {document.title}
           </h3>
           
-          <p className="text-xs font-black text-ink-300 uppercase tracking-widest mb-6 px-1">
+          <p className="text-xs font-semibold text-ink-300 uppercase tracking-widest mb-6 px-1">
             {DOCUMENT_TYPE_LABELS[document.document_type]}
           </p>
         </div>
@@ -295,8 +295,8 @@ function DocumentCard({ document }: { document: Document }) {
           {/* Sync Score */}
           <div className="space-y-3">
             <div className="flex justify-between items-end">
-              <span className="text-[10px] font-black uppercase tracking-widest text-ink-300">Sincronia Aura</span>
-              <span className="text-sm font-black text-ink-950">{document.aura_contribution_score}%</span>
+              <span className="text-caption font-semibold uppercase tracking-widest text-ink-300">Sincronia Aura</span>
+              <span className="text-sm font-semibold text-ink-950">{document.aura_contribution_score}%</span>
             </div>
             <div className="h-1.5 bg-ink-950/5 rounded-full overflow-hidden p-0.5 border border-bone-400/10">
               <motion.div
@@ -309,12 +309,12 @@ function DocumentCard({ document }: { document: Document }) {
           </div>
 
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-[10px] font-black text-ink-300 uppercase tracking-tight">
+            <div className="flex items-center gap-2 text-caption font-semibold text-ink-300 uppercase tracking-tight">
               <Clock className="w-3.5 h-3.5" />
               {new Date(document.updated_at).toLocaleDateString()}
             </div>
             {document.ai_suggestions_count > 0 && (
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-gold-500/10 text-gold-600 text-[10px] font-black uppercase tracking-tight">
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-gold-500/10 text-gold-600 text-caption font-semibold uppercase tracking-tight">
                 <Sparkles className="w-3 h-3" />
                 <span>{document.ai_suggestions_count} Dicas</span>
               </div>
@@ -342,14 +342,14 @@ function DocumentListItem({ document }: { document: Document }) {
             <h3 className="font-display text-xl text-ink-950 group-hover:text-gold-500 transition-colors truncate">
               {document.title}
             </h3>
-            <p className="text-[10px] font-black text-ink-300 uppercase tracking-widest mt-1">
+            <p className="text-caption font-semibold text-ink-300 uppercase tracking-widest mt-1">
               {DOCUMENT_TYPE_LABELS[document.document_type]}
             </p>
           </div>
 
           <div className="flex items-center gap-8">
             <div className="hidden lg:block w-48 space-y-2">
-              <div className="flex justify-between text-[8px] font-black uppercase text-ink-200">
+              <div className="flex justify-between text-[8px] font-semibold uppercase text-ink-200">
                 <span>Sincronia</span>
                 <span>{document.aura_contribution_score}%</span>
               </div>
@@ -366,11 +366,11 @@ function DocumentListItem({ document }: { document: Document }) {
             {document.ai_suggestions_count > 0 && (
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gold-500/10 text-gold-600">
                 <Sparkles className="w-4 h-4" />
-                <span className="text-xs font-black">{document.ai_suggestions_count}</span>
+                <span className="text-xs font-semibold">{document.ai_suggestions_count}</span>
               </div>
             )}
 
-            <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full border border-current/20 text-[10px] font-black uppercase tracking-tight ${statusConfig.color}`}>
+            <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full border border-current/20 text-caption font-semibold uppercase tracking-tight ${statusConfig.color}`}>
               <StatusIcon className="w-4 h-4" />
               <span className="hidden sm:inline">{statusConfig.label}</span>
             </div>

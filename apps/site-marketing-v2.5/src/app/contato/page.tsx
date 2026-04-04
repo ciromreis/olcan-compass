@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import EnhancedNavbar from '@/components/layout/EnhancedNavbar';
 import EnhancedFooter from '@/components/layout/EnhancedFooter';
 import { ContactForm } from '@/components/forms/ContactForm';
-import { Mail, MessageCircle, MapPin, Clock } from 'lucide-react';
+import { Mail, MapPin, Clock } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Contato | Olcan',
@@ -47,18 +47,6 @@ export default function ContatoPage() {
                       <div className="font-semibold text-olcan-navy mb-1">Email</div>
                       <a href="mailto:contato@olcan.com.br" className="text-brand-600 hover:text-brand-700">
                         contato@olcan.com.br
-                      </a>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
-                      <MessageCircle className="w-6 h-6 text-brand-600" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-olcan-navy mb-1">WhatsApp</div>
-                      <a href="https://wa.me/5511999999999" className="text-brand-600 hover:text-brand-700">
-                        +55 11 99999-9999
                       </a>
                     </div>
                   </div>

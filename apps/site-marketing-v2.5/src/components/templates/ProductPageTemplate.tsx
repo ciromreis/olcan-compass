@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, Star, ArrowRight, Shield, Users, Clock, Award, Globe, Map, BookOpen, Video, Target, Calendar, TrendingUp, FileCheck, MessageCircle, Edit, Zap, FileText } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { trackProductView, trackEvent } from '@/lib/analytics';
 
 // Icon mapping helper
@@ -75,6 +76,7 @@ interface ProductPageProps {
   duration?: string;
   format?: string;
   level?: string;
+  coverImage?: string;
 }
 
 export function ProductPageTemplate({
@@ -91,7 +93,8 @@ export function ProductPageTemplate({
   category,
   duration,
   format,
-  level
+  level,
+  coverImage,
 }: ProductPageProps) {
   const [expandedFAQ, setExpandedFAQ] = React.useState<number | null>(null);
 
@@ -112,7 +115,24 @@ export function ProductPageTemplate({
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-white to-cream-50" />
-        
+
+        {/* Cover image banner */}
+        {coverImage && (
+          <div className="relative w-full max-w-4xl mx-auto px-6 lg:px-12 mb-12 z-10">
+            <div className="rounded-[2rem] overflow-hidden aspect-[16/7] relative shadow-2xl shadow-olcan-navy/10">
+              <Image
+                src={coverImage}
+                alt={name}
+                fill
+                className="object-cover object-center"
+                sizes="(max-width: 768px) 100vw, 896px"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-olcan-navy/30 via-transparent to-transparent" />
+            </div>
+          </div>
+        )}
+
         <div className="container-site relative z-10 mx-auto px-6 lg:px-12 w-full max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -169,14 +189,16 @@ export function ProductPageTemplate({
                 <div className="text-sm text-text-secondary mt-2">Pagamento único ou parcelado</div>
               </div>
 
-              <Link
+              <a
                 href={enrollmentLink}
                 onClick={handleEnrollClick}
-                className="btn-primary w-full py-4 text-center text-lg"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary w-full py-4 text-center text-lg flex items-center justify-center"
               >
-                Garantir Minha Vaga
+                Comprar no Hotmart
                 <ArrowRight className="inline-block w-5 h-5 ml-2" />
-              </Link>
+              </a>
 
               <div className="flex items-center justify-center gap-4 mt-6 text-sm text-text-secondary">
                 <div className="flex items-center gap-1">
@@ -385,14 +407,16 @@ export function ProductPageTemplate({
             <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
               Junte-se a centenas de profissionais que já transformaram suas carreiras com a Olcan
             </p>
-            <Link
+            <a
               href={enrollmentLink}
               onClick={handleEnrollClick}
-              className="inline-block px-8 py-4 bg-white text-olcan-navy font-semibold rounded-xl hover:bg-cream-50 transition-all duration-300 shadow-lg hover:scale-105"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center px-8 py-4 bg-white text-olcan-navy font-semibold rounded-xl hover:bg-cream-50 transition-all duration-300 shadow-lg hover:scale-105"
             >
-              Garantir Minha Vaga Agora
+              Comprar no Hotmart
               <ArrowRight className="inline-block w-5 h-5 ml-2" />
-            </Link>
+            </a>
             <div className="mt-6 text-white/60 text-sm">
               Garantia de 7 dias • Acesso imediato • Suporte dedicado
             </div>

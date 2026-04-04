@@ -6,10 +6,13 @@
   "scripts": {
     "dev:v1": "pnpm --filter @olcan/web dev -- --host 0.0.0.0 --port 3000",
     "dev:v2": "pnpm --filter @olcan/web-v2 dev",
+    "dev:v2.5": "pnpm --filter @olcan/web-site dev",
     "build:v1": "pnpm --filter @olcan/web build",
     "build:v2": "pnpm --filter @olcan/web-v2 build",
+    "build:v2.5": "pnpm --filter @olcan/web-site build",
     "lint:v1": "pnpm --filter @olcan/web lint",
     "lint:v2": "pnpm --filter @olcan/web-v2 lint",
+    "lint:v2.5": "pnpm --filter @olcan/web-site lint",
     "dev": "pnpm dev:v2",
     "build": "pnpm build:v2",
     "lint": "pnpm lint:v2",

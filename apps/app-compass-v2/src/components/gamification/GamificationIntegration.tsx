@@ -103,7 +103,7 @@ export function GamificationDebugger() {
   const progress = useGamificationStore((state) => state.userProgress)
   
   return (
-    <div className="fixed bottom-4 right-4 z-[9999] p-4 rounded-2xl bg-ink-950/90 text-white backdrop-blur-xl border border-white/10 shadow-2xl font-display text-[10px] uppercase tracking-widest">
+    <div className="fixed bottom-4 right-4 z-[9999] p-4 rounded-2xl bg-ink-950/90 text-white backdrop-blur-xl border border-white/10 shadow-2xl font-display text-caption uppercase tracking-widest">
       <div className="flex items-center gap-2 mb-2 text-gold-500">
         <Zap className="w-4 h-4" />
         DEBUG AURA

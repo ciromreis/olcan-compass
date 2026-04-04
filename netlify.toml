@@ -1,6 +1,6 @@
 [build]
   command = "pnpm build:v2"
-  publish = "apps/web-v2/.next"
+  publish = "apps/app-compass-v2/.next"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"

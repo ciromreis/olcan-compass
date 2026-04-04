@@ -39,12 +39,12 @@ export default function QuestsPage() {
                 <Link href="/aura">
                   <GlassButton className="h-12 px-5 rounded-2xl bg-white border border-bone-500/20 text-ink-300 hover:text-ink-950 transition-all shadow-sm flex items-center gap-2 group">
                     <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Retornar à Aura</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-widest">Retornar à Aura</span>
                   </GlassButton>
                 </Link>
                 
                 <div className="space-y-3">
-                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-[10px] font-black uppercase tracking-[0.2em] text-gold-600">
+                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-[10px] font-semibold uppercase tracking-wide text-gold-600">
                     <Target className="w-4 h-4" />
                     Central de Missões
                   </div>
@@ -52,7 +52,7 @@ export default function QuestsPage() {
                     Quests
                   </h1>
                   <p className="text-xl text-ink-400 font-medium max-w-2xl leading-relaxed">
-                    Acelere sua evolução global. Complete marcos estratégicos e fortaleça sua <span className="text-gold-500 font-black">Aura</span> em cada etapa da jornada.
+                    Acelere sua evolução global. Complete marcos estratégicos e fortaleça sua <span className="text-gold-500 font-semibold">Aura</span> em cada etapa da jornada.
                   </p>
                 </div>
               </div>

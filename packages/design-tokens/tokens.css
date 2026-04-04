@@ -1,84 +1,103 @@
-/* Olcan Compass V2 — Clinical Boutique Design Tokens */
-/* MMXD Premium Light Theme */
+/* Olcan Compass V2.5 — Metamodern Minimalism (MMXD) */
+/* Liquid Glass Design System */
 
 :root {
-  /* Moss (Primary Action) */
-  --moss-50: #E8EDE9;
-  --moss-100: #C5D4C8;
-  --moss-200: #9FB9A4;
-  --moss-300: #799E80;
-  --moss-400: #5D8B65;
-  --moss-500: #2E4036;
-  --moss-600: #263630;
-  --moss-700: #1E2C28;
-  --moss-800: #162220;
-  --moss-900: #0E1818;
+  /* Bone (Main Background / Light Theme) */
+  --bone-50: #FEFDFC;
+  --bone-100: #FBF9F6;
+  --bone-200: #F7F4EF;
+  --bone-300: #F2EFE9;
+  --bone-400: #EDE9E0;
+  --bone-500: #F9F6F0;
+  --bone-600: #E5E1D7;
+  --bone-700: #D1CDBE;
+  --bone-800: #BDB9A5;
+  --bone-900: #A9A58C;
 
-  /* Clay (Accent / CTA / Urgency) */
-  --clay-50: #FFF0EB;
-  --clay-100: #FFD9CC;
-  --clay-200: #FFB8A0;
-  --clay-300: #FF9774;
-  --clay-400: #E86B40;
-  --clay-500: #CC5833;
-  --clay-600: #A64529;
-  --clay-700: #80341F;
-  --clay-800: #592315;
-  --clay-900: #33120B;
+  /* Ink (Text / Deep Surfaces / Contrast) */
+  --ink-50: #E6E6E7;
+  --ink-100: #B3B3B5;
+  --ink-200: #808083;
+  --ink-300: #4D4D51;
+  --ink-400: #1A1A1F;
+  --ink-500: #0A0A0B;
+  --ink-600: #080809;
+  --ink-700: #060607;
+  --ink-800: #040405;
+  --ink-900: #020203;
 
-  /* Cream (Background / Surface) */
-  --cream-50: #FEFDFB;
-  --cream-100: #FBF9F5;
-  --cream-200: #F7F5EF;
-  --cream-300: #F2F0E9;
-  --cream-400: #EDE9E0;
-  --cream-500: #E8E3D7;
-  --cream-600: #D4CFBE;
-  --cream-700: #B0AB9A;
-  --cream-800: #8C8776;
-  --cream-900: #686352;
+  /* Gold (Premium Accent / Critical Actions) */
+  --gold-50: #FAF7EC;
+  --gold-100: #F1E9BF;
+  --gold-200: #E8DB92;
+  --gold-300: #DFCD65;
+  --gold-400: #D6BF38;
+  --gold-500: #D4AF37;
+  --gold-600: #AB8D2C;
+  --gold-700: #826B21;
+  --gold-800: #594917;
+  --gold-900: #30270D;
 
-  /* Semantic surfaces */
-  --surface-bg: var(--cream-300);
-  --surface-card: #FFFFFF;
+  /* Silver & Slate (Secondary/Metadata) */
+  --silver-400: #CED4DA;
+  --silver-500: #ADB5BD;
+  --slate-500: #7E8CA3;
+
+  /* Semantic Surfaces (Liquid Glass) */
+  --surface-bg: var(--bone-500);
+  --surface-card: rgba(255, 255, 255, 0.85);
   --surface-elevated: #FFFFFF;
-  --surface-overlay: rgba(26, 26, 26, 0.4);
-  --surface-glass: rgba(255, 255, 255, 0.7);
-
+  --surface-overlay: rgba(10, 10, 11, 0.4);
+  --surface-glass: rgba(255, 255, 255, 0.15);
+  
   /* Text */
-  --text-primary: #1A1A1A;
-  --text-secondary: #686352;
-  --text-muted: #8C8776;
-  --text-inverse: #FFFFFF;
-  --text-accent: var(--moss-500);
+  --text-primary: var(--ink-500);
+  --text-secondary: var(--ink-300);
+  --text-muted: var(--slate-500);
+  --text-inverse: var(--bone-50);
+  --text-accent: var(--gold-500);
 
   /* Semantic */
   --success: #3D8B5E;
-  --warning: #D4A026;
-  --error: #C4402A;
-  --info: #2E6B9E;
+  --warning: var(--gold-500);
+  --error: #962D2D;
+  --info: #4A7A5C;
 
   /* Typography */
-  --font-heading: 'Plus Jakarta Sans', sans-serif;
-  --font-emphasis: 'Cormorant Garamond', serif;
-  --font-body: 'Inter', sans-serif;
+  --font-heading: 'DM Serif Display', serif;
+  --font-body: 'DM Sans', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Shadows */
-  --shadow-card: 0 1px 3px rgba(26, 26, 26, 0.04), 0 1px 2px rgba(26, 26, 26, 0.06);
-  --shadow-card-hover: 0 4px 12px rgba(26, 26, 26, 0.08), 0 2px 4px rgba(26, 26, 26, 0.04);
-  --shadow-glass: 0 8px 32px rgba(26, 26, 26, 0.06);
+  /* Shadows (Softer, deeper for Metamodern) */
+  --shadow-card: 0 4px 24px -1px rgba(10, 10, 11, 0.03), 0 2px 8px -1px rgba(10, 10, 11, 0.02);
+  --shadow-card-hover: 0 12px 48px -4px rgba(10, 10, 11, 0.08), 0 4px 12px -2px rgba(10, 10, 11, 0.04);
+  --shadow-glass: 0 8px 32px 0 rgba(10, 10, 11, 0.1);
 
-  /* Transitions */
-  --transition-fast: 150ms;
-  --transition-base: 200ms;
-  --transition-slow: 300ms;
+  /* Transitions (MMXD Smoothness) */
+  --transition-fast: 200ms cubic-bezier(0.23, 1, 0.32, 1);
+  --transition-base: 350ms cubic-bezier(0.23, 1, 0.32, 1);
+  --transition-slow: 500ms cubic-bezier(0.23, 1, 0.32, 1);
   --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
   /* Radii */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-2xl: 24px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+}
+
+/* Glass Utilities */
+.glass-effect {
+  background: var(--surface-glass);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: var(--shadow-card);
 }
