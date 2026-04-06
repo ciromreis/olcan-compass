@@ -1,1 +1,7 @@
 .vercel
+.env*.local
+
+# Environment variables
+.env.local
+.env*.local
+.vercel/.env*.local
