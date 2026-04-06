@@ -72,11 +72,12 @@ const config: Config = {
         mono:    ["'JetBrains Mono'", "monospace"],
       },
       fontSize: {
-        "display-2xl": ["clamp(4rem, 8vw, 9rem)", { lineHeight: "0.95", letterSpacing: "-0.035em" }],
-        "display-xl":  ["clamp(3rem, 6vw, 7rem)",  { lineHeight: "0.97", letterSpacing: "-0.03em"  }],
-        "display-lg":  ["clamp(2.25rem, 5vw, 5rem)", { lineHeight: "1.0",  letterSpacing: "-0.025em" }],
-        "display-md":  ["clamp(1.75rem, 4vw, 3.5rem)", { lineHeight: "1.05", letterSpacing: "-0.02em" }],
-        "display-sm":  ["clamp(1.375rem, 3vw, 2.25rem)", { lineHeight: "1.1", letterSpacing: "-0.015em" }],
+        // Refined typography scale - luxury corporate standards
+        "display-2xl": ["clamp(3rem, 5vw, 4.5rem)", { lineHeight: "1.0", letterSpacing: "-0.03em" }],
+        "display-xl":  ["clamp(2.5rem, 4vw, 3.5rem)",  { lineHeight: "1.05", letterSpacing: "-0.025em"  }],
+        "display-lg":  ["clamp(2rem, 3.5vw, 2.75rem)", { lineHeight: "1.1",  letterSpacing: "-0.02em" }],
+        "display-md":  ["clamp(1.5rem, 2.5vw, 2rem)", { lineHeight: "1.15", letterSpacing: "-0.015em" }],
+        "display-sm":  ["clamp(1.25rem, 2vw, 1.5rem)", { lineHeight: "1.2", letterSpacing: "-0.01em" }],
       },
       keyframes: {
         "fade-up": {

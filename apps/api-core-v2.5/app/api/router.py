@@ -11,9 +11,15 @@ from app.api.routes.application import router as application_router
 from app.api.routes.sprint import router as sprint_router
 from app.api.routes.ai import router as ai_router
 from app.api.routes.marketplace import router as marketplace_router
+from app.api.routes.commerce import router as commerce_router
 from app.api.routes.org import router as org_router
 from app.api.routes.constraints import router as constraints_router
-from app.api.companions import router as companions_router
+COMPANIONS_AVAILABLE = False
+try:
+    from app.api.companions import router as companions_router
+    COMPANIONS_AVAILABLE = True
+except ImportError as e:
+    print(f"[INFO] Companion routes not loaded: {e}")
 
 # Economics-driven intelligence routes
 from app.api.routes.credentials import router as credentials_router
@@ -49,9 +55,11 @@ def _mount_all_routes(router: APIRouter) -> None:
     router.include_router(sprint_router, tags=["Readiness Engine"])
     router.include_router(ai_router, tags=["AI Service Layer"])
     router.include_router(marketplace_router, tags=["Marketplace"])
+    router.include_router(commerce_router, tags=["Commerce"])
     router.include_router(org_router, tags=["Organizations"])
     router.include_router(constraints_router, tags=["User Constraints"])
-    router.include_router(companions_router, tags=["Companions"])
+    if COMPANIONS_AVAILABLE:
+        router.include_router(companions_router, tags=["Companions"])
 
     # Economics Intelligence
     router.include_router(credentials_router, tags=["Economics - Credentials"])

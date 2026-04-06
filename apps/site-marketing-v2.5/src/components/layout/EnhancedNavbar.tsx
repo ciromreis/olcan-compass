@@ -7,10 +7,18 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
+const APP_BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+
+function getAppUrl(path: string) {
+  const base = APP_BASE_URL.endsWith('/') ? APP_BASE_URL.slice(0, -1) : APP_BASE_URL;
+  return `${base}${path}`;
+}
+
 export default function EnhancedNavbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [hasOlcanSession, setHasOlcanSession] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -25,10 +33,17 @@ export default function EnhancedNavbar() {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return;
+    }
+    setHasOlcanSession(document.cookie.includes('olcan_session_state=authenticated'));
+  }, []);
+
   const navItems = [
     { href: "/", label: "Início", icon: Home },
     { href: "/sobre", label: "Sobre", icon: Info },
-    { href: "/marketplace", label: "Marketplace", icon: ShoppingBag },
+    { href: "/marketplace", label: "Loja", icon: ShoppingBag },
     { href: "/diagnostico", label: "Diagnóstico", icon: Compass },
     { href: "/blog", label: "Blog", icon: BookOpen },
     { href: "/contato", label: "Contato", icon: MessageCircle },
@@ -124,11 +139,11 @@ export default function EnhancedNavbar() {
               </button>
               
               <Link 
-                href="https://compass.olcan.com.br" 
+                href={hasOlcanSession ? getAppUrl('/dashboard') : getAppUrl('/login')} 
                 className="flex items-center gap-2 px-4 py-2 label-xs text-olcan-navy/60 hover:text-olcan-navy transition-all duration-500"
               >
                 <User className="w-4 h-4" />
-                Acessar
+                {hasOlcanSession ? 'Abrir plataforma' : 'Entrar'}
               </Link>
               
               <Link 
@@ -263,7 +278,7 @@ export default function EnhancedNavbar() {
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <ShoppingBag className="w-5 h-5" />
-                      <span className="text-xs font-bold uppercase tracking-widest">Marketplace</span>
+                      <span className="text-xs font-bold uppercase tracking-widest">Loja</span>
                     </Link>
                   </div>
                 </div>
@@ -288,12 +303,12 @@ export default function EnhancedNavbar() {
               <div className="p-6 border-t border-white/20 bg-white/20">
                 <div className="space-y-3">
                   <Link
-                    href="https://compass.olcan.com.br"
+                    href={hasOlcanSession ? getAppUrl('/dashboard') : getAppUrl('/login')}
                     className="w-full flex items-center justify-center gap-2 px-5 py-4 bg-white/40 border border-white/60 text-olcan-navy text-xs font-bold uppercase tracking-widest rounded-2xl hover:bg-white/60 transition-all"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <User className="w-4 h-4" />
-                    Entrar
+                    {hasOlcanSession ? 'Abrir plataforma' : 'Entrar'}
                   </Link>
                   <Link
                     href="/diagnostico"

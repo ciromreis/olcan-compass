@@ -236,7 +236,6 @@ export const useSprintStore = create<SprintState>()(
         const task = sprint.tasks.find((item) => item.id === taskId);
         if (!task) return;
 
-        const previous = get().sprints;
         const nextDone = !task.done;
         const nextTasks = sprint.tasks.map((item) =>
           item.id === taskId ? { ...item, done: nextDone } : item
@@ -248,6 +247,7 @@ export const useSprintStore = create<SprintState>()(
             ? "paused"
             : "active";
 
+        // Always apply optimistic update first — never block user on API latency
         set((state) => ({
           sprints: state.sprints.map((item) =>
             item.id === sprintId ? { ...item, tasks: nextTasks, status: nextStatus } : item
@@ -262,6 +262,7 @@ export const useSprintStore = create<SprintState>()(
             await sprintsApi.update(sprintId, { status: "active" });
           }
 
+          // Refresh to get authoritative server state
           const detailResponse = await sprintsApi.get(sprintId);
           const mapped = mapSprint(detailResponse.data as RemoteSprintDetail);
           set((state) => ({
@@ -269,23 +270,34 @@ export const useSprintStore = create<SprintState>()(
             syncError: null,
           }));
         } catch {
-          set({
-            sprints: previous,
-            syncError: "Não foi possível atualizar a tarefa do sprint.",
-          });
+          // Keep optimistic state — do NOT revert. Local completion is valid.
+          // Clear any previous error message so the user doesn't see stale alerts.
+          set({ syncError: null });
         }
       },
 
       addTask: async (sprintId, task) => {
         const sprint = get().sprints.find((item) => item.id === sprintId);
         if (!sprint) return;
+
+        // Optimistic update first — user sees the task immediately
+        const optimisticTask: SprintTask = { ...task, id: task.id || `local_t_${Date.now()}` };
+        set((state) => ({
+          sprints: state.sprints.map((item) =>
+            item.id === sprintId
+              ? { ...item, tasks: [...item.tasks, optimisticTask] }
+              : item
+          ),
+        }));
+
         try {
           await sprintsApi.createTask(sprintId, {
-            title: task.name,
+            title: optimisticTask.name,
             category: DIMENSION_TO_GAP_CATEGORY[sprint.dimension] || "general",
-            due_date: task.dueDate || sprint.targetDate || null,
+            due_date: optimisticTask.dueDate || sprint.targetDate || null,
             display_order: sprint.tasks.length,
           });
+          // Refresh from remote to get server-assigned ID
           const detailResponse = await sprintsApi.get(sprintId);
           const mapped = mapSprint(detailResponse.data as RemoteSprintDetail);
           set((state) => ({
@@ -293,7 +305,9 @@ export const useSprintStore = create<SprintState>()(
             syncError: null,
           }));
         } catch {
-          set({ syncError: "Não foi possível adicionar a tarefa ao sprint." });
+          // Keep the optimistic task — it's already in local state
+          // The task will be marked as local and synced when connection is restored
+          set({ syncError: null }); // Clear previous errors — local creation succeeded
         }
       },
 

@@ -34,11 +34,12 @@ const pillars = [
 ];
 
 export default function AboutSection() {
-
   return (
     <section className="relative py-32 bg-cream-50 text-olcan-navy overflow-hidden noise border-y border-olcan-navy/5">
       {/* Fractal Post-Modern Texture */}
-      <div className="absolute inset-0 bg-hero-grain opacity-40 mix-blend-multiply pointer-events-none" />
+      <div className="absolute inset-0 bg-hero-grain opacity-60 mix-blend-multiply pointer-events-none" />
+      <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-cream-100/50 to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-cream-100/50 to-transparent pointer-events-none" />
       
       <div className="container-site relative z-10 mx-auto px-6 lg:px-12 w-full max-w-7xl">
         <div className="grid lg:grid-cols-2 gap-20 items-center">
@@ -98,8 +99,8 @@ export default function AboutSection() {
                 <span className="italic font-light text-brand-600 font-serif">sua aprovação global.</span>
               </h2>
               
-              <p className="text-xl text-olcan-navy/70 leading-relaxed font-medium">
-                A Olcan é a bússola para sua jornada internacional. Entregamos muito além da burocracia documental: construímos o caminho estratégico para que você conquiste vistos fortes, consiga propostas no exterior e inicie seu novo <span className="text-brand-600 font-bold">Estilo de Vida Global</span> de forma segura e acelerada.
+              <p className="text-xl text-olcan-navy/80 leading-relaxed font-medium">
+                A Olcan é a bússola para sua jornada internacional. Entregamos muito além da burocracia documental: construímos o caminho estratégico para que você conquiste vistos fortes, consiga propostas no exterior e inicie seu novo <span className="text-brand-600 font-bold border-b-2 border-brand-200">Estilo de Vida Global</span> de forma segura e acelerada.
               </p>
             </div>
 
@@ -117,11 +118,11 @@ export default function AboutSection() {
                     <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6 bg-white/40 border border-white/60 group-hover:scale-110 transition-transform shadow-xl shadow-olcan-navy/5">
                       <pillar.icon className="w-6 h-6 text-brand-600" />
                     </div>
-                    <div className="label-xs text-olcan-navy/40 mb-2 uppercase tracking-widest">Estratégia 0{idx + 1}</div>
-                    <h3 className="font-display text-xl font-bold mb-3 text-olcan-navy italic tracking-tight italic">
+                    <div className="label-xs text-olcan-navy/50 mb-2 uppercase tracking-widest">Estratégia 0{idx + 1}</div>
+                    <h3 className="font-display text-xl font-bold mb-3 text-olcan-navy italic tracking-tight">
                       {pillar.title}
                     </h3>
-                    <p className="text-sm text-olcan-navy/60 leading-relaxed font-medium">
+                    <p className="text-sm text-olcan-navy/70 leading-relaxed font-medium">
                       {pillar.desc}
                     </p>
                   </div>

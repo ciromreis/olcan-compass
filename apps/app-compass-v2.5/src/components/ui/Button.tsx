@@ -24,10 +24,10 @@ const variantStyles: Record<ButtonVariant, string> = {
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: "h-8 px-3 text-body-sm gap-1.5 rounded-lg",
-  md: "h-10 px-4 text-body-sm gap-2 rounded-lg",
-  lg: "h-12 px-6 text-body gap-2 rounded-xl",
-  icon: "h-10 w-10 rounded-lg justify-center",
+  sm: "h-7 px-3 text-xs gap-1.5 rounded-md",
+  md: "h-9 px-4 text-sm gap-2 rounded-md",
+  lg: "h-10 px-6 text-sm gap-2 rounded-lg",
+  icon: "h-9 w-9 rounded-md justify-center",
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(

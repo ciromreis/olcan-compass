@@ -259,6 +259,13 @@ class AuraApiClient {
     )
   }
   
+  static async updateAura(auraId: string, updates: Partial<Aura>): Promise<Aura> {
+    return this.request<Aura>(`/companions/${auraId}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    })
+  }
+
   static async triggerEvolution(auraId: string): Promise<Aura> {
     return this.request<Aura>(`/companions/${auraId}/evolution`, {
       method: 'POST',
@@ -494,11 +501,19 @@ export const useAuraStore = create<
           const { aura } = get()
           if (!aura) return
           
-          set({
-            aura: { ...aura, ...updates },
-          })
+          set({ isLoading: true, error: null })
           
-          console.warn('updateAura: API endpoint not implemented')
+          try {
+            const updatedAura = await AuraApiClient.updateAura(aura.id, updates)
+            set({ aura: updatedAura, isLoading: false })
+          } catch (error) {
+            // Optimistic update fallback
+            set({ 
+              aura: { ...aura, ...updates },
+              isLoading: false,
+              error: error instanceof Error ? error.message : 'Failed to update aura in backend'
+            })
+          }
         },
         
         performCareActivity: async (activityType: CareActivityType) => {

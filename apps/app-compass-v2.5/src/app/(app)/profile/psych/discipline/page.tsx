@@ -62,8 +62,8 @@ export default function DisciplineBlockPage() {
         >
           <ArrowLeft className="w-4 h-4" /> Voltar
         </Link>
-        <Button onClick={handleNext} disabled={!allAnswered} className={!allAnswered ? "opacity-50" : ""}>
-          Próximo <ArrowRight className="w-4 h-4" />
+        <Button onClick={handleNext} disabled={!allAnswered} className={!allAnswered ? "opacity-50" : "!text-white"}>
+          Avançar <ArrowRight className="w-4 h-4" />
         </Button>
       </div>
     </div>

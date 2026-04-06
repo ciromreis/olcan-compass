@@ -43,6 +43,7 @@ import { useRouteStore } from "@/stores/routes";
 import { useSprintStore } from "@/stores/sprints";
 import { useInterviewStore } from "@/stores/interviews";
 import { useForgeStore } from "@/stores/forge";
+import { apiClient } from "@/lib/api-client";
 import { Avatar, Input } from "@/components/ui";
 import { ErrorBoundary } from "@/components/enterprise/ErrorBoundary";
 import { useHydration } from "@/hooks";
@@ -82,22 +83,50 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     avatar_url: null,
   } : user), [user]);
 
-  // Consolidate Sync logic for performance
-  const syncStores = {
-    applications: useApplicationStore((state) => state.syncFromApi),
-    marketplace: useMarketplaceStore((state) => state.syncFromApi),
-    routes: useRouteStore((state) => state.syncFromApi),
-    sprint: useSprintStore((state) => state.syncFromApi),
-    interview: useInterviewStore((state) => state.syncFromApi),
-    forge: useForgeStore((state) => state.syncFromApi),
-  };
+  // Pull each sync fn individually — stable selector references prevent re-render loops
+  const syncApplications = useApplicationStore((state) => state.syncFromApi);
+  const syncMarketplace = useMarketplaceStore((state) => state.syncFromApi);
+  const syncRoutes = useRouteStore((state) => state.syncFromApi);
+  const syncSprint = useSprintStore((state) => state.syncFromApi);
+  const syncInterview = useInterviewStore((state) => state.syncFromApi);
+  const syncForge = useForgeStore((state) => state.syncFromApi);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [authBootstrapDone, setAuthBootstrapDone] = useState(DEMO_MODE);
+  const [authBootstrapDone, setAuthBootstrapDone] = useState(false);
   const syncStarted = useRef(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+
+  // Auth Bootstrap Logic
+  useEffect(() => {
+    if (!hydrated) return;
+    
+    const bootstrap = async () => {
+      if (DEMO_MODE) {
+        setAuthBootstrapDone(true);
+        return;
+      }
+
+      const hasSession = !!apiClient.getToken();
+      
+      if (hasSession && !user) {
+        try {
+          const success = await fetchProfile();
+          if (!success) {
+            logout();
+          }
+        } catch (err) {
+          console.error("Auth bootstrap failure:", err);
+          logout();
+        }
+      }
+      
+      setAuthBootstrapDone(true);
+    };
+
+    bootstrap();
+  }, [hydrated, user, fetchProfile, logout]);
 
   // Layout UI State
   const navSections = getNavigationSectionsForRole(effectiveUser?.role);
@@ -110,19 +139,21 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     const performSync = async () => {
       try {
         await Promise.allSettled([
-          syncStores.applications(),
-          syncStores.marketplace(),
-          syncStores.routes(),
-          syncStores.sprint(),
-          syncStores.interview(),
-          syncStores.forge(),
+          syncApplications(),
+          syncMarketplace(),
+          syncRoutes(),
+          syncSprint(),
+          syncInterview(),
+          syncForge(),
         ]);
       } catch (err) {
         console.error("Sync error:", err);
       }
     };
     performSync();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authBootstrapDone, hydrated]);
+
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -157,7 +188,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     return (
       <div className="min-h-screen bg-surface-bg flex flex-col items-center justify-center p-8">
         <div className="w-full max-w-sm space-y-4 text-center">
-          <div className="inline-block w-12 h-12 rounded-2xl bg-gold-500/10 border border-gold-500/20 animate-pulse" />
+          <div className="inline-block w-12 h-12 rounded-2xl bg-brand-100 border border-brand-200 animate-pulse" />
           <div className="space-y-2">
             <div className="h-4 w-32 bg-ink-100 rounded-full mx-auto animate-pulse" />
             <div className="h-3 w-48 bg-ink-50 rounded-full mx-auto animate-pulse opacity-50" />
@@ -168,7 +199,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-surface-bg flex text-ink-500 font-sans selection:bg-gold-200">
+    <div className="min-h-screen bg-surface-bg flex text-ink-500 font-sans selection:bg-brand-100">
       {/* Liquid Mesh Background Layer */}
       <div className="fixed inset-0 pointer-events-none opacity-[0.03] bg-noise-texture z-0" />
       
@@ -193,7 +224,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="px-6 py-8 border-b border-ink-500/5">
             <Link href="/dashboard" className="flex items-center gap-3 group">
               <div className="w-10 h-10 rounded-2xl bg-ink-500 flex items-center justify-center transition-transform group-hover:scale-110 shadow-lg">
-                <Compass className="text-gold-500 w-6 h-6" />
+                <Compass className="text-white w-6 h-6" />
               </div>
               <div className="flex flex-col">
                 <span className="font-display text-xl tracking-tight text-ink-500">Olcan Compass</span>
@@ -224,21 +255,21 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                           transition-all duration-300 relative
                           ${
                             active
-                              ? "bg-ink-500 text-gold-500 shadow-xl"
+                              ? "bg-ink-500 text-white shadow-xl"
                               : "text-ink-400 hover:bg-ink-500/5 hover:text-ink-500"
                           }
                         `}
                       >
                         <item.icon
                           className={`w-5 h-5 flex-shrink-0 transition-transform group-hover:scale-110 ${
-                            active ? "text-gold-500" : "text-ink-300 group-hover:text-ink-500"
+                            active ? "text-white" : "text-ink-300 group-hover:text-ink-500"
                           }`}
                         />
                         <span className="flex-1 truncate tracking-tight">{item.label}</span>
                         {active && (
                           <motion.div 
                             layoutId="active-pill"
-                            className="bg-gold-500 w-1.5 h-1.5 rounded-full"
+                            className="bg-white w-1.5 h-1.5 rounded-full"
                           />
                         )}
                       </Link>
@@ -252,7 +283,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           {/* User Profile Hook (Integrated in Deck) */}
           <div className="mt-auto p-4 border-t border-ink-500/5 bg-ink-500/5">
             <div className="flex items-center gap-3 p-3 rounded-[1.5rem] bg-white/40 border border-white/60">
-              <Avatar name={effectiveUser?.full_name} size="sm" className="ring-2 ring-gold-500/20" />
+              <Avatar name={effectiveUser?.full_name} size="sm" className="ring-2 ring-brand-200" />
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold text-ink-500 truncate">{effectiveUser?.full_name}</p>
                 <p className="text-caption text-ink-300 font-medium truncate">Assinatura Basic</p>
@@ -301,7 +332,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </button>
             <button className="p-2.5 rounded-2xl bg-white/60 border border-white/80 text-ink-400 hover:text-ink-500 transition-all relative">
               <Bell className="w-5 h-5" />
-              <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-gold-500 ring-2 ring-white" />
+              <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-brand-400 ring-2 ring-white" />
             </button>
             <button 
               onClick={handleLogout}
@@ -333,11 +364,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   href={item.href}
                   className={`relative flex flex-col items-center justify-center p-2 transition-transform duration-300 ${active ? "scale-110" : "opacity-60"}`}
                 >
-                  <item.icon className={`h-6 w-6 ${active ? "text-gold-500" : "text-white"}`} />
+                  <item.icon className={`h-6 w-6 ${active ? "text-white" : "text-white"}`} />
                   {active && (
                     <motion.div 
                       layoutId="mobile-active"
-                      className="absolute -bottom-1 w-1 h-1 rounded-full bg-gold-500" 
+                      className="absolute -bottom-1 w-1 h-1 rounded-full bg-white" 
                     />
                   )}
                 </Link>

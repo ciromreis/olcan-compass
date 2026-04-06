@@ -1,0 +1,39 @@
+/* Olcan Marketplace Brand Overrides */
+:root {
+  /* Override Medusa UI base colors to match Olcan */
+  --bg-subtle: #ffffff;
+  --bg-base: #f9f9f9;
+  --fg-base: #0f172a;
+  --fg-subtle: #475569;
+  
+  --ui-bg-base: #ffffff;
+  --ui-bg-subtle: #f9f9f9;
+  
+  --ui-fg-base: #0f172a;
+  --ui-fg-subtle: #475569;
+}
+
+/* Hard override of Medusa logos, replacing with Olcan Logo */
+/* Usually standard Medusa uses a specific logo container or SVG */
+svg[class*="logo"], svg[id*="logo"], .medusa-logo {
+  display: none !important;
+}
+
+/* Attempt to inject Olcan logo wherever Medusa logo was */
+[class*="logo-container"], [class*="Logo"] {
+  background-image: url('/logo.png') !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+}
+
+/* If it is an img tag */
+img[src*="logo"], img[alt*="Medusa"] {
+  content: url('/logo.png') !important;
+}
+
+.login-container {
+  background-color: #f9f9f9 !important;
+}

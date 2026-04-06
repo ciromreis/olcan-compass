@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   BookOpen,
@@ -54,8 +54,15 @@ export default function CommunityPage() {
     toggleSave,
     addReply,
     createCollection,
+    fetchPosts,
     getStats,
   } = useCommunityStore();
+
+  useEffect(() => {
+    if (ready) {
+      fetchPosts();
+    }
+  }, [ready, fetchPosts]);
 
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<FeedFilter>("all");

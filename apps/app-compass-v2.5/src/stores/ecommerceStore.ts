@@ -37,6 +37,9 @@ const DEMO_PRODUCTS: Product[] = [
     requires_shipping: false,
     stock_quantity: 999,
     created_at: '2025-01-15T10:00:00Z',
+    checkout_mode: 'external',
+    checkout_url: 'https://pay.hotmart.com/X85073158P',
+    catalog_url: 'http://localhost:3001/marketplace/kit-application',
   },
   {
     id: 'prod_curso_cidadao_mundo',
@@ -64,6 +67,9 @@ const DEMO_PRODUCTS: Product[] = [
     requires_shipping: false,
     stock_quantity: 999,
     created_at: '2025-03-01T10:00:00Z',
+    checkout_mode: 'external',
+    checkout_url: 'https://pay.hotmart.com/N97314230U',
+    catalog_url: 'http://localhost:3001/marketplace/curso-cidadao-mundo',
   },
   {
     id: 'prod_ebook_canada',
@@ -196,11 +202,14 @@ const DEMO_PRODUCTS: Product[] = [
     requires_shipping: false,
     stock_quantity: 999,
     created_at: '2025-05-01T10:00:00Z',
+    checkout_mode: 'external',
+    checkout_url: 'https://pay.hotmart.com/K97966494E',
+    catalog_url: 'http://localhost:3001/marketplace/rota-internacionalizacao',
   },
 ]
 
 // Types
-interface Product {
+export interface Product {
   id: string
   seller_id: string
   name: string
@@ -214,6 +223,7 @@ interface Product {
   currency: string
   slug: string
   images?: string[]
+  thumbnail?: string | null
   video_url?: string
   tags?: string[]
   rating: number
@@ -227,6 +237,11 @@ interface Product {
   requires_shipping: boolean
   stock_quantity: number
   created_at: string
+  checkout_mode?: 'external' | 'catalog_only' | 'internal'
+  checkout_url?: string | null
+  catalog_url?: string | null
+  price_display?: string
+  compare_at_price_display?: string | null
 }
 
 interface CartItem {
@@ -371,10 +386,22 @@ export const useEcommerceStore = create<EcommerceState>()(
           set({ isLoading: true, error: null })
           try {
             const filters = get().filters
-            const products = await apiClient.getProducts({ ...filters, ...params })
+            const products = await apiClient.getPublicProducts({ ...filters, ...params })
             set({ products, isLoading: false })
           } catch (error) {
-            set({ isLoading: false, error: error instanceof Error ? error.message : 'Failed to fetch products' })
+            const filters = get().filters
+            let fallback = [...DEMO_PRODUCTS]
+            if (filters.product_type) fallback = fallback.filter((p) => p.product_type === filters.product_type)
+            if (filters.category) fallback = fallback.filter((p) => p.category === filters.category)
+            if (filters.search) {
+              const q = filters.search.toLowerCase()
+              fallback = fallback.filter((p) => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q))
+            }
+            set({
+              products: fallback,
+              isLoading: false,
+              error: error instanceof Error ? error.message : 'Failed to fetch products',
+            })
           }
         },
 
@@ -389,7 +416,11 @@ export const useEcommerceStore = create<EcommerceState>()(
             const featuredProducts = await apiClient.getFeaturedProducts(10)
             set({ featuredProducts, isLoading: false })
           } catch (error) {
-            set({ isLoading: false, error: error instanceof Error ? error.message : 'Failed to fetch featured products' })
+            set({
+              featuredProducts: DEMO_PRODUCTS.filter((p) => p.is_featured),
+              isLoading: false,
+              error: error instanceof Error ? error.message : 'Failed to fetch featured products',
+            })
           }
         },
 
@@ -406,7 +437,13 @@ export const useEcommerceStore = create<EcommerceState>()(
             const olcanProducts = await apiClient.getOlcanOfficialProducts(category)
             set({ olcanProducts, isLoading: false })
           } catch (error) {
-            set({ isLoading: false, error: error instanceof Error ? error.message : 'Failed to fetch Olcan products' })
+            let fallback = DEMO_PRODUCTS.filter((p) => p.is_olcan_official)
+            if (category) fallback = fallback.filter((p) => p.category === category)
+            set({
+              olcanProducts: fallback,
+              isLoading: false,
+              error: error instanceof Error ? error.message : 'Failed to fetch Olcan products',
+            })
           }
         },
 
@@ -422,7 +459,12 @@ export const useEcommerceStore = create<EcommerceState>()(
             const currentProduct = await apiClient.getProduct(productId)
             set({ currentProduct, isLoading: false })
           } catch (error) {
-            set({ isLoading: false, error: error instanceof Error ? error.message : 'Failed to fetch product' })
+            const fallback = DEMO_PRODUCTS.find((p) => p.id === productId) || null
+            set({
+              currentProduct: fallback,
+              isLoading: false,
+              error: error instanceof Error ? error.message : 'Failed to fetch product',
+            })
           }
         },
 
@@ -438,7 +480,12 @@ export const useEcommerceStore = create<EcommerceState>()(
             const currentProduct = await apiClient.getProductBySlug(slug)
             set({ currentProduct, isLoading: false })
           } catch (error) {
-            set({ isLoading: false, error: error instanceof Error ? error.message : 'Failed to fetch product' })
+            const fallback = DEMO_PRODUCTS.find((p) => p.slug === slug) || null
+            set({
+              currentProduct: fallback,
+              isLoading: false,
+              error: error instanceof Error ? error.message : 'Failed to fetch product',
+            })
           }
         },
         

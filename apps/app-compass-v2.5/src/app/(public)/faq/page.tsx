@@ -4,13 +4,13 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 const FAQS = [
-  { q: "O Compass é gratuito?", a: "Sim, o plano Lite é 100% gratuito e inclui diagnóstico psicológico, 1 rota ativa, Score de Certeza e Custo de Inação. Planos pagos desbloqueiam IA avançada, simulador de entrevista e marketplace." },
+  { q: "O Compass é gratuito?", a: "Sim, o plano Lite é 100% gratuito e inclui diagnóstico psicológico, 1 rota ativa, Score de Certeza e Taxa de Perda por Inércia. Planos pagos desbloqueiam IA avançada, simulador de entrevista e marketplace." },
   { q: "Como funciona o Score de Certeza?", a: "O Score de Certeza (Cs) combina probabilidade de visto, gap financeiro, capital necessário e índice de prontidão em uma fórmula ponderada. Quanto mais dados você fornecer, mais preciso o score." },
   { q: "Meus dados são seguros?", a: "Sim. Usamos criptografia end-to-end, Row Level Security (RLS) no banco de dados, e nunca compartilhamos seus dados com terceiros. Compliance total com LGPD." },
   { q: "Como funciona o escrow do marketplace?", a: "Quando você contrata um profissional, o valor fica retido (escrow) até que o serviço seja entregue e aprovado. Se houver disputa, nossa equipe media a resolução." },
   { q: "O simulador de entrevista usa IA real?", a: "Sim. Usamos Gemini 1.5 Pro para gerar perguntas contextualizadas, analisar suas respostas em tempo real e fornecer feedback sobre clareza, hesitação e confiança projetada." },
   { q: "Posso usar o Compass para mais de um destino?", a: "Sim! No plano Core você pode ter até 3 rotas ativas simultâneas, e no Pro são ilimitadas. Cada rota tem seu próprio grafo de dependências." },
-  { q: "O que é o Custo de Inação (COI)?", a: "É quanto você perde por dia ao não agir. Calculamos com base na diferença entre seu salário atual e o salário-alvo no destino, ajustado pela taxa de câmbio." },
+  { q: "O que é o Taxa de Perda por Inércia (COI)?", a: "É quanto você perde por dia ao não agir. Calculamos com base na diferença entre seu salário atual e o salário-alvo no destino, ajustado pela taxa de câmbio." },
   { q: "Posso cancelar minha assinatura a qualquer momento?", a: "Sim, sem multa. Você mantém acesso até o final do período pago e pode reativar quando quiser." },
 ];
 

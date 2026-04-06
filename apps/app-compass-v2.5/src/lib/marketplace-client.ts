@@ -5,6 +5,10 @@
 
 const MARKETPLACE_API_URL = process.env.NEXT_PUBLIC_MARKETPLACE_API_URL || 'http://localhost:9000'
 
+if (!process.env.NEXT_PUBLIC_MARKETPLACE_API_URL && typeof window !== 'undefined') {
+  console.warn('NEXT_PUBLIC_MARKETPLACE_API_URL not set, using default:', MARKETPLACE_API_URL);
+}
+
 interface ApiResponse<T> {
   data: T
   error?: string

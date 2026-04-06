@@ -57,6 +57,14 @@ class Settings(BaseSettings):
     stripe_publishable_key: str = "pk_test_your_stripe_publishable_key"
     stripe_webhook_secret: str = "whsec_your_webhook_secret"
 
+    # Commerce engine bridge
+    marketplace_engine_url: str = "http://localhost:9000"
+    marketplace_publishable_key: str = ""
+    commerce_catalog_url: str = "http://localhost:3001/marketplace"
+    commerce_checkout_curso_cidadao_mundo_url: str = "https://pay.hotmart.com/N97314230U"
+    commerce_checkout_kit_application_url: str = "https://pay.hotmart.com/X85073158P"
+    commerce_checkout_rota_internacionalizacao_url: str = "https://pay.hotmart.com/K97966494E"
+
     # Encryption (for PII hashing)
     encryption_key: str = "your-32-byte-encryption-key-change-in-production"
 

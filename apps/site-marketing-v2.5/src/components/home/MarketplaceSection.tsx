@@ -67,8 +67,9 @@ export default function MarketplaceSection() {
   return (
     <section className="py-24 md:py-32 bg-cream relative overflow-hidden noise border-t border-olcan-navy/5">
       {/* Background Elements */}
-      <div className="absolute inset-0 bg-hero-grain opacity-40 mix-blend-multiply pointer-events-none" />
-      <div className="absolute top-20 right-10 w-[500px] h-[500px] rounded-full blur-[120px] opacity-10 bg-brand-200 pointer-events-none" />
+      <div className="absolute inset-0 bg-hero-grain opacity-60 mix-blend-multiply pointer-events-none" />
+      <div className="absolute top-20 right-10 w-[500px] h-[500px] rounded-full blur-[120px] opacity-[0.12] bg-brand-300 pointer-events-none" />
+      <div className="absolute -bottom-10 left-10 w-[400px] h-[400px] rounded-full blur-[100px] opacity-[0.08] bg-olcan-navy pointer-events-none" />
       
       <div className="container-site relative z-10 mx-auto px-6 lg:px-12 w-full max-w-7xl">
         {/* Header */}
@@ -110,9 +111,9 @@ export default function MarketplaceSection() {
             
             <div className="relative z-10 text-center space-y-8">
               <div className="space-y-3">
-                <div className="label-xs text-brand-600 tracking-wide">Acesso Liberado</div>
+                <div className="label-xs text-brand-600 tracking-wide font-bold">Acesso Liberado</div>
                 <h3 className="font-display text-3xl text-olcan-navy italic">Explore o Novo Ecossistema</h3>
-                <p className="text-olcan-navy/60 font-medium">Os recursos, mentorias e equipamentos de alta performance que você precisa agora estão disponíveis nativamente.</p>
+                <p className="text-olcan-navy/80 font-medium">Os recursos, mentorias e equipamentos de alta performance que você precisa agora estão disponíveis nativamente.</p>
               </div>
 
               <div className="flex justify-center pt-4">

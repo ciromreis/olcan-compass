@@ -6,6 +6,15 @@ import { Instagram, Compass, Briefcase, Shield, Users, Star, ArrowRight } from '
 import Link from 'next/link';
 import Image from 'next/image';
 
+// TikTok icon (not in lucide-react)
+function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.85a8.18 8.18 0 0 0 4.79 1.53V6.96a4.85 4.85 0 0 1-1.02-.27z" />
+    </svg>
+  );
+}
+
 const footerSections = [
   {
     title: "Produto",
@@ -19,9 +28,9 @@ const footerSections = [
   {
     title: "Serviços",
     items: [
-      { label: "Marketplace", href: "/marketplace", icon: Briefcase },
-      { label: "Mentoria de Carreira", href: "https://instagram.com/olcancompass", icon: Users },
-      { label: "Acompanhamento", href: "https://instagram.com/olcancompass", icon: Users },
+      { label: "Loja", href: "/marketplace", icon: Briefcase },
+      { label: "Mentoria de Carreira", href: "/ciro", icon: Users },
+      { label: "Acompanhamento", href: "/contato", icon: Users },
       { label: "Assistência Jurídica", href: "/marketplace", icon: Shield },
     ]
   },
@@ -32,21 +41,24 @@ const footerSections = [
       { label: "CEO — Ciro Moraes", href: "/sobre/ceo" },
       { label: "Mentoria com Ciro", href: "/ciro" },
       { label: "Blog", href: "/blog" },
-      { label: "Instagram", href: "https://instagram.com/olcancompass" },
+      { label: "@olcan.global", href: "https://instagram.com/olcan.global" },
     ]
   },
   {
     title: "Suporte",
     items: [
-      { label: "Instagram", href: "https://instagram.com/olcancompass" },
+      { label: "Instagram", href: "https://instagram.com/olcan.global" },
+      { label: "TikTok", href: "https://tiktok.com/@olcan.global" },
       { label: "Termos de Uso", href: "/termos" },
       { label: "Privacidade", href: "/privacidade" },
     ]
   }
 ];
 
-const socialLinks = [
-  { icon: Instagram, href: "https://instagram.com/olcancompass", label: "Instagram" },
+// Usando componente local TikTokIcon
+const socialLinks: Array<{ icon: typeof Instagram | typeof TikTokIcon; href: string; label: string }> = [
+  { icon: Instagram, href: "https://instagram.com/olcan.global", label: "Instagram @olcan.global" },
+  { icon: TikTokIcon, href: "https://tiktok.com/@olcan.global", label: "TikTok @olcan.global" },
 ];
 
 const trustBadges = [
@@ -164,7 +176,7 @@ export default function EnhancedFooter() {
                   href="/marketplace"
                   className="bg-white/10 backdrop-blur-xl border border-white/20 text-white hover:bg-white/20 px-10 py-5 rounded-2xl text-lg font-bold uppercase tracking-widest transition-all duration-500 w-full sm:w-auto"
                 >
-                  Ver Marketplace
+                  Ver Loja
                 </Link>
               </div>
             </div>
@@ -173,7 +185,8 @@ export default function EnhancedFooter() {
           {/* Bottom Contact & Legal */}
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12 pt-16 border-t border-olcan-navy/5">
             <div className="flex flex-wrap items-center justify-center gap-8 label-xs text-olcan-navy/40">
-              <Link href="https://instagram.com/olcancompass" className="hover:text-olcan-navy transition-colors">Instagram</Link>
+              <a href="https://instagram.com/olcan.global" target="_blank" rel="noopener noreferrer" className="hover:text-olcan-navy transition-colors">Instagram</a>
+              <a href="https://tiktok.com/@olcan.global" target="_blank" rel="noopener noreferrer" className="hover:text-olcan-navy transition-colors">TikTok</a>
               <Link href="/termos" className="hover:text-olcan-navy transition-colors">Termos de Uso</Link>
               <Link href="/privacidade" className="hover:text-olcan-navy transition-colors">Privacidade</Link>
               <Link href="/contato" className="hover:text-olcan-navy transition-colors">Suporte</Link>

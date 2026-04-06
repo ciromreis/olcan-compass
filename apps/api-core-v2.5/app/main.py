@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
-from app.api.v1 import api_router
+from app.api.router import api_router
 from app.core.config import get_settings
 from app.core.database import init_db, test_db_connection
 from app.core.rate_limit import limiter

@@ -8,10 +8,10 @@ import { Button } from "@/components/ui";
 
 const DIMENSION = "goals" as const;
 const QUESTIONS = [
-  { id: "clarity", label: "Tenho clareza sobre o que quero alcançar morando fora do Brasil.", options: ["Discordo totalmente", "Discordo", "Neutro", "Concordo", "Concordo totalmente"] },
-  { id: "motivation", label: "Minha motivação principal é:", options: ["Crescimento profissional", "Qualidade de vida", "Segurança/estabilidade", "Formação acadêmica", "Aventura/experiência", "Fuga de situação atual"] },
-  { id: "timeline", label: "Quero estar no exterior em:", options: ["3 meses", "6 meses", "1 ano", "2 anos", "Sem prazo definido"] },
-  { id: "commitment", label: "Estou disposto(a) a dedicar pelo menos 5 horas por semana ao processo de emigração.", options: ["Discordo totalmente", "Discordo", "Neutro", "Concordo", "Concordo totalmente"] },
+  { id: "clarity", label: "Tenho clareza sobre o que quero alcançar vivendo fora do Brasil.", options: ["Discordo totalmente", "Discordo", "Neutro", "Concordo", "Concordo totalmente"] },
+  { id: "motivation", label: "Minha principal motivação para mudar de país é:", options: ["Crescimento profissional", "Qualidade de vida", "Segurança e estabilidade", "Formação acadêmica", "Experiência de vida", "Insatisfação com a situação atual"] },
+  { id: "urgency", label: "Quando penso na minha mudança internacional, meu senso de urgência é:", options: ["Muito baixo — não tenho pressa", "Baixo — estou apenas explorando", "Moderado — quero agir em breve", "Alto — quero estar em movimento nos próximos meses", "Crítico — já deveria ter saído"] },
+  { id: "commitment", label: "Consigo descrever detalhadamente os próximos três passos práticos que preciso dar no meu plano de internacionalização.", options: ["Discordo totalmente", "Discordo", "Neutro", "Concordo", "Concordo totalmente"] },
 ];
 
 export default function GoalsBlockPage() {
@@ -47,7 +47,7 @@ export default function GoalsBlockPage() {
       </div>
       <div className="flex justify-between">
         <Link href="/profile/psych/anxiety" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-cream-500 text-text-secondary font-medium text-body-sm hover:bg-cream-200 transition-colors"><ArrowLeft className="w-4 h-4" /> Voltar</Link>
-        <Button onClick={handleNext} disabled={!allAnswered} className={!allAnswered ? "opacity-50" : ""}>Próximo <ArrowRight className="w-4 h-4" /></Button>
+        <Button onClick={handleNext} disabled={!allAnswered} className="!text-white">Avançar <ArrowRight className="w-4 h-4" /></Button>
       </div>
     </div>
   );

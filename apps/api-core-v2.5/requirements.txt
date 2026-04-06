@@ -6,6 +6,8 @@ alembic==1.14.1
 SQLAlchemy==2.0.38
 asyncpg==0.30.0
 psycopg[binary]==3.2.5
+aiosqlite==0.20.0
+greenlet==3.1.1
 
 # Auth dependencies
 python-jose[cryptography]==3.3.0
@@ -32,4 +34,3 @@ structlog==24.1.0
 
 # Sentry for Error Tracking
 sentry-sdk[fastapi]==2.8.0
-

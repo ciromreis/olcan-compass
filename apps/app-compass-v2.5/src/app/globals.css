@@ -278,6 +278,7 @@
   .btn-liquid {
     position: relative;
     overflow: hidden;
+    color: #ffffff !important;
     background: linear-gradient(135deg, var(--olcan-navy-600) 0%, var(--olcan-brand-500) 100%);
     backdrop-filter: blur(10px);
     box-shadow: 
@@ -317,11 +318,10 @@
     opacity: 1;
   }
   
-  .btn-liquid:hover {
-    transform: translateY(-1px);
-    box-shadow: 
-      0 6px 20px rgba(0, 19, 56, 0.25),
-      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  .btn-liquid:disabled {
+    opacity: 0.45;
+    color: #ffffff !important;
+    pointer-events: none;
   }
 
   /* Shimmer effect for loading states */

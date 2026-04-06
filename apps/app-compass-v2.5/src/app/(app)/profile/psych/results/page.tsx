@@ -2,9 +2,70 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Target, TrendingUp, Shield, Lightbulb, DollarSign, Clock, Heart, Route as RouteIcon } from "lucide-react";
+import { ArrowRight, Target, TrendingUp, Shield, Lightbulb, DollarSign, Clock, Heart, Route as RouteIcon, Share2, Check } from "lucide-react";
 import { usePsychStore, type Dimension } from "@/stores/psych";
 import { Progress, RadarChart, ProgressRing, type RadarDataPoint } from "@/components/ui";
+
+// ─── Share Button ─────────────────────────────────────────────────────────────
+// ─── Share Button ─────────────────────────────────────────────────────────────
+function ShareResultButton({ overallScore, routeLabel }: { overallScore: number; routeLabel: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = async () => {
+    const text = `Concluí meu Diagnóstico Psicológico no Olcan Compass e obtive ${overallScore}% de Score de Certeza! A rota recomendada para mim é: ${routeLabel}.`;
+    const url = typeof window !== "undefined" ? window.location.origin + "/profile/psych/results" : "https://olcan.global";
+    const shareContent = `${text}\n${url}`;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "Meu Diagnóstico Olcan Compass",
+          text: text,
+          url: url,
+        });
+      } else {
+        // Fallback for browsers without navigator.share
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(shareContent);
+        } else {
+          // Absolute fallback using a hidden textarea or prompt
+          const textArea = document.createElement("textarea");
+          textArea.value = shareContent;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand("copy");
+          document.body.removeChild(textArea);
+        }
+        setCopied(true);
+        setTimeout(() => setCopied(false), 3000);
+      }
+    } catch (err) {
+      console.error("Erro ao compartilhar:", err);
+      // If sharing was cancelled or failed, check if we can at least copy to clipboard
+      if (err instanceof Error && err.name !== 'AbortError') {
+        alert("Não foi possível abrir o menu de compartilhamento. O link será copiado para sua área de transferência.");
+        await navigator.clipboard.writeText(shareContent);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 3000);
+      }
+    }
+  };
+
+  return (
+    <button
+      onClick={handleShare}
+      className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg border text-body-sm font-bold tracking-tight transition-all duration-300 ${
+        copied
+          ? "border-sage-400 bg-sage-50 text-sage-600 ring-2 ring-sage-200"
+          : "border-brand-300 bg-brand-50 text-brand-600 hover:bg-brand-100 hover:shadow-md active:scale-95"
+      }`}
+    >
+      {copied ? <Check className="w-4 h-4 animate-in zoom-in" /> : <Share2 className="w-4 h-4" />}
+      {copied ? "Link Copiado!" : "Compartilhar Resultado"}
+    </button>
+  );
+}
+
 
 type RouteType = "scholarship" | "postgrad" | "work_visa" | "exchange" | "study_abroad";
 
@@ -170,7 +231,7 @@ export default function ResultsPage() {
 
         <div className="space-y-5">
           <div className="card-surface p-6">
-            <h3 className="font-heading text-h4 text-text-primary mb-2">Custo de Inação Estimado</h3>
+            <h3 className="font-heading text-h4 text-text-primary mb-2">Taxa de Perda por Inércia Estimado</h3>
             <p className="font-heading text-h1 text-clay-500">
               R$ <AnimatedScore target={coiPerDay} /><span className="text-body text-text-muted">/dia</span>
             </p>
@@ -210,11 +271,12 @@ export default function ResultsPage() {
         </Link>
       </div>
 
-      <div className="flex justify-center gap-4">
-        <Link href="/profile/psych" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-cream-500 text-text-secondary font-medium hover:bg-cream-200 transition-colors text-body-sm">
+      <div className="flex flex-col sm:flex-row justify-center gap-3">
+        <Link href="/profile/psych" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg border border-cream-500 text-text-secondary font-medium hover:bg-cream-200 transition-colors text-body-sm">
           Refazer Diagnóstico
         </Link>
-        <Link href="/dashboard" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 transition-colors text-body-sm">
+        <ShareResultButton overallScore={overallScore} routeLabel={recommendedRoute.label} />
+        <Link href="/dashboard" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 transition-colors text-body-sm">
           Voltar ao Painel <ArrowRight className="w-4 h-4" />
         </Link>
       </div>

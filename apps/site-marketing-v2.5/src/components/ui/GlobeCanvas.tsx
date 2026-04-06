@@ -34,31 +34,31 @@ export default function GlobeCanvas({
   className,
   style,
   dark = 0,
-  diffuse = 1.2,
+  diffuse = 1.5,
   baseColor = [0.12, 0.17, 0.38],
   glowColor = [0.80, 0.88, 1.0],
   markerColor = [235 / 255, 126 / 255, 81 / 255],
-  mapBrightness = 5,
-  mapSamples = 16000,
+  mapBrightness = 12,
+  mapSamples = 24000,
   speed = 0.005,
   theta = 0.3,
   markers = DEFAULT_MARKERS,
 }: GlobeCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let phi = 0;
-    let width = 0;
     let globe: ReturnType<typeof createGlobe> | null = null;
 
-    const initGlobe = () => {
-      if (!canvasRef.current || width === 0) return;
-      if (globe) return; // already initialized
+    const initGlobe = (w: number) => {
+      if (!canvasRef.current || w === 0) return;
+      if (globe) globe.destroy();
 
       globe = createGlobe(canvasRef.current, {
-        devicePixelRatio: 2,
-        width: width * 2,
-        height: width * 2,
+        devicePixelRatio: typeof window !== 'undefined' ? Math.min(window.devicePixelRatio, 2) : 1,
+        width: w * 2,
+        height: w * 2,
         phi: 0,
         theta,
         dark,
@@ -73,23 +73,34 @@ export default function GlobeCanvas({
         onRender: (state) => {
           state.phi = phi;
           phi += speed;
-          state.width = width * 2;
-          state.height = width * 2;
+          state.width = w * 2;
+          state.height = w * 2;
         },
       });
     };
 
-    // ResizeObserver catches initial layout + window resizes
+    const container = containerRef.current;
+    if (!container) return;
+
+    // ResizeObserver on the CONTAINER div (always has size)
     const ro = new ResizeObserver(([entry]) => {
-      width = entry.contentRect.width;
-      if (width > 0) initGlobe();
+      const w = Math.floor(entry.contentRect.width);
+      if (w > 0) {
+        // Set canvas intrinsic size to match container
+        if (canvasRef.current) {
+          canvasRef.current.width = w * 2;
+          canvasRef.current.height = w * 2;
+        }
+        initGlobe(w);
+      }
     });
 
-    if (canvasRef.current) {
-      ro.observe(canvasRef.current);
-      // Fallback: read immediately in case already sized
-      width = canvasRef.current.offsetWidth;
-      if (width > 0) initGlobe();
+    ro.observe(container);
+
+    // Also trigger immediately in case already sized
+    const immediate = container.offsetWidth;
+    if (immediate > 0) {
+      setTimeout(() => initGlobe(immediate), 0);
     }
 
     return () => {
@@ -100,17 +111,19 @@ export default function GlobeCanvas({
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
+    <div
+      ref={containerRef}
       className={className}
-      style={{
-        width: '100%',
-        height: '100%',
-        contain: 'layout paint size',
-        opacity: 1,
-        transition: 'opacity 1s ease',
-        ...style,
-      }}
-    />
+      style={{ width: '100%', height: '100%', ...style }}
+    >
+      <canvas
+        ref={canvasRef}
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'block',
+        }}
+      />
+    </div>
   );
 }

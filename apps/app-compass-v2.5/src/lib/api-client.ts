@@ -3,7 +3,39 @@
  * Connects frontend to real backend API
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api/v1';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api';
+const AUTH_STATE_COOKIE = 'olcan_session_state';
+const AUTH_HINT_COOKIE = 'olcan_known_user';
+
+const AUTH_TOKEN_COOKIE = 'olcan_token';
+
+function writeAuthCookies(isAuthenticated: boolean, token?: string) {
+  if (typeof document === 'undefined') {
+    return;
+  }
+
+  const maxAge = isAuthenticated ? '2592000' : '0';
+  const sameSite = 'SameSite=Lax';
+  const path = 'Path=/';
+  
+  // Determine domain for SSO (e.g., .olcan.com.br)
+  const hostname = window.location.hostname;
+  const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+  const domainParts = hostname.split('.');
+  const rootDomain = isLocalhost || domainParts.length < 2 
+    ? '' 
+    : `; Domain=.${domainParts.slice(-2).join('.')}`;
+
+  document.cookie = `${AUTH_STATE_COOKIE}=${isAuthenticated ? 'authenticated' : 'guest'}; Max-Age=${maxAge}; ${path}; ${sameSite}${rootDomain}`;
+  document.cookie = `${AUTH_HINT_COOKIE}=${isAuthenticated ? '1' : '0'}; Max-Age=${maxAge}; ${path}; ${sameSite}${rootDomain}`;
+  
+  if (isAuthenticated && token) {
+    // Store token in cookie for cross-subdomain API access / SSR
+    document.cookie = `${AUTH_TOKEN_COOKIE}=${token}; Max-Age=${maxAge}; ${path}; ${sameSite}${rootDomain}`;
+  } else {
+    document.cookie = `${AUTH_TOKEN_COOKIE}=; Max-Age=0; ${path}; ${sameSite}${rootDomain}`;
+  }
+}
 
 // Types
 export interface RegisterData {
@@ -39,16 +71,88 @@ export interface TokenResponse {
   refresh_token?: string;
 }
 
+export interface CommerceContextResponse {
+  user: {
+    id: string;
+    email: string;
+    full_name: string;
+  };
+  catalog_url: string;
+  app_catalog_url: string;
+  auth_mode: string;
+  checkout_mode: string;
+  source: string;
+}
+
+export interface CheckoutIntentResponse {
+  checkout_url: string;
+  catalog_url: string;
+  product: any;
+  user: {
+    id: string;
+    email: string;
+    full_name: string;
+  };
+  auth_mode: string;
+  source: string;
+}
+
+function normalizeCommerceProduct(product: any): any {
+  if (!product) return product;
+
+  return {
+    id: product.id,
+    seller_id: product.seller_id || 'vendor_olcan_official',
+    name: product.name || product.title,
+    title: product.title || product.name,
+    description: product.description || product.short_description || '',
+    short_description: product.short_description || product.description || '',
+    product_type: product.product_type || 'digital',
+    category: product.category || 'Marketplace',
+    status: product.status || 'active',
+    price: product.price ?? product.price_amount ?? 0,
+    compare_at_price: product.compare_at_price ?? product.compare_at_price_amount ?? undefined,
+    currency: product.currency || product.price_currency || 'BRL',
+    slug: product.slug || product.handle,
+    handle: product.handle || product.slug,
+    images: product.images || (product.thumbnail ? [product.thumbnail] : []),
+    thumbnail: product.thumbnail || product.images?.[0] || null,
+    tags: product.tags || [],
+    rating: product.rating ?? 5,
+    review_count: product.review_count ?? 0,
+    sales_count: product.sales_count ?? 0,
+    view_count: product.view_count ?? 0,
+    is_featured: Boolean(product.is_featured),
+    is_olcan_official: Boolean(product.is_olcan_official),
+    is_bestseller: Boolean(product.is_bestseller),
+    is_new: Boolean(product.is_new),
+    requires_shipping: Boolean(product.requires_shipping),
+    stock_quantity: product.stock_quantity ?? 999,
+    created_at: product.created_at || new Date().toISOString(),
+    checkout_mode: product.checkout_mode,
+    checkout_url: product.checkout_url,
+    catalog_url: product.catalog_url,
+    price_display: product.price_display,
+    compare_at_price_display: product.compare_at_price_display,
+  };
+}
+
 // API Client Class
-class ApiClient {
+export class ApiClient {
   private baseUrl: string;
   private token: string | null = null;
 
-  constructor(baseUrl: string) {
-    this.baseUrl = baseUrl;
-    // Load token from localStorage if available
+  constructor(baseUrl?: string) {
+    this.baseUrl = baseUrl || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api/v1';
     if (typeof window !== 'undefined') {
-      this.token = localStorage.getItem('access_token');
+      this.token = localStorage.getItem('olcan_access_token');
+        if (tokenCookie) {
+          this.token = tokenCookie.split('=')[1].trim();
+          // Sync back to localStorage for this subdomain
+          localStorage.setItem('olcan_access_token', this.token);
+          writeAuthCookies(true, this.token);
+        }
+      }
     }
   }
 
@@ -75,15 +179,26 @@ class ApiClient {
   setToken(token: string) {
     this.token = token;
     if (typeof window !== 'undefined') {
+      // Use unified token key for cross-service auth
+      localStorage.setItem('olcan_access_token', token);
+      // Keep legacy key for backwards compatibility
       localStorage.setItem('access_token', token);
+      writeAuthCookies(true, token);
     }
+  }
+
+  getToken(): string | null {
+    return this.token;
   }
 
   clearToken() {
     this.token = null;
     if (typeof window !== 'undefined') {
+      localStorage.removeItem('olcan_access_token');
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
+      localStorage.removeItem('olcan_refresh_token');
+      writeAuthCookies(false);
     }
   }
 
@@ -537,28 +652,25 @@ class ApiClient {
     if (params?.limit) queryParams.append('limit', params.limit.toString());
     if (params?.offset) queryParams.append('offset', params.offset.toString());
 
-    const response = await fetch(`${this.baseUrl}/marketplace/products/public?${queryParams}`, {
+    const response = await fetch(`${this.baseUrl}/commerce/public/products?${queryParams}`, {
       headers: this.getHeaders(false),
     });
-    return this.handleResponse<any[]>(response);
+    const data = await this.handleResponse<{ items: any[] }>(response);
+    return (data.items || []).map(normalizeCommerceProduct);
   }
 
   async getOlcanOfficialProducts(category?: string, limit: number = 50): Promise<any[]> {
-    const queryParams = new URLSearchParams();
-    if (category) queryParams.append('category', category);
-    queryParams.append('limit', limit.toString());
-
-    const response = await fetch(`${this.baseUrl}/marketplace/products/public/olcan-official?${queryParams}`, {
-      headers: this.getHeaders(false),
+    const products = await this.getPublicProducts({ limit });
+    return products.filter((product) => {
+      if (!product.is_olcan_official) return false;
+      if (!category) return true;
+      return product.category === category;
     });
-    return this.handleResponse<any[]>(response);
   }
 
   async getFeaturedProducts(limit: number = 10): Promise<any[]> {
-    const response = await fetch(`${this.baseUrl}/marketplace/products/public/featured?limit=${limit}`, {
-      headers: this.getHeaders(false),
-    });
-    return this.handleResponse<any[]>(response);
+    const products = await this.getPublicProducts({ limit });
+    return products.filter((product) => product.is_featured).slice(0, limit);
   }
 
   async getProduct(productId: string): Promise<any> {
@@ -569,10 +681,30 @@ class ApiClient {
   }
 
   async getProductBySlug(slug: string): Promise<any> {
-    const response = await fetch(`${this.baseUrl}/marketplace/products/public/${slug}`, {
+    const response = await fetch(`${this.baseUrl}/commerce/public/products/${slug}`, {
       headers: this.getHeaders(false),
     });
-    return this.handleResponse<any>(response);
+    const data = await this.handleResponse<{ item: any }>(response);
+    return normalizeCommerceProduct(data.item);
+  }
+
+  async getCommerceContext(): Promise<CommerceContextResponse> {
+    const response = await fetch(`${this.baseUrl}/commerce/me/context`, {
+      headers: this.getHeaders(true),
+    });
+    return this.handleResponse<CommerceContextResponse>(response);
+  }
+
+  async createCheckoutIntent(
+    handle: string,
+    origin: string = 'compass-product-page'
+  ): Promise<CheckoutIntentResponse> {
+    const response = await fetch(`${this.baseUrl}/commerce/me/checkout-intents`, {
+      method: 'POST',
+      headers: this.getHeaders(true),
+      body: JSON.stringify({ handle, origin }),
+    });
+    return this.handleResponse<CheckoutIntentResponse>(response);
   }
 
   async createProduct(data: any): Promise<any> {

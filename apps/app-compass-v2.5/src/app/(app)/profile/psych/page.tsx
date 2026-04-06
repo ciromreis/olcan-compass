@@ -31,7 +31,7 @@ export default function PsychIntroPage() {
       </div>
       <div className="card-surface p-6 bg-cream-100">
         <h3 className="font-heading text-h4 text-text-primary mb-2">O que acontece depois?</h3>
-        <p className="text-body-sm text-text-secondary">Ao completar o diagnóstico, você recebe seu Score de Certeza, Custo de Inação diário, e uma recomendação automática de rota baseada no seu perfil. Você pode refazer o diagnóstico a qualquer momento.</p>
+        <p className="text-body-sm text-text-secondary">Ao completar o diagnóstico, você recebe seu Score de Certeza, Taxa de Perda por Inércia diário, e uma recomendação automática de rota baseada no seu perfil. Você pode refazer o diagnóstico a qualquer momento.</p>
       </div>
     </div>
   );

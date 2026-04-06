@@ -29,7 +29,7 @@ export default function Home() {
       <EnhancedFooter />
 
       {/* Global Grain Overlay (Subtle) */}
-      <div className="fixed inset-0 pointer-events-none z-[100] opacity-[0.03] bg-hero-grain mix-blend-overlay" />
+      <div className="fixed inset-0 pointer-events-none z-[100] opacity-[0.06] bg-hero-grain mix-blend-overlay" />
     </main>
   );
 }

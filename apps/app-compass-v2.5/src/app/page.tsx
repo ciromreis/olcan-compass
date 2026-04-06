@@ -31,7 +31,7 @@ const STATS = [
   { value: "2.400+", label: "Jornadas iniciadas" },
   { value: "18", label: "Países cobertos" },
   { value: "94%", label: "Taxa de satisfação" },
-  { value: "R$ 47/dia", label: "Custo de Inação médio" },
+  { value: "R$ 47/dia", label: "Taxa de Perda por Inércia médio" },
 ];
 
 export default function LandingPage() {

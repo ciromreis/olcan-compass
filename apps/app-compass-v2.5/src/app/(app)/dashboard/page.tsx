@@ -551,7 +551,7 @@ export default function DashboardPage() {
             { icon: FileEdit, label: "Forge", href: "/forge", color: "bg-sage-50 text-sage-600" },
             { icon: MessageSquare, label: "Treino", href: "/interviews/new", color: "bg-blue-50 text-blue-600" },
             { icon: Zap, label: "Sprints", href: "/sprints", color: "bg-amber-50 text-amber-600" },
-            { icon: Store, label: "Market", href: "/marketplace", color: "bg-clay-50 text-clay-600" },
+            { icon: Store, label: "Loja", href: "/marketplace", color: "bg-clay-50 text-clay-600" },
             { icon: Calendar, label: "Apps", href: "/applications", color: "bg-purple-50 text-purple-600" },
           ].map((action) => (
             <Link

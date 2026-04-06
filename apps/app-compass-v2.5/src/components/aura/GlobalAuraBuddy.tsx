@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, X, Activity, MessageCircle, Star } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -124,13 +125,19 @@ export default function GlobalAuraBuddy() {
               className={`absolute w-10 h-10 rounded-full bg-gradient-to-tr ${coreGradient} blur-[2px] opacity-90 mix-blend-screen shadow-inner`}
             />
             
-            {/* Geometric Center Shape */}
+            {/* Creature Avatar */}
             <motion.div 
-              animate={{ rotate: -180 }}
-              transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-              className="absolute w-6 h-6 rotate-45 border-[1.5px] border-white/80 rounded flex items-center justify-center backdrop-blur-sm shadow-xl"
+              className="absolute inset-0 flex items-center justify-center p-2 z-10"
+              animate={{ y: [0, -3, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             >
-              <div className="w-2 h-2 rounded-full bg-white/90" />
+              <Image 
+                src={String(aura.archetype).toLowerCase().includes('scholar') || String(aura.archetype).toLowerCase().includes('sage') ? "/images/creature-scholar.png" : "/images/creature-compass.png"}
+                alt="Aura Companion"
+                width={48}
+                height={48}
+                className="object-contain drop-shadow-lg"
+              />
             </motion.div>
 
             {/* Notifications Badge */}

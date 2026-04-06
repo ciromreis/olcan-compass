@@ -9,7 +9,7 @@ const PLANS = [
       { text: "Diagnóstico psicológico completo", included: true },
       { text: "1 rota ativa", included: true },
       { text: "Score de Certeza básico", included: true },
-      { text: "Custo de Inação (COI)", included: true },
+      { text: "Taxa de Perda por Inércia (COI)", included: true },
       { text: "Forge de Documentos (1 doc)", included: true },
       { text: "Simulador de Entrevista", included: false },
       { text: "Marketplace com escrow", included: false },

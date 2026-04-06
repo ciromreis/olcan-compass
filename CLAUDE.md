@@ -20,8 +20,9 @@ If you need to understand what v2 does, read it. Do not write to it.
 This is the **public-facing Olcan website**. It is an independent product, not a marketing add-on. It has its own CLAUDE.md.
 
 - **Status:** 100% functional, 13 routes, build passes — ready to deploy
+- **Integration:** Fully integrated with Mercur/MedusaJS marketplace (API key configured)
 - **Identity:** Has its own domain, brand, and content strategy
-- **Connection to v2.5 app:** Shares design tokens; hosts public store pages (no login required)
+- **Connection to v2.5 app:** Shares design tokens; hosts public store pages fetching dynamically from Mercur
 - **Blog:** Will integrate content from `olcan-blog-adk`
 
 ### 2. The App — `apps/app-compass-v2.5/`
@@ -84,16 +85,16 @@ packages/
 
 ## Key Documents (Read in This Order)
 
-1. `_CONTEXT/ARCHITECTURE.md` — how the website, app, and backend connect
-2. `_CONTEXT/PRODUCT_TRUTH.md` — honest current feature state, what is and isn't built
-3. `_CONTEXT/WEBSITE_V25_BRIDGE.md` — website/app shared layer and public store pages
-4. `README_ESTADO_REAL.md` — latest technical status (ui-components blocker, deploy options)
-5. `00_MISSION_CONTROL/STORE_ARCHITECTURE_GUIDE.md` — ecommerce/store architecture
-6. `00_MISSION_CONTROL/MARKETPLACE_ECOMMERCE_GUIDE.md` — marketplace architecture
+1. `1_Pillars/Context/ARCHITECTURE.md` — how the website, app, and backend connect
+2. `1_Pillars/Context/PRODUCT_TRUTH.md` — honest current feature state, what is and isn't built
+3. `1_Pillars/Context/WEBSITE_V25_BRIDGE.md` — website/app shared layer and public store pages
+4. `1_Pillars/Architecture/README_ESTADO_REAL.md` — latest technical status (ui-components blocker, deploy options)
+5. `1_Pillars/Architecture/STORE_ARCHITECTURE_GUIDE.md` — ecommerce/store architecture
+6. `1_Pillars/Architecture/MARKETPLACE_ECOMMERCE_GUIDE.md` — marketplace architecture
 
 ## For Deep Assessment or Planning Work
 
-Read these in `_CONTEXT/product-design/` — they are the canonical product and architecture docs, pulled from across all app versions:
+Read these in `1_Pillars/Context/product-design/` — they are the canonical product and architecture docs, pulled from across all app versions:
 
 - `PRODUCT_ARCHITECTURE_V2_5.md` — the product vision (career mobility OS + companion shell)
 - `IMPLEMENTATION_ROADMAP_V2_5.md` — the intended build sequence
@@ -101,10 +102,10 @@ Read these in `_CONTEXT/product-design/` — they are the canonical product and 
 - `CANONICAL_STORES_V2_5.md` — state management architecture (Zustand store design)
 - `BACKEND_ARCHITECTURE_SCALE.md` — FastAPI async patterns and event-driven design
 - `VISUAL_DESIGN_GUIDE.md` — liquid-glass design system implementation
-- `_CONTEXT/product-design/ASSESSMENT_GUIDE.md` — how to run a plan-vs-reality audit
+- `1_Pillars/Context/product-design/ASSESSMENT_GUIDE.md` — how to run a plan-vs-reality audit
 
-Session-level reports (what was claimed done per session) are in `_REPORTS/session-features/`.
-Build/audit reports are in `_REPORTS/`.
+Session-level reports (what was claimed done per session) are in `3_Vaults/Session_Logs/`.
+Build/audit reports are in `3_Vaults/Historical_Audits/`.
 
 ---
 

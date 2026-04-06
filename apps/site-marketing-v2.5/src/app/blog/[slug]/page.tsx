@@ -9,12 +9,13 @@ import Link from 'next/link';
 const SUBSTACK_BASE = 'https://olcanglobal.substack.com/p';
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
   // Check for local post first
-  const localPost = getLocalPostBySlug(params.slug);
+  const localPost = getLocalPostBySlug(slug);
   if (localPost) {
     return {
       title: `${localPost.title} | Blog Olcan`,
@@ -32,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: 'Artigo | Blog Olcan',
     robots: { index: false },
-    alternates: { canonical: `${SUBSTACK_BASE}/${params.slug}` },
+    alternates: { canonical: `${SUBSTACK_BASE}/${slug}` },
   };
 }
 
@@ -45,8 +46,9 @@ export async function generateStaticParams() {
   return localPosts.map((p) => ({ slug: p.slug }));
 }
 
-export default function BlogPostPage({ params }: Props) {
-  const localPost = getLocalPostBySlug(params.slug);
+export default async function BlogPostPage({ params }: Props) {
+  const { slug } = await params;
+  const localPost = getLocalPostBySlug(slug);
 
   // If post exists locally — render it
   if (localPost) {
@@ -139,5 +141,5 @@ export default function BlogPostPage({ params }: Props) {
   }
 
   // No local post found → redirect to Substack
-  redirect(`${SUBSTACK_BASE}/${params.slug}`);
+  redirect(`${SUBSTACK_BASE}/${slug}`);
 }

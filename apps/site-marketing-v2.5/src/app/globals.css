@@ -51,6 +51,21 @@
     color: var(--foreground);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Global grain texture over the entire site */
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    background-size: 256px 256px;
+    background-repeat: repeat;
+    opacity: 0.04;
+    mix-blend-mode: multiply;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -187,25 +202,33 @@
     text-transform: uppercase;
   }
 
-  /* ─── Standardized Button System ─── */
+  /* ─── Standardized Button System (Luxury Corporate Standards) ─── */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-300 active:scale-[0.98];
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
     background: var(--olcan-navy);
     color: white;
+    box-shadow: 0 2px 8px rgba(0, 19, 56, 0.15), 0 1px 2px rgba(0, 19, 56, 0.1);
   }
   
   .btn-primary:hover {
     background: var(--olcan-navy-light);
-    transform: translateY(-2px);
-    box-shadow: 0 12px 30px rgba(0, 19, 56, 0.25);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 19, 56, 0.2), 0 2px 4px rgba(0, 19, 56, 0.12);
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 border active:scale-95;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-300 border active:scale-[0.98];
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
     background: rgba(255, 255, 255, 0.4);
     backdrop-filter: blur(8px);
     border-color: rgba(0, 19, 56, 0.15);
     color: var(--olcan-navy);
+    box-shadow: 0 1px 3px rgba(0, 19, 56, 0.08);
   }
 
   .btn-secondary:hover {

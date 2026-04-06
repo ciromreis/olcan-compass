@@ -4,14 +4,16 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { BookOpen, Map, FileText, Globe, Users, Brain, ArrowRight, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const PRODUCTS = [
   {
-    id: 'sem-fronteiras',
-    name: 'Sem Fronteiras',
-    tagline: 'Curso Online — A porta de entrada para o mundo',
+    id: 'curso-cidadao-mundo',
+    name: 'Cidadão do Mundo',
+    tagline: 'Curso Online — A base da transformação',
     description: 'Tudo o que você precisa saber para planejar, executar e conquistar sua vaga no mercado internacional. Do currículo ao visto, do LinkedIn à oferta de emprego.',
     icon: Globe,
+    image: '/images/product-cidadao-mundo.png',
     features: [
       'Módulos completos de carreira global',
       'Templates e materiais exclusivos',
@@ -30,6 +32,7 @@ const PRODUCTS = [
     tagline: 'Mapa estratégico — Seu caminho personalizado',
     description: 'Um roadmap interativo e detalhado para sua jornada internacional. Planejamento mês a mês com todas as etapas que você precisa concluir antes de embarcar.',
     icon: Map,
+    image: '/images/product-rota.png',
     features: [
       'Mapa interativo (Miro Board)',
       'Checklist por país-alvo',
@@ -48,6 +51,7 @@ const PRODUCTS = [
     tagline: 'Template Notion — Documentos profissionais',
     description: 'Sistema completo em Notion para organizar, criar e revisar toda a documentação necessária para sua candidatura internacional. Currículo, carta de motivação e mais.',
     icon: FileText,
+    image: '/images/product-kit.png',
     features: [
       'Templates prontos em Notion',
       'Currículo no padrão internacional',
@@ -117,8 +121,9 @@ export default function ProductsSection() {
   return (
     <section className="py-24 md:py-32 bg-cream-50 relative overflow-hidden noise">
       {/* Background Elements */}
-      <div className="absolute inset-0 bg-hero-grain opacity-40 mix-blend-multiply pointer-events-none" />
-      <div className="absolute top-20 right-0 w-[600px] h-[600px] rounded-full blur-[140px] opacity-10 bg-olcan-navy pointer-events-none" />
+      <div className="absolute inset-0 bg-hero-grain opacity-60 mix-blend-multiply pointer-events-none" />
+      <div className="absolute top-20 right-0 w-[600px] h-[600px] rounded-full blur-[140px] opacity-[0.12] bg-brand-400 pointer-events-none" />
+      <div className="absolute -bottom-20 -left-20 w-[500px] h-[500px] rounded-full blur-[120px] opacity-[0.08] bg-olcan-navy pointer-events-none" />
       
       <div className="container-site relative z-10 mx-auto px-6 lg:px-12 w-full max-w-7xl">
         {/* Header */}
@@ -139,7 +144,7 @@ export default function ProductsSection() {
             <span className="italic font-light text-brand-600">sua jornada global.</span>
           </h2>
           
-          <p className="text-xl text-olcan-navy/70 max-w-3xl mx-auto leading-relaxed font-medium">
+          <p className="text-xl text-olcan-navy/80 max-w-3xl mx-auto leading-relaxed font-medium">
             Do primeiro passo ao destino final — cada produto foi criado para resolver 
             uma etapa real da sua transição internacional.
           </p>
@@ -166,15 +171,27 @@ export default function ProductsSection() {
                   </div>
                 )}
 
-                {/* Icon */}
-                <div className="w-16 h-16 rounded-2xl bg-white/40 flex items-center justify-center mb-6 border border-white/60 shadow-xl shadow-olcan-navy/5 group-hover:scale-110 group-hover:bg-white transition-all">
-                  <product.icon className="w-8 h-8 text-olcan-navy" />
+                {/* Image / Icon Container */}
+                <div className="relative w-full aspect-video mb-8 rounded-2xl overflow-hidden border border-white/20 shadow-lg group-hover:shadow-2xl transition-all duration-500">
+                  {product.image ? (
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-white/40 flex items-center justify-center">
+                      <product.icon className="w-12 h-12 text-olcan-navy" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-olcan-navy/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
                 
                 {/* Content */}
-                <div className="label-xs text-brand-600 mb-2 uppercase tracking-wide">{product.tagline}</div>
+                <div className="label-xs text-brand-600 mb-2 uppercase tracking-wide font-bold">{product.tagline}</div>
                 <h3 className="font-display text-3xl text-olcan-navy mb-4 italic leading-tight">{product.name}</h3>
-                <p className="text-olcan-navy/70 mb-8 leading-relaxed font-medium flex-1">{product.description}</p>
+                <p className="text-olcan-navy/80 mb-8 leading-relaxed font-medium flex-1">{product.description}</p>
                 
                 {/* Features */}
                 <div className="space-y-4 mb-10 pt-6 border-t border-olcan-navy/5">

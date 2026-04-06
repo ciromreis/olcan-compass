@@ -8,6 +8,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Heart, Zap, Sparkles, Shield, Activity, Star, Info } from 'lucide-react'
 import type { EvolutionStage, ArchetypeType, AuraStats } from '@/stores/auraStore'
@@ -168,25 +169,32 @@ export function AuraVisual({
               />
             ))}
 
-            {/* Core Essence Orb */}
+            {/* Core Essence Creature */}
             <motion.div
-              className={`absolute rounded-full ${visual.color} shadow-[0_0_40px_rgba(255,255,255,0.1)]`}
+              className="absolute flex items-center justify-center pointer-events-none"
               animate={isPerformingActivity ? {
-                scale: [1, 1.3, 1],
-                filter: ['brightness(1)', 'brightness(1.5)', 'brightness(1)'],
+                scale: [1, 1.1, 1],
+                filter: ['brightness(1)', 'brightness(1.2)', 'brightness(1)'],
               } : {
                 scale: [1, 1.05, 1],
               }}
-              transition={{ duration: 0.8, repeat: isPerformingActivity ? Infinity : 0 }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               style={{
-                width: visual.size * 0.4,
-                height: visual.size * 0.4,
-                left: -visual.size * 0.2,
-                top: -visual.size * 0.2,
+                width: visual.size * 0.8,
+                height: visual.size * 0.8,
+                left: -visual.size * 0.4,
+                top: -visual.size * 0.4,
                 zIndex: visual.layers + 1
               }}
             >
-              <Sparkles className="w-full h-full p-2 text-white/50" />
+              <Image 
+                src={archetype.toLowerCase().includes('scholar') || archetype.toLowerCase().includes('sage') ? "/images/creature-scholar.png" : "/images/creature-compass.png"}
+                alt={`${name} Creature`}
+                width={visual.size * 0.8}
+                height={visual.size * 0.8}
+                className="object-contain drop-shadow-2xl"
+                priority
+              />
             </motion.div>
           </motion.div>
         </AnimatePresence>
@@ -298,14 +306,20 @@ export function AuraAvatar({
           repeat: Infinity,
           ease: 'easeInOut',
         }}
-        className={`rounded-full ${visual.color} border border-white/20 backdrop-blur-md shadow-lg`}
+        className={`rounded-full ${visual.color} border border-white/20 backdrop-blur-md shadow-lg overflow-hidden flex items-center justify-center`}
         style={{
           width: currentSize,
           height: currentSize,
           boxShadow: `0 0 15px ${visual.color.replace('bg-', '')}`
         }}
       >
-        <Sparkles className="w-full h-full p-2 text-white/40" />
+        <Image 
+          src="/images/creature-compass.png"
+          alt="Aura Avatar"
+          width={currentSize * 0.8}
+          height={currentSize * 0.8}
+          className="object-contain"
+        />
       </motion.div>
       
       {showLevel && level && (

@@ -6,6 +6,9 @@ import { apiClient } from "@/lib/api-client";
 
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
+// Unified auth token key - shared across app, website, and marketplace
+const UNIFIED_TOKEN_KEY = 'olcan_access_token';
+
 function normalizeProfile(profile: UserProfile): UserProfile {
   return {
     ...profile,

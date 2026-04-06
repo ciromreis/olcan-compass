@@ -8,64 +8,78 @@ import { devtools } from 'zustand/middleware'
 import { persist } from 'zustand/middleware'
 
 // Types
-interface MarketplaceItem {
-  id: number
+export type AssetType = 'item' | 'skill' | 'companion' | 'accessory' | 'bundle'
+export type CurrencyType = 'aura' | 'credits' | 'gems' | 'brl'
+export type RarityType = 'common' | 'rare' | 'epic' | 'legendary' | 'mythic'
+
+export interface MarketplaceAsset {
+  id: string
   name: string
   description: string
+  shortDescription?: string
   category: string
-  itemType: string
+  assetType: AssetType
   price: number
-  rarity: 'common' | 'rare' | 'epic' | 'legendary'
-  effectType?: string
-  effectValue?: number
+  currency: CurrencyType
+  rarity: RarityType
   icon: string
+  thumbnail?: string
+  tags?: string[]
+  metadata?: Record<string, any>
+  isFeatured?: boolean
+  isNew?: boolean
   createdAt: string
+  updatedAt: string
 }
 
-interface UserInventory {
-  id: number
-  itemId: number
+export interface InventoryAsset {
+  id: string
+  assetId: string
+  userId: string
+  assetType: AssetType
   quantity: number
-  purchasedAt: string
-  item: MarketplaceItem | null
+  unlockedAt: string
+  metadata?: Record<string, any>
+  asset?: MarketplaceAsset | null
 }
 
-interface UserEconomy {
-  coins: number
-  gems: number
-  premiumExpiresAt?: string
+export interface UserEconomy {
+  auraPoints: number // System level/XP points
+  credits: number    // Paid currency (formerly coins)
+  gems: number       // Premium currency
+  level: number
+  nextLevelXp: number
   transactions: Transaction[]
 }
 
-interface Transaction {
-  id: number
-  transactionType: 'purchase' | 'sale'
+export interface Transaction {
+  id: string
+  type: 'purchase' | 'reward' | 'burn' | 'refund'
   amount: number
-  paymentMethod: string
+  currency: CurrencyType
+  status: 'pending' | 'completed' | 'failed'
+  assetId?: string
+  assetName?: string
   createdAt: string
-  item?: {
-    id: number
-    name: string
-    icon: string
-  }
 }
 
 interface MarketplaceState {
   // State
-  items: MarketplaceItem[]
-  inventory: UserInventory[]
+  assets: MarketplaceAsset[]
+  inventory: InventoryAsset[]
   economy: UserEconomy | null
   categories: string[]
   isLoading: boolean
   error: string | null
   
   // Actions
-  fetchItems: (params?: any) => Promise<void>
+  fetchAssets: (params?: any) => Promise<void>
   fetchInventory: () => Promise<void>
   fetchEconomy: () => Promise<void>
-  purchaseItem: (itemId: number, quantity?: number) => Promise<void>
-  useItem: (inventoryId: number) => Promise<void>
-  earnCoins: (amount: number, source?: string) => Promise<void>
+  purchaseAsset: (assetId: string, quantity?: number) => Promise<void>
+  useAsset: (inventoryId: string) => Promise<void>
+  earnCredits: (amount: number, source?: string) => Promise<void>
+  addAuraPoints: (amount: number, source?: string) => Promise<void>
   fetchCategories: () => Promise<void>
   clearError: () => void
 }
@@ -93,9 +107,9 @@ class MarketplaceAPI {
     return response.json()
   }
   
-  static async getItems(params?: any) {
+  static async getAssets(params?: any) {
     const query = new URLSearchParams(params).toString()
-    return this.request(`/items${query ? '?' + query : ''}`)
+    return this.request(`/assets${query ? '?' + query : ''}`)
   }
   
   static async getInventory() {
@@ -106,20 +120,27 @@ class MarketplaceAPI {
     return this.request('/economy')
   }
   
-  static async purchaseItem(itemId: number, quantity: number = 1) {
-    return this.request(`/purchase/${itemId}?quantity=${quantity}`, {
+  static async purchaseAsset(assetId: string, quantity: number = 1) {
+    return this.request(`/purchase/${assetId}?quantity=${quantity}`, {
       method: 'POST',
     })
   }
   
-  static async useItem(inventoryId: number) {
+  static async useAsset(inventoryId: string) {
     return this.request(`/use/${inventoryId}`, {
       method: 'POST',
     })
   }
   
-  static async earnCoins(amount: number, source: string = 'daily_bonus') {
-    return this.request(`/earn-coins`, {
+  static async earnCredits(amount: number, source: string = 'daily_bonus') {
+    return this.request(`/earn-credits`, {
+      method: 'POST',
+      body: JSON.stringify({ amount, source }),
+    })
+  }
+
+  static async addAuraPoints(amount: number, source: string = 'activity_complete') {
+    return this.request(`/aura-points`, {
       method: 'POST',
       body: JSON.stringify({ amount, source }),
     })
@@ -136,7 +157,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
     persist(
       (set, get) => ({
         // Initial state
-        items: [],
+        assets: [],
         inventory: [],
         economy: null,
         categories: [],
@@ -144,16 +165,16 @@ export const useMarketplaceStore = create<MarketplaceState>()(
         error: null,
         
         // Actions
-        fetchItems: async (params?: any) => {
+        fetchAssets: async (params?: any) => {
           set({ isLoading: true, error: null })
           
           try {
-            const items = await MarketplaceAPI.getItems(params)
-            set({ items, isLoading: false })
+            const assets = await MarketplaceAPI.getAssets(params)
+            set({ assets, isLoading: false })
           } catch (error) {
             set({ 
               isLoading: false, 
-              error: error instanceof Error ? error.message : 'Failed to fetch items' 
+              error: error instanceof Error ? error.message : 'Failed to fetch assets' 
             })
           }
         },
@@ -186,12 +207,36 @@ export const useMarketplaceStore = create<MarketplaceState>()(
           }
         },
         
-        purchaseItem: async (itemId: number, quantity: number = 1) => {
+        purchaseAsset: async (assetId: string, quantity: number = 1) => {
           set({ isLoading: true, error: null })
           
           try {
-            const response = await MarketplaceAPI.purchaseItem(itemId, quantity)
+            const asset = get().assets.find(a => a.id === assetId)
+            const response = await MarketplaceAPI.purchaseAsset(assetId, quantity)
             
+            // Handle Side Effects
+            if (asset) {
+              if (asset.assetType === 'companion') {
+                const { createAura } = (await import('./auraStore')).useAuraStore.getState()
+                await createAura(asset.name, asset.metadata?.archetype || 'strategist')
+              } else if (asset.assetType === 'skill') {
+                const { updateAura, aura } = (await import('./auraStore')).useAuraStore.getState()
+                if (aura) {
+                  const newAbility = {
+                    id: assetId,
+                    name: asset.name,
+                    description: asset.description,
+                    abilityType: 'active' as const,
+                    powerLevel: asset.metadata?.powerLevel || 1,
+                    cooldown: asset.metadata?.cooldown || 60,
+                    isUnlocked: true,
+                    unlockedAt: new Date().toISOString()
+                  }
+                  await updateAura({ abilities: [...aura.abilities, newAbility] })
+                }
+              }
+            }
+
             // Refresh economy and inventory
             await Promise.all([
               get().fetchEconomy(),
@@ -202,44 +247,58 @@ export const useMarketplaceStore = create<MarketplaceState>()(
           } catch (error) {
             set({ 
               isLoading: false, 
-              error: error instanceof Error ? error.message : 'Failed to purchase item' 
+              error: error instanceof Error ? error.message : 'Failed to purchase asset' 
             })
           }
         },
         
-        useItem: async (inventoryId: number) => {
+        useAsset: async (inventoryId: string) => {
           set({ isLoading: true, error: null })
           
           try {
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            const response = await MarketplaceAPI.useItem(inventoryId)
+            const response = await MarketplaceAPI.useAsset(inventoryId)
             
-            // Refresh inventory
-            await get().fetchInventory()
+            // Refresh inventory and economy
+            await Promise.all([
+              get().fetchInventory(),
+              get().fetchEconomy()
+            ])
             
             set({ isLoading: false })
           } catch (error) {
             set({ 
               isLoading: false, 
-              error: error instanceof Error ? error.message : 'Failed to use item' 
+              error: error instanceof Error ? error.message : 'Failed to use asset' 
             })
           }
         },
         
-        earnCoins: async (amount: number, source: string = 'daily_bonus') => {
+        earnCredits: async (amount: number, source: string = 'daily_bonus') => {
           set({ isLoading: true, error: null })
           
           try {
-            const response = await MarketplaceAPI.earnCoins(amount, source)
-            
-            // Refresh economy
+            const response = await MarketplaceAPI.earnCredits(amount, source)
             await get().fetchEconomy()
-            
             set({ isLoading: false })
           } catch (error) {
             set({ 
               isLoading: false, 
-              error: error instanceof Error ? error.message : 'Failed to earn coins' 
+              error: error instanceof Error ? error.message : 'Failed to earn credits' 
+            })
+          }
+        },
+
+        addAuraPoints: async (amount: number, source: string = 'activity_complete') => {
+          set({ isLoading: true, error: null })
+          
+          try {
+            const response = await MarketplaceAPI.addAuraPoints(amount, source)
+            await get().fetchEconomy()
+            set({ isLoading: false })
+          } catch (error) {
+            set({ 
+              isLoading: false, 
+              error: error instanceof Error ? error.message : 'Failed to add aura points' 
             })
           }
         },
@@ -263,14 +322,15 @@ export const useMarketplaceStore = create<MarketplaceState>()(
         },
       }),
       {
-        name: 'marketplace-store',
+        name: 'marketplace-economy-store',
         partialize: (state) => ({
           economy: state.economy,
+          inventory: state.inventory,
         }),
       }
     ),
     {
-      name: 'marketplace-store',
+      name: 'marketplace-economy-store',
     }
   )
 )
@@ -280,57 +340,68 @@ export const useMarketplace = () => useMarketplaceStore()
 export const useMarketplaceActions = () => useMarketplaceStore(state => state)
 
 // Utility functions
-export const getItemRarityInfo = (rarity: string) => {
+export const getAssetRarityInfo = (rarity: string) => {
   const rarities = {
     common: {
       name: 'Common',
-      description: 'Standard item',
+      description: 'Standard asset',
       color: '#6b7280',
       icon: '📦'
     },
     rare: {
       name: 'Rare',
-      description: 'Uncommon item',
+      description: 'Uncommon asset',
       color: '#3b82f6',
       icon: '💎'
     },
     epic: {
       name: 'Epic',
-      description: 'Special item',
+      description: 'Special asset',
       color: '#8b5cf6',
       icon: '⭐'
     },
     legendary: {
       name: 'Legendary',
-      description: 'Ultra rare item',
+      description: 'Ultra rare asset',
       color: '#f59e0b',
       icon: '👑'
+    },
+    mythic: {
+      name: 'Mythic',
+      description: 'One of a kind',
+      color: '#ef4444',
+      icon: '🔥'
     }
   }
   
   return rarities[rarity as keyof typeof rarities] || rarities.common
 }
 
-export const getItemCategoryInfo = (category: string) => {
+export const getAssetCategoryInfo = (category: string) => {
   const categories = {
-    companion_accessory: {
-      name: 'Companion Accessories',
-      description: 'Items to customize your companion',
+    companion: {
+      name: 'Companions',
+      description: 'New Auras to join your journey',
+      icon: '🧬'
+    },
+    skill: {
+      name: 'Skills',
+      description: 'Abilities to boost your Aura',
+      icon: '⚡'
+    },
+    accessory: {
+      name: 'Accessories',
+      description: 'Customization items',
       icon: '🎀'
     },
     consumable: {
       name: 'Consumables',
-      description: 'Items that provide temporary effects',
+      description: 'Temporary boosts and items',
       icon: '🧪'
-    },
-    special: {
-      name: 'Special Items',
-      description: 'Unique and powerful items',
-      icon: '✨'
     }
   }
   
-  return categories[category as keyof typeof categories] || categories.companion_accessory
+  return categories[category as keyof typeof categories] || { name: category, description: '', icon: '📦' }
 }
 
 export const getEffectTypeInfo = (effectType: string) => {
@@ -364,16 +435,33 @@ export const getEffectTypeInfo = (effectType: string) => {
   return effectTypes[effectType as keyof typeof effectTypes] || null
 }
 
-export const formatPrice = (price: number) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-  }).format(price)
+export const formatCurrency = (amount: number, currency: CurrencyType = 'brl') => {
+  if (currency === 'brl') {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(amount)
+  }
+  
+  const symbols = {
+    aura: '✨',
+    credits: '🪙',
+    gems: '💎',
+  }
+  
+  return `${symbols[currency as keyof typeof symbols] || ''} ${amount}`
 }
 
-export const canAfford = (price: number, userCoins: number) => {
-  return userCoins >= price
+export const canAfford = (asset: MarketplaceAsset, economy: UserEconomy | null) => {
+  if (!economy) return false
+  
+  switch (asset.currency) {
+    case 'aura': return economy.auraPoints >= asset.price
+    case 'credits': return economy.credits >= asset.price
+    case 'gems': return economy.gems >= asset.price
+    case 'brl': return true // Usually handled via external checkout
+    default: return false
+  }
 }
 
 export const getDailyBonus = () => {

@@ -47,7 +47,7 @@ export default function RiskBlockPage() {
       </div>
       <div className="flex justify-between">
         <Link href="/profile/psych/confidence" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-cream-500 text-text-secondary font-medium text-body-sm hover:bg-cream-200 transition-colors"><ArrowLeft className="w-4 h-4" /> Voltar</Link>
-        <Button onClick={handleNext} disabled={!allAnswered} className={!allAnswered ? "opacity-50" : ""}>Próximo <ArrowRight className="w-4 h-4" /></Button>
+        <Button onClick={handleNext} disabled={!allAnswered} className={!allAnswered ? "opacity-50" : "!text-white"}>Avançar <ArrowRight className="w-4 h-4" /></Button>
       </div>
     </div>
   );

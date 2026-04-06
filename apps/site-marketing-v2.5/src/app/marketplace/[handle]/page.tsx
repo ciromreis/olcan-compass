@@ -2,10 +2,10 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getProducts } from '@/lib/medusa';
+import { getMercurProduct, getProductPrice } from '@/lib/mercur-client';
 import EnhancedNavbar from '@/components/layout/EnhancedNavbar';
 import EnhancedFooter from '@/components/layout/EnhancedFooter';
-import { ArrowLeft, Check, Shield, Globe, Layers, Compass, Star } from 'lucide-react';
+import { ArrowLeft, Check, Shield, Globe, Layers, Compass, Star, Lock, ArrowRight } from 'lucide-react';
 
 // Static fallbacks for infoproducts that aren't yet in Medusa DB
 const STATIC_PRODUCTS = {
@@ -41,43 +41,52 @@ const STATIC_PRODUCTS = {
   }
 };
 
-export async function generateMetadata({ params }: { params: { handle: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
+  const { handle } = await params;
+  const staticProduct = STATIC_PRODUCTS[handle as keyof typeof STATIC_PRODUCTS];
+  const title = staticProduct?.title || 'Produto';
+  const description = staticProduct?.description || 'Produto oficial do ecossistema Olcan para sua mobilidade internacional.';
   return {
-    title: `Marketplace | Olcan`,
-    description: `Detalhes do produto ou serviço.`,
+    title: `${title} | Loja Olcan`,
+    description,
+    openGraph: {
+      title: `${title} | Olcan`,
+      description,
+    },
   };
 }
 
-export default async function ProductPage({ params }: { params: { handle: string } }) {
-  const { handle } = params;
+export default async function ProductPage({ params }: { params: Promise<{ handle: string }> }) {
+  const { handle } = await params;
   let product: any = null;
+  let isStaticProduct = false;
 
-  // 1. Try static infoproducts first
-  if (STATIC_PRODUCTS[handle as keyof typeof STATIC_PRODUCTS]) {
+  // 1. Try fetching from Mercur marketplace first
+  const mercurProduct = await getMercurProduct(handle);
+  if (mercurProduct) {
+    product = mercurProduct;
+  } else if (STATIC_PRODUCTS[handle as keyof typeof STATIC_PRODUCTS]) {
+    // 2. Fallback to static infoproducts
     product = STATIC_PRODUCTS[handle as keyof typeof STATIC_PRODUCTS];
-  } else {
-    // 2. Fetch from Medusa backend
-    const medusaProducts = await getProducts({ handle });
-    if (medusaProducts && medusaProducts.length > 0) {
-      product = medusaProducts[0];
-    }
+    isStaticProduct = true;
   }
 
   if (!product) {
     notFound();
   }
 
-  // Handle price display depending on Medusa or Static format
-  let displayPrice = 'Consulta';
-  if (product.variants?.[0]?.calculated_price?.calculated_amount) {
-    displayPrice = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
-      .format(product.variants[0].calculated_price.calculated_amount);
-  } else if (product.price) {
+  // Handle price display
+  let displayPrice = 'Sob Consulta';
+  if (isStaticProduct && product.price) {
     displayPrice = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
       .format(product.price / 100);
+  } else if (!isStaticProduct) {
+    displayPrice = getProductPrice(product);
   }
 
-  const features = product.features || ['Benefício Premium 1', 'Suporte Especializado', 'Acesso Imediato', 'Verificado pela Olcan'];
+  const features = product.features || ['Operação comercial validada pela Olcan', 'Acesso ao material principal', 'Suporte conforme a oferta', 'Entrega alinhada com sua jornada'];
+  const checkoutUrl = product.checkout_url || null;
+  const checkoutLabel = checkoutUrl ? 'Continuar para a compra' : 'Solicitar disponibilidade';
 
   return (
     <main className="min-h-screen bg-cream selection:bg-brand-500/30 font-body text-ink">
@@ -87,7 +96,7 @@ export default async function ProductPage({ params }: { params: { handle: string
         <div className="container-site mx-auto px-6 lg:px-12 w-full max-w-7xl">
           
           <Link href="/marketplace" className="inline-flex items-center gap-2 text-ink/50 hover:text-brand-600 transition-colors text-sm font-bold uppercase tracking-widest mb-12">
-            <ArrowLeft className="w-4 h-4" /> Voltar ao Marketplace
+            <ArrowLeft className="w-4 h-4" /> Voltar à Loja
           </Link>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
@@ -128,12 +137,25 @@ export default async function ProductPage({ params }: { params: { handle: string
 
               {/* Checkout CTA */}
               <div className="mb-12 space-y-4">
-                {/* For Medusa or Static, clicking buy defaults to Stripe integration / checkout process */}
-                <button className="w-full btn-primary py-4 px-8 text-lg flex items-center justify-center gap-3">
-                   Comprar Agora <Shield className="w-5 h-5" />
-                </button>
+                {checkoutUrl ? (
+                  <a
+                    href={checkoutUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full btn-primary py-4 px-8 text-lg flex items-center justify-center gap-3"
+                  >
+                    {checkoutLabel} <ArrowRight className="w-5 h-5" />
+                  </a>
+                ) : (
+                  <Link
+                    href="/contato"
+                    className="w-full btn-primary py-4 px-8 text-lg flex items-center justify-center gap-3"
+                  >
+                    {checkoutLabel} <Shield className="w-5 h-5" />
+                  </Link>
+                )}
                 <p className="text-center text-xs text-ink/40 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
-                   <Lock className="w-3 h-3" /> Transação 100% Segura
+                   <Lock className="w-3 h-3" /> Fluxo comercial oficial da Olcan
                 </p>
               </div>
 

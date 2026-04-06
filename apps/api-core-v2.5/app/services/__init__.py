@@ -1,28 +1,12 @@
-"""Services layer for business logic"""
+"""Service package.
 
-from app.models.progress import UserAchievement, UserProgress, Achievement
-from app.services.evolution_service import (
-    EvolutionService,
-    EvolutionRequirements,
-    EligibilityResult,
-    eligibility_result_to_dict,
-    evolution_record_to_dict,
-)
-from .document_service import DocumentService
-from .interview_service import InterviewService
-from .marketplace_service import MarketplaceService
-from .guild_service import GuildService
-from .social_service import SocialService
+Keep package initialization lightweight.
 
-__all__ = [
-    "EvolutionService",
-    "EvolutionRequirements", 
-    "EligibilityResult",
-    "eligibility_result_to_dict",
-    "evolution_record_to_dict",
-    "DocumentService",
-    "InterviewService",
-    "MarketplaceService",
-    "GuildService",
-    "SocialService"
-]
+Some runtime entrypoints import submodules from ``app.services`` directly
+(``from app.services import credentials``). Eager imports here were pulling in
+database-backed modules at package import time, which made unrelated services
+fail before the application booted. Import concrete services from their
+respective modules instead.
+"""
+
+__all__: list[str] = []

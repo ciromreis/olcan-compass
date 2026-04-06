@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "@mercurjs/vendor/index.css";
+import "./olcan-theme.css";
 import App from "@mercurjs/vendor";
 
 createRoot(document.getElementById("root")!).render(

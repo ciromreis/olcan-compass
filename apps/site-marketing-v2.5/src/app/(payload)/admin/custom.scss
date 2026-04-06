@@ -1,0 +1,48 @@
+/* 
+  Clinical Boutique / Liquid-Glass Branding for Payload CMS Admin
+*/
+
+:root {
+  /* Liquid-Glass Colors & Dark Mode Overrides */
+  --theme-bg: #09090b;
+  --theme-elevation-50: #18181b;
+  --theme-elevation-100: #27272a;
+  
+  --theme-success-400: #4ade80;
+  --theme-error-400: #f87171;
+
+  --theme-text: #ffffff;
+  --theme-text-muted: #a1a1aa;
+
+  /* Fonts */
+  --font-body: 'Inter', sans-serif;
+  --font-display: 'DM Serif Display', serif;
+
+  /* Payload specific overrides */
+  --color-base-0: var(--theme-bg);
+  --color-base-50: var(--theme-elevation-50);
+  --color-base-100: var(--theme-elevation-100);
+  
+  --color-success: var(--theme-success-400);
+  --color-error: var(--theme-error-400);
+}
+
+.payload__admin-wrap {
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  font-family: var(--font-body);
+}
+
+/* Glassmorphism utility for some panels */
+.payload__drawer, .payload__modal {
+  background: rgba(9, 9, 11, 0.8) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display) !important;
+  letter-spacing: -0.05em;
+  font-weight: normal;
+}

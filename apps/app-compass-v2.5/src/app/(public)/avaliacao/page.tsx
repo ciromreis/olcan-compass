@@ -36,7 +36,7 @@ export default function AssessmentTeaserPage() {
             <ul className="space-y-2 text-body text-text-secondary">
               <li className="flex items-start gap-2"><Target className="w-4 h-4 text-brand-500 mt-1 flex-shrink-0" />Score de Certeza personalizado (0–100)</li>
               <li className="flex items-start gap-2"><Target className="w-4 h-4 text-brand-500 mt-1 flex-shrink-0" />Mapa de medos e bloqueios identificados</li>
-              <li className="flex items-start gap-2"><Target className="w-4 h-4 text-brand-500 mt-1 flex-shrink-0" />Custo de Inação diário calculado (R$/dia)</li>
+              <li className="flex items-start gap-2"><Target className="w-4 h-4 text-brand-500 mt-1 flex-shrink-0" />Taxa de Perda por Inércia diário calculado (R$/dia)</li>
               <li className="flex items-start gap-2"><Target className="w-4 h-4 text-brand-500 mt-1 flex-shrink-0" />Recomendação de rota com base no seu perfil</li>
             </ul>
           </div>

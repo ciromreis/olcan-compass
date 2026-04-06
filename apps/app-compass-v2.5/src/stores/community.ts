@@ -57,6 +57,7 @@ interface CommunityState {
   addReply: (itemId: string, payload: { author: string; body: string }) => void;
   createCollection: (payload: { name: string; description: string; visibility: "private" | "shared" }) => void;
   getStats: () => { total: number; saved: number; questions: number; sharedCollections: number };
+  fetchPosts: () => Promise<void>;
   reset: () => void;
 }
 
@@ -362,6 +363,36 @@ export const useCommunityStore = create<CommunityState>()(
           questions: items.filter((item) => item.type === "question").length,
           sharedCollections: collections.filter((collection) => collection.visibility === "shared").length,
         };
+      },
+
+      fetchPosts: async () => {
+        try {
+          const serverUrl = process.env.NEXT_PUBLIC_PAYLOAD_URL || "http://localhost:3000";
+          const res = await fetch(`${serverUrl}/api/chronicles`);
+          if (!res.ok) throw new Error("Failed to fetch chronicles");
+          const data = await res.json();
+          
+          const payloadItems: CommunityItem[] = data.docs.map((doc: any) => ({
+            id: doc.id,
+            type: "olcan_post",
+            title: doc.title,
+            description: doc.content || doc.excerpt || "",
+            author: "Equipe Olcan",
+            topic: doc.category || "community",
+            savedCount: 0,
+            likeCount: 0,
+            replyCount: 0,
+            createdAt: doc.createdAt,
+            tags: doc.tags?.map((t: any) => t.name) || [],
+            replies: [],
+          }));
+
+          set((state) => ({
+            items: [...payloadItems, ...state.items.filter(i => i.type !== "olcan_post")]
+          }));
+        } catch (error) {
+          console.error("Payload fetch error:", error);
+        }
       },
 
       reset: () => set({ items: SEED_ITEMS, collections: SEED_COLLECTIONS }),
