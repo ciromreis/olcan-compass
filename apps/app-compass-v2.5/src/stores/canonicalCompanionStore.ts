@@ -1,8 +1,8 @@
 /**
- * Canonical Companion Store (v2.5)
+ * Alias canônico de compatibilidade para a Aura.
  *
- * This is the single source of truth for companion/aura state.
- * Legacy stores like `companionStore.ts` and `realCompanionStore.ts` are deprecated.
+ * A store oficial é `auraStore.ts`.
+ * Este arquivo existe para preservar imports antigos durante a migração.
  */
 
 export {
@@ -23,4 +23,3 @@ export type {
   EvolutionStage,
   ArchetypeType,
 } from "./auraStore";
-

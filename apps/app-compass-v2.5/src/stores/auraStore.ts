@@ -14,6 +14,7 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import { type ArchetypeId } from '@/lib/archetypes'
+import { auraApi } from '@/lib/api'
 
 // ============================================================================
 // TYPES - Aligned with Backend API Contract
@@ -183,93 +184,122 @@ function makeDemoAura(name: string, archetype: ArchetypeType): Aura {
 }
 
 // ============================================================================
-// API CLIENT
+// API ADAPTER
 // ============================================================================
+const ACTIVITY_PRESENTATION: Record<CareActivityType, Pick<CareActivity, 'icon' | 'description' | 'healthChange' | 'happinessChange'>> = {
+  feed: { icon: 'heart', description: 'Calibrou a Aura', healthChange: 5, happinessChange: 5 },
+  train: { icon: 'zap', description: 'Potencializou a Aura', healthChange: 0, happinessChange: -5 },
+  play: { icon: 'sparkles', description: 'Manifestou a Aura', healthChange: 0, happinessChange: 15 },
+  rest: { icon: 'shield', description: 'Preservou a Aura', healthChange: 10, happinessChange: 3 },
+  groom: { icon: 'droplets', description: 'Harmonizou a Aura', healthChange: 5, happinessChange: 10 },
+  socialize: { icon: 'users', description: 'Conectou a Aura', healthChange: 0, happinessChange: 20 },
+}
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+interface CareActivityResponse {
+  id?: string
+  type?: CareActivityType
+  xpReward?: number
+  energyCost?: number
+  description?: string
+  performedAt?: string
+}
+
+interface AuraCareResponse extends Aura {
+  activityResult?: {
+    type?: CareActivityType
+    xpGained?: number
+    energyChange?: number
+    happinessChange?: number
+    healthChange?: number
+    leveledUp?: boolean
+    newLevel?: number
+  }
+}
 
 class AuraApiClient {
-  private static async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
-    const url = `${API_BASE_URL}/api/v1${endpoint}`
-    
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.getAuthToken()}`,
-        ...options.headers,
-      },
-    })
-    
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ detail: 'Request failed' }))
-      throw new Error(error.detail || `HTTP ${response.status}`)
-    }
-    
-    return response.json()
-  }
-  
-  private static getAuthToken(): string {
-    if (typeof window === 'undefined') return ''
-    return localStorage.getItem('access_token') || ''
-  }
-  
   static async getAura(): Promise<Aura | null> {
-    const auras = await this.request<Aura[]>('/companions')
-    return auras[0] || null
+    const { data } = await auraApi.getAll()
+    return (Array.isArray(data) ? data[0] : null) as Aura | null
   }
-  
-  static async createAura(
-    name: string,
-    archetype: ArchetypeType
-  ): Promise<Aura> {
-    return this.request<Aura>('/companions', {
-      method: 'POST',
-      body: JSON.stringify({ name, archetype }),
-    })
+
+  static async createAura(name: string, archetype: ArchetypeType): Promise<Aura> {
+    const { data } = await auraApi.create({ name, archetype })
+    return data as Aura
   }
-  
+
   static async performCareActivity(
     auraId: string,
     activityType: CareActivityType
-  ): Promise<CareActivity> {
-    return this.request<CareActivity>(`/companions/${auraId}/care`, {
-      method: 'POST',
-      body: JSON.stringify({ activity_type: activityType }),
-    })
+  ): Promise<{ aura: Aura; activity: CareActivity }> {
+    const { data } = await auraApi.care(auraId, activityType)
+    const response = data as AuraCareResponse
+    const activityMeta = ACTIVITY_PRESENTATION[activityType]
+    const activityResult = response.activityResult || {}
+
+    return {
+      aura: response as Aura,
+      activity: {
+        id: `${auraId}-${activityType}-${response.updatedAt || Date.now()}`,
+        type: activityType,
+        xpReward: activityResult.xpGained ?? 0,
+        energyCost: Math.abs(activityResult.energyChange ?? 0),
+        healthChange: activityResult.healthChange ?? activityMeta.healthChange,
+        happinessChange: activityResult.happinessChange ?? activityMeta.happinessChange,
+        description: activityMeta.description,
+        icon: activityMeta.icon,
+        performedAt: response.lastCaredAt || new Date().toISOString(),
+      },
+    }
   }
-  
-  static async getCareHistory(
-    auraId: string,
-    limit: number = 50
-  ): Promise<CareActivity[]> {
-    return this.request<CareActivity[]>(
-      `/companions/${auraId}/activities?limit=${limit}`
-    )
-  }
-  
-  static async checkEvolutionEligibility(
-    auraId: string
-  ): Promise<{ eligible: boolean; requirements: EvolutionRequirement }> {
-    return this.request<{ eligible: boolean; requirements: EvolutionRequirement }>(
-      `/companions/${auraId}/evolution/check`
-    )
-  }
-  
-  static async updateAura(auraId: string, updates: Partial<Aura>): Promise<Aura> {
-    return this.request<Aura>(`/companions/${auraId}`, {
-      method: 'PUT',
-      body: JSON.stringify(updates),
+
+  static async getCareHistory(auraId: string, limit: number = 50): Promise<CareActivity[]> {
+    const { data } = await auraApi.getActivities(auraId, limit)
+    return ((Array.isArray(data) ? data : []) as CareActivityResponse[]).map((item) => {
+      const type = item.type || 'feed'
+      const meta = ACTIVITY_PRESENTATION[type]
+      return {
+        id: item.id || `${auraId}-${type}-${item.performedAt || Date.now()}`,
+        type,
+        xpReward: item.xpReward || 0,
+        energyCost: item.energyCost || 0,
+        healthChange: meta.healthChange,
+        happinessChange: meta.happinessChange,
+        description: item.description || meta.description,
+        icon: meta.icon,
+        performedAt: item.performedAt || new Date().toISOString(),
+      }
     })
   }
 
+  static async checkEvolutionEligibility(
+    auraId: string
+  ): Promise<{ eligible: boolean; requirements: EvolutionRequirement }> {
+    const { data } = await auraApi.checkEvolution(auraId)
+    const response = data as {
+      eligible?: boolean
+      requirements?: {
+        minLevel?: number
+      }
+    }
+
+    return {
+      eligible: Boolean(response.eligible),
+      requirements: {
+        minLevel: response.requirements?.minLevel || 0,
+        minCareStreak: 0,
+        requiredAchievements: [],
+        minDaysAtStage: 0,
+      },
+    }
+  }
+
+  static async updateAura(_auraId: string, _updates: Partial<Aura>): Promise<Aura> {
+    throw new Error('Atualização parcial da Aura ainda não está exposta pela API v2.5.')
+  }
+
   static async triggerEvolution(auraId: string): Promise<Aura> {
-    return this.request<Aura>(`/companions/${auraId}/evolution`, {
-      method: 'POST',
-    })
+    const { data } = await auraApi.evolve(auraId)
+    return data as Aura
   }
 }
 
@@ -530,24 +560,10 @@ export const useAuraStore = create<
           set({ isLoading: true, error: null })
           
           try {
-            const activity = await AuraApiClient.performCareActivity(
+            const { aura: updatedAura, activity } = await AuraApiClient.performCareActivity(
               aura.id,
               activityType
             )
-            
-            const updatedAura = {
-              ...aura,
-              experiencePoints: aura.experiencePoints + activity.xpReward,
-              health: Math.max(0, Math.min(100, aura.health + activity.healthChange)),
-              happiness: Math.max(0, Math.min(100, aura.happiness + activity.happinessChange)),
-              energy: Math.max(0, Math.min(100, aura.energy - activity.energyCost)),
-              lastCaredAt: activity.performedAt,
-            }
-            
-            if (updatedAura.experiencePoints >= updatedAura.xpToNextLevel) {
-              updatedAura.level += 1
-              updatedAura.xpToNextLevel = updatedAura.level * 100
-            }
             
             set({
               aura: updatedAura,

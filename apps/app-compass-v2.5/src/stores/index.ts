@@ -15,7 +15,7 @@
  * ```
  */
 
-// Aura Store (Metamodern v2.5)
+// Aura Store (fonte canônica)
 export {
   useAuraStore,
   useAura,
@@ -48,7 +48,7 @@ export {
   CANONICAL_ACHIEVEMENTS,
 } from './eventDrivenGamificationStore'
 
-// Deprecation Aliases for Branding Migration
+// Aliases de compatibilidade para trilhas legadas
 /**
  * @deprecated Use useAuraStore instead.
  */

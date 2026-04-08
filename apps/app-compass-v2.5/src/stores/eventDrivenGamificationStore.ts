@@ -12,7 +12,7 @@
  * - Streaks reflect consistent product engagement, not just daily logins
  * 
  * Architecture:
- * - Subscribes to companion events via onCompanionEvent()
+ * - Subscribes to aura events via onAuraEvent()
  * - Subscribes to product events (routes, execution, marketplace)
  * - Maintains user progress state (XP, level, achievements, quests)
  * - Emits gamification events for UI celebrations
@@ -23,7 +23,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import type { AuraEvent as CompanionEvent } from './canonicalCompanionStore'
+import type { AuraEvent } from './canonicalCompanionStore'
 
 // ============================================================================
 // TYPES - Achievement and Quest System
@@ -31,7 +31,7 @@ import type { AuraEvent as CompanionEvent } from './canonicalCompanionStore'
 
 export type AchievementCategory = 
   | 'progression'      // Level up, evolution
-  | 'companion'        // Care, bonding
+  | 'aura'            // Care, bonding
   | 'execution'        // Documents, interviews, applications
   | 'marketplace'      // Bookings, transactions
   | 'social'           // Guilds, battles, friends
@@ -161,102 +161,102 @@ const eventEmitter = new GamificationEventEmitter()
 export const CANONICAL_ACHIEVEMENTS: Omit<Achievement, 'isUnlocked' | 'unlockedAt' | 'progress'>[] = [
   // Progression Achievements
   {
-    id: 'first_companion',
+    id: 'first_aura',
     name: 'First Steps',
-    description: 'Hatch your first companion',
+    description: 'Create your first aura',
     category: 'progression',
     rarity: 'common',
     icon: '🥚',
     xpReward: 100,
     requirementType: 'one_time',
     requirementTarget: 1,
-    requirementKey: 'companion.created',
+    requirementKey: 'aura.created',
   },
   {
     id: 'first_evolution',
     name: 'Growing Up',
-    description: 'Evolve your companion for the first time',
+    description: 'Evolve your aura for the first time',
     category: 'progression',
     rarity: 'common',
     icon: '🌱',
     xpReward: 250,
     requirementType: 'one_time',
     requirementTarget: 1,
-    requirementKey: 'companion.evolved',
+    requirementKey: 'aura.evolved',
   },
   {
     id: 'max_level_sprout',
     name: 'Sprout Master',
-    description: 'Reach the maximum level for a Sprout companion',
+    description: 'Reach the maximum level for a Sprout aura',
     category: 'progression',
     rarity: 'rare',
     icon: '🌿',
     xpReward: 500,
     requirementType: 'milestone',
     requirementTarget: 10,  // Level 10
-    requirementKey: 'companion.level.sprout',
+    requirementKey: 'aura.level.sprout',
   },
   {
-    id: 'legendary_companion',
+    id: 'legendary_aura',
     name: 'Legendary Bond',
-    description: 'Evolve a companion to Legendary stage',
+    description: 'Evolve an aura to Legendary stage',
     category: 'progression',
     rarity: 'legendary',
     icon: '👑',
     xpReward: 5000,
     requirementType: 'one_time',
     requirementTarget: 1,
-    requirementKey: 'companion.stage.legendary',
+    requirementKey: 'aura.stage.legendary',
   },
   
-  // Companion Care Achievements
+  // Aura Care Achievements
   {
     id: 'first_care',
     name: 'Caring Heart',
     description: 'Perform your first care activity',
-    category: 'companion',
+    category: 'aura',
     rarity: 'common',
     icon: '❤️',
     xpReward: 50,
     requirementType: 'one_time',
     requirementTarget: 1,
-    requirementKey: 'companion.cared',
+    requirementKey: 'aura.cared',
   },
   {
     id: 'care_streak_7',
     name: 'Week of Care',
     description: 'Maintain a 7-day care streak',
-    category: 'companion',
+    category: 'aura',
     rarity: 'rare',
     icon: '📅',
     xpReward: 300,
     requirementType: 'streak',
     requirementTarget: 7,
-    requirementKey: 'companion.care_streak',
+    requirementKey: 'aura.care_streak',
   },
   {
     id: 'care_streak_30',
     name: 'Dedicated Guardian',
     description: 'Maintain a 30-day care streak',
-    category: 'companion',
+    category: 'aura',
     rarity: 'epic',
     icon: '🏆',
     xpReward: 1000,
     requirementType: 'streak',
     requirementTarget: 30,
-    requirementKey: 'companion.care_streak',
+    requirementKey: 'aura.care_streak',
   },
   {
     id: 'all_activities',
     name: 'Well-Rounded',
     description: 'Perform all 6 types of care activities',
-    category: 'companion',
+    category: 'aura',
     rarity: 'rare',
     icon: '🎭',
     xpReward: 200,
     requirementType: 'count',
     requirementTarget: 6,
-    requirementKey: 'companion.activity_type.unique',
+    requirementKey: 'aura.activity_type.unique',
   },
   
   // Execution Achievements (Product Value)
@@ -375,7 +375,7 @@ export const CANONICAL_ACHIEVEMENTS: Omit<Achievement, 'isUnlocked' | 'unlockedA
   {
     id: 'first_battle',
     name: 'Friendly Competition',
-    description: 'Participate in your first companion battle',
+    description: 'Participate in your first aura battle',
     category: 'social',
     rarity: 'common',
     icon: '⚔️',
@@ -387,7 +387,7 @@ export const CANONICAL_ACHIEVEMENTS: Omit<Achievement, 'isUnlocked' | 'unlockedA
   {
     id: 'battle_winner',
     name: 'Victorious',
-    description: 'Win your first companion battle',
+    description: 'Win your first aura battle',
     category: 'social',
     rarity: 'rare',
     icon: '🏅',
@@ -449,8 +449,8 @@ function generateDailyQuests(): Quest[] {
       name: 'Daily Care',
       description: 'Perform 3 care activities today',
       type: 'daily',
-      category: 'companion',
-      requirementKey: 'companion.cared',
+      category: 'aura',
+      requirementKey: 'aura.cared',
       requirementTarget: 3,
       xpReward: 50,
       coinReward: 10,
@@ -465,10 +465,10 @@ function generateDailyQuests(): Quest[] {
     {
       id: `daily_check_${today}`,
       name: 'Daily Check-in',
-      description: 'View your companion progress',
+      description: 'View your aura progress',
       type: 'daily',
       category: 'engagement',
-      requirementKey: 'companion.viewed',
+      requirementKey: 'aura.viewed',
       requirementTarget: 1,
       xpReward: 25,
       coinReward: 5,
@@ -534,7 +534,7 @@ interface GamificationStoreActions {
   updateStreak: (type: string, activityDate?: string) => void
   
   // Event Handling
-  handleCompanionEvent: (event: CompanionEvent) => void
+  handleAuraEvent: (event: AuraEvent) => void
   handleProductEvent: (eventType: string, payload: Record<string, unknown>) => void
   
   // Subscription
@@ -980,44 +980,44 @@ export const useGamificationStore = create<
         // EVENT HANDLERS - The Core of Event-Driven Gamification
         // ========================================================================
         
-        handleCompanionEvent: (event: CompanionEvent) => {
+        handleAuraEvent: (event: AuraEvent) => {
           const { type, payload } = event
           
           switch (type) {
             case 'aura.created':
-              get().checkAchievementProgress('companion.created', 1)
+              get().checkAchievementProgress('aura.created', 1)
               get().updateStreak('daily_care', event.timestamp)
               break
 
             case 'aura.cared':
-              get().addXP(10 + (payload.xpGained as number || 0), 'companion_care')
-              get().updateQuestProgress('companion.cared')
+              get().addXP(10 + (payload.xpGained as number || 0), 'aura_care')
+              get().updateQuestProgress('aura.cared')
               get().updateStreak('daily_care', event.timestamp)
 
               // Track activity types for "all activities" achievement
               if (payload.activityType) {
-                get().checkAchievementProgress('companion.activity_type.unique', 1)
+                get().checkAchievementProgress('aura.activity_type.unique', 1)
               }
               break
 
             case 'aura.leveled':
-              get().addXP(50, 'companion_level_up')
-              get().checkAchievementProgress(`companion.level`, payload.newLevel as number)
+              get().addXP(50, 'aura_level_up')
+              get().checkAchievementProgress(`aura.level`, payload.newLevel as number)
               break
 
             case 'aura.evolved':
-              get().addXP(200, 'companion_evolution')
+              get().addXP(200, 'aura_evolution')
               get().unlockAchievement('first_evolution')
-              get().checkAchievementProgress(`companion.stage.${payload.toStage}`, 1)
+              get().checkAchievementProgress(`aura.stage.${payload.toStage}`, 1)
               break
 
             case 'aura.ability_unlocked':
               get().addXP(100, 'ability_unlocked')
-              get().checkAchievementProgress('companion.ability.unlocked', 1)
+              get().checkAchievementProgress('aura.ability.unlocked', 1)
               break
 
             default:
-              console.log(`[Gamification] Unhandled companion event: ${type}`)
+              console.log(`[Gamification] Unhandled aura event: ${type}`)
           }
         },
         
@@ -1139,17 +1139,17 @@ export const useCurrentStreakMultiplier = () =>
   useGamificationStore((state) => state.getCurrentStreakMultiplier())
 
 // ============================================================================
-// INTEGRATION HELPER - Subscribe companion events
+// INTEGRATION HELPER - Subscribe aura events
 // ============================================================================
 
 /**
- * Hook to wire companion events to gamification
- * Usage: Call this once in your app root or companion page
+ * Hook to wire aura events to gamification
+ * Usage: Call this once in your app root or aura page
  */
-export function useCompanionGamificationIntegration() {
-  const handleCompanionEvent = useGamificationStore((state) => state.handleCompanionEvent)
+export function useAuraGamificationIntegration() {
+  const handleAuraEvent = useGamificationStore((state) => state.handleAuraEvent)
   
   // This would be imported from canonicalCompanionStore
   // and subscribed to events
-  return { handleCompanionEvent }
+  return { handleAuraEvent }
 }

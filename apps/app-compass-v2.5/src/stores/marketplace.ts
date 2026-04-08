@@ -366,133 +366,30 @@ interface MarketplaceState {
   reset: () => void;
 }
 
+// Only the Olcan official provider is seeded in demo mode.
+// Third-party providers will be populated from the backend API once the marketplace is live.
 const DEMO_PROVIDERS: Provider[] = [
   {
     id: "provider_olcan_official",
     name: "Equipe Olcan",
-    bio: "Time oficial da Olcan com especialistas em mobilidade internacional. Mais de 1.000 candidaturas acompanhadas e 5 anos de experiência ajudando brasileiros a construir carreiras globais.",
+    bio: "Time oficial da Olcan com especialistas em mobilidade internacional, focado em orientação estratégica, narrativa e preparação para entrevistas.",
     avatar: null,
     specialties: ["cv_review", "interview_coaching", "career_coaching", "academic_mentoring"],
-    rating: 4.9,
-    reviewCount: 247,
+    rating: 0,
+    reviewCount: 0,
     verified: true,
     country: "Brasil / Global",
     languages: ["pt", "en", "es"],
     yearsExperience: 5,
     services: [
-      { id: "svc_cv_olcan", providerId: "provider_olcan_official", title: "Revisão de CV Internacional", description: "Revisão completa do CV com feedback detalhado para candidaturas internacionais.", category: "cv_review", price: 197, currency: "BRL", duration: 45, isActive: true },
-      { id: "svc_interview_olcan", providerId: "provider_olcan_official", title: "Simulação de Entrevista", description: "Sessão prática de entrevista com feedback em tempo real.", category: "interview_coaching", price: 297, currency: "BRL", duration: 60, isActive: true },
-      { id: "svc_coaching_olcan", providerId: "provider_olcan_official", title: "Coaching de Carreira Internacional", description: "Sessão estratégica para planejar sua transição de carreira para o exterior.", category: "career_coaching", price: 397, currency: "BRL", duration: 90, isActive: true },
+      { id: "svc_mentoria_olcan", providerId: "provider_olcan_official", title: "Mentoria Olcan — Sessão avulsa", description: "Sessão 1:1 de 60 minutos com foco em narrativa, candidaturas e posicionamento internacional.", category: "career_coaching", price: 225, currency: "BRL", duration: 60, isActive: true },
     ],
-    reviews: [
-      { id: "rev_1", bookingId: "b1", providerId: "provider_olcan_official", userId: "u1", userName: "Lucas M.", rating: 5, comment: "Excelente revisão de CV. Recebi 3 convites para entrevista na semana seguinte.", createdAt: "2026-03-15T10:00:00Z" },
-      { id: "rev_2", bookingId: "b2", providerId: "provider_olcan_official", userId: "u2", userName: "Camila R.", rating: 5, comment: "A simulação de entrevista foi transformadora. Passei na entrevista da bolsa Erasmus.", createdAt: "2026-03-20T14:00:00Z" },
-    ],
+    reviews: [],
     joinedAt: "2021-01-01T00:00:00Z",
-  },
-  {
-    id: "provider_maria_silva",
-    name: "Maria Silva",
-    bio: "Coach de carreira com 8 anos de experiência em candidaturas internacionais. Especializada em CV, personal branding e transição para o mercado europeu.",
-    avatar: null,
-    specialties: ["cv_review", "career_coaching"],
-    rating: 4.8,
-    reviewCount: 87,
-    verified: true,
-    country: "Portugal",
-    languages: ["pt", "en", "es"],
-    yearsExperience: 8,
-    services: [
-      { id: "svc_cv_maria", providerId: "provider_maria_silva", title: "Revisão de CV + LinkedIn", description: "Revisão completa de CV e otimização do perfil LinkedIn para o mercado europeu.", category: "cv_review", price: 247, currency: "BRL", duration: 60, isActive: true },
-      { id: "svc_coaching_maria", providerId: "provider_maria_silva", title: "Coaching de Transição", description: "Sessão estratégica focada em transição de carreira para Europa.", category: "career_coaching", price: 347, currency: "BRL", duration: 75, isActive: true },
-    ],
-    reviews: [
-      { id: "rev_3", bookingId: "b3", providerId: "provider_maria_silva", userId: "u3", userName: "Pedro A.", rating: 5, comment: "Maria me ajudou a reposicionar meu CV e consegui emprego em Lisboa.", createdAt: "2026-02-28T09:00:00Z" },
-    ],
-    joinedAt: "2023-03-01T00:00:00Z",
-  },
-  {
-    id: "provider_joao_santos",
-    name: "João Santos",
-    bio: "Especialista em preparação para entrevistas de admissão e bolsas. Ex-bolsista Fulbright com experiência em universidades dos EUA, UK e Alemanha.",
-    avatar: null,
-    specialties: ["interview_coaching", "academic_mentoring"],
-    rating: 4.9,
-    reviewCount: 64,
-    verified: true,
-    country: "EUA",
-    languages: ["pt", "en"],
-    yearsExperience: 6,
-    services: [
-      { id: "svc_interview_joao", providerId: "provider_joao_santos", title: "Prep Entrevista de Bolsa", description: "Preparação intensiva para entrevistas de bolsas (Fulbright, Chevening, DAAD).", category: "interview_coaching", price: 397, currency: "BRL", duration: 90, isActive: true },
-      { id: "svc_mentoring_joao", providerId: "provider_joao_santos", title: "Mentoria Acadêmica", description: "Orientação completa para candidatura a programas de mestrado e doutorado.", category: "academic_mentoring", price: 497, currency: "BRL", duration: 60, isActive: true },
-    ],
-    reviews: [
-      { id: "rev_4", bookingId: "b4", providerId: "provider_joao_santos", userId: "u4", userName: "Ana L.", rating: 5, comment: "Passei na entrevista da Fulbright! João é incrível.", createdAt: "2026-03-10T16:00:00Z" },
-    ],
-    joinedAt: "2023-04-15T00:00:00Z",
-  },
-  {
-    id: "provider_ana_costa",
-    name: "Ana Costa",
-    bio: "Editora acadêmica especializada em SOPs, essays e documentos de candidatura. 10 anos revisando documentos para universidades top 50 do mundo.",
-    avatar: null,
-    specialties: ["academic_mentoring", "cv_review"],
-    rating: 4.7,
-    reviewCount: 45,
-    verified: true,
-    country: "UK",
-    languages: ["pt", "en", "fr"],
-    yearsExperience: 10,
-    services: [
-      { id: "svc_sop_ana", providerId: "provider_ana_costa", title: "Edição de SOP / Personal Statement", description: "Revisão e edição profissional do seu Statement of Purpose com feedback estruturado.", category: "academic_mentoring", price: 247, currency: "BRL", duration: 60, isActive: true },
-    ],
-    reviews: [
-      { id: "rev_5", bookingId: "b5", providerId: "provider_ana_costa", userId: "u5", userName: "Rafael B.", rating: 5, comment: "Ana transformou meu SOP. Fui aceito em Oxford.", createdAt: "2026-01-20T11:00:00Z" },
-    ],
-    joinedAt: "2023-06-01T00:00:00Z",
-  },
-  {
-    id: "provider_carlos_oliveira",
-    name: "Carlos Oliveira",
-    bio: "Mentor sênior com experiência em transição de carreira internacional. Viveu em 4 países e orientou mais de 200 profissionais na construção de carreiras globais.",
-    avatar: null,
-    specialties: ["career_coaching", "financial_planning", "immigration_consulting"],
-    rating: 5.0,
-    reviewCount: 23,
-    verified: true,
-    country: "Alemanha",
-    languages: ["pt", "en", "de"],
-    yearsExperience: 12,
-    services: [
-      { id: "svc_mentoring_carlos", providerId: "provider_carlos_oliveira", title: "Mentoria Premium (4 sessões/mês)", description: "Acompanhamento mensal completo para sua jornada de mobilidade internacional.", category: "career_coaching", price: 997, currency: "BRL", duration: 60, isActive: true },
-      { id: "svc_financial_carlos", providerId: "provider_carlos_oliveira", title: "Planejamento Financeiro Internacional", description: "Planejamento detalhado de custos, câmbio e sustentabilidade financeira no exterior.", category: "financial_planning", price: 347, currency: "BRL", duration: 75, isActive: true },
-    ],
-    reviews: [
-      { id: "rev_6", bookingId: "b6", providerId: "provider_carlos_oliveira", userId: "u6", userName: "Fernanda S.", rating: 5, comment: "Carlos mudou minha perspectiva sobre morar fora. Planejamento impecável.", createdAt: "2026-03-25T13:00:00Z" },
-    ],
-    joinedAt: "2023-01-10T00:00:00Z",
   },
 ];
 
-const DEMO_BOOKINGS: Booking[] = [
-  {
-    id: "demo_booking_1",
-    providerId: "provider_olcan_official",
-    providerName: "Equipe Olcan",
-    serviceId: "svc_cv_olcan",
-    serviceTitle: "Revisão de CV Internacional",
-    date: "2026-04-10",
-    time: "14:00",
-    status: "confirmed",
-    price: 197,
-    currency: "BRL",
-    escrow: "held",
-    notes: "CV atualizado para candidatura na Alemanha",
-    rating: null,
-    createdAt: "2026-04-02T10:00:00Z",
-  },
-];
+const DEMO_BOOKINGS: Booking[] = [];
 
 const initialState = {
   providers: [],

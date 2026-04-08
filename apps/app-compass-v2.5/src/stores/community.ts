@@ -367,23 +367,22 @@ export const useCommunityStore = create<CommunityState>()(
 
       fetchPosts: async () => {
         try {
-          const serverUrl = process.env.NEXT_PUBLIC_PAYLOAD_URL || "http://localhost:3000";
-          const res = await fetch(`${serverUrl}/api/chronicles`);
-          if (!res.ok) throw new Error("Failed to fetch chronicles");
-          const data = await res.json();
-          
-          const payloadItems: CommunityItem[] = data.docs.map((doc: any) => ({
+          const docs = await fetchCommunityChronicles();
+
+          const payloadItems: CommunityItem[] = docs.map((doc: any) => ({
             id: doc.id,
             type: "olcan_post",
             title: doc.title,
-            description: doc.content || doc.excerpt || "",
+            description:
+              doc.excerpt ||
+              (typeof doc.content === "string" ? doc.content : "Conteúdo editorial da Olcan"),
             author: "Equipe Olcan",
             topic: doc.category || "community",
             savedCount: 0,
             likeCount: 0,
             replyCount: 0,
-            createdAt: doc.createdAt,
-            tags: doc.tags?.map((t: any) => t.name) || [],
+            createdAt: doc.published_at || doc.createdAt,
+            tags: doc.tags?.map((t: any) => t.label).filter(Boolean) || [],
             replies: [],
           }));
 
@@ -400,3 +399,4 @@ export const useCommunityStore = create<CommunityState>()(
     { name: "olcan-community" },
   ),
 );
+import { fetchCommunityChronicles } from "@/lib/cms";

@@ -53,9 +53,9 @@ interface RealtimeState {
   sendMessage: (type: string, data: any) => void
   sendPing: () => void
   
-  // Companion updates
-  subscribeToCompanion: (companionId: number) => void
-  unsubscribeFromCompanion: (companionId: number) => void
+  // Aura updates
+  subscribeToAura: (auraId: number) => void
+  unsubscribeFromAura: (auraId: number) => void
   
   // Guild updates
   subscribeToGuild: (guildId: number) => void
@@ -71,14 +71,14 @@ interface RealtimeState {
 
   // Internal handlers
   handleMessage: (message: RealtimeMessage) => void
-  handleCompanionUpdate: (data: unknown) => void
-  handleCompanionLevelUp: (data: unknown) => void
+  handleAuraUpdate: (data: unknown) => void
+  handleAuraLevelUp: (data: unknown) => void
   handleGuildBattleUpdate: (message: unknown) => void
   handlePurchaseCompleted: (data: unknown) => void
   handleNewItemAdded: (data: unknown) => void
   handleRecordingUpdate: (data: unknown) => void
   handleGuildMemberActivity: (data: unknown) => void
-  handleCompanionNotification: (data: unknown) => void
+  handleAuraNotification: (data: unknown) => void
 }
 
 // WebSocket URL
@@ -312,13 +312,13 @@ export const useRealtimeStore = create<RealtimeState>()(
         get().sendMessage('ping', { timestamp: new Date().toISOString() })
       },
       
-      // Companion updates
-      subscribeToCompanion: (companionId: number) => {
-        get().subscribeToRoom(`companion_${companionId}`)
+      // Aura updates
+      subscribeToAura: (auraId: number) => {
+        get().subscribeToRoom(`aura_${auraId}`)
       },
       
-      unsubscribeFromCompanion: (companionId: number) => {
-        get().unsubscribeFromRoom(`companion_${companionId}`)
+      unsubscribeFromAura: (auraId: number) => {
+        get().unsubscribeFromRoom(`aura_${auraId}`)
       },
       
       // Guild updates
@@ -354,14 +354,14 @@ export const useRealtimeStore = create<RealtimeState>()(
             // Ping response - no action needed
             break
             
-          case 'companion_updated':
-            // Companion care activity completed
-            state.handleCompanionUpdate(message.data)
+          case 'aura_updated':
+            // Aura care activity completed
+            state.handleAuraUpdate(message.data)
             break
             
-          case 'companion_level_up':
-            // Companion leveled up
-            state.handleCompanionLevelUp(message.data)
+          case 'aura_level_up':
+            // Aura leveled up
+            state.handleAuraLevelUp(message.data)
             break
             
           case 'battle_started':
@@ -391,9 +391,9 @@ export const useRealtimeStore = create<RealtimeState>()(
             state.handleGuildMemberActivity(message.data)
             break
             
-          case 'companion_notification':
-            // Companion notification
-            state.handleCompanionNotification(message.data)
+          case 'aura_notification':
+            // Aura notification
+            state.handleAuraNotification(message.data)
             break
             
           default:
@@ -402,16 +402,16 @@ export const useRealtimeStore = create<RealtimeState>()(
       },
       
       // Message handlers
-      handleCompanionUpdate: (data: any) => {
-        // This would typically update the companion store
-        console.log('Companion updated:', data)
+      handleAuraUpdate: (data: any) => {
+        // This would typically update the aura store
+        console.log('Aura updated:', data)
         
         // Add notification
         set(state => ({
           notifications: [...state.notifications.slice(-9), {
             id: Date.now(),
-            type: 'companion_update',
-            title: 'Companion Activity',
+            type: 'aura_update',
+            title: 'Aura Activity',
             message: `${data.activity} completed!`,
             data,
             timestamp: new Date().toISOString()
@@ -419,8 +419,8 @@ export const useRealtimeStore = create<RealtimeState>()(
         }))
       },
       
-      handleCompanionLevelUp: (data: any) => {
-        console.log('Companion leveled up:', data)
+      handleAuraLevelUp: (data: any) => {
+        console.log('Aura leveled up:', data)
         
         // Add notification
         set(state => ({
@@ -428,7 +428,7 @@ export const useRealtimeStore = create<RealtimeState>()(
             id: Date.now(),
             type: 'level_up',
             title: 'Level Up!',
-            message: `Your companion reached level ${data.new_level}!`,
+            message: `Your aura reached level ${data.new_level}!`,
             data,
             timestamp: new Date().toISOString()
           }]
@@ -515,15 +515,15 @@ export const useRealtimeStore = create<RealtimeState>()(
         }))
       },
       
-      handleCompanionNotification: (data: any) => {
-        console.log('Companion notification:', data)
+      handleAuraNotification: (data: any) => {
+        console.log('Aura notification:', data)
         
         // Add notification
         set(state => ({
           notifications: [...state.notifications.slice(-9), {
             id: Date.now(),
-            type: 'companion_notification',
-            title: 'Companion Alert',
+            type: 'aura_notification',
+            title: 'Aura Alert',
             message: data.message,
             data,
             timestamp: new Date().toISOString()

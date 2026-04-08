@@ -16,7 +16,7 @@ interface Achievement {
   title: string
   description: string
   icon: string
-  category: 'companion' | 'guild' | 'marketplace' | 'social' | 'creation'
+  category: 'aura' | 'guild' | 'marketplace' | 'social' | 'creation'
   rarity: 'common' | 'rare' | 'epic' | 'legendary'
   points: number
   requirements: {
@@ -58,7 +58,7 @@ interface Reward {
 
 interface Leaderboard {
   id: string
-  type: 'level' | 'xp' | 'guild_battles' | 'companion_care' | 'video_views'
+  type: 'level' | 'xp' | 'guild_battles' | 'aura_care' | 'video_views'
   title: string
   description: string
   icon: string
@@ -71,7 +71,7 @@ interface Leaderboard {
 interface LeaderboardEntry {
   userId: number
   username: string
-  companionName?: string
+  auraName?: string
   guildName?: string
   score: number
   rank: number
@@ -148,11 +148,11 @@ interface GamificationState {
 // Achievement definitions
 const ACHIEVEMENTS: Achievement[] = [
   {
-    id: 'first_companion',
+    id: 'first_aura',
     title: 'First Steps',
-    description: 'Create your first companion',
+    description: 'Create your first aura',
     icon: '🥚',
-    category: 'companion',
+    category: 'aura',
     rarity: 'common',
     points: 10,
     requirements: [
@@ -165,11 +165,11 @@ const ACHIEVEMENTS: Achievement[] = [
     isUnlocked: false
   },
   {
-    id: 'companion_level_10',
+    id: 'aura_level_10',
     title: 'Rising Star',
-    description: 'Reach level 10 with your companion',
+    description: 'Reach level 10 with your aura',
     icon: '⭐',
-    category: 'companion',
+    category: 'aura',
     rarity: 'rare',
     points: 50,
     requirements: [
@@ -183,11 +183,11 @@ const ACHIEVEMENTS: Achievement[] = [
     isUnlocked: false
   },
   {
-    id: 'companion_evolution_master',
+    id: 'aura_evolution_master',
     title: 'Evolution Master',
-    description: 'Evolve your companion to master stage',
+    description: 'Evolve your aura to master stage',
     icon: '🏆',
-    category: 'companion',
+    category: 'aura',
     rarity: 'epic',
     points: 100,
     requirements: [
@@ -272,11 +272,11 @@ const ACHIEVEMENTS: Achievement[] = [
     isUnlocked: false
   },
   {
-    id: 'legendary_companion',
-    title: 'Legendary Companion',
-    description: 'Evolve your companion to legendary stage',
+    id: 'legendary_aura',
+    title: 'Legendary Aura',
+    description: 'Evolve your aura to legendary stage',
     icon: '👑',
-    category: 'companion',
+    category: 'aura',
     rarity: 'legendary',
     points: 500,
     requirements: [
@@ -286,7 +286,7 @@ const ACHIEVEMENTS: Achievement[] = [
     rewards: [
       { type: 'coins', value: 10000, description: '10000 coins' },
       { type: 'gems', value: 100, description: '100 gems' },
-      { type: 'titles', value: 'Legendary Companion', description: 'Legendary title' },
+      { type: 'titles', value: 'Legendary Aura', description: 'Legendary title' },
       { type: 'abilities', value: 'legendary_ability', description: 'Legendary ability' }
     ],
     progress: 0,
@@ -298,12 +298,12 @@ const ACHIEVEMENTS: Achievement[] = [
 const DAILY_QUESTS: Quest[] = [
   {
     id: 'daily_care',
-    title: 'Daily Companion Care',
-    description: 'Care for your companion 3 times today',
+    title: 'Daily Aura Care',
+    description: 'Care for your aura 3 times today',
     type: 'daily',
     difficulty: 'easy',
     requirements: [
-      { type: 'activities', current: 0, target: 3, description: 'Care for companion' }
+      { type: 'activities', current: 0, target: 3, description: 'Care for aura' }
     ],
     rewards: [
       { type: 'coins', value: 50, description: '50 coins' }
