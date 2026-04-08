@@ -1,6 +1,6 @@
 /**
- * Companion Personality and Behaviors Store
- * Manages companion personality traits, moods, and behavioral patterns
+ * Aura Personality and Behaviors Store
+ * Manages aura personality traits, moods, and behavioral patterns
  */
 
 import { create } from 'zustand'
@@ -59,8 +59,8 @@ interface Behavior {
   cooldown: number // in minutes
 }
 
-interface CompanionPersonality {
-  companionId: number
+interface AuraPersonality {
+  auraId: number
   traits: PersonalityTrait[]
   currentMood: Mood
   moodHistory: {
@@ -92,8 +92,8 @@ interface CompanionPersonality {
 }
 
 interface PersonalityState {
-  // Companion personalities
-  personalities: Map<number, CompanionPersonality>
+  // Aura personalities
+  personalities: Map<number, AuraPersonality>
   
   // Behavior tracking
   activeBehaviors: Map<number, Behavior[]>
@@ -111,24 +111,24 @@ interface PersonalityState {
   }[]>
   
   // Actions
-  initializePersonality: (companionId: number, archetype: string) => void
-  updateMood: (companionId: number, moodId: string, reason: string) => void
-  triggerBehavior: (companionId: number, context: any) => Behavior | null
-  addMemory: (companionId: number, memory: Omit<CompanionPersonality['memories'][0], 'id'>) => void
-  updateTrait: (companionId: number, traitId: string, value: number) => void
-  getPersonalityProfile: (companionId: number) => CompanionPersonality | null
-  getCurrentMood: (companionId: number) => Mood | null
-  getActiveBehaviors: (companionId: number) => Behavior[]
-  getMoodHistory: (companionId: number) => CompanionPersonality['moodHistory']
+  initializePersonality: (auraId: number, archetype: string) => void
+  updateMood: (auraId: number, moodId: string, reason: string) => void
+  triggerBehavior: (auraId: number, context: any) => Behavior | null
+  addMemory: (auraId: number, memory: Omit<AuraPersonality['memories'][0], 'id'>) => void
+  updateTrait: (auraId: number, traitId: string, value: number) => void
+  getPersonalityProfile: (auraId: number) => AuraPersonality | null
+  getCurrentMood: (auraId: number) => Mood | null
+  getActiveBehaviors: (auraId: number) => Behavior[]
+  getMoodHistory: (auraId: number) => AuraPersonality['moodHistory']
   
   // Computed
-  getPersonalitySummary: (companionId: number) => {
+  getPersonalitySummary: (auraId: number) => {
     dominantTraits: PersonalityTrait[]
     moodTendencies: { mood: Mood; percentage: number }[]
     behaviorPatterns: { behavior: Behavior; frequency: number }[]
   }
-  getCompatibilityScore: (companionId1: number, companionId2: number) => number
-  getMoodPrediction: (companionId: number) => Mood | null
+  getCompatibilityScore: (Iuranumber, auraInurar) => number
+  getMoodPrediction: (Iuraumber) => Mood | null
 }
 
 // Personality traits definitions
@@ -411,9 +411,9 @@ export const useCompanionPersonalityStore = create<PersonalityState>()(
         moodPatterns: new Map(),
         
         // Actions
-        initializePersonality: (companionId: number, archetype: string) => {
-          const personality: CompanionPersonality = {
-            companionId,
+        initializePersonality: (auraId: number, archetype: string) => {
+          const personality: AuraPersonality = {
+            auraId,
             traits: getArchetypeTraits(archetype),
             currentMood: MOODS[0], // Default to happy
             moodHistory: [],
@@ -425,14 +425,14 @@ export const useCompanionPersonalityStore = create<PersonalityState>()(
           
           set(state => {
             const newPersonalities = new Map(state.personalities)
-            newPersonalities.set(companionId, personality)
+            newPersonalities.set(auraId, personality)
             return { personalities: newPersonalities }
           })
         },
         
-        updateMood: (companionId: number, moodId: string, reason: string) => {
+        updateMood: (auraId: number, moodId: string, reason: string) => {
           const state = get()
-          const personality = state.personalities.get(companionId)
+          const personality = state.personalities.get(auraId)
           
           if (!personality) return
           
@@ -451,7 +451,7 @@ export const useCompanionPersonalityStore = create<PersonalityState>()(
           
           // Update mood patterns
           const newMoodPatterns = new Map(state.moodPatterns)
-          const existingPattern = newMoodPatterns.get(companionId) || []
+          const existingPattern = newMoodPatterns.get(auraId) || []
           
           const patternIndex = existingPattern.findIndex(p => p.mood.id === moodId)
           if (patternIndex >= 0) {
@@ -468,20 +468,20 @@ export const useCompanionPersonalityStore = create<PersonalityState>()(
             })
           }
           
-          newMoodPatterns.set(companionId, existingPattern)
+          newMoodPatterns.set(auraId, existingPattern)
           
           set({
-            personalities: new Map(state.personalities.set(companionId, updatedPersonality)),
+            personalities: new Map(state.personalities.set(auraId, updatedPersonality)),
             moodPatterns: newMoodPatterns
           })
           
           // Trigger behaviors based on new mood
-          get().triggerBehavior(companionId, { moodChange: true })
+          get().triggerBehavior(auraId, { moodChange: true })
         },
         
-        triggerBehavior: (companionId: number, context: any) => {
+        triggerBehavior: (auraId: number, context: any) => {
           const state = get()
-          const personality = state.personalities.get(companionId)
+          const personality = state.personalities.get(auraId)
           
           if (!personality) return null
           
@@ -498,7 +498,7 @@ export const useCompanionPersonalityStore = create<PersonalityState>()(
             if (conditions.happiness && Math.random() * 100 > conditions.happiness) return false
             
             // Check cooldown
-            const behaviorHistory = state.behaviorHistory.get(companionId) || []
+            const behaviorHistory = state.behaviorHistory.get(auraId) || []
             const lastExecution = behaviorHistory
               .filter(h => h.behavior.id === behavior.id)
               .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0]
@@ -528,19 +528,19 @@ export const useCompanionPersonalityStore = create<PersonalityState>()(
           
           // Add to behavior history
           const newBehaviorHistory = new Map(state.behaviorHistory)
-          const history = newBehaviorHistory.get(companionId) || []
+          const history = newBehaviorHistory.get(auraId) || []
           history.push({
             behavior: selectedBehavior,
             timestamp: new Date().toISOString(),
             context: JSON.stringify(context)
           })
-          newBehaviorHistory.set(companionId, history.slice(-50)) // Keep last 50 behaviors
+          newBehaviorHistory.set(auraId, history.slice(-50)) // Keep last 50 behaviors
           
           // Add to active behaviors
           const newActiveBehaviors = new Map(state.activeBehaviors)
-          const active = newActiveBehaviors.get(companionId) || []
+          const active = newActiveBehaviors.get(auraId) || []
           active.push(selectedBehavior)
-          newActiveBehaviors.set(companionId, active.slice(-10)) // Keep last 10 active behaviors
+          newActiveBehaviors.set(auraId, active.slice(-10)) // Keep last 10 active behaviors
           
           set({
             behaviorHistory: newBehaviorHistory,
@@ -550,9 +550,9 @@ export const useCompanionPersonalityStore = create<PersonalityState>()(
           return selectedBehavior
         },
         
-        addMemory: (companionId: number, memory: Omit<CompanionPersonality['memories'][0], 'id'>) => {
+        addMemory: (auraId: number, memory: Omit<AuraPersonality['memories'][0], 'id'>) => {
           const state = get()
-          const personality = state.personalities.get(companionId)
+          const personality = state.personalities.get(auraId)
           
           if (!personality) return
           
@@ -567,13 +567,13 @@ export const useCompanionPersonalityStore = create<PersonalityState>()(
           }
           
           set(state => ({
-            personalities: new Map(state.personalities.set(companionId, updatedPersonality))
+            personalities: new Map(state.personalities.set(auraId, updatedPersonality))
           }))
         },
         
-        updateTrait: (companionId: number, traitId: string, value: number) => {
+        updateTrait: (auraId: number, traitId: string, value: number) => {
           const state = get()
-          const personality = state.personalities.get(companionId)
+          const personality = state.personalities.get(auraId)
           
           if (!personality) return
           
@@ -587,31 +587,31 @@ export const useCompanionPersonalityStore = create<PersonalityState>()(
           }
           
           set(state => ({
-            personalities: new Map(state.personalities.set(companionId, updatedPersonality))
+            personalities: new Map(state.personalities.set(auraId, updatedPersonality))
           }))
         },
         
-        getPersonalityProfile: (companionId: number) => {
-          return get().personalities.get(companionId) || null
+        getPersonalityProfile: (auraId: number) => {
+          return get().personalities.get(auraId) || null
         },
         
-        getCurrentMood: (companionId: number) => {
-          const personality = get().personalities.get(companionId)
+        getCurrentMood: (auraId: number) => {
+          const personality = get().personalities.get(auraId)
           return personality?.currentMood || null
         },
         
-        getActiveBehaviors: (companionId: number) => {
-          return get().activeBehaviors.get(companionId) || []
+        getActiveBehaviors: (auraId: number) => {
+          return get().activeBehaviors.get(auraId) || []
         },
         
-        getMoodHistory: (companionId: number) => {
-          const personality = get().personalities.get(companionId)
+        getMoodHistory: (auraId: number) => {
+          const personality = get().personalities.get(auraId)
           return personality?.moodHistory || []
         },
         
         // Computed
-        getPersonalitySummary: (companionId: number) => {
-          const personality = get().personalities.get(companionId)
+        getPersonalitySummary: (auraId: number) => {
+          const personality = get().personalities.get(auraId)
           if (!personality) return { dominantTraits: [], moodTendencies: [], behaviorPatterns: [] }
           
           // Get dominant traits
@@ -620,7 +620,7 @@ export const useCompanionPersonalityStore = create<PersonalityState>()(
             .slice(3)
           
           // Get mood tendencies
-          const moodPatterns = get().moodPatterns.get(companionId) || []
+          const moodPatterns = get().moodPatterns.get(auraId) || []
           const totalMoodOccurrences = moodPatterns.reduce((sum, p) => sum + p.frequency, 0)
           
           const moodTendencies = moodPatterns.map(pattern => ({
@@ -629,7 +629,7 @@ export const useCompanionPersonalityStore = create<PersonalityState>()(
           }))
           
           // Get behavior patterns
-          const behaviorHistory = get().behaviorHistory.get(companionId) || []
+          const behaviorHistory = get().behaviorHistory.get(auraId) || []
           const behaviorCounts = behaviorHistory.reduce((counts, h) => {
             const count = counts.get(h.behavior.id) || 0
             counts.set(h.behavior.id, count + 1)
@@ -647,9 +647,9 @@ export const useCompanionPersonalityStore = create<PersonalityState>()(
           return { dominantTraits, moodTendencies, behaviorPatterns }
         },
         
-        getCompatibilityScore: (companionId1: number, companionId2: number) => {
-          const personality1 = get().personalities.get(companionId1)
-          const personality2 = get().personalities.get(companionId2)
+        getCompatibilityScore: (auraId1: number, auraId2: number) => {
+          const personality1 = get().personalities.get(auraId1)
+          const personality2 = get().personalities.get(auraId2)
           
           if (!personality1 || !personality2) return 0
           
@@ -684,11 +684,11 @@ export const useCompanionPersonalityStore = create<PersonalityState>()(
           return Math.round(overallScore)
         },
         
-        getMoodPrediction: (companionId: number) => {
-          const personality = get().personalities.get(companionId)
+        getMoodPrediction: (auraId: number) => {
+          const personality = get().personalities.get(auraId)
           if (!personality) return null
           
-          const moodPatterns = get().moodPatterns.get(companionId) || []
+          const moodPatterns = get().moodPatterns.get(auraId) || []
           const timeOfDay = new Date().getHours()
           
           // Predict mood based on time of day and patterns
