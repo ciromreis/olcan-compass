@@ -1,14 +1,22 @@
+// Primary exports from aura.ts
 export type {
-  CompanionType,
+  AuraType,
   EvolutionStage,
   FearCluster,
   Ability,
+  AuraStats,
+  AuraRoute,
+  Aura,
+  AuraCustomization,
+  CareActivity,
+  EvolutionRequirement,
+  AuraInteraction,
+  InteractionResult,
+  // Backward compatibility aliases
+  CompanionType,
   CompanionStats,
   CompanionRoute,
   Companion,
   CompanionCustomization,
-  CareActivity,
-  EvolutionRequirement,
-  CompanionInteraction,
-  InteractionResult
-} from './companion'
+  CompanionInteraction
+} from './aura'

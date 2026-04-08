@@ -1,6 +1,6 @@
 /**
  * Inventory System
- * Items, consumables, and companion equipment
+ * Items, consumables, and aura equipment
  */
 
 export type ItemType = 'consumable' | 'evolution' | 'cosmetic' | 'boost' | 'special'
@@ -45,7 +45,7 @@ export const ITEMS: Record<string, Item> = {
   energy_potion: {
     id: 'energy_potion',
     name: 'Energy Potion',
-    description: 'Restores 20 energy to your companion',
+    description: 'Restores 20 energy to your aura',
     type: 'consumable',
     rarity: 'common',
     icon: '⚡',
@@ -63,7 +63,7 @@ export const ITEMS: Record<string, Item> = {
   health_potion: {
     id: 'health_potion',
     name: 'Health Potion',
-    description: 'Restores 30 health to your companion',
+    description: 'Restores 30 health to your aura',
     type: 'consumable',
     rarity: 'common',
     icon: '❤️',
@@ -121,7 +121,7 @@ export const ITEMS: Record<string, Item> = {
   evolution_stone: {
     id: 'evolution_stone',
     name: 'Evolution Stone',
-    description: 'Helps your companion evolve faster',
+    description: 'Helps your aura evolve faster',
     type: 'evolution',
     rarity: 'rare',
     icon: '💎',
@@ -159,7 +159,7 @@ export const ITEMS: Record<string, Item> = {
   starter_pack: {
     id: 'starter_pack',
     name: 'Starter Pack',
-    description: 'Contains useful items for new companions',
+    description: 'Contains useful items for new auras',
     type: 'special',
     rarity: 'common',
     icon: '🎁',
@@ -169,7 +169,7 @@ export const ITEMS: Record<string, Item> = {
   skill_book: {
     id: 'skill_book',
     name: 'Skill Book',
-    description: 'Teaches your companion a new ability',
+    description: 'Teaches your aura a new ability',
     type: 'special',
     rarity: 'epic',
     icon: '📚',
@@ -202,7 +202,7 @@ export const ITEMS: Record<string, Item> = {
   evolution_certificate: {
     id: 'evolution_certificate',
     name: 'Evolution Certificate',
-    description: 'Commemorates your companion\'s first evolution',
+    description: 'Commemorates your aura\'s first evolution',
     type: 'cosmetic',
     rarity: 'rare',
     icon: '🏅',
@@ -229,7 +229,7 @@ export function canStackItem(item: Item, currentQuantity: number): boolean {
   return currentQuantity < item.maxStack
 }
 
-export function useItem(item: Item, companionId: string): {
+export function useItem(item: Item, auraId: string): {
   success: boolean
   message: string
   effect?: any
