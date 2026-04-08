@@ -13,7 +13,7 @@ interface Sound {
   id: string
   name: string
   url: string
-  category: 'ui' | 'companion' | 'guild' | 'marketplace' | 'achievement' | 'ambient'
+  category: 'ui' | 'aura' | 'guild' | 'marketplace' | 'achievement' | 'ambient'
   volume: number
   loop: boolean
   preload: boolean
@@ -119,57 +119,57 @@ const SOUND_DEFINITIONS: Sound[] = [
     preload: true
   },
   
-  // Companion Sounds
+  // Aura Sounds
   {
-    id: 'companion_happy',
-    name: 'Companion Happy',
-    url: '/sounds/companion/happy.mp3',
-    category: 'companion',
+    id: 'aura_happy',
+    name: 'Aura Happy',
+    url: '/sounds/aura/happy.mp3',
+    category: 'aura',
     volume: 0.5,
     loop: false,
     preload: true
   },
   {
-    id: 'companion_feed',
-    name: 'Companion Feed',
-    url: '/sounds/companion/feed.mp3',
-    category: 'companion',
+    id: 'aura_feed',
+    name: 'Aura Feed',
+    url: '/sounds/aura/feed.mp3',
+    category: 'aura',
     volume: 0.4,
     loop: false,
     preload: true
   },
   {
-    id: 'companion_play',
-    name: 'Companion Play',
-    url: '/sounds/companion/play.mp3',
-    category: 'companion',
+    id: 'aura_play',
+    name: 'Aura Play',
+    url: '/sounds/aura/play.mp3',
+    category: 'aura',
     volume: 0.5,
     loop: false,
     preload: true
   },
   {
-    id: 'companion_train',
-    name: 'Companion Train',
-    url: '/sounds/companion/train.mp3',
-    category: 'companion',
+    id: 'aura_train',
+    name: 'Aura Train',
+    url: '/sounds/aura/train.mp3',
+    category: 'aura',
     volume: 0.4,
     loop: false,
     preload: true
   },
   {
-    id: 'companion_evolve',
-    name: 'Companion Evolve',
-    url: '/sounds/companion/evolve.mp3',
-    category: 'companion',
+    id: 'aura_evolve',
+    name: 'Aura Evolve',
+    url: '/sounds/aura/evolve.mp3',
+    category: 'aura',
     volume: 0.6,
     loop: false,
     preload: true
   },
   {
-    id: 'companion_level_up',
-    name: 'Companion Level Up',
-    url: '/sounds/companion/level_up.mp3',
-    category: 'companion',
+    id: 'aura_level_up',
+    name: 'Aura Level Up',
+    url: '/sounds/aura/level_up.mp3',
+    category: 'aura',
     volume: 0.5,
     loop: false,
     preload: true
@@ -582,7 +582,7 @@ export const useAudioStore = create<AudioState>()(
           
           switch (category) {
             case 'ui':
-            case 'companion':
+            case 'aura':
             case 'guild':
             case 'marketplace':
             case 'achievement':
@@ -616,7 +616,7 @@ export const playUISound = (soundId: string) => {
   useAudioStore.getState().playSound(soundId)
 }
 
-export const playCompanionSound = (soundId: string) => {
+export const playAuraSound = (soundId: string) => {
   useAudioStore.getState().playSound(soundId)
 }
 
@@ -674,13 +674,13 @@ export const SOUNDS = {
   ERROR: 'ui_error',
   NOTIFICATION: 'ui_notification',
   
-  // Companion
-  COMPANION_HAPPY: 'companion_happy',
-  COMPANION_FEED: 'companion_feed',
-  COMPANION_PLAY: 'companion_play',
-  COMPANION_TRAIN: 'companion_train',
-  COMPANION_EVOLVE: 'companion_evolve',
-  COMPANION_LEVEL_UP: 'companion_level_up',
+  // Aura
+  AURA_HAPPY: 'aura_happy',
+  AURA_FEED: 'aura_feed',
+  AURA_PLAY: 'aura_play',
+  AURA_TRAIN: 'aura_train',
+  AURA_EVOLVE: 'aura_evolve',
+  AURA_LEVEL_UP: 'aura_level_up',
   
   // Guild
   GUILD_JOIN: 'guild_join',

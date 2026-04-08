@@ -4,7 +4,7 @@
  */
 
 export type AchievementCategory = 
-  | 'companion'
+  | 'aura'
   | 'evolution'
   | 'care'
   | 'social'
@@ -39,26 +39,26 @@ export interface Achievement {
 }
 
 export const ACHIEVEMENTS: Achievement[] = [
-  // Companion Achievements
+  // Aura Achievements
   {
-    id: 'first_companion',
-    name: 'First Companion',
-    description: 'Discovered and bonded with your first career companion',
-    category: 'companion',
+    id: 'first_aura',
+    name: 'First Aura',
+    description: 'Discovered and created your first career aura',
+    category: 'aura',
     rarity: 'common',
     icon: '🐣',
-    requirement: { type: 'create_companion', target: 1 },
+    requirement: { type: 'create_aura', target: 1 },
     reward: { xp: 100 },
     unlocked: false
   },
   {
-    id: 'companion_namer',
-    name: 'Companion Namer',
-    description: 'Gave your companion a unique name',
-    category: 'companion',
+    id: 'aura_namer',
+    name: 'Aura Namer',
+    description: 'Gave your aura a unique name',
+    category: 'aura',
     rarity: 'common',
     icon: '✏️',
-    requirement: { type: 'name_companion', target: 1 },
+    requirement: { type: 'name_aura', target: 1 },
     reward: { xp: 50 },
     unlocked: false
   },
@@ -67,18 +67,18 @@ export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'first_evolution',
     name: 'First Evolution',
-    description: 'Evolved your companion for the first time',
+    description: 'Evolved your aura for the first time',
     category: 'evolution',
     rarity: 'rare',
     icon: '⚡',
-    requirement: { type: 'evolve_companion', target: 1 },
+    requirement: { type: 'evolve_aura', target: 1 },
     reward: { xp: 500 },
     unlocked: false
   },
   {
     id: 'young_stage',
     name: 'Coming of Age',
-    description: 'Evolved your companion to Young stage',
+    description: 'Evolved your aura to Young stage',
     category: 'evolution',
     rarity: 'rare',
     icon: '🌱',
@@ -89,7 +89,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'mature_stage',
     name: 'Fully Matured',
-    description: 'Evolved your companion to Mature stage',
+    description: 'Evolved your aura to Mature stage',
     category: 'evolution',
     rarity: 'epic',
     icon: '🌟',
@@ -99,8 +99,8 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'master_stage',
-    name: 'Master Trainer',
-    description: 'Evolved your companion to Master stage',
+    name: 'Master Presence',
+    description: 'Evolved your aura to Master stage',
     category: 'evolution',
     rarity: 'epic',
     icon: '👑',
@@ -116,7 +116,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     rarity: 'legendary',
     icon: '💎',
     requirement: { type: 'reach_stage_legendary', target: 1 },
-    reward: { xp: 10000, title: 'Legendary Trainer' },
+    reward: { xp: 10000, title: 'Legendary Presence' },
     unlocked: false
   },
   
@@ -180,9 +180,9 @@ export const ACHIEVEMENTS: Achievement[] = [
   // Level Achievements
   {
     id: 'level_10',
-    name: 'Experienced Trainer',
-    description: 'Reached level 10 with your companion',
-    category: 'companion',
+    name: 'Experienced Guide',
+    description: 'Reached level 10 with your aura',
+    category: 'aura',
     rarity: 'rare',
     icon: '⭐',
     requirement: { type: 'reach_level', target: 10 },
@@ -191,9 +191,9 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'level_25',
-    name: 'Veteran Trainer',
-    description: 'Reached level 25 with your companion',
-    category: 'companion',
+    name: 'Veteran Guide',
+    description: 'Reached level 25 with your aura',
+    category: 'aura',
     rarity: 'epic',
     icon: '⭐⭐',
     requirement: { type: 'reach_level', target: 25 },
@@ -202,13 +202,13 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'level_50',
-    name: 'Elite Trainer',
-    description: 'Reached level 50 with your companion',
-    category: 'companion',
+    name: 'Elite Presence',
+    description: 'Reached level 50 with your aura',
+    category: 'aura',
     rarity: 'legendary',
     icon: '⭐⭐⭐',
     requirement: { type: 'reach_level', target: 50 },
-    reward: { xp: 5000, title: 'Elite Trainer' },
+    reward: { xp: 5000, title: 'Elite Presence' },
     unlocked: false
   },
   
