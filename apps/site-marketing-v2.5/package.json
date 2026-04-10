@@ -17,6 +17,7 @@
     "cobe": "^2.0.1",
     "framer-motion": "^11.0.0",
     "graphql": "^16.13.2",
+    "gsap": "^3.14.2",
     "lucide-react": "^0.367.0",
     "next": "^15.5.14",
     "payload": "^3.81.0",

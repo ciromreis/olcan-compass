@@ -289,7 +289,7 @@ export default function CiroPage() {
             <div className="relative z-10">
               <h2 className="font-display text-4xl md:text-6xl text-white mb-8 tracking-tight leading-tight">
                 Pronto para sair<br />
-                <span className="italic font-light text-brand-400">do Brasil?</span>
+                <span className="italic font-light text-[#E5E7EB]">do Brasil?</span>
               </h2>
               <p className="text-white/70 text-xl mb-12 leading-relaxed max-w-2xl mx-auto">
                 Vagas limitadas por trimestre. Se você está comprometido com sua internacionalização,

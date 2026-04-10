@@ -32,10 +32,10 @@ export const MentorshipCTA = ({ id, className }: { id?: string; className?: stri
             <div className="bg-white/5 border border-white/10 rounded-[3rem] p-10 md:p-16 space-y-10">
               <div className="space-y-2">
                 <p className="label-xs text-white/50">Mentoria Individual com Ciro</p>
-                <p className="font-display text-5xl text-white italic tracking-tight">R$ 500/hora</p>
+                <p className="font-display text-4xl text-white tracking-tight">Sessão de 60 minutos</p>
                 <div className="flex items-center justify-center gap-3">
-                  <span className="text-[10px] font-bold text-[#C08A3C] uppercase tracking-widest px-3 py-1 bg-[#C08A3C]/10 rounded-full border border-[#C08A3C]/20">
-                    Online · 60 minutos · Ao vivo
+                  <span className="text-[10px] font-bold text-brand-blue-light uppercase tracking-widest px-3 py-1 bg-brand-blue/10 rounded-full border border-brand-blue/20">
+                    Online · Ao vivo · Português
                   </span>
                 </div>
               </div>
@@ -85,25 +85,60 @@ export const SocialProof = ({ className }: { className?: string }) => {
           <span className="italic font-light text-brand-blue">pelo processo.</span>
         </h2>
 
-        <div className="grid md:grid-cols-2 gap-10 max-w-6xl mx-auto">
-          {[1, 2].map((_, i) => (
-            <div key={i} className="card-olcan p-12 bg-white/60 border-transparent shadow-glass">
-              <p className="text-xl text-olcan-navy font-medium italic leading-relaxed mb-10 font-display">
-                "{i === 0 ? "O apoio de Ciro foi fundamental para eu entender que o meu perfil tinha valor internacional. Em 2 meses eu estava com a bolsa aprovada." : "A metodologia FIND/DECIDE/BUILD é o que faltava para quem está perdido no excesso de informação. Direto, prático e eficiente."}"
-              </p>
-              <div className="flex items-center gap-5 pt-8 border-t border-olcan-navy/10">
-                <div className="w-16 h-16 rounded-full bg-olcan-navy/5 flex items-center justify-center text-olcan-navy">
-                  <User className="w-8 h-8 opacity-20" />
-                </div>
-                <div>
-                   <p className="font-display text-lg text-olcan-navy italic">[Nome do Mentorando]</p>
-                   <p className="text-[10px] font-bold text-[#C08A3C] uppercase tracking-widest mt-1">
-                     Aprovado no programa X, [país]
-                   </p>
-                </div>
+        <div className="grid md:grid-cols-3 gap-10 max-w-7xl mx-auto">
+          {/* Testimonial 1 - Mari U */}
+          <div className="card-olcan p-12 bg-white/60 border-transparent shadow-glass">
+            <p className="text-lg text-olcan-navy font-medium leading-relaxed mb-10 font-body">
+              "Pensar no curso é pensar em um mundo cheio de possibilidades, ele me permitiu sonhar de novo. Aprendi muito ao longo das aulas, desde os documentos necessários, como escrevê-los, como a banca avalia... é um curso excelente, ele renova as esperanças e te ensina a como conquistar os seus objetivos a curto, médio e longo prazo."
+            </p>
+            <div className="flex items-center gap-5 pt-8 border-t border-olcan-navy/10">
+              <div className="w-16 h-16 rounded-full bg-olcan-navy/5 flex items-center justify-center text-olcan-navy">
+                <User className="w-8 h-8 opacity-20" />
+              </div>
+              <div>
+                 <p className="font-display text-lg text-olcan-navy font-bold">Mari U</p>
+                 <p className="text-[10px] font-bold text-brand-600 uppercase tracking-widest mt-1">
+                   Aluna do Curso
+                 </p>
               </div>
             </div>
-          ))}
+          </div>
+
+          {/* Testimonial 2 - Jessica F */}
+          <div className="card-olcan p-12 bg-white/60 border-transparent shadow-glass">
+            <p className="text-lg text-olcan-navy font-medium leading-relaxed mb-10 font-body">
+              "O curso foi uma experiência incrível e enriquecedora para mim. Ciro mapeou de maneira clara as possibilidades e demonstrou de forma simples os caminhos a seguir. O destaque está em compreender como dar o primeiro passo, e o curso oferece essa orientação, mostrando como construir o esqueleto para alcançar nossos objetivos."
+            </p>
+            <div className="flex items-center gap-5 pt-8 border-t border-olcan-navy/10">
+              <div className="w-16 h-16 rounded-full bg-olcan-navy/5 flex items-center justify-center text-olcan-navy">
+                <User className="w-8 h-8 opacity-20" />
+              </div>
+              <div>
+                 <p className="font-display text-lg text-olcan-navy font-bold">Jessica F</p>
+                 <p className="text-[10px] font-bold text-brand-600 uppercase tracking-widest mt-1">
+                   Aluna do Curso
+                 </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Testimonial 3 - Hortênsia M */}
+          <div className="card-olcan p-12 bg-white/60 border-transparent shadow-glass">
+            <p className="text-lg text-olcan-navy font-medium leading-relaxed mb-10 font-body">
+              "Participar deste curso foi como abrir uma porta para um universo de novas oportunidades e compreensões. Com o Prof. Ciro no comando, cada aula era uma descoberta, uma chance de ver o mundo sob uma perspectiva renovada, cheia de possibilidades e sonhos realizáveis."
+            </p>
+            <div className="flex items-center gap-5 pt-8 border-t border-olcan-navy/10">
+              <div className="w-16 h-16 rounded-full bg-olcan-navy/5 flex items-center justify-center text-olcan-navy">
+                <User className="w-8 h-8 opacity-20" />
+              </div>
+              <div>
+                 <p className="font-display text-lg text-olcan-navy font-bold">Hortênsia M</p>
+                 <p className="text-[10px] font-bold text-brand-600 uppercase tracking-widest mt-1">
+                   Aluna do Curso
+                 </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

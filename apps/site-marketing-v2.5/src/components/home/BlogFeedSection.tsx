@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import type { SubstackPost } from "@/app/api/substack/route";
+import { getPublishedChronicles } from "@/lib/cms";
 
 async function getSubstackPosts(): Promise<SubstackPost[]> {
   try {
@@ -52,7 +53,11 @@ const EDITORIAL_FALLBACK = [
 ];
 
 export async function BlogFeedSection() {
-  const posts = await getSubstackPosts();
+  const [chronicles, posts] = await Promise.all([
+    getPublishedChronicles(3),
+    getSubstackPosts(),
+  ]);
+  const hasChronicles = chronicles.length > 0;
   const hasPosts = posts.length > 0;
 
   return (
@@ -68,8 +73,8 @@ export async function BlogFeedSection() {
               <span className="label-xs text-olcan-navy/60">Conteúdo Editorial</span>
             </div>
             <h2 className="font-display text-4xl md:text-6xl text-olcan-navy leading-[1.1] tracking-tight">
-              A Inteligência da <br />
-              <span className="italic font-light text-brand-600 font-serif">Olcan no Substack.</span>
+              Leituras e sinais que <br />
+              <span className="italic font-light text-brand-600 font-serif">orientam a jornada.</span>
             </h2>
           </div>
 
@@ -87,7 +92,43 @@ export async function BlogFeedSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {hasPosts
+          {hasChronicles
+            ? chronicles.map((post) => (
+                <article key={post.id}>
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="card-olcan p-8 h-full flex flex-col group border-white/60 hover:border-brand-300 transition-all duration-500"
+                  >
+                    <div className="flex items-center justify-between mb-8">
+                      <div className="fear-pill bg-white/40 border-white text-olcan-navy/60 py-1 px-3">
+                        {post.category || "Olcan"}
+                      </div>
+                      <span className="text-3xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                        ✦
+                      </span>
+                    </div>
+                    <div className="flex-1 space-y-4">
+                      <h3 className="font-display text-xl text-olcan-navy leading-snug group-hover:text-brand-600 group-hover:italic transition-all duration-300 tracking-tight">
+                        {post.title}
+                      </h3>
+                      {post.excerpt && (
+                        <p className="text-olcan-navy/60 font-medium text-sm leading-relaxed line-clamp-3">
+                          {post.excerpt}
+                        </p>
+                      )}
+                    </div>
+                    <div className="mt-8 pt-6 border-t border-olcan-navy/5 flex items-center justify-between">
+                      <span className="label-xs text-olcan-navy/40">
+                        {post.published_at ? formatDate(post.published_at) : "Olcan"}
+                      </span>
+                      <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-olcan-navy group-hover:text-brand-600 transition-colors">
+                        Ler <ArrowRight size={14} className="group-hover:translate-x-1.5 transition-transform" />
+                      </span>
+                    </div>
+                  </Link>
+                </article>
+              ))
+            : hasPosts
             ? posts.map((post) => (
                 <article key={post.id}>
                   <Link

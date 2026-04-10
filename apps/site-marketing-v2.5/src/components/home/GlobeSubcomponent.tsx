@@ -23,7 +23,7 @@ export default function GlobeSubcomponent() {
       mapSamples: 16000,
       mapBrightness: 6,
       baseColor: [0.97, 0.96, 0.94], // Cream/Bone base
-      markerColor: [0.91, 0.26, 0.1], // Flame (#E8421A)
+      markerColor: [0.98, 0.75, 0.14], // Amber (#FBBF24)
       glowColor: [1, 1, 1],
       markers: [
         // Brazil

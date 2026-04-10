@@ -24,7 +24,7 @@ export default function BlogPage() {
           <div className="text-center mb-16">
             <div className="liquid-glass px-5 py-2 inline-flex items-center gap-3 mb-8">
               <span className="w-2 h-2 rounded-full bg-brand-500" />
-              <span className="label-xs text-olcan-navy/60">Publicado no Substack · Atualizado semanalmente</span>
+              <span className="label-xs text-olcan-navy/60">Editoria Olcan · CMS integrado · Atualizado continuamente</span>
             </div>
             <h1 className="font-display text-5xl md:text-7xl text-ink leading-tight mb-6">
               Conteúdo que <span className="italic font-light text-brand-600">abre fronteiras</span>

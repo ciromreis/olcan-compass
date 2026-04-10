@@ -53,7 +53,7 @@ export default function TermosPage() {
               <h2 className="font-display text-2xl text-olcan-navy mb-4">4. Propriedade Intelectual</h2>
               <p className="leading-relaxed">
                 Todo o conteúdo disponível na plataforma — incluindo textos, vídeos, metodologias,
-                marcas e o Sistema OIOS — é propriedade exclusiva da Olcan e está protegido pela
+                marcas e sistemas proprietários — é propriedade exclusiva da Olcan e está protegido pela
                 legislação de direitos autorais. É proibida a reprodução sem autorização prévia por escrito.
               </p>
             </div>

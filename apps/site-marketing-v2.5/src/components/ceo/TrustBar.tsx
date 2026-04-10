@@ -5,10 +5,10 @@ export const TrustBar = ({ className }: { className?: string }) => {
   const logos = [
     "London School of Economics",
     "TikTok",
-    "Transparência Internacional Brasil",
     "Woodrow Wilson Center",
     "Fundação Lemann",
     "Fundação Botín",
+    "Chevening Scholars",
     "Brown University",
     "Universidade de Salamanca"
   ];

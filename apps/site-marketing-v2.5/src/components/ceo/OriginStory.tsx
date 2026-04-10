@@ -30,7 +30,7 @@ export const OriginStory = ({ className }: { className?: string }) => {
             <p className="relative z-10 text-2xl font-display leading-tight mb-6">
               "A maioria das pessoas não vai porque não sabe por onde começar. O Compass existe para resolver exatamente isso."
             </p>
-            <cite className="relative z-10 block not-italic font-bold tracking-widest text-[#C08A3C] uppercase text-xs">
+            <cite className="relative z-10 block not-italic font-bold tracking-widest text-[#E5E7EB] uppercase text-xs">
               Ciro Moraes dos Reis
             </cite>
           </blockquote>
@@ -43,7 +43,7 @@ export const OriginStory = ({ className }: { className?: string }) => {
 export const ImpactStats = ({ className }: { className?: string }) => {
   const stats = [
     {
-      number: "10+",
+      number: "4+",
       label: "anos de experiência em cargos de impacto internacional",
       icon: <Globe className="w-6 h-6" />
     },
@@ -62,7 +62,7 @@ export const ImpactStats = ({ className }: { className?: string }) => {
   return (
     <section className={cn("py-24 border-y border-olcan-navy/5", className)}>
       <div className="container-site">
-        <h3 className="label-xs text-olcan-navy/40 mb-20 text-center">Números que traduzem impacto</h3>
+        <h3 className="label-xs text-olcan-navy/40 mb-20 text-center">Travessia em números</h3>
         
         <div className="grid md:grid-cols-3 gap-16 max-w-5xl mx-auto">
           {stats.map((s, idx) => (

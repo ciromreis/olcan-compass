@@ -1,145 +1,129 @@
-import { redirect, notFound } from 'next/navigation';
-import { Metadata } from 'next';
-import EnhancedNavbar from '@/components/layout/EnhancedNavbar';
-import EnhancedFooter from '@/components/layout/EnhancedFooter';
-import { getLocalPostBySlug, getLocalPosts } from '@/lib/blog-posts';
-import { ArrowLeft, Calendar, Clock } from 'lucide-react';
-import Link from 'next/link';
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { ArrowLeft, Calendar, ExternalLink } from "lucide-react";
+import EnhancedNavbar from "@/components/layout/EnhancedNavbar";
+import EnhancedFooter from "@/components/layout/EnhancedFooter";
+import { getPublishedChronicleBySlug } from "@/lib/cms";
 
-const SUBSTACK_BASE = 'https://olcanglobal.substack.com/p';
+function formatDate(iso?: string | null): string | null {
+  if (!iso) return null;
 
-interface Props {
-  params: Promise<{ slug: string }>;
+  return new Date(iso).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+function extractText(value: unknown): string {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (Array.isArray(value)) return value.map(extractText).filter(Boolean).join("\n\n");
+  if (typeof value === "object") {
+    return Object.values(value as Record<string, unknown>)
+      .map(extractText)
+      .filter(Boolean)
+      .join("\n");
+  }
+
+  return "";
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
   const { slug } = await params;
-  // Check for local post first
-  const localPost = getLocalPostBySlug(slug);
-  if (localPost) {
+  const chronicle = await getPublishedChronicleBySlug(slug);
+
+  if (!chronicle) {
     return {
-      title: `${localPost.title} | Blog Olcan`,
-      description: localPost.description,
-      openGraph: {
-        title: localPost.title,
-        description: localPost.description,
-        images: localPost.coverImage ? [localPost.coverImage] : [],
-      },
-      alternates: { canonical: `/blog/${localPost.slug}` },
+      title: "Artigo | Olcan",
     };
   }
 
-  // Fallback — post lives on Substack
   return {
-    title: 'Artigo | Blog Olcan',
-    robots: { index: false },
-    alternates: { canonical: `${SUBSTACK_BASE}/${slug}` },
+    title: `${chronicle.title} | Blog Olcan`,
+    description: chronicle.excerpt || undefined,
   };
 }
 
-/**
- * Pre-generate static paths for all local posts at build time.
- * Substack posts are handled by the redirect below (no static generation needed).
- */
-export async function generateStaticParams() {
-  const localPosts = getLocalPosts();
-  return localPosts.map((p) => ({ slug: p.slug }));
-}
-
-export default async function BlogPostPage({ params }: Props) {
+export default async function BlogPostPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
-  const localPost = getLocalPostBySlug(slug);
+  const chronicle = await getPublishedChronicleBySlug(slug);
 
-  // If post exists locally — render it
-  if (localPost) {
-    const readTime = Math.max(3, Math.ceil(localPost.content.split(' ').length / 200));
-
-    return (
-      <main className="min-h-screen bg-cream">
-        <EnhancedNavbar />
-
-        {/* Hero */}
-        <section className="pt-36 pb-16 relative overflow-hidden">
-          <div className="absolute inset-0 bg-hero-grain opacity-30 mix-blend-multiply pointer-events-none" />
-          <div className="container-site relative z-10 mx-auto px-6 lg:px-12 w-full max-w-4xl">
-            <Link
-              href="/blog"
-              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-olcan-navy/40 hover:text-olcan-navy transition-colors mb-12 group"
-            >
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              Blog
-            </Link>
-
-            <div className="mb-8">
-              <span className="fear-pill bg-white/40 border-white text-olcan-navy text-sm inline-block mb-6">
-                {localPost.tag}
-              </span>
-              <h1 className="font-display text-4xl md:text-6xl text-olcan-navy leading-[1.05] tracking-tight mb-6">
-                {localPost.title}
-              </h1>
-              <p className="text-xl text-olcan-navy/60 font-medium leading-relaxed">
-                {localPost.description}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-6 text-xs font-bold uppercase tracking-widest text-olcan-navy/30 border-t border-olcan-navy/8 pt-6">
-              <span className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                {new Date(localPost.publishedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
-              </span>
-              <span className="flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                {readTime} min de leitura
-              </span>
-              {localPost.author && (
-                <span>{localPost.author}</span>
-              )}
-            </div>
-          </div>
-        </section>
-
-        {/* Cover image */}
-        {localPost.coverImage && (
-          <div className="w-full max-w-5xl mx-auto px-6 mb-12">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={localPost.coverImage}
-              alt={localPost.title}
-              className="w-full rounded-3xl object-cover aspect-[2/1]"
-            />
-          </div>
-        )}
-
-        {/* Content */}
-        <article className="container-site mx-auto px-6 lg:px-12 w-full max-w-3xl pb-32">
-          <div
-            className="prose prose-lg prose-olcan max-w-none
-              prose-headings:font-display prose-headings:text-olcan-navy prose-headings:tracking-tight
-              prose-p:text-olcan-navy/70 prose-p:leading-relaxed prose-p:font-medium
-              prose-a:text-brand-600 prose-a:no-underline hover:prose-a:underline
-              prose-strong:text-olcan-navy
-              prose-blockquote:border-brand-500 prose-blockquote:text-olcan-navy/60 prose-blockquote:italic
-              prose-ul:text-olcan-navy/70 prose-ol:text-olcan-navy/70"
-            dangerouslySetInnerHTML={{ __html: localPost.content }}
-          />
-
-          {/* Back CTA */}
-          <div className="mt-20 pt-10 border-t border-olcan-navy/8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-            <Link href="/blog" className="btn-secondary group">
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              Voltar ao Blog
-            </Link>
-            <Link href="/diagnostico" className="btn-primary">
-              Iniciar Diagnóstico Gratuito
-            </Link>
-          </div>
-        </article>
-
-        <EnhancedFooter />
-      </main>
-    );
+  if (!chronicle) {
+    notFound();
   }
 
-  // No local post found → redirect to Substack
-  redirect(`${SUBSTACK_BASE}/${slug}`);
+  const bodyText = extractText(chronicle.content);
+
+  return (
+    <main className="min-h-screen bg-cream">
+      <EnhancedNavbar />
+
+      <section className="pt-32 pb-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-hero-grain opacity-30 mix-blend-multiply pointer-events-none" />
+        <div className="container-site relative z-10 mx-auto px-6 lg:px-12 w-full max-w-4xl">
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-2 text-olcan-navy/50 hover:text-brand-600 transition-colors text-sm font-bold uppercase tracking-widest mb-10"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Voltar ao blog
+          </Link>
+
+          <div className="mb-10">
+            <div className="flex flex-wrap items-center gap-4 text-xs font-semibold uppercase tracking-widest text-olcan-navy/40 mb-6">
+              {chronicle.category && <span>{chronicle.category}</span>}
+              {chronicle.published_at && (
+                <span className="inline-flex items-center gap-2">
+                  <Calendar className="w-3.5 h-3.5" />
+                  {formatDate(chronicle.published_at)}
+                </span>
+              )}
+            </div>
+
+            <h1 className="font-display text-5xl md:text-7xl text-ink leading-tight mb-6">
+              {chronicle.title}
+            </h1>
+
+            {chronicle.excerpt && (
+              <p className="text-xl text-ink/70 leading-relaxed font-medium">
+                {chronicle.excerpt}
+              </p>
+            )}
+          </div>
+
+          <article className="rounded-[2rem] border border-cream-200 bg-white/70 backdrop-blur-xl p-8 md:p-12 shadow-xl shadow-ink/5">
+            <div className="prose prose-lg max-w-none prose-headings:text-ink prose-p:text-ink/75 whitespace-pre-wrap">
+              {bodyText || "Este conteúdo ainda não recebeu corpo editorial no CMS."}
+            </div>
+
+            {chronicle.external_url && (
+              <div className="mt-10 pt-8 border-t border-cream-200">
+                <a
+                  href={chronicle.external_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 text-brand-600 font-semibold hover:text-brand-700"
+                >
+                  Abrir versão externa
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
+            )}
+          </article>
+        </div>
+      </section>
+
+      <EnhancedFooter />
+    </main>
+  );
 }

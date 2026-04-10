@@ -18,20 +18,23 @@ export const CeoHero = ({ className }: CeoHeroProps) => {
         {/* Left: Image (Full Screen Split) */}
         <div className="relative group overflow-hidden h-[50vh] lg:h-auto order-2 lg:order-1">
           <Image
-            src="/images/ceo-hero.png"
-            alt="Ciro Moraes dos Reis - Chevening Scholar"
+            src="/images/ciro-timeline-4.jpg"
+            alt="Ciro Moraes dos Reis encontrando a Rainha Elizabeth II na London School of Economics"
             fill
-            className="object-cover object-center transition-transform duration-1000 group-hover:scale-105"
+            className="object-cover object-[50%_25%] transition-transform duration-1000 group-hover:scale-105 grayscale-[15%] contrast-110"
             priority
           />
-          {/* Subtle blue overlay gradient */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#001338]/40 via-[#001338]/10 to-transparent mix-blend-multiply" />
+          {/* Subtle overlay for readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#001338]/50 via-[#001338]/20 to-transparent mix-blend-multiply" />
 
-          {/* Annotation */}
-          <div className="absolute bottom-8 left-8">
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-lg">
-              <p className="text-white text-[10px] font-medium tracking-widest uppercase opacity-80">
-                Chevening Scholar, London School of Economics — 2016
+          {/* Annotation - emphasizing the symbolic moment */}
+          <div className="absolute bottom-8 left-8 right-8">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 px-5 py-3 rounded-lg">
+              <p className="text-white text-xs font-bold tracking-wider uppercase">
+                Com a Rainha Elizabeth II
+              </p>
+              <p className="text-white/80 text-[10px] font-medium tracking-widest uppercase mt-1">
+                Quando a travessia vira legado · Chevening Scholar · 2016
               </p>
             </div>
           </div>

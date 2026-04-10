@@ -9,7 +9,7 @@ const fears = [
     cluster: "Competência",
     color: "border-blue-200 bg-blue-50",
     iconBg: "bg-blue-100",
-    solution: "O sistema OIOS identifica suas forças reais e constrói a narrativa que o comitê de seleção precisa ouvir.",
+    solution: "O diagnóstico identifica suas forças reais e constrói a narrativa que o comitê de seleção precisa ouvir.",
   },
   {
     emoji: "💔",
@@ -23,8 +23,8 @@ const fears = [
     emoji: "💸",
     title: "\"E se eu largar tudo e não der certo?\"",
     cluster: "Perda",
-    color: "border-amber-200 bg-amber-50",
-    iconBg: "bg-amber-100",
+    color: "border-orange-200 bg-orange-50",
+    iconBg: "bg-orange-100",
     solution: "O Compass mapeia sua viabilidade financeira antes de qualquer decisão. Zero surpresas, máxima clareza.",
   },
   {
@@ -47,10 +47,10 @@ export function FearClustersSection() {
           viewport={{ once: true }}
           className="text-center mb-14"
         >
-          <span className="text-flame font-heading font-bold text-sm uppercase tracking-widest">
+          <span className="text-brand-500 font-display font-bold text-sm uppercase tracking-widest">
             Os 4 Medos da Internacionalização
           </span>
-          <h2 className="font-heading font-extrabold text-3xl md:text-4xl text-void mt-3 mb-4 text-balance">
+          <h2 className="font-display font-extrabold text-3xl md:text-4xl text-void mt-3 mb-4 text-balance">
             Reconhece algum desses pensamentos?
           </h2>
           <p className="text-ink-muted font-body text-lg max-w-xl mx-auto">
@@ -74,7 +74,7 @@ export function FearClustersSection() {
                 </div>
                 <div>
                   <span className="fear-pill mb-2 inline-block">{fear.cluster}</span>
-                  <p className="font-heading font-bold text-void text-base mb-2">{fear.title}</p>
+                  <p className="font-display font-bold text-void text-base mb-2">{fear.title}</p>
                   <p className="text-ink-muted font-body text-sm leading-relaxed">{fear.solution}</p>
                 </div>
               </div>

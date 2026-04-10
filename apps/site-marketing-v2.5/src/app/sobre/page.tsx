@@ -38,11 +38,11 @@ const values = [
 ];
 
 const milestones = [
-  { year: '2021', title: 'Fundação', description: 'A Olcan nasce da frustração com a falta de informação qualificada sobre mobilidade internacional no Brasil.' },
-  { year: '2022', title: 'Primeiro Curso', description: 'Lançamento do Curso Cidadão do Mundo, reunindo centenas de brasileiros em busca da carreira global.' },
-  { year: '2023', title: 'Expansão', description: 'Rota da Internacionalização, Kit Application e mentorias individuais se juntam ao portfólio de produtos.' },
-  { year: '2024', title: 'Tecnologia', description: 'Desenvolvimento do Olcan Compass — plataforma inteligente que mapeia e acelera jornadas internacionais.' },
-  { year: '2025', title: 'Ecossistema', description: 'Marketplace de profissionais verificados e sistema de inteligência global Olcan completa o ecossistema.' },
+  { year: '2021', title: 'Fundação', description: 'A Olcan nasce da frustração com a falta de informação qualificada sobre mobilidade internacional no Brasil.', icon: Compass },
+  { year: '2022', title: 'Primeiro Curso', description: 'Lançamento do Curso Cidadão do Mundo, reunindo centenas de brasileiros em busca da carreira global.', icon: Globe },
+  { year: '2023', title: 'Expansão', description: 'Rota da Internacionalização, Kit Application e mentorias individuais se juntam ao portfólio de produtos.', icon: Target },
+  { year: '2024', title: 'Tecnologia', description: 'Desenvolvimento do Olcan Compass — plataforma inteligente que mapeia e acelera jornadas internacionais.', icon: Zap },
+  { year: '2025', title: 'Ecossistema', description: 'Marketplace de profissionais verificados e sistema de inteligência global Olcan completa o ecossistema.', icon: Users },
 ];
 
 export default function SobrePage() {
@@ -54,6 +54,16 @@ export default function SobrePage() {
       <section className="pt-40 pb-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-hero-grain opacity-40 mix-blend-multiply pointer-events-none" />
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-brand-500/5 rounded-full blur-[140px] -mr-32 -mt-32 pointer-events-none" />
+        {/* Fractal pattern background */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+          <Image
+            src="/images/fractal_pattern_bg.png"
+            alt=""
+            fill
+            className="object-cover"
+            aria-hidden="true"
+          />
+        </div>
         
         <div className="container-site relative z-10 mx-auto px-6 lg:px-12 w-full max-w-7xl">
           <div className="max-w-4xl mx-auto text-center">
@@ -118,10 +128,10 @@ export default function SobrePage() {
 
             <div className="grid grid-cols-2 gap-6">
               {[
-                { label: 'Vidas transformadas', value: '500+' },
-                { label: 'Países alcançados', value: '30+' },
-                { label: 'Taxa de sucesso', value: '85%' },
-                { label: 'Avaliação média', value: '4.8' },
+                { label: 'Metodologia', value: 'Própria' },
+                { label: 'Rotas de carreira', value: '4' },
+                { label: 'Anos de atuação', value: '4+' },
+                { label: 'Cursos lançados', value: '5+' },
               ].map((stat, i) => (
                 <div key={i} className="card-olcan p-8 text-center border-white/60">
                   <div className="text-4xl font-bold text-olcan-navy mb-2 tracking-tighter">{stat.value}</div>
@@ -148,18 +158,27 @@ export default function SobrePage() {
             </h2>
           </div>
 
-          <div className="max-w-4xl mx-auto space-y-10">
-            {milestones.map((milestone, idx) => (
-              <div key={idx} className="flex gap-8 items-start group">
-                <div className="flex-shrink-0 w-24 h-24 bg-olcan-navy rounded-[2rem] flex items-center justify-center shadow-2xl shadow-olcan-navy/20 transform group-hover:scale-110 transition-transform duration-500">
-                  <span className="text-white font-bold text-xl tracking-tighter">{milestone.year}</span>
-                </div>
-                <div className="flex-1 card-olcan p-8 border-white/60 group-hover:border-brand-300 transition-all duration-500">
-                  <h3 className="font-bold text-2xl text-olcan-navy mb-3 tracking-tight italic font-display">{milestone.title}</h3>
-                  <p className="text-olcan-navy/60 leading-relaxed font-medium">{milestone.description}</p>
-                </div>
-              </div>
-            ))}
+          <div className="max-w-4xl mx-auto relative">
+            {/* Vertical connecting line */}
+            <div className="absolute left-12 top-12 bottom-12 w-px bg-olcan-navy/10 hidden md:block" />
+
+            <div className="space-y-10">
+              {milestones.map((milestone, idx) => {
+                const Icon = milestone.icon;
+                return (
+                  <div key={idx} className="flex gap-8 items-start group relative">
+                    <div className="flex-shrink-0 w-24 h-24 bg-olcan-navy rounded-[2rem] flex flex-col items-center justify-center shadow-2xl shadow-olcan-navy/20 transform group-hover:scale-110 transition-transform duration-500 relative z-10">
+                      <Icon className="w-5 h-5 text-white/60 mb-1" />
+                      <span className="text-white font-bold text-lg tracking-tighter">{milestone.year}</span>
+                    </div>
+                    <div className="flex-1 card-olcan p-8 border-white/60 group-hover:border-brand-300 transition-all duration-500">
+                      <h3 className="font-bold text-2xl text-olcan-navy mb-3 tracking-tight italic font-display">{milestone.title}</h3>
+                      <p className="text-olcan-navy/60 leading-relaxed font-medium">{milestone.description}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
@@ -212,8 +231,8 @@ export default function SobrePage() {
                   esse conhecimento em uma plataforma acessível para todos.
                 </p>
                 <p>
-                  De 2018 até hoje, Ciro construiu um ecossistema completo de ferramentas, 
-                  cursos e mentorias que já ajudaram mais de 500 profissionais a cruzarem 
+                  De 2018 até hoje, Ciro construiu um ecossistema completo de ferramentas,
+                  cursos e mentorias que já ajudaram centenas de profissionais a cruzarem
                   fronteiras com método e estratégia real.
                 </p>
               </div>
@@ -238,7 +257,7 @@ export default function SobrePage() {
                 <div className="text-center pb-8 border-b border-olcan-navy/5">
                   <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-6 ring-4 ring-brand-500/20 shadow-xl">
                     <Image
-                      src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&q=80"
+                      src="/images/ciro-origin.jpg"
                       alt="Ciro Moraes"
                       width={96}
                       height={96}
@@ -250,10 +269,10 @@ export default function SobrePage() {
                 </div>
                 <div className="space-y-4">
                   {[
-                    { label: "Profissionais impactados", value: "500+" },
+                    { label: "Anos de atuação", value: "4+" },
+                    { label: "Cursos e produtos", value: "8+" },
                     { label: "Países alcançados", value: "30+" },
-                    { label: "Anos de experiência", value: "6+" },
-                    { label: "Taxa de sucesso", value: "85%" },
+                    { label: "Rotas de carreira", value: "4" },
                   ].map((stat, i) => (
                     <div key={i} className="flex items-center justify-between py-3 border-b border-olcan-navy/5 last:border-0">
                       <span className="text-sm text-olcan-navy/60 font-medium">{stat.label}</span>
@@ -277,7 +296,7 @@ export default function SobrePage() {
             <div className="relative z-10 max-w-3xl mx-auto">
               <h2 className="font-display text-4xl md:text-6xl text-white mb-10 tracking-tight leading-[1.1]">
                 Sua transição começa com um <br />
-                <span className="italic font-light text-brand-400 font-serif">diagnóstico preciso.</span>
+                <span className="italic font-light text-[#E5E7EB] font-serif">diagnóstico preciso.</span>
               </h2>
               <p className="text-white/70 text-xl mb-14 font-medium leading-relaxed">
                 Descubra em qual estágio da mobilidade internacional você se encontra e receba seu Plano de Carreira Internacional personalizado.

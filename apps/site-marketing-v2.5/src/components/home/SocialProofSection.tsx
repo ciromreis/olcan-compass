@@ -9,21 +9,21 @@ import Image from "next/image";
 const metrics = [
   {
     icon: Users,
-    value: "500+",
-    label: "Profissionais Impactados",
+    value: "Centenas",
+    label: "Profissionais na Jornada",
     description: "Brasileiros que já iniciaram ou completaram sua transição internacional com a Olcan.",
   },
   {
     icon: Globe,
-    value: "30+",
-    label: "Países Alcançados",
-    description: "De Portugal a Canadá, Alemanha a Austrália — nossa rede cobre os principais destinos.",
+    value: "4 Rotas",
+    label: "Protocolos Mapeados",
+    description: "Acadêmica, Corporativa, Nômade Digital e Bolsas — cada caminho com seu protocolo específico.",
   },
   {
     icon: TrendingUp,
-    value: "85%",
-    label: "Taxa de Sucesso",
-    description: "Dos nossos clientes recebem propostas internacionais em até 12 meses de trabalho conjunto.",
+    value: "12",
+    label: "Perfis de Carreira",
+    description: "Arquétipos mapeados para personalizar sua estratégia de internacionalização.",
   },
 ];
 

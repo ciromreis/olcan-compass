@@ -85,7 +85,7 @@ export function MauticNewsletterForm({ source = "blog", variant = "light" }: Mau
         </div>
 
         <h2 className={`font-display text-4xl md:text-5xl mb-4 tracking-tight leading-[1.1] ${isDark ? "text-white" : "text-olcan-navy"}`}>
-          Receba conteúdo que <span className={`italic font-light ${isDark ? "text-brand-400" : "text-brand-600"}`}>vale a viagem.</span>
+          Receba conteúdo que <span className={`italic font-light ${isDark ? "text-[#E5E7EB]" : "text-brand-600"}`}>vale a viagem.</span>
         </h2>
 
         <p className={`text-lg mb-10 font-medium leading-relaxed ${isDark ? "text-white/60" : "text-olcan-navy/60"}`}>

@@ -2,29 +2,31 @@ import { SocialProofSection } from "@/components/home/SocialProofSection";
 import EnhancedNavbar from "@/components/layout/EnhancedNavbar";
 import { HeroSection } from "@/components/home/HeroSection";
 import ProductsSection from "@/components/home/ProductsSection";
-import AboutSection from "@/components/home/AboutSection";
-import InsightsSection from "@/components/home/InsightsSection";
+import { MethodologyRoadmap } from "@/components/home/MethodologyRoadmap";
+import { CompassSpotlight } from "@/components/home/CompassSpotlight";
 import { BlogFeedSection } from "@/components/home/BlogFeedSection";
-import MarketplaceSection from "@/components/home/MarketplaceSection";
-import ManifestoSection from "@/components/home/ManifestoSection";
+import { FinalConversionCTA } from "@/components/home/FinalConversionCTA";
 import EnhancedFooter from "@/components/layout/EnhancedFooter";
+import { getMercurProducts } from "@/lib/mercur-client";
+import { getPublishedPageBySlug } from "@/lib/cms";
 
-export default function Home() {
+export default async function Home() {
+  const products = await getMercurProducts({ limit: 8 });
+
   return (
     <main className="min-h-screen bg-cream selection:bg-[#d8dee8] selection:text-[#001338]">
       <EnhancedNavbar />
       
-      {/* Homepage Sections */}
+      {/* Hero Section with Video Card */}
       <HeroSection />
-      <ProductsSection />
-      <AboutSection />
-      <ManifestoSection />
-      <InsightsSection />
-      <BlogFeedSection />
-      <MarketplaceSection />
-      <SocialProofSection />
       
-      {/* Optional: Add spacing or spacer components if needed between sections */}
+      {/* Streamlined Homepage Sections */}
+      <ProductsSection products={products} />
+      <MethodologyRoadmap />
+      <CompassSpotlight />
+      <SocialProofSection />
+      <BlogFeedSection />
+      <FinalConversionCTA />
       
       <EnhancedFooter />
 

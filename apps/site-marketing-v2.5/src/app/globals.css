@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300;0,400;0,700;0,800;1,300;1,400&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;0,900;1,300;1,400&family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -9,8 +9,8 @@
   :root {
     --background:           #FBFAF7;
     --foreground:           #0D0C0A;
-    --flame:                #E8421A;
-    --flame-hover:          #F05A1E;
+    --amber:                #FBBF24;
+    --amber-hover:          #F59E0B;
     --radius:               0.625rem;
     
     /* Olcan Brand Colors - STRICT ENFORCEMENT */
@@ -46,7 +46,7 @@
   html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
   body {
-    font-family: 'DM Sans', system-ui, sans-serif;
+    font-family: 'Source Sans 3', 'DM Sans', system-ui, sans-serif;
     background-color: var(--background);
     color: var(--foreground);
     -webkit-font-smoothing: antialiased;
@@ -69,14 +69,14 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'DM Serif Display', Georgia, serif;
+    font-family: 'Merriweather Sans', 'DM Serif Display', Georgia, serif;
     line-height: 1.05;
   }
 
   ::-webkit-scrollbar { width: 3px; }
   ::-webkit-scrollbar-track { background: #F7F4EF; }
   ::-webkit-scrollbar-thumb { background: #0D0C0A; }
-  ::-webkit-scrollbar-thumb:hover { background: #E8421A; }
+  ::-webkit-scrollbar-thumb:hover { background: #001338; }
 }
 
 /* ─── Liquid Glass System ─── */
@@ -195,7 +195,7 @@
 
   /* Editorial label: small caps tracking */
   .label-xs {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Source Sans 3', 'DM Sans', sans-serif;
     font-size: 0.6875rem;
     font-weight: 500;
     letter-spacing: 0.18em;

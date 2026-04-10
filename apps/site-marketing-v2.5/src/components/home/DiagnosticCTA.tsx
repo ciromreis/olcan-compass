@@ -21,26 +21,26 @@ export function DiagnosticCTA() {
             background: "linear-gradient(145deg, #001338 0%, #001a4d 50%, #001338 100%)",
           }}
         >
-          {/* OIOS Dynamic Glare */}
+          {/* Dynamic Glare */}
           <div className="absolute inset-0 bg-hero-grain opacity-20 mix-blend-overlay pointer-events-none" />
           <div className="absolute -top-32 -left-32 w-96 h-96 bg-brand-500/20 rounded-full blur-[100px] animate-pulse" />
           <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-brand-400/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
 
           <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center text-center">
             <div className="bg-white/10 backdrop-blur-md border border-white/20 px-6 py-2 rounded-full inline-flex items-center gap-3 mb-10">
-              <Sparkles size={14} className="text-brand-400" />
+              <Sparkles size={14} className="text-[#E5E7EB]" />
               <span className="label-xs text-white/80">Rede Global Olcan Ativa</span>
             </div>
 
             <h2 className="font-display text-4xl md:text-7xl text-white leading-[1.1] mb-8 tracking-tight">
               Qual é o seu <br />
-              <span className="italic font-light text-brand-400 font-serif">Potencial Internacional?</span>
+              <span className="italic font-light text-[#E5E7EB] font-serif">Potencial Internacional?</span>
             </h2>
 
             <p className="text-xl text-white/70 max-w-2xl mx-auto leading-relaxed mb-12 font-medium">
               "Eu era uma professora do interior da Bahia sem nenhuma rede internacional. A metodologia da Olcan me mostrou exatamente o que minha candidatura precisava. Hoje tenho aceitações em Harvard e LSE."
               <br /><br />
-              Descubra sua Rota de Navegação personalizada baseada em um dos 12 Perfis de Carreira mapeados pelo nosso sistema.
+              Descubra sua Rota de Navegação personalizada: Bolsas, Trabalho, Empreendedorismo ou Transferência Corporativa.
             </p>
 
             <div className="flex flex-wrap gap-4 justify-center mb-16 max-w-2xl px-4">
@@ -59,7 +59,7 @@ export function DiagnosticCTA() {
                   {a}
                 </div>
               ))}
-              <div className="fear-pill bg-white/5 border-white/10 text-brand-400/60 py-2 px-4 italic">
+              <div className="fear-pill bg-white/5 border-white/10 text-white/40 py-2 px-4 italic">
                 +6 arquétipos...
               </div>
             </div>

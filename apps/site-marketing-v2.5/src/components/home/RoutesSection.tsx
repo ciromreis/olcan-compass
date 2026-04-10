@@ -48,9 +48,9 @@ const routes = [
     description: "Para quem quer financiamento integral via bolsas governamentais e fundações privadas.",
     tags: ["Fulbright", "CAPES", "Lemann"],
     href: "/jornadas/bolsas",
-    accent: "#F59E0B",
-    bg: "bg-amber-50 border-amber-100 hover:border-amber-300",
-    iconBg: "bg-amber-100 text-amber-700",
+    accent: "#F97316",
+    bg: "bg-orange-50 border-orange-100 hover:border-orange-300",
+    iconBg: "bg-orange-100 text-orange-700",
     emoji: "🏆",
   },
 ];
@@ -128,7 +128,7 @@ export function RoutesSection() {
                     </p>
                   </div>
 
-                  {/* Tags - OIOS Style */}
+                  {/* Tags */}
                   <div className="flex flex-wrap gap-2 mb-8 mt-6">
                     {route.tags.map((tag) => (
                       <div

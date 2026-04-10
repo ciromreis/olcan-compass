@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Image from 'next/image';
 import EnhancedNavbar from '@/components/layout/EnhancedNavbar';
 import EnhancedFooter from '@/components/layout/EnhancedFooter';
 import { ContactForm } from '@/components/forms/ContactForm';
@@ -16,12 +17,25 @@ export default function ContatoPage() {
       
       <section className="pt-32 pb-20">
         <div className="container-site mx-auto px-6 lg:px-12 w-full max-w-7xl">
+          {/* Hero with Fátima Bernardes Photo */}
           <div className="text-center mb-16">
+            {/* Larger image showing both faces */}
+            <div className="relative w-full max-w-2xl mx-auto mb-8 aspect-[16/10] rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
+              <Image
+                src="/images/ciro-fatima-encontro.jpg"
+                alt="Ciro Moraes em encontro especial"
+                fill
+                className="object-cover object-center"
+                priority
+              />
+              {/* Subtle overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-olcan-navy/20 via-transparent to-transparent" />
+            </div>
             <h1 className="font-display text-5xl md:text-7xl text-olcan-navy mb-6">
-              Vamos Conversar
+              Vamos Marcar um Encontro
             </h1>
             <p className="text-xl text-text-secondary max-w-3xl mx-auto">
-              Agende uma consulta gratuita e descubra como a Olcan pode acelerar sua jornada internacional
+              Toda grande travessia começa com uma conversa. Agende sua consulta gratuita e descubra o próximo passo da sua jornada internacional.
             </p>
           </div>
 
@@ -81,10 +95,10 @@ export default function ContatoPage() {
 
               <div className="bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl p-8 text-white">
                 <h3 className="font-bold text-2xl mb-4">
-                  Consulta Gratuita de 30 Minutos
+                  Seu Encontro Estratégico — 30 Minutos
                 </h3>
                 <p className="text-white/90 mb-6">
-                  Agende uma conversa sem compromisso para entender como podemos ajudar na sua jornada internacional.
+                  Um encontro sem compromisso para mapear sua travessia. Clareza, direção e próximos passos concretos.
                 </p>
                 <ul className="space-y-3 text-white/90">
                   <li className="flex items-start gap-2">

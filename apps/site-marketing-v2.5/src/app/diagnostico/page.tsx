@@ -193,7 +193,7 @@ export default function DiagnosticoPage() {
             >
               <div className="card-olcan p-12 md:p-20 relative overflow-hidden border-2 border-white/60">
                 <div className="absolute top-0 right-0 w-80 h-80 bg-brand-500/10 rounded-full blur-[100px] -mr-40 -mt-40" />
-                <div className="absolute bottom-0 left-0 w-80 h-80 bg-flame-2/5 rounded-full blur-[100px] -ml-40 -mb-40" />
+                <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-100/5 rounded-full blur-[100px] -ml-40 -mb-40" />
                 
                 <div className="relative z-10 flex flex-col items-center">
                   <div className="text-9xl mb-12 drop-shadow-2xl companion-float">{archetype.emoji}</div>

@@ -22,8 +22,28 @@ export const Chronicles: CollectionConfig = {
       unique: true,
     },
     {
+      name: 'excerpt',
+      type: 'textarea',
+    },
+    {
       name: 'author',
       type: 'text',
+    },
+    {
+      name: 'category',
+      type: 'text',
+    },
+    {
+      name: 'cover_image',
+      type: 'text',
+    },
+    {
+      name: 'external_url',
+      type: 'text',
+    },
+    {
+      name: 'published_at',
+      type: 'date',
     },
     {
       name: 'status',
@@ -33,6 +53,16 @@ export const Chronicles: CollectionConfig = {
         { label: 'Published', value: 'published' },
       ],
       defaultValue: 'draft',
+    },
+    {
+      name: 'tags',
+      type: 'array',
+      fields: [
+        {
+          name: 'label',
+          type: 'text',
+        },
+      ],
     },
     {
       name: 'content',

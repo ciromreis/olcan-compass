@@ -2,121 +2,149 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowRight, MapPin, Zap } from "lucide-react";
-import GlobeCanvas from "@/components/ui/GlobeCanvas";
+import Image from "next/image";
+import { ArrowRight, Compass, Activity, FileText, CheckCircle2 } from "lucide-react";
+import type { CMSHeroSection } from "@/lib/cms";
 
-export const HeroSection = () => {
+interface HeroSectionProps {
+  content?: CMSHeroSection | null;
+}
+
+export const HeroSection = ({ content }: HeroSectionProps) => {
+  const eyebrow = content?.eyebrow || "De onde você está — para onde quer chegar";
+  const title = content?.title || "O mundo é seu. Você só precisa das ferramentas certas para atravessá-lo.";
+  const accent = content?.accent || "";
+  const description =
+    content?.description ||
+    "Metodologia própria para transformar ansiedade em aprovação internacional. Diagnóstico estratégico em 10 minutos. Sem promessas vazias.";
+  const primaryCtaLabel = content?.primaryCtaLabel || "Iniciar Diagnóstico Gratuito →";
+  const primaryCtaHref = content?.primaryCtaHref || "/diagnostico";
+  const secondaryCtaLabel = content?.secondaryCtaLabel || "Ver Produtos";
+  const secondaryCtaHref = content?.secondaryCtaHref || "/marketplace";
+
   return (
-    <section className="relative min-h-[92vh] flex items-center pt-28 pb-20 overflow-hidden bg-cream selection:bg-brand-100/30">
-      {/* Subtle coordinate grid — evokes maps */}
-      <div
-        className="absolute inset-0 z-0 pointer-events-none"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(0,19,56,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(0,19,56,0.035) 1px, transparent 1px)',
-          backgroundSize: '72px 72px',
-        }}
-      />
-      <div className="absolute top-[-10%] right-[-5%] w-[30%] h-[30%] bg-brand-50/30 blur-[80px] rounded-full z-0" />
-      <div className="absolute bottom-[-10%] left-[-5%] w-[25%] h-[25%] bg-flame-50/20 blur-[60px] rounded-full z-0" />
+    <section className="relative min-h-screen flex items-center overflow-hidden bg-olcan-navy">
+
+      {/* Globe Background Image */}
+      <div className="absolute inset-0">
+        <Image
+          src="/images/hero-globe.png"
+          alt=""
+          fill
+          className="object-contain object-right opacity-20 lg:opacity-30"
+          priority
+          sizes="100vw"
+        />
+      </div>
+
+      {/* Fractal Pattern Background */}
+      <div className="absolute inset-0 opacity-[0.04]">
+        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="fractal" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+              <path d="M50 10 L90 90 L10 90 Z M50 30 L70 70 L30 70 Z" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="0.5"/>
+              <circle cx="50" cy="50" r="2" fill="rgba(34,211,238,0.4)"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#fractal)" />
+        </svg>
+      </div>
+
+      {/* Volumetric Spotlights */}
+      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-gradient-radial from-cyan-500/10 via-transparent to-transparent rounded-full blur-[100px]" />
+      <div className="absolute bottom-0 left-1/3 w-[500px] h-[500px] bg-gradient-radial from-cyan-500/6 via-transparent to-transparent rounded-full blur-[120px]" />
+
+      {/* Gradient Overlay for Text Readability */}
+      <div className="absolute inset-0 bg-gradient-to-r from-olcan-navy/95 via-olcan-navy/80 to-olcan-navy/50" />
 
       <div className="container-site relative z-10 mx-auto px-6 lg:px-12 w-full max-w-7xl">
         <div className="grid lg:grid-cols-12 gap-12 items-center">
 
-          {/* Left Column */}
-          <div className="lg:col-span-7 space-y-8 animate-fade-up">
+          {/* Left Column - Content */}
+          <div className="lg:col-span-7 space-y-10 animate-fade-up">
 
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/5 border border-brand-500/10 text-brand-600 text-[10px] font-bold uppercase tracking-wide">
-              <MapPin className="w-3 h-3" />
-              <span>De onde você está — para onde quer chegar</span>
+            {/* Eyebrow */}
+            <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20">
+              <Compass className="w-4 h-4 text-cyan-300" />
+              <span className="text-xs font-bold uppercase tracking-widest text-white/90">{eyebrow}</span>
             </div>
 
-            <div className="space-y-3 max-w-prose">
-              <h1 className="text-display-2xl text-ink font-display">
-                O mundo é seu.
+            {/* Headline */}
+            <div className="space-y-4 max-w-3xl">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl text-white font-display leading-[1.1] tracking-[-0.03em]">
+                {title}
               </h1>
-              <p className="text-display-md text-brand-500 font-display italic">
-                Você só precisa das ferramentas certas para atravessá-lo.
-              </p>
+              {accent && (
+                <p className="text-2xl md:text-3xl text-[#E5E7EB] font-display italic font-light">
+                  {accent}
+                </p>
+              )}
             </div>
 
-            <p className="text-lg lg:text-xl text-slate max-w-xl leading-relaxed font-sans font-normal">
-              Olcan é uma plataforma de aprendizado e desenvolvimento profissional pensada para 
-              quem não quer mais esperar a oportunidade bater na porta — e sabe que ela está 
-              em algum lugar no mundo.
+            <p className="text-lg lg:text-xl text-white/80 max-w-2xl leading-relaxed font-sans">
+              {description}
             </p>
 
-            <div className="flex flex-wrap gap-4 pt-2">
-              <Link href="/diagnostico" className="btn-primary group">
-                <span>Descobrir minha trilha</span>
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            {/* CTAs */}
+            <div className="flex flex-wrap gap-5 pt-4">
+              <Link
+                href={primaryCtaHref}
+                className="inline-flex items-center gap-3 px-8 py-4 bg-[#00BCD4] text-[#001338] rounded-full font-bold text-base hover:bg-[#00ACC1] transition-all shadow-2xl hover:shadow-[#00BCD4]/50 hover:scale-105 group"
+              >
+                <span>{primaryCtaLabel}</span>
+                <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
               </Link>
-              <Link href="/marketplace" className="btn-secondary">
-                Ver produtos
+              <Link
+                href={secondaryCtaHref}
+                className="inline-flex items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full font-bold text-base hover:bg-white/20 transition-all"
+              >
+                {secondaryCtaLabel}
               </Link>
             </div>
 
-            {/* Stats — unique set, updated to avoid global section repetition */}
-            <div className="pt-8 border-t border-brand-500/10 grid grid-cols-3 gap-6">
+            {/* Stats — Honest */}
+            <div className="pt-10 border-t border-white/10 grid grid-cols-3 gap-8">
               {[
-                { value: "1,2k+", label: "Acessos este mês" },
-                { value: "24/7", label: "Mentor inteligente" },
-                { value: "v2.5", label: "Olcan Engine" },
+                { value: "Método", label: "Próprio" },
+                { value: "4 Rotas", label: "Internacionais" },
+                { value: "10 min", label: "Diagnóstico" },
               ].map((s) => (
-                <div key={s.label}>
-                  <div className="text-2xl font-bold text-olcan-navy tracking-tight">{s.value}</div>
-                  <div className="text-[10px] text-slate uppercase tracking-widest font-bold mt-0.5 leading-tight">{s.label}</div>
+                <div key={s.label} className="text-center lg:text-left">
+                  <div className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-1">{s.value}</div>
+                  <div className="text-xs text-white/60 uppercase tracking-wider font-semibold">{s.label}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Right Column: Globe + CTA card */}
-          <div className="lg:col-span-5 hidden lg:flex flex-col gap-4">
-
-            {/* Interactive Globe — sized explicitly so ResizeObserver fires */}
-            <div
-              className="rounded-3xl overflow-hidden relative shadow-2xl shadow-olcan-navy/20"
-              style={{
-                background: 'radial-gradient(ellipse at 40% 40%, #0d2060 0%, #001338 55%, #000b20 100%)',
-                width: '100%',
-                aspectRatio: '1 / 1',
-              }}
-            >
-              {/* Canvas fills the container */}
-              <div className="absolute inset-0">
-                <GlobeCanvas
-                  dark={1}
-                  baseColor={[1, 1, 1]}
-                  glowColor={[0.2, 0.4, 0.9]}
-                  markerColor={[235 / 255, 126 / 255, 81 / 255]}
-                  mapBrightness={12}
-                  diffuse={1.2}
-                  speed={0.006}
-                  theta={0.3}
-                  mapSamples={18000}
-                  className="w-full h-full"
-                />
+          {/* Right Column: Video Card */}
+          <div className="lg:col-span-5 hidden lg:flex items-center justify-center relative">
+            <div className="relative w-full max-w-md">
+              {/* Video Card with Glass Morphism */}
+              <div className="relative w-full aspect-video bg-[rgba(255,255,255,0.08)] backdrop-blur-[24px] border border-white/20 border-t-2 border-t-white/40 rounded-3xl shadow-2xl overflow-hidden">
+                {/* Video */}
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="w-full h-full object-cover"
+                >
+                  <source src="/videos/olcan-hero-video.mp4" type="video/mp4" />
+                </video>
+                
+                {/* Subtle overlay for depth */}
+                <div className="absolute inset-0 bg-gradient-to-t from-olcan-navy/40 via-transparent to-transparent pointer-events-none" />
+                
+                {/* Bottom label */}
+                <div className="absolute bottom-4 left-4 right-4">
+                  <div className="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-lg">
+                    <p className="text-white text-xs font-bold tracking-wider uppercase">
+                      Veja o Compass em ação
+                    </p>
+                  </div>
+                </div>
               </div>
-              {/* Single minimal badge */}
-              <div className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 flex items-center gap-2 whitespace-nowrap z-10">
-                <span className="w-2 h-2 rounded-full bg-brand-400 animate-pulse flex-shrink-0" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-white/70">Plataforma Global · Ao vivo</span>
-              </div>
-            </div>
-
-            {/* CTA Micro Card — replaces the redundant numbers card */}
-            <div className="rounded-3xl border border-brand-200 bg-brand-50/60 backdrop-blur-xl p-5 flex items-center gap-4">
-              <div className="w-10 h-10 rounded-2xl bg-brand-500 flex items-center justify-center flex-shrink-0">
-                <Zap className="w-5 h-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <div className="text-xs font-bold uppercase tracking-widest text-brand-700 mb-0.5">Diagnóstico gratuito</div>
-                <div className="text-[11px] text-brand-600/70">Descubra seu perfil internacional em 10 min</div>
-              </div>
-              <Link href="/diagnostico" className="flex-shrink-0">
-                <ArrowRight className="w-4 h-4 text-brand-500 hover:text-brand-700 transition-colors" />
-              </Link>
             </div>
           </div>
 

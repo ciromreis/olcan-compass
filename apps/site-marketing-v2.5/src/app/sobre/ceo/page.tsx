@@ -8,6 +8,8 @@ import { CeoTimeline } from '@/components/ceo/CeoTimeline';
 import { MethodologySection, MissionBanner } from '@/components/ceo/MethodologySection';
 import { SocialProof, MentorshipCTA } from '@/components/ceo/MentorshipCTA';
 import { MediaGrid, ProductCrossSell, MinimalFooter } from '@/components/ceo/MediaGrid';
+import { CodifiedArbitrageMatrix } from '@/components/ceo/CodifiedArbitrageMatrix';
+import { GalleryStrip } from '@/components/ceo/GalleryStrip';
 import { cn } from '@/lib/utils';
 
 // Font definitions for the CEO page to match design tokens
@@ -58,8 +60,14 @@ export default function CeoPage() {
       {/* Impact Numbers */}
       <ImpactStats />
 
-      {/* Detailed Trajectory */}
+      {/* Gallery Photo Strip */}
+      <GalleryStrip />
+
+      {/* Detailed Trajectory with Photos */}
       <CeoTimeline />
+
+      {/* Product Bridge: Converts narrative into product adoption */}
+      <CodifiedArbitrageMatrix />
 
       {/* Methodology Bridge */}
       <MethodologySection />

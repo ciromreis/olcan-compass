@@ -19,19 +19,19 @@ const footerSections = [
   {
     title: "Produto",
     items: [
-      { label: "Curso Cidadão do Mundo", href: "/marketplace/curso-cidadao-mundo" },
+      { label: "Sem Fronteiras", href: "/marketplace/curso-cidadao-mundo" },
       { label: "Rota da Internacionalização", href: "/marketplace/rota-internacionalizacao" },
       { label: "Kit Application", href: "/marketplace/kit-application" },
-      { label: "Diagnóstico", href: "/diagnostico" },
+      { label: "Compass by Olcan", href: "/marketplace/compass-by-olcan" },
     ]
   },
   {
     title: "Serviços",
     items: [
       { label: "Loja", href: "/marketplace", icon: Briefcase },
-      { label: "Mentoria de Carreira", href: "/ciro", icon: Users },
-      { label: "Acompanhamento", href: "/contato", icon: Users },
-      { label: "Assistência Jurídica", href: "/marketplace", icon: Shield },
+      { label: "Mentorias Olcan", href: "https://zenklub.com.br/coaches/ciro-moraes/", icon: Users, external: true },
+      { label: "Diagnóstico", href: "/diagnostico", icon: Compass },
+      { label: "Atendimento", href: "/contato", icon: Shield },
     ]
   },
   {
@@ -62,9 +62,9 @@ const socialLinks: Array<{ icon: typeof Instagram | typeof TikTokIcon; href: str
 ];
 
 const trustBadges = [
-  { icon: Shield, text: "Pagamento Seguro" },
-  { icon: Star, text: "4.8/5 Avaliação" },
-  { icon: Users, text: "2.000+ Usuários" },
+  { icon: Shield, text: "Metodologia Própria" },
+  { icon: Star, text: "Fundado em 2021" },
+  { icon: Users, text: "Profissionais Verificados" },
 ];
 
 export default function EnhancedFooter() {
@@ -124,18 +124,25 @@ export default function EnhancedFooter() {
               <div key={section.title} className="space-y-10">
                 <h4 className="label-xs text-brand-600/60 transition-colors uppercase tracking-wide">{section.title}</h4>
                 <ul className="space-y-5">
-                  {section.items.map((item) => (
-                    <li key={item.label}>
-                      <Link
-                        href={item.href}
-                        className="group flex items-center gap-2 text-sm font-bold text-olcan-navy/50 hover:text-olcan-navy transition-all duration-500 uppercase tracking-widest"
-                      >
-                        <span className="relative overflow-hidden flex items-center gap-2">
-                          {item.label}
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
+                  {section.items.map((item) => {
+                    const isExternal = 'external' in item && item.external;
+                    const Component = isExternal ? 'a' : Link;
+                    const extraProps = isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {};
+                    
+                    return (
+                      <li key={item.label}>
+                        <Component
+                          href={item.href}
+                          className="group flex items-center gap-2 text-sm font-bold text-olcan-navy/50 hover:text-olcan-navy transition-all duration-500 uppercase tracking-widest"
+                          {...extraProps}
+                        >
+                          <span className="relative overflow-hidden flex items-center gap-2">
+                            {item.label}
+                          </span>
+                        </Component>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ))}
@@ -151,13 +158,13 @@ export default function EnhancedFooter() {
             
             <div className="relative z-10 max-w-3xl mx-auto">
               <div className="bg-white/10 backdrop-blur-md border border-white/20 px-6 py-2 rounded-full inline-flex items-center gap-3 mb-10">
-                <Compass size={14} className="text-brand-400" />
-                <span className="label-xs text-white/80">Olcan Intelligence v2.5</span>
+                <Compass size={14} className="text-[#E5E7EB]" />
+                <span className="label-xs text-white/80">Olcan Compass</span>
               </div>
               
               <h3 className="font-display text-4xl md:text-6xl text-white mb-10 tracking-tight leading-[1.1]">
                 Pronto para iniciar sua <br />
-                <span className="italic font-light text-brand-400 font-serif">Jornada Global?</span>
+                <span className="italic font-light text-[#E5E7EB] font-serif">Jornada Global?</span>
               </h3>
               
               <p className="text-xl text-white/70 mb-14 font-medium leading-relaxed">

@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Microscope, Map, Zap, Brain } from 'lucide-react';
 
@@ -69,19 +70,20 @@ export const MissionBanner = ({ className }: { className?: string }) => {
               "Eu construí a Olcan porque cada pessoa que me pede ajuda merecia ter tido acesso a esse sistema antes — não depois de anos desperdiçados no escuro."
             </p>
             <footer className="flex flex-col gap-1">
-              <p className="font-bold tracking-widest text-[#C08A3C] uppercase text-xs">Ciro Moraes dos Reis</p>
+              <p className="font-bold tracking-widest text-brand-blue-light uppercase text-xs">Ciro Moraes dos Reis</p>
               <p className="text-white/40 text-[10px] uppercase tracking-widest font-medium">Fundador & CEO da Olcan</p>
             </footer>
           </blockquote>
         </div>
 
-        <div className="flex-1 relative w-full lg:w-auto h-[400px] lg:h-[500px] rounded-[3rem] overflow-hidden group">
-          <div className="absolute inset-0 bg-olcan-navy/20 z-10" />
-          <div className="bg-olcan-navy/20 animate-pulse absolute inset-0 z-0" />
-          <div className="absolute inset-0 flex items-center justify-center z-20">
-             <p className="text-white/40 text-[10px] uppercase font-medium tracking-widest">[ Foto Ciro Mentoria ]</p>
-          </div>
-          {/* We'll use a placeholder since it's a specific context photo the user mentioned */}
+        <div className="flex-1 relative w-full lg:w-auto h-[400px] lg:h-[500px] rounded-[3rem] overflow-hidden group shadow-2xl">
+          <Image
+            src="/images/ciro-mentoria-lse.jpg"
+            alt="Ciro Moraes - Mentoria"
+            fill
+            className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-olcan-navy/60 via-transparent to-transparent" />
         </div>
       </div>
     </section>

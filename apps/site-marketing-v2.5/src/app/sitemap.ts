@@ -2,6 +2,13 @@ import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://www.olcan.com.br'
+  const marketplaceHandles = [
+    'curso-cidadao-mundo',
+    'kit-application',
+    'rota-internacionalizacao',
+    'mentorias-olcan',
+    'compass-by-olcan',
+  ]
   
   return [
     {
@@ -41,24 +48,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/marketplace/curso-cidadao-mundo`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/marketplace/kit-application`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/marketplace/rota-internacionalizacao`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
       url: `${baseUrl}/termos`,
       lastModified: new Date(),
       changeFrequency: 'yearly',
@@ -76,5 +65,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.8,
     },
+    ...marketplaceHandles.map((handle) => ({
+      url: `${baseUrl}/marketplace/${handle}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    })),
   ]
 }

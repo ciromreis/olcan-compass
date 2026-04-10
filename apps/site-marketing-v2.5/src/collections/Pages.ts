@@ -11,9 +11,28 @@ export const Pages: CollectionConfig = {
   },
   fields: [
     {
+      name: 'slug',
+      type: 'text',
+      required: true,
+      unique: true,
+    },
+    {
       name: 'title',
       type: 'text',
       required: true,
+    },
+    {
+      name: 'status',
+      type: 'select',
+      options: [
+        { label: 'Draft', value: 'draft' },
+        { label: 'Published', value: 'published' },
+      ],
+      defaultValue: 'draft',
+    },
+    {
+      name: 'summary',
+      type: 'textarea',
     },
     {
       name: 'hero_section',

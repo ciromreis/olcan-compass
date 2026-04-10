@@ -4,15 +4,15 @@ import { motion } from "framer-motion";
 
 const partners = [
   { name: "SEBRAE ALI", desc: "Parceiro de Produtividade" },
-  { name: "GOOGLE", desc: "for Startups Antigravity" },
+  { name: "GOOGLE", desc: "for Startups" },
   { name: "ZENKLUB", desc: "Parceiro de Bem-Estar" },
 ];
 
 const stats = [
-  { value: "500+", label: "Brasileiros na jornada" },
-  { value: "12", label: "Perfis de Carreira mapeados" },
-  { value: "4", label: "Rotas internacionais" },
-  { value: "87%", label: "Satisfação NPS" },
+  { value: "Centenas", label: "Brasileiros na jornada" },
+  { value: "30+", label: "Países alcançados" },
+  { value: "10 min", label: "Diagnóstico gratuito" },
+  { value: "Método", label: "Próprio de diagnóstico" },
 ];
 
 export function TrustBar() {
@@ -30,7 +30,7 @@ export function TrustBar() {
               transition={{ delay: i * 0.1 }}
               className="text-center"
             >
-              <div className="font-heading font-extrabold text-3xl text-void mb-1">{stat.value}</div>
+              <div className="font-display font-extrabold text-3xl text-void mb-1">{stat.value}</div>
               <div className="text-ink-muted text-sm font-body">{stat.label}</div>
             </motion.div>
           ))}
@@ -40,7 +40,7 @@ export function TrustBar() {
         <div className="flex flex-wrap items-center justify-center gap-8 opacity-50">
           {partners.map((p) => (
             <div key={p.name} className="flex flex-col items-center gap-0.5">
-              <span className="font-heading font-extrabold text-sm tracking-widest text-ink">{p.name}</span>
+              <span className="font-display font-extrabold text-sm tracking-widest text-ink">{p.name}</span>
               <span className="text-xs text-ink-muted font-body">{p.desc}</span>
             </div>
           ))}

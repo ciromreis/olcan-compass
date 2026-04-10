@@ -52,7 +52,7 @@ export default function ManifestoSection() {
         >
           <h2 className="font-display text-4xl md:text-6xl lg:text-7xl text-white leading-[1.1] tracking-tight">
             No mundo pós-pandemia,<br />
-            <span className="italic font-light text-brand-400">o Brasil busca uma saída.</span>
+            <span className="italic font-light text-[#E5E7EB]">o Brasil busca uma saída.</span>
           </h2>
 
           {/* Featured quote */}

@@ -40,17 +40,17 @@ const config: Config = {
           900: "#00081D",
         },
 
-        // ─── Olcan Accent - Flame (uso reduzido, apenas para CTAs específicos) ───
-        flame: {
-          DEFAULT: "#D4691E",
-          50:  "#FDF6F3",
-          100: "#FAEEE8",
-          200: "#F5DDD1",
-          300: "#EDBFA8",
-          400: "#E19A70",
-          500: "#D4691E",
-          600: "#B85818",
-          700: "#8F4513",
+        // ─── Olcan Accent - Amber/Gold (micro-interactions & high-leverage CTAs) ───
+        amber: {
+          DEFAULT: "#FBBF24",
+          50:  "#FFFBEB",
+          100: "#FEF3C7",
+          200: "#FDE68A",
+          300: "#FCD34D",
+          400: "#FBBF24",
+          500: "#F59E0B",
+          600: "#D97706",
+          700: "#B45309",
         },
 
         // ─── Semantic aliases ───
@@ -63,12 +63,13 @@ const config: Config = {
           primary: "#0D0C0A",
           secondary: "#1F2937",
           muted: "#6B7280",
-          accent: "#E8421A",
+          accent: "#001338",
         }
       },
       fontFamily: {
-        display: ["'DM Serif Display'", "serif"],
-        sans:    ["'DM Sans'", "sans-serif"],
+        display: ["'Merriweather Sans'", "'DM Serif Display'", "serif"],
+        sans:    ["'Source Sans 3'", "'DM Sans'", "sans-serif"],
+        body:    ["'Source Sans 3'", "'DM Sans'", "sans-serif"],
         mono:    ["'JetBrains Mono'", "monospace"],
       },
       fontSize: {
@@ -89,10 +90,15 @@ const config: Config = {
           "50%":  { backgroundPosition: "100% 50%" },
           "100%": { backgroundPosition: "0% 50%" },
         },
+        "drift": {
+          "0%":   { transform: "translate(0, 0)" },
+          "100%": { transform: "translate(-48px, -48px)" },
+        },
       },
       animation: {
         "fade-up":      "fade-up 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards",
         "liquid-shift": "liquid-shift 12s ease infinite",
+        "drift":        "drift 60s linear infinite",
       },
       boxShadow: {
         glass:      "inset 0 1px 1px rgba(255,255,255,0.4), 0 4px 24px rgba(0,0,0,0.04)",

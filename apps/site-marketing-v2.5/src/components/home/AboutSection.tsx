@@ -11,7 +11,7 @@ const pillars = [
     title: "Mapeamento de Perfil Profissional",
     desc: "Descubra qual a melhor rota e oportunidades exclusivas para o seu perfil e ambições internacionais.",
     icon: Compass,
-    color: "flame"
+    color: "amber"
   },
   {
     title: "Prontidão Internacional",

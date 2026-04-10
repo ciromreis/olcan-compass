@@ -1,189 +1,238 @@
+'use client';
+
 import React from 'react';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { 
-  Globe, 
-  BookOpen, 
-  GraduationCap, 
-  Scale, 
-  BarChart3, 
-  School, 
-  Projector, 
-  Search, 
-  Smartphone, 
-  Navigation 
+import {
+  Globe,
+  BookOpen,
+  GraduationCap,
+  Scale,
+  BarChart3,
+  School,
+  Projector,
+  Search,
+  Smartphone,
+  Navigation,
 } from 'lucide-react';
 
+/**
+ * CeoTimeline — Beautiful Visual Timeline with Always-Visible Photos
+ *
+ * Photos are displayed prominently alongside content.
+ * Photos use object-cover for visual impact.
+ * Queen Elizabeth II photo receives "Sober Treatment": grayscale + contrast.
+ *
+ * Design: Alternating left/right layout with large photo cards
+ */
+
+interface TimelineItem {
+  year: string;
+  role: string;
+  location: string;
+  icon: React.ReactNode;
+  copy: string;
+  tag: string;
+  /** Path to the photo asset in /public/images/ */
+  imageSrc?: string;
+  imageAlt?: string;
+  /** Special filter treatment for archival photos */
+  soberTreatment?: boolean;
+}
+
+const items: TimelineItem[] = [
+  {
+    year: '2010–2013',
+    role: 'Coordenador — AIESEC Salvador',
+    location: 'Salvador, Brasil + Iași, Romênia + Buenos Aires, Argentina',
+    icon: <Globe className="w-5 h-5" />,
+    copy: 'Primeiro contato com liderança intercultural. Gerenciou voluntários em ONGs, coordenou intercâmbios internacionais e viveu experiências de campo na Romênia e na Argentina — antes de qualquer título formal.',
+    tag: 'Liderança · Cooperação Internacional',
+    imageSrc: '/images/ciro-timeline-1.jpg',
+    imageAlt: 'Ciro Moraes no Castelo de Peleș, Sinaia, Romênia — período AIESEC',
+  },
+  {
+    year: '2013',
+    role: 'Research Assistant — Woodrow Wilson Center',
+    location: 'Washington D.C., EUA',
+    icon: <BookOpen className="w-5 h-5" />,
+    copy: 'Participou do Prudential Foundation Global Citizens Program e colaborou em pesquisa sobre direitos das mulheres. Primeiro contato com o ecossistema de think tanks de Washington.',
+    tag: 'Pesquisa de Políticas Públicas',
+    imageSrc: '/images/ciro-timeline-2.jpg',
+    imageAlt: 'Ciro Moraes e colegas no Capitólio dos EUA, Washington D.C.',
+  },
+  {
+    year: '2014',
+    role: 'Programa de Fortalecimento do Serviço Civil — Fundação Botín',
+    location: 'EUA + Espanha + Brasil (Brown, Salamanca, FGV)',
+    icon: <GraduationCap className="w-5 h-5" />,
+    copy: 'Selecionado para programa competitivo de formação de líderes do setor público na América Latina. Passou por Brown University, Universidade de Salamanca e FGV em sequência.',
+    tag: 'Liderança Pública · América Latina',
+    imageSrc: '/images/ciro-timeline-3.jpg',
+    imageAlt: 'Ciro Moraes na Kennedy School of Government, Harvard, Boston — 2015',
+  },
+  {
+    year: '2016–2017',
+    role: 'MSc Políticas Públicas e Gestão — London School of Economics',
+    location: 'Londres, Reino Unido',
+    icon: <School className="w-5 h-5" />,
+    copy: 'Bolsa Chevening — o programa de bolsas mais competitivo do governo britânico. Focou em governança democrática e políticas baseadas em evidências. Um dos menos de 1.500 Chevening Scholars selecionados globalmente naquele ano.',
+    tag: 'Chevening Scholar · LSE',
+    imageSrc: '/images/ciro-timeline-4.jpg',
+    imageAlt: 'Ciro Moraes com a Rainha Elizabeth II — Recepção dos Chevening Scholars na London School of Economics',
+    soberTreatment: true,
+  },
+  {
+    year: '2019–2020',
+    role: 'Arquiteto de Impacto Social',
+    location: 'São Paulo, Brasil',
+    icon: <Projector className="w-5 h-5" />,
+    copy: 'Coordenou projetos de transformação educacional em escala nacional. Construiu pontes entre governo, sociedade civil e indicadores de impacto real — aprendendo a traduzir visão em execução mensurável.',
+    tag: 'Impacto Social · Gestão Estratégica',
+  },
+  {
+    year: '2021–2024',
+    role: 'Guardião da Integridade Digital',
+    location: 'São Paulo, Brasil',
+    icon: <Smartphone className="w-5 h-5" />,
+    copy: 'Liderou estratégias de segurança digital e combate à desinformação durante as eleições brasileiras de 2022 — em escala de bilhões de usuários. Construiu ecossistemas de confiança com universidades, fact-checkers e sociedade civil.',
+    tag: 'Segurança Digital · Escala Global',
+  },
+  {
+    year: '2026',
+    role: 'Cartógrafo de Travessias',
+    location: 'Brasil → Mundo',
+    icon: <Navigation className="w-5 h-5" />,
+    copy: 'Transformou décadas de travessia internacional em metodologia navegável. O Compass não é apenas um produto — é o mapa que Ciro gostaria de ter tido quando saíu de Nova Soure pela primeira vez.',
+    tag: 'Fundador · Produto · Legado',
+  },
+];
+
 export const CeoTimeline = ({ className }: { className?: string }) => {
-  const items = [
-    {
-      year: "2010–2013",
-      role: "Coordenador — AIESEC Salvador",
-      location: "Salvador, Brasil + Iași, Romênia + Buenos Aires, Argentina",
-      icon: <Globe className="w-5 h-5" />,
-      copy: "Primeiro contato com liderança intercultural. Gerenciou voluntários em ONGs, coordenou intercâmbios internacionais e viveu experiências de campo na Romênia e na Argentina — antes de qualquer título formal.",
-      tag: "Liderança · Cooperação Internacional"
-    },
-    {
-      year: "2013",
-      role: "Research Assistant — Woodrow Wilson Center",
-      location: "Washington D.C., EUA",
-      icon: <BookOpen className="w-5 h-5" />,
-      copy: "Participou do Prudential Foundation Global Citizens Program e colaborou em pesquisa sobre direitos das mulheres. Primeiro contato com o ecossistema de think tanks de Washington.",
-      tag: "Pesquisa de Políticas Públicas"
-    },
-    {
-      year: "2014",
-      role: "Programa de Fortalecimento do Serviço Civil — Fundação Botín",
-      location: "EUA + Espanha + Brasil (Brown, Salamanca, FGV)",
-      icon: <GraduationCap className="w-5 h-5" />,
-      copy: "Selecionado para programa competitivo de formação de líderes do setor público na América Latina. Passou por Brown University, Universidade de Salamanca e FGV em sequência.",
-      tag: "Liderança Pública · América Latina"
-    },
-    {
-      year: "2014",
-      role: "Estágio — Defensoria Pública da União",
-      location: "Brasil",
-      icon: <Scale className="w-5 h-5" />,
-      copy: "Atuou na defesa jurídica de cidadãos de baixa renda em previdência social e direitos humanos. A base que ancora toda a atuação posterior em impacto social.",
-      tag: "Direito · Impacto Social"
-    },
-    {
-      year: "2016",
-      role: "Trainee de Gestão Pública — Vetor Brasil",
-      location: "Cuiabá, Brasil",
-      icon: <BarChart3 className="w-5 h-5" />,
-      copy: "Implementou melhorias no setor público local. Desenvolveu estratégias baseadas em dados, negociou com lideranças sindicais e trabalhou com gestão de recursos humanos no setor público.",
-      tag: "Gestão Pública · Inovação"
-    },
-    {
-      year: "2016–2017",
-      role: "MSc Políticas Públicas e Gestão — London School of Economics",
-      location: "Londres, Reino Unido",
-      icon: <School className="w-5 h-5" />,
-      copy: "Bolsa Chevening — o programa de bolsas mais competitivo do governo britânico. Focou em governança democrática e políticas baseadas em evidências. Um dos menos de 1.500 Chevening Scholars selecionados globalmente naquele ano.",
-      tag: "Chevening Scholar · LSE"
-    },
-    {
-      year: "2019–2020",
-      role: "Analista de Projetos — Fundação Lemann",
-      location: "São Paulo, Brasil",
-      icon: <Projector className="w-5 h-5" />,
-      copy: "Gerenciou projetos de impacto na educação brasileira. Coordenou equipes multidisciplinares, elaborou propostas de captação e monitorou indicadores de impacto em parceria com governo e ONGs.",
-      tag: "Educação · Gestão de Projetos"
-    },
-    {
-      year: "2020–2021",
-      role: "Analista de Governança Local — Transparência Internacional Brasil",
-      location: "São Paulo, Brasil",
-      icon: <Search className="w-5 h-5" />,
-      copy: "Desenvolveu e implementou políticas de transparência anticorrupção em nível municipal. Conduziu pesquisas, workshops e publicações que influenciaram práticas de governança em todo o país.",
-      tag: "Anticorrupção · Governança"
-    },
-    {
-      year: "2021–2024",
-      role: "Outreach and Partnerships Manager — TikTok",
-      location: "São Paulo, Brasil",
-      icon: <Smartphone className="w-5 h-5" />,
-      copy: "Liderou estratégias de segurança digital e combate à desinformação durante as eleições brasileiras de 2022 — em escala de bilhões de usuários. Construiu parcerias com universidades, organizações da sociedade civil e agências de fact-checking.",
-      tag: "Segurança Digital · Parcerias Estratégicas"
-    },
-    {
-      year: "2024–presente",
-      role: "Coordenador do CCA — Transparência Internacional Brasil",
-      location: "São Paulo, Brasil",
-      icon: <Globe className="w-5 h-5" />,
-      copy: "Dirige o Centro de Contabilidade e Accountability, liderando a RedeGOV — rede de organizações anticorrupção em países lusófonos. Desenvolve estruturas de governança e materiais de advocacy.",
-      tag: "Liderança · Impacto Internacional"
-    },
-    {
-      year: "2026",
-      role: "Fundador & CEO — Olcan",
-      location: "Brasil → Mundo",
-      icon: <Navigation className="w-5 h-5" />,
-      copy: "Canaliza décadas de travessia internacional em um produto: o Compass. Uma plataforma que traduz a experiência vivida em sistema navegável para profissionais do Sul Global.",
-      tag: "Empreendedor · Produto · Mentoria"
-    }
-  ];
+  // Filter only items with photos for the main visual timeline
+  const photoItems = items.filter(item => item.imageSrc);
 
   return (
-    <section className={cn("py-32 relative overflow-hidden", className)}>
-      <div className="container-site max-w-5xl mx-auto px-6">
-        <div className="text-center mb-24 animate-fade-up">
-          <h2 className="font-display text-5xl md:text-6xl text-olcan-navy tracking-tight">
-            Uma trajetória construída <span className="italic font-light text-brand-blue">entre continentes.</span>
+    <section className={cn('py-32 relative overflow-hidden bg-gradient-to-b from-white to-cream', className)}>
+      <div className="container-site max-w-7xl mx-auto px-6">
+        <div className="text-center mb-20 animate-fade-up">
+          <p className="text-sm uppercase tracking-wider text-brand-500 mb-4 font-bold">
+            A Trajetória
+          </p>
+          <h2 className="font-display text-5xl md:text-6xl text-olcan-navy tracking-tight mb-6">
+            De Nova Soure ao Palácio de Buckingham
           </h2>
+          <p className="text-xl text-olcan-navy/70 max-w-3xl mx-auto leading-relaxed">
+            Cada foto conta uma parte da jornada que transformou experiência vivida em metodologia replicável.
+          </p>
         </div>
 
-        <div className="relative">
-          {/* Centered line for Desktop, hidden on Mobile */}
-          <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-olcan-navy/10 -translate-x-1/2" />
-          
-          <div className="space-y-20">
-            {items.map((item, idx) => (
-              <div key={idx} className={cn(
-                "relative flex flex-col md:flex-row gap-8 items-center",
-                idx % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
+        <div className="space-y-24">
+          {photoItems.map((item, idx) => (
+            <div
+              key={idx}
+              className={cn(
+                'grid lg:grid-cols-2 gap-12 items-center',
+                idx % 2 === 0 ? '' : 'lg:grid-flow-dense'
+              )}
+            >
+              {/* Photo Card - Always Visible */}
+              <div className={cn(
+                'relative group',
+                idx % 2 === 0 ? 'lg:col-start-1' : 'lg:col-start-2'
               )}>
-                {/* Desktop layout: Side text */}
-                <div className="flex-1 w-full md:text-right hidden md:block">
-                  {idx % 2 === 0 ? (
-                    <div className="space-y-2">
-                       <span className="text-xs font-bold uppercase tracking-widest text-[#C08A3C]">
-                        {item.year}
-                      </span>
-                      <p className="text-xs font-medium text-olcan-navy/40 uppercase tracking-widest">
-                        {item.location}
-                      </p>
-                    </div>
-                  ) : null}
-                </div>
-
-                {/* Central Icon */}
-                <div className="relative z-10 w-12 h-12 rounded-full bg-olcan-navy text-white flex items-center justify-center shadow-glass ring-8 ring-[#FAF9F6] shrink-0">
-                  {item.icon}
-                </div>
-
-                {/* Content Card */}
-                <div className="flex-1 w-full">
-                  <div className={cn(
-                    "card-olcan p-8 border-transparent hover:border-brand-blue/10 bg-white/60",
-                    idx % 2 === 0 ? "md:text-left" : "md:text-left" // Always left for the content inside card
-                  )}>
-                    {/* Mobile year info */}
-                    <div className="md:hidden flex flex-col mb-4">
-                      <span className="text-xs font-bold uppercase tracking-widest text-[#C08A3C]">
-                        {item.year}
-                      </span>
-                      <p className="text-[10px] font-medium text-olcan-navy/40 uppercase tracking-widest">
-                        {item.location}
-                      </p>
-                    </div>
-
-                    <div className="flex flex-col gap-3">
-                      <span className="inline-block self-start px-3 py-1 rounded-full bg-olcan-navy/5 text-[10px] font-bold text-olcan-navy uppercase tracking-widest">
-                        {item.tag}
-                      </span>
-                      <h3 className="font-display text-2xl text-olcan-navy italic">{item.role}</h3>
-                      <p className="text-sm font-medium text-olcan-navy/60 leading-relaxed font-body">
-                        {item.copy}
+                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
+                  <Image
+                    src={item.imageSrc!}
+                    alt={item.imageAlt || ''}
+                    fill
+                    className={cn(
+                      'object-cover transition-transform duration-700 group-hover:scale-105',
+                      item.soberTreatment && 'grayscale-[20%] contrast-125'
+                    )}
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                  {/* Subtle overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-olcan-navy/40 via-transparent to-transparent" />
+                  
+                  {/* Photo Caption */}
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <div className="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-3 rounded-lg">
+                      <p className="text-white text-xs font-bold tracking-wider">
+                        {item.imageAlt}
                       </p>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                {/* Desktop layout: Side text (opposite side) */}
-                <div className="flex-1 w-full md:text-left hidden md:block">
-                  {idx % 2 !== 0 ? (
-                    <div className="space-y-2">
-                       <span className="text-xs font-bold uppercase tracking-widest text-[#C08A3C]">
-                        {item.year}
-                      </span>
-                      <p className="text-xs font-medium text-olcan-navy/40 uppercase tracking-widest">
-                        {item.location}
-                      </p>
-                    </div>
-                  ) : null}
+              {/* Content Card */}
+              <div className={cn(
+                'space-y-6',
+                idx % 2 === 0 ? 'lg:col-start-2' : 'lg:col-start-1'
+              )}>
+                <div className="space-y-3">
+                  <span className="inline-block px-4 py-1.5 rounded-full bg-brand-500/10 text-brand-600 text-xs font-bold uppercase tracking-widest">
+                    {item.year}
+                  </span>
+                  <h3 className="font-display text-3xl md:text-4xl text-olcan-navy leading-tight">
+                    {item.role}
+                  </h3>
+                  <p className="text-sm font-medium text-olcan-navy/50 uppercase tracking-widest">
+                    {item.location}
+                  </p>
                 </div>
+
+                <div className="inline-block px-3 py-1 rounded-full bg-olcan-navy/5 text-[10px] font-bold text-olcan-navy uppercase tracking-widest">
+                  {item.tag}
+                </div>
+
+                <p className="text-lg text-olcan-navy/80 leading-relaxed font-body">
+                  {item.copy}
+                </p>
+
+                {/* Icon Badge */}
+                <div className="flex items-center gap-3 pt-4">
+                  <div className="w-10 h-10 rounded-full bg-olcan-navy text-white flex items-center justify-center">
+                    {item.icon}
+                  </div>
+                  <div className="h-px flex-1 bg-olcan-navy/10" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Additional Timeline Items Without Photos */}
+        <div className="mt-32 pt-16 border-t border-olcan-navy/10">
+          <h3 className="font-display text-3xl text-olcan-navy text-center mb-16">
+            Outras Experiências Formativas
+          </h3>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {items.filter(item => !item.imageSrc).map((item, idx) => (
+              <div key={idx} className="card-olcan p-6 bg-white/60 border-transparent hover:border-olcan-navy/10">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-olcan-navy/5 text-olcan-navy flex items-center justify-center shrink-0">
+                    {item.icon}
+                  </div>
+                  <div className="flex-1">
+                    <span className="text-xs font-bold uppercase tracking-widest text-brand-500 block mb-1">
+                      {item.year}
+                    </span>
+                    <p className="text-[10px] font-medium text-olcan-navy/40 uppercase tracking-widest">
+                      {item.location}
+                    </p>
+                  </div>
+                </div>
+                <span className="inline-block px-2 py-1 rounded-full bg-olcan-navy/5 text-[9px] font-bold text-olcan-navy uppercase tracking-widest mb-3">
+                  {item.tag}
+                </span>
+                <h4 className="font-display text-lg text-olcan-navy mb-2 leading-tight">
+                  {item.role}
+                </h4>
+                <p className="text-sm text-olcan-navy/60 leading-relaxed font-body">
+                  {item.copy}
+                </p>
               </div>
             ))}
           </div>

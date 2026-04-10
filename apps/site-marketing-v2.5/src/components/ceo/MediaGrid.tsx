@@ -6,9 +6,9 @@ import Link from 'next/link';
 export const MediaGrid = ({ className }: { className?: string }) => {
   const items = [
     "Chevening Scholars Network",
-    "Transparência Internacional",
     "TikTok Newsroom",
-    "Fundação Lemann"
+    "Fundação Lemann",
+    "Woodrow Wilson Center"
   ];
 
   return (
@@ -62,7 +62,7 @@ export const MinimalFooter = ({ className }: { className?: string }) => {
     <footer className={cn("py-16 bg-white border-t border-olcan-navy/5", className)}>
       <div className="container-site flex flex-col md:flex-row justify-between items-center gap-10">
         <p className="text-sm font-medium text-olcan-navy/40 uppercase tracking-widest">
-           Ciro Moraes dos Reis · Fundador & CEO da Olcan · ciromreis@gmail.com
+           Ciro Moraes dos Reis · Fundador & CEO da Olcan
         </p>
         
         <div className="flex items-center gap-8">
