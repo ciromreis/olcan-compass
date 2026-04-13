@@ -94,7 +94,7 @@ export default function ApplicationDetailPage() {
   }
 
   const readyDocs = app.documents.filter((d) => d.status === "ready").length;
-  const docProgress = Math.round((readyDocs / app.documents.length) * 100);
+  const docProgress = app.documents.length > 0 ? Math.round((readyDocs / app.documents.length) * 100) : 0;
   const st = STATUS_CONFIG[app.status];
   const probabilityScore = Math.min(95, Math.round(app.match * 0.7 + docProgress * 0.3));
   const submissionEligibility = evaluateApplicationSubmissionEligibility(app, gate);

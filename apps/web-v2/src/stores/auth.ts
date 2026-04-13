@@ -36,9 +36,15 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null });
         try {
           const { data } = await authApi.login({ email, password });
-          const token = data.token;
-          localStorage.setItem("access_token", token.access_token);
-          localStorage.setItem("refresh_token", token.refresh_token);
+          const accessToken = data.token?.access_token || (data as unknown as Record<string, string>).access_token;
+          const refreshToken = data.token?.refresh_token || (data as unknown as Record<string, string>).refresh_token;
+          if (!accessToken) {
+            throw new Error("Token de acesso não recebido do servidor.");
+          }
+          localStorage.setItem("access_token", accessToken);
+          if (refreshToken) {
+            localStorage.setItem("refresh_token", refreshToken);
+          }
 
           // Fetch full profile
           const { data: profile } = await authApi.me();
@@ -60,9 +66,15 @@ export const useAuthStore = create<AuthState>()(
             password,
             full_name: fullName,
           });
-          const token = data.token;
-          localStorage.setItem("access_token", token.access_token);
-          localStorage.setItem("refresh_token", token.refresh_token);
+          const accessToken = data.token?.access_token || (data as unknown as Record<string, string>).access_token;
+          const refreshToken = data.token?.refresh_token || (data as unknown as Record<string, string>).refresh_token;
+          if (!accessToken) {
+            throw new Error("Token de acesso não recebido do servidor.");
+          }
+          localStorage.setItem("access_token", accessToken);
+          if (refreshToken) {
+            localStorage.setItem("refresh_token", refreshToken);
+          }
 
           const { data: profile } = await authApi.me();
           set({ user: normalizeProfile(profile), isAuthenticated: true, isLoading: false });
