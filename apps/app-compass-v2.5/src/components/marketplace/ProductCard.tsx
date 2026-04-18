@@ -10,6 +10,7 @@ import { motion } from 'framer-motion'
 import { ShoppingCart, Star, Eye, TrendingUp, Award, Package, Zap } from 'lucide-react'
 import { GlassCard } from '@/components/ui'
 import Link from 'next/link'
+import Image from 'next/image'
 
 type ProductType = 'digital' | 'physical' | 'service' | 'hybrid'
 
@@ -51,7 +52,7 @@ const PRODUCT_TYPE_COLORS = {
   digital: 'text-purple-500',
   physical: 'text-blue-500',
   service: 'text-green-500',
-  hybrid: 'text-orange-500'
+  hybrid: 'text-slate-500'
 }
 
 export function ProductCard({ product, onAddToCart, showQuickAdd = true }: ProductCardProps) {
@@ -80,10 +81,11 @@ export function ProductCard({ product, onAddToCart, showQuickAdd = true }: Produ
           {/* Image */}
           <div className="relative aspect-square bg-gradient-to-br from-foreground/5 to-foreground/10 overflow-hidden">
             {product.images && product.images.length > 0 ? (
-              <img
+              <Image
                 src={product.images[0]}
                 alt={product.name}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
@@ -99,7 +101,7 @@ export function ProductCard({ product, onAddToCart, showQuickAdd = true }: Produ
                 </span>
               )}
               {product.is_bestseller && (
-                <span className="px-2 py-1 rounded-full bg-amber-500 text-white text-xs font-bold shadow-lg">
+                <span className="px-2 py-1 rounded-full bg-slate-500 text-white text-xs font-bold shadow-lg">
                   Bestseller
                 </span>
               )}
@@ -162,7 +164,7 @@ export function ProductCard({ product, onAddToCart, showQuickAdd = true }: Produ
             {/* Rating & Sales */}
             <div className="flex items-center gap-4 mb-3 text-sm">
               <div className="flex items-center gap-1">
-                <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                <Star className="w-4 h-4 text-slate-500 fill-slate-500" />
                 <span className="font-medium">{product.rating.toFixed(1)}</span>
                 <span className="text-foreground/40">({product.review_count})</span>
               </div>

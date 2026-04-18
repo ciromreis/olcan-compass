@@ -8,6 +8,8 @@ import { Chronicles } from '@/collections/Chronicles'
 import { Pages } from '@/collections/Pages'
 import { Archetypes } from '@/collections/Archetypes'
 import { Users } from '@/collections/Users'
+import { CommunityItems } from '@/collections/CommunityItems'
+import { Replies } from '@/collections/Replies'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -22,7 +24,23 @@ export default buildConfig({
     // Clinical Boutique / Liquid-Glass aesthetic injected via CSS later
     theme: 'dark',
   },
-  collections: [Users, Chronicles, Pages, Archetypes],
+  cors: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'https://app.olcan.com.br',
+    'https://site.olcan.com.br',
+    'https://nexus.olcan.com.br',
+    'https://zenith.olcan.com.br'
+  ],
+  csrf: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'https://app.olcan.com.br',
+    'https://site.olcan.com.br',
+    'https://nexus.olcan.com.br',
+    'https://zenith.olcan.com.br'
+  ],
+  collections: [Users, Chronicles, Pages, Archetypes, CommunityItems, Replies],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || 'fallback-secret-for-development-olcan',
   typescript: {

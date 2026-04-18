@@ -1,14 +1,14 @@
 import { ArrowRight, Shield, Brain, Map, Sparkles, FileText, Mic, Target, CheckCircle, Star } from "lucide-react";
 
 const VALUE_PROPS = [
-  { icon: Brain, title: "Diagnóstico Inteligente", description: "Avaliação psicológica e financeira que calibra sua jornada automaticamente." },
+  { icon: Brain, title: "Diagnóstico Inteligente", description: "Avaliação de perfil e financeira que calibra sua jornada automaticamente." },
   { icon: Map, title: "Rotas Estratégicas", description: "Grafos dinâmicos que recalculam seu caminho com base em mudanças reais do mercado." },
   { icon: Sparkles, title: "IA Especializada", description: "Documentos, entrevistas e narrativas otimizados por IA treinada em padrões internacionais." },
-  { icon: Shield, title: "Marketplace Verificado", description: "Advogados, tradutores e coaches vetados — contrate com escrow seguro." },
+  { icon: Shield, title: "Marketplace Verificado", description: "Advogados, tradutores e coaches vetados — contrate com pagamento protegido." },
 ];
 
 const STEPS = [
-  { number: "01", icon: Brain, title: "Diagnóstico", description: "Complete o perfil psicológico em 10 minutos e receba seu Score de Certeza." },
+  { number: "01", icon: Brain, title: "Avaliação", description: "Complete seu perfil de mobilidade em 10 minutos e receba seu Score de Certeza." },
   { number: "02", icon: Map, title: "Rota", description: "Receba rotas personalizadas com milestones, prazos e orçamento detalhado." },
   { number: "03", icon: FileText, title: "Documentos", description: "Use o Forge para criar cartas, CVs e narrativas com análise de IA." },
   { number: "04", icon: Mic, title: "Preparação", description: "Treine com simulador de entrevistas e acompanhe sua evolução." },
@@ -16,15 +16,15 @@ const STEPS = [
 ];
 
 const PLANS = [
-  { id: "free", name: "Explorador", price: "Grátis", period: "", highlight: false, features: ["Diagnóstico psicológico básico", "1 rota ativa", "Marketplace (visualizar)", "Suporte por e-mail"] },
-  { id: "pro", name: "Navegador", price: "R$ 79", period: "/mês", highlight: true, features: ["Diagnóstico completo (8 dimensões)", "3 rotas ativas", "Forge com IA ilimitada", "Simulador de entrevistas", "Marketplace (contratar)", "Suporte prioritário"] },
+  { id: "free", name: "Explorador", price: "Grátis", period: "", highlight: false, features: ["Perfil de mobilidade básico", "1 rota ativa", "Marketplace (visualizar)", "Suporte por e-mail"] },
+  { id: "pro", name: "Navegador", price: "R$ 79", period: "/mês", highlight: true, features: ["Perfil completo (8 dimensões)", "3 rotas ativas", "Forge com IA ilimitada", "Simulador de entrevistas", "Marketplace (contratar)", "Suporte prioritário"] },
   { id: "premium", name: "Comandante", price: "R$ 149", period: "/mês", highlight: false, features: ["Tudo do Navegador", "Rotas ilimitadas", "Coach IA dedicado", "Análise de competitividade", "Sprints personalizados", "Suporte 1:1"] },
 ];
 
 const TESTIMONIALS = [
   { name: "Carla M.", country: "Berlim, DE", text: "O Compass me deu clareza que eu não tinha depois de meses pesquisando sozinha. Meu visto saiu em 3 meses.", rating: 5 },
   { name: "Rafael S.", country: "Dublin, IE", text: "O simulador de entrevistas foi decisivo. Recebi 2 ofertas de emprego na Irlanda em 6 semanas.", rating: 5 },
-  { name: "Ana Paula T.", country: "Lisboa, PT", text: "O marketplace me conectou com uma advogada excelente. Escrow me deu segurança total.", rating: 5 },
+  { name: "Ana Paula T.", country: "Lisboa, PT", text: "O marketplace me conectou com uma advogada excelente. O pagamento protegido me deu segurança total.", rating: 5 },
 ];
 
 const STATS = [
@@ -67,7 +67,7 @@ export default function LandingPage() {
               <span className="bg-gradient-to-r from-brand-600 to-brand-500 bg-clip-text text-transparent">calculada com precisão</span>
             </h1>
             <p className="text-h4 text-text-secondary max-w-2xl mb-12 leading-relaxed">
-              O Olcan Compass transforma a complexidade da emigração em um plano de ação claro, personalizado e financeiramente otimizado. Do diagnóstico ao desembarque.
+              O Olcan Compass transforma a complexidade da emigração em um plano de ação claro, personalizado e financeiramente otimizado. Da avaliação ao desembarque.
             </p>
             <div className="flex flex-wrap gap-4">
               <a href="/register" className="bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 inline-flex items-center gap-2 px-8 py-4 rounded-xl text-white font-heading font-bold text-body transition-all shadow-xl hover:shadow-2xl hover:scale-105">
@@ -104,7 +104,7 @@ export default function LandingPage() {
               <span className="bg-gradient-to-r from-clay-600 to-clay-500 bg-clip-text text-transparent">em um só lugar</span>
             </h2>
             <p className="text-h4 text-text-secondary max-w-3xl mx-auto leading-relaxed">
-              Cinco verticais integradas que cobrem desde o diagnóstico psicológico até a compra do chip eSIM no desembarque.
+              Cinco verticais integradas que cobrem desde a avaliação de perfil até a compra do chip eSIM no desembarque.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -218,7 +218,7 @@ export default function LandingPage() {
             <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
             <h2 className="font-heading text-5xl md:text-6xl font-bold text-white mb-6 relative z-10">Pronto para dar o primeiro passo?</h2>
             <p className="text-h4 text-brand-50 max-w-2xl mx-auto mb-10 relative z-10 leading-relaxed">
-              Comece com o diagnóstico gratuito e descubra seu Score de Certeza em menos de 10 minutos.
+              Comece com a avaliação gratuita e descubra seu Score de Certeza em menos de 10 minutos.
             </p>
             <a href="/register" className="relative z-10 inline-flex items-center gap-2 px-10 py-5 rounded-xl bg-white text-brand-600 font-heading font-bold text-h4 hover:bg-cream-50 transition-all shadow-2xl hover:scale-105">
               Criar Minha Conta <ArrowRight className="w-5 h-5" />
@@ -233,7 +233,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <p className="font-heading font-bold text-brand-500 mb-3">Olcan Compass</p>
-              <p className="text-caption text-text-muted">Mobilidade global como serviço. Do diagnóstico ao desembarque.</p>
+              <p className="text-caption text-text-muted">Mobilidade global como serviço. Da avaliação ao desembarque.</p>
             </div>
             <div>
               <p className="font-heading font-semibold text-text-primary text-body-sm mb-3">Produto</p>

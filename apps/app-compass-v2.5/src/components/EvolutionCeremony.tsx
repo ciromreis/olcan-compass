@@ -196,7 +196,7 @@ export const EvolutionCeremony: React.FC<EvolutionCeremonyProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
               >
-                <h2 className="text-5xl font-bold text-white mb-4 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 bg-clip-text text-transparent">
+                <h2 className="text-5xl font-bold text-white mb-4 bg-gradient-to-r from-slate-400 via-pink-500 to-purple-600 bg-clip-text text-transparent">
                   Evolution Complete!
                 </h2>
                 <p className="text-2xl text-white/90 mb-2">
@@ -230,7 +230,7 @@ export const EvolutionCeremony: React.FC<EvolutionCeremonyProps> = ({
                     }}
                   >
                     {i % 3 === 0 ? (
-                      <Star className="w-6 h-6 text-yellow-400" fill="currentColor" />
+                      <Star className="w-6 h-6 text-slate-400" fill="currentColor" />
                     ) : i % 3 === 1 ? (
                       <Sparkles className="w-6 h-6 text-pink-400" />
                     ) : (

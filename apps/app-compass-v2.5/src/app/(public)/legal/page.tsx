@@ -20,9 +20,9 @@ export default function LegalPage() {
           <h3 className="font-heading text-h4 text-text-primary">Privacidade</h3>
           <p className="text-caption text-text-muted mt-1">LGPD Compliant</p>
         </a>
-        <a href="#escrow" className="card-surface p-6 text-center group hover:-translate-y-1 transition-transform">
+        <a href="#pagamento" className="card-surface p-6 text-center group hover:-translate-y-1 transition-transform">
           <Scale className="w-6 h-6 text-brand-500 mx-auto mb-3" />
-          <h3 className="font-heading text-h4 text-text-primary">Política de Escrow</h3>
+          <h3 className="font-heading text-h4 text-text-primary">Política de Pagamento Protegido</h3>
           <p className="text-caption text-text-muted mt-1">Marketplace e pagamentos</p>
         </a>
       </div>
@@ -30,23 +30,23 @@ export default function LegalPage() {
         <div id="termos" className="card-surface p-8">
           <h2 className="font-heading text-h2 text-text-primary mb-4">Termos de Uso</h2>
           <div className="prose prose-sm text-text-secondary space-y-3">
-            <p>Ao utilizar a plataforma Olcan Compass, você concorda com estes termos. A plataforma é um serviço de inteligência para mobilidade internacional que fornece ferramentas de diagnóstico, planejamento e conexão com profissionais.</p>
+            <p>Ao utilizar a plataforma Olcan Compass, você concorda com estes termos. A plataforma é um serviço de inteligência para mobilidade internacional que fornece ferramentas de avaliação, planejamento e conexão com profissionais.</p>
             <p>O Compass não é uma agência de imigração e não garante resultados de processos de visto ou admissão. Os scores e métricas são estimativas baseadas em dados fornecidos pelo usuário e modelos estatísticos.</p>
-            <p>Os profissionais listados no marketplace são prestadores independentes. O Olcan Compass atua como intermediário e não se responsabiliza diretamente pela qualidade dos serviços prestados, mas oferece mecanismos de escrow e resolução de disputas.</p>
+            <p>Os profissionais listados no marketplace são prestadores independentes. O Olcan Compass atua como intermediário e não se responsabiliza diretamente pela qualidade dos serviços prestados, mas oferece mecanismos de pagamento protegido e resolução de disputas.</p>
           </div>
         </div>
         <div id="privacidade" className="card-surface p-8">
           <h2 className="font-heading text-h2 text-text-primary mb-4">Política de Privacidade</h2>
           <div className="prose prose-sm text-text-secondary space-y-3">
             <p>Seus dados pessoais são protegidos por criptografia e Row Level Security (RLS). Nunca vendemos ou compartilhamos seus dados com terceiros para fins de marketing.</p>
-            <p>Dados psicológicos e financeiros são tratados como informações sensíveis e recebem camada adicional de proteção (PII masking) antes de qualquer processamento por IA.</p>
+            <p>Dados de perfil e financeiros são tratados como informações sensíveis e recebem camada adicional de proteção (PII masking) antes de qualquer processamento por IA.</p>
             <p>Em conformidade com a LGPD, você tem direito a: acessar, corrigir, exportar e solicitar a exclusão de todos os seus dados a qualquer momento.</p>
           </div>
         </div>
-        <div id="escrow" className="card-surface p-8">
-          <h2 className="font-heading text-h2 text-text-primary mb-4">Política de Escrow</h2>
+        <div id="pagamento" className="card-surface p-8">
+          <h2 className="font-heading text-h2 text-text-primary mb-4">Política de Pagamento Protegido</h2>
           <div className="prose prose-sm text-text-secondary space-y-3">
-            <p>Pagamentos no marketplace são processados via Stripe Connect. O valor é retido em escrow até que o serviço seja concluído e aprovado pelo comprador.</p>
+            <p>Pagamentos no marketplace são processados via Stripe Connect. O valor é retido em garantia até que o serviço seja concluído e aprovado pelo comprador.</p>
             <p>Em caso de disputa, ambas as partes têm 7 dias para apresentar evidências. A equipe do Compass media a resolução com base nos termos do serviço contratado.</p>
           </div>
         </div>

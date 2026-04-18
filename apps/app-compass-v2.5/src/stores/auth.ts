@@ -1,13 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { type UserProfile } from "@/lib/api";
+import { type UpdateProfilePayload, type UserProfile } from "@/lib/api";
 import { normalizeUserRole } from "@/lib/roles";
-import { apiClient } from "@/lib/api-client";
+import { apiClient, type AuthMeResponse } from "@/lib/api-client";
+import { eventBus } from "@/lib/event-bus";
 
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
-
-// Unified auth token key - shared across app, website, and marketplace
-const UNIFIED_TOKEN_KEY = 'olcan_access_token';
 
 function normalizeProfile(profile: UserProfile): UserProfile {
   return {
@@ -24,7 +22,28 @@ function makeDemoProfile(email: string, fullName?: string): UserProfile {
     role: "user",
     avatar_url: undefined,
     created_at: new Date().toISOString(),
+    language: "pt-BR",
+    timezone: "America/Sao_Paulo",
+    is_verified: true,
   };
+}
+
+function profileFromAuthMe(data: AuthMeResponse, previous?: UserProfile | null): UserProfile {
+  return normalizeProfile({
+    id: String(data.id),
+    email: data.email,
+    full_name: data.full_name || data.email.split("@")[0] || "Usuário",
+    role: data.role,
+    avatar_url: data.avatar_url ?? undefined,
+    created_at: data.created_at,
+    language: data.language,
+    timezone: data.timezone,
+    is_verified: data.is_verified,
+    is_premium: data.is_premium ?? previous?.is_premium,
+    economics: data.economics,
+    momentum: data.momentum,
+    psychology: data.psychology,
+  });
 }
 
 interface AuthState {
@@ -38,7 +57,10 @@ interface AuthState {
   logout: () => void;
   fetchProfile: () => Promise<boolean>;
   clearError: () => void;
-  updateLocalUser: (updates: Partial<Pick<UserProfile, "full_name">>) => void;
+  updateLocalUser: (
+    updates: Partial<Pick<UserProfile, "full_name" | "language" | "timezone" | "avatar_url">>,
+  ) => void;
+  updateProfile: (updates: UpdateProfilePayload) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -60,15 +82,13 @@ export const useAuthStore = create<AuthState>()(
 
           await apiClient.login({ username: email, password });
           const userData = await apiClient.getCurrentUser();
-          const profile: UserProfile = {
-            id: userData.id.toString(),
-            email: userData.email,
-            full_name: userData.full_name || userData.username,
-            role: 'user',
-            avatar_url: userData.avatar_url || undefined,
-            created_at: userData.created_at,
-          };
-          set({ user: normalizeProfile(profile), isAuthenticated: true, isLoading: false });
+          set({
+            user: profileFromAuthMe(userData),
+            isAuthenticated: true,
+            isLoading: false,
+          });
+          // Emit daily active event for gamification/streaks
+          eventBus.emit("user.daily_active", { userId: userData.id });
         } catch (err: unknown) {
           const message =
             (err as Error)?.message ||
@@ -88,22 +108,19 @@ export const useAuthStore = create<AuthState>()(
           }
 
           const username = email.split('@')[0];
-          const userData = await apiClient.register({
+          await apiClient.register({
             email,
             username,
             password,
             full_name: fullName,
           });
           await apiClient.login({ username, password });
-          const profile: UserProfile = {
-            id: userData.id.toString(),
-            email: userData.email,
-            full_name: userData.full_name || userData.username,
-            role: 'user',
-            avatar_url: userData.avatar_url || undefined,
-            created_at: userData.created_at,
-          };
-          set({ user: normalizeProfile(profile), isAuthenticated: true, isLoading: false });
+          const userData = await apiClient.getCurrentUser();
+          set({
+            user: profileFromAuthMe(userData),
+            isAuthenticated: true,
+            isLoading: false,
+          });
         } catch (err: unknown) {
           const message =
             (err as Error)?.message ||
@@ -122,15 +139,10 @@ export const useAuthStore = create<AuthState>()(
         try {
           if (DEMO_MODE) return true;
           const userData = await apiClient.getCurrentUser();
-          const profile: UserProfile = {
-            id: userData.id.toString(),
-            email: userData.email,
-            full_name: userData.full_name || userData.username,
-            role: 'user',
-            avatar_url: userData.avatar_url || undefined,
-            created_at: userData.created_at,
-          };
-          set({ user: normalizeProfile(profile), isAuthenticated: true });
+          set((state) => ({
+            user: profileFromAuthMe(userData, state.user),
+            isAuthenticated: true,
+          }));
           return true;
         } catch {
           set({ user: null, isAuthenticated: false });
@@ -145,6 +157,27 @@ export const useAuthStore = create<AuthState>()(
         set((state) => ({
           user: state.user ? { ...state.user, ...updates } : state.user,
         })),
+
+      updateProfile: async (updates) => {
+        if (DEMO_MODE) {
+          set((state) => ({
+            user: state.user
+              ? normalizeProfile({
+                  ...state.user,
+                  ...(updates.full_name !== undefined ? { full_name: updates.full_name } : {}),
+                  ...(updates.language !== undefined ? { language: updates.language } : {}),
+                  ...(updates.timezone !== undefined ? { timezone: updates.timezone } : {}),
+                  ...(updates.avatar_url !== undefined ? { avatar_url: updates.avatar_url } : {}),
+                })
+              : state.user,
+          }));
+          return;
+        }
+        const data = await apiClient.updateMyProfile(updates);
+        set((state) => ({
+          user: profileFromAuthMe(data, state.user),
+        }));
+      },
     }),
     {
       name: "olcan-auth",

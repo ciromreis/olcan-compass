@@ -5,7 +5,7 @@ import Link from "next/link";
 import { AlertTriangle, ArrowRight, Zap } from "lucide-react";
 import { useSprintStore } from "@/stores/sprints";
 import { useRouteStore } from "@/stores/routes";
-import { usePsychStore } from "@/stores/psych";
+import { hasOiosArchetypeEstablished, usePsychStore } from "@/stores/psych";
 import { useHydration } from "@/hooks";
 import { EmptyState, PageHeader, Skeleton } from "@/components/ui";
 import { normalizeForComparison } from "@/lib/text-normalize";
@@ -24,7 +24,16 @@ export default function GapsRankedPage() {
   const hydrated = useHydration();
   const { sprints } = useSprintStore();
   const { routes, getRouteProgress } = useRouteStore();
-  const { isComplete, getOverallScore } = usePsychStore();
+  const {
+    isComplete,
+    getOverallScore,
+    oiosAssessmentComplete,
+    oiosSnapshot,
+  } = usePsychStore();
+  const hasOiosArchetype = hasOiosArchetypeEstablished({
+    oiosAssessmentComplete,
+    oiosSnapshot,
+  });
 
   const gaps = useMemo(() => {
     if (!hydrated) return [];
@@ -75,6 +84,19 @@ export default function GapsRankedPage() {
       });
     }
 
+    if (!hasOiosArchetype) {
+      result.push({
+        rank: 0,
+        dimension: "Psicológica",
+        gap: "Diagnóstico de mobilidade não realizado",
+        impact: "Médio",
+        detail:
+          "O diagnóstico alinha presença, entrevistas e recomendações ao seu perfil. Leva poucos minutos e complementa o mapeamento Likert de 8 blocos.",
+        action: "Fazer diagnóstico",
+        link: "/onboarding/quiz",
+      });
+    }
+
     if (!isComplete()) {
       result.push({ rank: 0, dimension: "Psicológica", gap: "Diagnóstico psicológico incompleto", impact: "Alto", detail: "Sem diagnóstico, o score psicológico é 0. Isso impacta 15% da nota geral.", action: "Iniciar diagnóstico", link: "/profile/psych" });
     } else if (getOverallScore() < 50) {
@@ -84,7 +106,15 @@ export default function GapsRankedPage() {
     const impactOrder = { Alto: 0, Médio: 1, Baixo: 2 };
     result.sort((a, b) => impactOrder[a.impact] - impactOrder[b.impact]);
     return result.map((g, i) => ({ ...g, rank: i + 1 }));
-  }, [hydrated, sprints, routes, getRouteProgress, isComplete, getOverallScore]);
+  }, [
+    hydrated,
+    sprints,
+    routes,
+    getRouteProgress,
+    hasOiosArchetype,
+    isComplete,
+    getOverallScore,
+  ]);
 
   if (!hydrated) {
     return <div className="max-w-4xl mx-auto space-y-6"><Skeleton className="h-10 w-64" />{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-32" />)}</div>;

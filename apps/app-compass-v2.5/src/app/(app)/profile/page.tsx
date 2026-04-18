@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { User, Mail, MapPin, DollarSign, Globe, Brain, Edit, Shield, Save, X, FileText, Mic, Calendar, TrendingUp, Target, ChevronDown, ChevronUp, CheckCircle2, Circle } from "lucide-react";
 import { useAuthStore } from "@/stores/auth";
-import { usePsychStore } from "@/stores/psych";
+import { hasOiosArchetypeEstablished, usePsychStore } from "@/stores/psych";
 import { useForgeStore } from "@/stores/forge";
 import { useInterviewStore } from "@/stores/interviews";
 import { useApplicationStore } from "@/stores/applications";
@@ -19,7 +19,17 @@ export default function ProfilePage() {
   const { user, updateLocalUser } = useAuthStore();
   const { origin: savedOrigin, destination: savedDestination, plan, updatePrefs } = useProfileStore();
   const PLAN_LABELS: Record<string, string> = { free: "Explorador", pro: "Navegador", premium: "Comandante" };
-  const { completedDimensions, getOverallScore, isComplete } = usePsychStore();
+  const {
+    completedDimensions,
+    getOverallScore,
+    isComplete,
+    oiosAssessmentComplete,
+    oiosSnapshot,
+  } = usePsychStore();
+  const hasOiosArchetype = hasOiosArchetypeEstablished({
+    oiosAssessmentComplete,
+    oiosSnapshot,
+  });
   const { documents } = useForgeStore();
   const { sessions } = useInterviewStore();
   const { applications } = useApplicationStore();
@@ -57,13 +67,30 @@ export default function ProfilePage() {
       { key: "name", label: "Nome completo definido", done: !!(user?.full_name && user.full_name !== "Usuário do Compass"), href: undefined },
       { key: "origin", label: "Cidade de origem configurada", done: !!savedOrigin, href: undefined },
       { key: "destination", label: "Destino pretendido configurado", done: !!savedDestination, href: undefined },
+      {
+        key: "oios",
+        label: "Avaliação de perfil de mobilidade",
+        done: hasOiosArchetype,
+        href: "/onboarding/quiz",
+      },
       { key: "psych", label: "Diagnóstico psicológico completo", done: isComplete(), href: "/profile/psych" },
       { key: "route", label: "Primeira rota criada", done: routes.length > 0, href: "/routes/new" },
       { key: "sprint", label: "Primeiro sprint iniciado", done: sprints.length > 0, href: "/sprints/new" },
       { key: "forge", label: "Primeiro documento no Forge", done: documents.length > 0, href: "/forge/new" },
       { key: "interview", label: "Primeira entrevista simulada", done: sessions.length > 0, href: "/interviews/new" },
     ];
-  }, [hydrated, user, savedOrigin, savedDestination, isComplete, routes, sprints, documents, sessions]);
+  }, [
+    hydrated,
+    user,
+    savedOrigin,
+    savedDestination,
+    hasOiosArchetype,
+    isComplete,
+    routes,
+    sprints,
+    documents,
+    sessions,
+  ]);
 
   const completionScore = useMemo(() => {
     if (completionSteps.length === 0) return 0;
@@ -119,15 +146,15 @@ export default function ProfilePage() {
         actions={
           editing ? (
             <div className="flex gap-2">
-              <button onClick={() => setEditing(false)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-cream-500 text-text-secondary text-body-sm font-medium hover:bg-cream-200 transition-colors">
+              <button onClick={() => setEditing(false)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 text-slate-600 text-body-sm font-medium hover:bg-slate-50 transition-colors">
                 <X className="w-4 h-4" /> Cancelar
               </button>
-              <button onClick={handleSave} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-500 text-white text-body-sm font-semibold hover:bg-brand-600 transition-colors">
+              <button onClick={handleSave} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 text-white text-body-sm font-semibold hover:bg-slate-800 transition-colors">
                 <Save className="w-4 h-4" /> Salvar
               </button>
             </div>
           ) : (
-            <button onClick={handleStartEdit} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-cream-500 text-text-secondary text-body-sm font-medium hover:bg-cream-200 transition-colors">
+            <button onClick={handleStartEdit} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 text-slate-600 text-body-sm font-medium hover:bg-slate-50 transition-colors">
               <Edit className="w-4 h-4" /> Editar
             </button>
           )
@@ -136,8 +163,8 @@ export default function ProfilePage() {
 
       <div className="card-surface p-8">
         <div className="flex items-start gap-6">
-          <div className="w-20 h-20 rounded-2xl bg-brand-50 flex items-center justify-center flex-shrink-0">
-            <User className="w-10 h-10 text-brand-400" />
+          <div className="w-20 h-20 rounded-2xl bg-slate-50 flex items-center justify-center flex-shrink-0 border border-slate-100">
+            <User className="w-10 h-10 text-slate-400" />
           </div>
           <div className="flex-1">
             {editing ? (
@@ -172,11 +199,11 @@ export default function ProfilePage() {
             <div className="flex items-center gap-4 min-w-0">
               <div className="relative w-12 h-12 flex-shrink-0">
                 <svg className="w-12 h-12 -rotate-90" viewBox="0 0 48 48">
-                  <circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" strokeWidth="4" className="text-cream-300" />
+                  <circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" strokeWidth="4" className="text-slate-100" />
                   <circle
                     cx="24" cy="24" r="20" fill="none" stroke="currentColor" strokeWidth="4"
                     strokeDasharray={`${(completionScore / 100) * 125.66} 125.66`}
-                    className={completionScore >= 70 ? "text-brand-500" : completionScore >= 40 ? "text-amber-400" : "text-clay-400"}
+                    className={completionScore >= 70 ? "text-slate-900" : completionScore >= 40 ? "text-slate-500" : "text-slate-300"}
                     strokeLinecap="round"
                   />
                 </svg>
@@ -196,10 +223,10 @@ export default function ProfilePage() {
             <div className="border-t border-cream-200 px-5 py-4 grid sm:grid-cols-2 gap-2">
               {completionSteps.map((step) => {
                 const content = (
-                  <span className={`flex items-center gap-2 text-body-sm px-3 py-2 rounded-lg transition-colors ${step.done ? "text-text-secondary" : "text-text-primary font-medium"} ${!step.done && step.href ? "hover:bg-cream-100 cursor-pointer" : ""}`}>
+                  <span className={`flex items-center gap-2 text-body-sm px-3 py-2 rounded-lg transition-colors ${step.done ? "text-slate-500" : "text-slate-900 font-medium"} ${!step.done && step.href ? "hover:bg-slate-50 cursor-pointer" : ""}`}>
                     {step.done
-                      ? <CheckCircle2 className="w-4 h-4 text-brand-500 flex-shrink-0" />
-                      : <Circle className="w-4 h-4 text-cream-500 flex-shrink-0" />}
+                      ? <CheckCircle2 className="w-4 h-4 text-slate-900 flex-shrink-0" />
+                      : <Circle className="w-4 h-4 text-slate-300 flex-shrink-0" />}
                     <span className={step.done ? "line-through" : ""}>{step.label}</span>
                   </span>
                 );
@@ -214,24 +241,24 @@ export default function ProfilePage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Link href="/forge" className="card-surface p-4 text-center group hover:-translate-y-0.5 transition-transform">
-          <FileText className="w-5 h-5 text-brand-500 mx-auto mb-1" />
-          <p className="font-heading font-bold text-h3 text-text-primary">{stats.docs}</p>
-          <p className="text-caption text-text-muted">Documentos</p>
+          <FileText className="w-5 h-5 text-slate-800 mx-auto mb-1" />
+          <p className="font-heading font-bold text-h3 text-slate-900">{stats.docs}</p>
+          <p className="text-caption text-slate-500">Documentos</p>
         </Link>
         <Link href="/interviews" className="card-surface p-4 text-center group hover:-translate-y-0.5 transition-transform">
-          <Mic className="w-5 h-5 text-clay-500 mx-auto mb-1" />
-          <p className="font-heading font-bold text-h3 text-text-primary">{stats.interviews}</p>
-          <p className="text-caption text-text-muted">Entrevistas</p>
+          <Mic className="w-5 h-5 text-slate-800 mx-auto mb-1" />
+          <p className="font-heading font-bold text-h3 text-slate-900">{stats.interviews}</p>
+          <p className="text-caption text-slate-500">Entrevistas</p>
         </Link>
         <Link href="/applications" className="card-surface p-4 text-center group hover:-translate-y-0.5 transition-transform">
-          <Calendar className="w-5 h-5 text-sage-500 mx-auto mb-1" />
-          <p className="font-heading font-bold text-h3 text-text-primary">{stats.apps}</p>
-          <p className="text-caption text-text-muted">Candidaturas</p>
+          <Calendar className="w-5 h-5 text-slate-800 mx-auto mb-1" />
+          <p className="font-heading font-bold text-h3 text-slate-900">{stats.apps}</p>
+          <p className="text-caption text-slate-500">Candidaturas</p>
         </Link>
         <Link href="/sprints" className="card-surface p-4 text-center group hover:-translate-y-0.5 transition-transform">
-          <Target className="w-5 h-5 text-text-secondary mx-auto mb-1" />
-          <p className="font-heading font-bold text-h3 text-text-primary">{stats.sprints}</p>
-          <p className="text-caption text-text-muted">Sprints</p>
+          <Target className="w-5 h-5 text-slate-800 mx-auto mb-1" />
+          <p className="font-heading font-bold text-h3 text-slate-900">{stats.sprints}</p>
+          <p className="text-caption text-slate-500">Sprints</p>
         </Link>
       </div>
 
@@ -241,10 +268,10 @@ export default function ProfilePage() {
             <ProgressRing value={psychStatus.score} size={84} strokeWidth={8} variant="auto" className="flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center"><Brain className="w-5 h-5 text-brand-500" /></div>
+                <div className="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center border border-slate-100"><Brain className="w-5 h-5 text-slate-800" /></div>
                 <div>
-                  <h3 className="font-heading text-h4 text-text-primary">Perfil Psicológico</h3>
-                  <p className="text-caption text-text-muted">{psychStatus.label}</p>
+                  <h3 className="font-heading text-h4 text-slate-900">Perfil Psicológico</h3>
+                  <p className="text-caption text-slate-500">{psychStatus.label}</p>
                 </div>
               </div>
               <p className="text-body-sm text-text-secondary mb-3">Complete o diagnóstico para calibrar sua jornada e receber recomendações personalizadas.</p>
@@ -258,10 +285,10 @@ export default function ProfilePage() {
             <ProgressRing value={readinessStatus.score} size={84} strokeWidth={8} variant="auto" className="flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-lg bg-sage-50 flex items-center justify-center"><Shield className="w-5 h-5 text-sage-500" /></div>
+                <div className="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center border border-slate-100"><Shield className="w-5 h-5 text-slate-800" /></div>
                 <div>
-                  <h3 className="font-heading text-h4 text-text-primary">Prontidão</h3>
-                  <p className="text-caption text-text-muted">{readinessStatus.label}</p>
+                  <h3 className="font-heading text-h4 text-slate-900">Prontidão</h3>
+                  <p className="text-caption text-slate-500">{readinessStatus.label}</p>
                 </div>
               </div>
               <p className="text-body-sm text-text-secondary mb-3">Verifique sua prontidão em finanças, documentação, idioma, psicológico e logística.</p>
@@ -278,8 +305,8 @@ export default function ProfilePage() {
 
       <div className="card-surface p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-heading text-h4 text-text-primary">Atividade Recente</h3>
-          <Link href="/dashboard" className="text-body-sm text-brand-500 font-medium hover:underline flex items-center gap-1">
+          <h3 className="font-heading text-h4 text-slate-950">Atividade Recente</h3>
+          <Link href="/dashboard" className="text-body-sm text-slate-600 font-medium hover:underline flex items-center gap-1">
             <TrendingUp className="w-3.5 h-3.5" /> Ver Dashboard
           </Link>
         </div>

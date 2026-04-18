@@ -33,12 +33,12 @@ interface CompanionCustomizationProps {
     badge?: string
   }
   availableOptions: CustomizationOption[]
-  onApply: (customization: any) => void
+  onApply: (customization: Record<string, unknown>) => void
   onPurchase?: (optionId: string) => void
 }
 
 export const CompanionCustomization: React.FC<CompanionCustomizationProps> = ({
-  companionId,
+  companionId: _companionId,
   currentCustomization,
   availableOptions,
   onApply,

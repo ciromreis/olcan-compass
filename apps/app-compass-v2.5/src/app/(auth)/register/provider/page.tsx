@@ -48,7 +48,7 @@ export default function ProviderRegisterPage() {
       }
 
       await fetchProfile();
-      router.push("/verify-email?provider=1");
+      router.push("/provider/onboarding");
     } catch (err: unknown) {
       const message =
         (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ||

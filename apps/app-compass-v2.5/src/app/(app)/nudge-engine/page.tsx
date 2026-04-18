@@ -1,5 +1,7 @@
 "use client";
 
+import { ComingSoonPanel } from "@/components/product/ComingSoonPanel";
+import { productSurface } from "@/lib/product-flags";
 import { Brain, Flame, RefreshCcw, ShieldAlert, Sparkles, Target } from "lucide-react";
 import { Button, Card } from "@/components/ui";
 import {
@@ -13,7 +15,7 @@ import {
 const ARCHETYPE_OPTIONS = Object.values(ARCHETYPES_DB);
 const FEAR_OPTIONS = Object.entries(FEAR_CLUSTER_DB) as Array<[FearCluster, string]>;
 
-export default function NudgeEnginePage() {
+function NudgeEngineInner() {
   const {
     archetype,
     fearCluster,
@@ -206,4 +208,20 @@ export default function NudgeEnginePage() {
       </section>
     </div>
   );
+}
+
+export default function NudgeEnginePage() {
+  if (!productSurface.nudgeEngine) {
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center p-6">
+        <ComingSoonPanel
+          title="Motor de comportamento (interno)"
+          description="Esta área é um laboratório de UX para o time de produto. Ative com NEXT_PUBLIC_FEATURE_NUDGE_ENGINE=true apenas em ambientes de experimentação."
+          backHref="/dashboard"
+        />
+      </div>
+    );
+  }
+
+  return <NudgeEngineInner />;
 }

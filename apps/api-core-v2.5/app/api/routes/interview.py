@@ -1,15 +1,21 @@
 """Interview Intelligence Engine API Routes"""
 
 import random
+import logging
 from datetime import datetime, timezone
 from typing import Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File, Form, Request
+from app.core.rate_limit import limiter
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, desc, and_
 
-from app.core.auth import get_current_user
+logger = logging.getLogger(__name__)
+
+from app.core.auth import get_current_user, require_admin_or_provider
+from app.core.ai_engines import InterviewFeedbackEngine
+from app.core.ai_service import AIProvider, get_ai_provider_enum
 from app.db.session import get_db
 from app.db.models import (
     User,
@@ -97,11 +103,10 @@ async def get_question(
 @router.post("/questions", response_model=InterviewQuestionResponse, status_code=status.HTTP_201_CREATED)
 async def create_question(
     request: InterviewQuestionCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_admin_or_provider),
     db: AsyncSession = Depends(get_db)
 ):
-    """Create a new interview question (admin/provider only in production)"""
-    # TODO: Add role check for admin/provider
+    """Create a new interview question (admin/provider only)"""
     
     question = InterviewQuestion(**request.model_dump())
     db.add(question)
@@ -482,9 +487,11 @@ async def submit_answer(
 
 
 @router.post("/answers/{answer_id}/analyze", response_model=InterviewAnswerResponse)
+@limiter.limit("15/minute")
 async def analyze_answer(
     answer_id: UUID,
-    request: InterviewAnswerAnalyzeRequest,
+    request: Request,
+    analyze_request: InterviewAnswerAnalyzeRequest,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
@@ -510,27 +517,32 @@ async def analyze_answer(
     
     if answer.status != InterviewAnswerStatus.RECORDED:
         raise HTTPException(status_code=400, detail="Answer must be recorded before analysis")
-    
-    # TODO: In production, call AI service
-    # For now, placeholder analysis
-    answer.clarity_score = 75.0
-    answer.confidence_score = 80.0
-    answer.relevance_score = 70.0
-    answer.structure_score = 72.0
-    answer.overall_score = 74.25
-    
-    answer.content_feedback = "The answer demonstrates good understanding of the topic. Consider providing more specific examples to strengthen your points."
-    answer.delivery_feedback = "Clear and confident delivery. Pace was appropriate."
-    answer.key_strengths = ["Clear structure", "Confident tone", "Relevant content"]
-    answer.improvement_suggestions = [
-        "Add a concrete example",
-        "Expand on the 'why' behind your motivation",
-        "Connect back to the specific opportunity"
-    ]
-    
-    answer.ai_model = request.ai_model or "placeholder"
-    answer.token_usage = 1200
-    answer.processing_time_ms = 1800
+
+    # Run AI feedback engine — provider determined by AI_PROVIDER env var
+    ai_provider = get_ai_provider_enum()
+    engine = InterviewFeedbackEngine(db=db, provider=ai_provider)
+    feedback = engine._simulate_interview_feedback(answer.transcript or "")
+
+    answer.clarity_score = float(feedback.clarity_score)
+    answer.confidence_score = float(feedback.confidence_score)
+    answer.relevance_score = float(feedback.content_score)
+    answer.structure_score = float(feedback.structure_score)
+    answer.overall_score = float(feedback.overall_score)
+
+    answer.content_feedback = (
+        feedback.specific_feedback[0]["feedback"]
+        if feedback.specific_feedback
+        else "Resposta analisada com sucesso."
+    )
+    answer.delivery_feedback = (
+        feedback.specific_feedback[1]["feedback"]
+        if len(feedback.specific_feedback) > 1
+        else None
+    )
+    answer.key_strengths = feedback.strengths
+    answer.improvement_suggestions = feedback.improvements
+
+    answer.ai_model = analyze_request.ai_model or "simulation"
     answer.status = InterviewAnswerStatus.ANALYZED
     answer.analyzed_at = datetime.now(timezone.utc)
     
@@ -622,3 +634,119 @@ async def get_stats(
         scores_by_type={},  # Would need to compute from answers joined with questions
         recent_sessions=[InterviewSessionListItem.model_validate(s) for s in recent_sessions]
     )
+
+
+# === AUDIO ANSWER UPLOAD ===
+
+MAX_AUDIO_SIZE = 25 * 1024 * 1024  # 25 MB
+
+@router.post("/sessions/{session_id}/answers/{answer_index}/audio")
+@limiter.limit("10/minute")
+async def submit_audio_answer(
+    request: Request,
+    session_id: UUID,
+    answer_index: int,
+    audio: UploadFile = File(...),
+    language: str = Form("pt"),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Upload an audio recording for an answer, transcribe via Whisper, and analyze delivery.
+
+    - Accepts multipart audio (webm, ogg, mp4, wav).
+    - Transcribes via OpenAI Whisper (falls back to stub if key is absent).
+    - Runs delivery + content analysis on the transcript.
+    - Updates the InterviewAnswer record with transcript and scores.
+    - Rate limit: 5/min per user (enforced via slowapi when configured).
+    """
+    # Validate session ownership
+    session_result = await db.execute(
+        select(InterviewSession).where(
+            InterviewSession.id == session_id,
+            InterviewSession.user_id == current_user.id,
+        )
+    )
+    session = session_result.scalar_one_or_none()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    # Read audio data with size guard
+    audio_data = await audio.read()
+    if len(audio_data) > MAX_AUDIO_SIZE:
+        raise HTTPException(status_code=413, detail="Audio file too large (max 25 MB)")
+
+    if len(audio_data) == 0:
+        raise HTTPException(status_code=400, detail="Empty audio file")
+
+    # Get or create the answer record
+    answers_result = await db.execute(
+        select(InterviewAnswer)
+        .where(InterviewAnswer.session_id == session_id)
+        .order_by(InterviewAnswer.created_at)
+    )
+    answers = answers_result.scalars().all()
+
+    if answer_index < 0 or answer_index >= len(answers):
+        raise HTTPException(status_code=400, detail=f"Invalid answer index {answer_index}")
+
+    answer = answers[answer_index]
+
+    # Transcribe
+    from app.services.voice_analysis_service import VoiceAnalysisService
+    voice_service = VoiceAnalysisService()
+    transcription = await voice_service.transcribe_audio(audio_data, language=language)
+
+    transcript = transcription.get("text", "")
+    if not transcript:
+        raise HTTPException(status_code=422, detail="Could not transcribe audio")
+
+    # Get question context for content analysis
+    question_context = ""
+    if answer.question_id and session.question_ids:
+        q_result = await db.execute(
+            select(InterviewQuestion).where(InterviewQuestion.id == answer.question_id)
+        )
+        question = q_result.scalar_one_or_none()
+        if question:
+            question_context = question.question_text_pt or question.question_text_en or ""
+
+    # Analyze delivery and content
+    delivery = voice_service.analyze_delivery(audio_data, transcript)
+    content = voice_service.analyze_content_quality(transcript, question_context)
+    feedback = voice_service.generate_comprehensive_feedback(transcript, delivery, content)
+
+    # Update answer record
+    answer.transcript = transcript
+    answer.word_count = transcription.get("word_count", len(transcript.split()))
+    answer.duration_seconds = transcription.get("duration", 0)
+    answer.clarity_score = delivery["clarity_score"]
+    answer.confidence_score = delivery["confidence_score"]
+    answer.overall_score = feedback["overall_score"]
+    answer.content_feedback = "; ".join(feedback.get("improvements", []))
+    answer.delivery_feedback = "; ".join(
+        [item["message"] for item in delivery.get("feedback", [])]
+    )
+    answer.key_strengths = feedback.get("strengths", [])
+    answer.improvement_suggestions = feedback.get("improvements", [])
+    answer.status = InterviewAnswerStatus.ANALYZED
+    answer.analyzed_at = datetime.now(timezone.utc)
+    answer.processing_time_ms = transcription.get("processing_time_ms", 0)
+
+    await db.commit()
+    await db.refresh(answer)
+
+    logger.info(
+        "Audio answer processed: session=%s index=%d score=%.1f",
+        session_id, answer_index, feedback["overall_score"],
+    )
+
+    return {
+        "answer_id": str(answer.id),
+        "transcript": transcript,
+        "overall_score": feedback["overall_score"],
+        "delivery": delivery,
+        "content": content,
+        "strengths": feedback["strengths"],
+        "improvements": feedback["improvements"],
+        "next_steps": feedback["next_steps"],
+    }

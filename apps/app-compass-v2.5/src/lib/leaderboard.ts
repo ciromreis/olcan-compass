@@ -74,9 +74,9 @@ export function getRankBadge(rank: number): string {
 }
 
 export function getRankColor(rank: number): string {
-  if (rank === 1) return 'from-yellow-500 to-orange-500'
+  if (rank === 1) return 'from-slate-500 to-slate-500'
   if (rank === 2) return 'from-gray-400 to-gray-600'
-  if (rank === 3) return 'from-orange-700 to-orange-900'
+  if (rank === 3) return 'from-slate-700 to-slate-900'
   if (rank <= 10) return 'from-purple-500 to-pink-500'
   return 'from-blue-500 to-cyan-500'
 }

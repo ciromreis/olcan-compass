@@ -87,7 +87,7 @@ export default function MarketplaceSection({
             </div>
 
             <div className="mt-8 flex flex-wrap gap-4">
-              <Link href="/marketplace" className="btn-primary">
+              <Link href={process.env.NEXT_PUBLIC_STOREFRONT_URL || "https://marketplace.olcan.com.br"} className="btn-primary" target="_blank" rel="noopener noreferrer">
                 Explorar a loja
                 <ArrowRight className="w-4 h-4" />
               </Link>

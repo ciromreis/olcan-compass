@@ -14,6 +14,7 @@ interface GlassButtonProps {
   loading?: boolean
   icon?: React.ReactNode
   iconPosition?: 'left' | 'right'
+  type?: 'button' | 'submit' | 'reset'
 }
 
 export const GlassButton: React.FC<GlassButtonProps> = ({
@@ -25,12 +26,13 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
   disabled = false,
   loading = false,
   icon,
-  iconPosition = 'left'
+  iconPosition = 'left',
+  type = 'button'
 }) => {
   const variantClasses = {
     default: 'bg-white/70 hover:bg-white/80 border border-white/30 backdrop-blur-xl shadow-lg hover:shadow-xl',
-    primary: 'bg-gradient-to-br from-navy-600 to-brand-500 hover:from-navy-500 hover:to-brand-400 border border-white/20 shadow-lg hover:shadow-2xl text-white',
-    secondary: 'bg-white/40 hover:bg-white/50 border border-white/20 backdrop-blur-lg shadow-md hover:shadow-lg'
+    primary: 'bg-slate-950 hover:bg-slate-900 border border-white/20 shadow-lg hover:shadow-2xl text-white',
+    secondary: 'bg-slate-100/40 hover:bg-slate-100/50 border border-slate-200/30 backdrop-blur-lg shadow-md hover:shadow-lg text-slate-900'
   }
 
   const sizeClasses = {
@@ -41,6 +43,7 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
 
   return (
     <motion.button
+      type={type}
       className={cn(
         'relative overflow-hidden font-semibold transition-all duration-300',
         'rounded-xl',

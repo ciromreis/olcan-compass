@@ -71,3 +71,14 @@ export { GlassCard } from "./GlassCard";
 export { GlassButton } from "./GlassButton";
 export { GlassModal } from "./GlassModal";
 export { ProgressBar } from "./ProgressBar";
+
+// Plan gating
+export { PlanGate, PlanLockBadge } from "./PlanGate";
+
+// Navigation
+export { Breadcrumbs, generateBreadcrumbs } from "./Breadcrumbs";
+export type { BreadcrumbItem } from "./Breadcrumbs";
+
+// Tabs
+export { Tabs, TabsList, TabsTrigger, TabsContent } from "./Tabs";
+export type { TabsProps, TabsListProps, TabsTriggerProps, TabsContentProps } from "./Tabs";

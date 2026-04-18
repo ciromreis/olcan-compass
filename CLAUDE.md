@@ -1,130 +1,157 @@
-# Olcan Compass — Critical Context
-> Read this before touching any file in this monorepo.
+# Olcan Compass Project Guide (CLAUDE.md)
+
+**🚨 CRITICAL: Wiki Methodology - MemPalace Adapted**
+
+This repo follows hybrid **MemPalace + Karpathy** methodology:
+- **Wiki is source of truth** - All documentation lives in `wiki/`
+- **Wings/Rooms/Drawers** - Semantic organization (see MemPalace_Migration_Spec.md)
+- **Backlinks required** - All important docs must link to each other
+- **Minimal root clutter** - Only 3 essential files in root
+- **Session archives excluded** - See `.claudeignore` for what to skip
+- **Frozen apps protected** - v2 apps are read-only, focus on v2.5
+
+## Navigation Protocol (MemPalace Style)
+
+### For any new session/agent:
+1. **Always start here**: `wiki/00_SOVEREIGN/Olcan_Master_PRD_v2_5.md`
+2. **Check reality**: `wiki/00_SOVEREIGN/Verdade_do_Produto.md`
+3. **See knowledge map**: `wiki/00_SOVEREIGN/Grafo_de_Conhecimento_Olcan.md`
+4. **If technical**: `wiki/02_Arquitetura_Compass/Arquitetura_v2_5_Compass.md`
+
+### Backlinking Rule
+Every doc in `wiki/00_SOVEREIGN/`, `wiki/02_Arquitetura_Compass/`, and `wiki/03_Produto_Forge/` MUST have:
+- Links to related docs at the bottom
+- backlinks field in frontmatter (for major docs)
+
+## Quick Reference
+
+This file provides quick reference for development commands and project structure.
+
+## Structure
+- `apps/`: Main applications
+  - `app-compass-v2.5`: ✅ **Production app (ACTIVE)**
+  - `site-marketing-v2.5`: ✅ **Marketing website (ACTIVE)**
+  - `api-core-v2.5`: ✅ **Backend API (ACTIVE)**
+  - `app-compass-v2`: 🔒 Frozen (v2 production - read-only)
+  - `api-core-v2`: 🔒 Frozen (v2 production - read-only)
+- `packages/`: Shared packages
+  - `ui-components`: Liquid Glass design system
+  - `shared-auth`: Unified identity service
+- `wiki/`: **📚 Knowledge Base (The Source of Truth)** - Follows the LLM Wiki methodology
+
+## Documentation Map
+
+**Start here for navigation:**
+1. **This file (CLAUDE.md)** - Quick reference and commands
+2. **START_HERE.md** - Full navigation map to wiki pillars
+3. **Wiki** - All detailed documentation organized semantically
+
+**Semantic Hierarchy (Read in this order):**
+1. **wiki/00_SOVEREIGN/** - 🏛️ **THE SOURCE OF TRUTH** (read first!)
+   - `Olcan_Master_PRD_v2_5.md` - Complete product vision
+   - `Verdade_do_Produto.md` - Current reality (no inflation)
+   - `Grafo_de_Conhecimento_Olcan.md` - Knowledge map
+2. **wiki/01_Visao_Estrategica/** - WHY we're building this
+3. **wiki/03_Produto_Forge/** - WHAT we're building
+4. **wiki/02_Arquitetura_Compass/** - HOW it's built
+5. **wiki/07_Agentes_IA/** - AI agents and automation
+6. **wiki/00_Onboarding_Inicio/** - Operational procedures (when needed)
+
+**What's in the Wiki:**
+- `00_SOVEREIGN/` - 🏛️ **Highest centrality** - Master PRD, Product Truth
+- `01_Visao_Estrategica/` - Vision, strategy, roadmap
+- `02_Arquitetura_Compass/` - Architecture, backend, deployment
+- `03_Produto_Forge/` - Product, design system, UI catalog
+- `04_Ecossistema_Aura/` - Gamification, companions, rituals
+- `05_Inteligencia_Economica/` - Economic intelligence, escrow
+- `06_Inteligencia_Narrativa/` - AI, narrative forge, scoring
+- `07_Agentes_IA/` - AI agents, automation, Nexus system
+- `00_Onboarding_Inicio/` - Operations, testing, deployment (lower priority)
+- `10_Arquivo_Permanente/` - 🚫 **EXCLUDED** - Historical archives
+
+## Critical Documentation (Wiki)
+**ALWAYS READ FIRST:**
+- [[wiki/00_SOVEREIGN/Olcan_Master_PRD_v2_5.md]] - **THE** source of truth
+- [[wiki/00_SOVEREIGN/Verdade_do_Produto.md]] - Current product state
+- [[wiki/00_SOVEREIGN/Grafo_de_Conhecimento_Olcan.md]] - Knowledge map
+
+**Then proceed to:**
+- Migration Spec: [[wiki/00_SOVEREIGN/MemPalace_Migration_Spec.md]] - Wiki structure methodology
+- Vision: [[wiki/01_Visao_Estrategica/Carta_do_Projeto_Olcan_v2.5.md]]
+- Architecture: [[wiki/02_Arquitetura_Compass/Arquitetura_v2_5_Compass.md]]
+- Product: [[wiki/03_Produto_Forge/PRD_Master_Ethereal_Glass.md]]
+- Standards: [[wiki/00_Onboarding_Inicio/Padroes_de_Codigo.md]]
+- Roadmap: [[wiki/01_Visao_Estrategica/Roadmap_Implementacao_v2_5.md]]
+
+## Development Commands
+
+### Full Environment
+- Start all: `./2_Pipelines/scripts/START_APPLICATION.sh`
+- Quick Build: `./2_Pipelines/scripts/QUICK_DEPLOY.sh`
+
+### App (Compass v2.5)
+- Location: `apps/app-compass-v2.5`
+- Dev: `npm run dev`
+- Build: `npm run build`
+- Type check: `npm run type-check`
+- Lint: `npm run lint`
+
+### Backend (API v2.5)
+- Location: `apps/api-core-v2.5`
+- Docker: `docker compose up --build`
+- Local: `uvicorn app.main:app --reload`
+- Migrations: `docker compose run --rm api alembic upgrade head`
+
+### Marketing Site
+- Location: `apps/site-marketing-v2.5`
+- Dev: `npm run dev`
+- Build: `npm run build`
+
+### UI Components
+- Location: `packages/ui-components`
+- Build: `npm run build`
+
+## Git Guidelines
+- Format: Conventional Commits (`feat:`, `fix:`, `chore:`)
+- Branching: `feature/`, `fix/`, `refactor/`
+- Policy: No TODOs in production. All code must pass linting.
+
+## 🚫 What NOT to Read (Token Optimization)
+
+**Excluded via .claudeignore:**
+- `_GRAVEYARD/` - Historical archives (2275+ files, all outdated)
+- `3_Vaults/` - Session logs (outdated)
+- `wiki/10_Arquivo_Permanente/` - Permanent archive (sessions, changelogs, legacy docs)
+- Frozen apps: `app-compass-v2/`, `api-core-v2/` (v2 production, read-only)
+- Build artifacts: `node_modules/`, `.next/`, `.venv/`, etc.
+- Environment files: `.env*`, `.secrets/`
+
+**Why this matters:**
+- Saves 45,000+ tokens per context load
+- Focuses on active development (v2.5)
+- Preserves history without cluttering context
+
+## 🏛️ MemPalace Structure (Wings/Rooms/Drawers)
+
+| Wing | Nome | Rooms |
+|------|------|-------|
+| 00 | SOVEREIGN | Master PRD, Verdade, Grafo, Specs |
+| 01 | ESTRATEGICA | Visão, Roadmap, KPIs, Matriz |
+| 02 | ARQUITETURA | API, DB, Deploy, Auth, Stores |
+| 03 | PRODUTO | UI, Features, Design System |
+| 04 | AURA | Gamification, Companions |
+| 05 | ECONOMIC | Escrow, Pricing, CRM |
+| 06 | NARRATIVE | Narrative Forge, AI Scoring |
+| 07 | AGENTES | Nexus, Automação |
+| 08 | OPERATIONS | Runbooks, Testes, Onboarding |
+| 09 | ARCHIVE | Histórico (não ler ativamente)
+
+## Personas
+- **Valentino**: Technical/Architecture lead
+- **Greenback Boogie**: Legal/Compliance
+- **Mary**: Research/Data analysis
+- **Leon Greco**: Governance/Ethics
 
 ---
 
-## ⛔ PROTECTED — DO NOT MODIFY
-
-These two directories are the stable v2 production baseline. They must not be changed, refactored, or used as a testing ground:
-
-- `apps/app-compass-v2/` — stable v2 frontend (Next.js). Has its own CLAUDE.md.
-- `apps/api-core-v2/` — stable v2 backend (FastAPI). Has its own CLAUDE.md.
-
-If you need to understand what v2 does, read it. Do not write to it.
-
----
-
-## Active Work Areas
-
-### 1. The Website — `apps/site-marketing-v2.5/`
-This is the **public-facing Olcan website**. It is an independent product, not a marketing add-on. It has its own CLAUDE.md.
-
-- **Status:** 100% functional, 13 routes, build passes — ready to deploy
-- **Integration:** Fully integrated with Mercur/MedusaJS marketplace (API key configured)
-- **Identity:** Has its own domain, brand, and content strategy
-- **Connection to v2.5 app:** Shares design tokens; hosts public store pages fetching dynamically from Mercur
-- **Blog:** Will integrate content from `olcan-blog-adk`
-
-### 2. The App — `apps/app-compass-v2.5/`
-The main authenticated app (career companions, forge, marketplace).
-
-- **Status:** ~20–30% feature-complete. Build is blocked by `@olcan/ui-components`
-- **Code exists:** ~5,400 lines, 13 Forge components, 3 pages, backend services — but does not compile
-- **Blocker:** `packages/ui-components/` has 16 TypeScript errors, dist/ contains uncompiled .ts files
-- **Recommended fix:** Option B — replace `@olcan/ui-components` imports with `@/components/ui` across ~30 files (~2h estimated)
-- **DO NOT** attempt to fix ui-components directly (high risk, dist structure is broken)
-
-### 3. The Backend — `apps/api-core-v2.5/`
-FastAPI backend for v2.5.
-
-- **Status:** Functional, routes registered, DB ready — ready to deploy
-- **Run:** `cd apps/api-core-v2.5 && python -m uvicorn app.main:app --reload --port 8001`
-
-### 4. Legacy — `apps/app-mvp-v1/`
-Original MVP. Keep for reference only. Do not develop.
-
----
-
-## The ui-components Problem (Read Before Touching Packages)
-
-`packages/ui-components/` is broken. It has:
-- 16 TypeScript compilation errors
-- `dist/` folder with uncompiled `.ts` source files (not a valid build output)
-- All apps that import `@olcan/ui-components` will fail to build
-
-**Options:**
-- **Option A** (zero work): Deploy only website + backend v2.5 — both work now
-- **Option B** (recommended for app): Replace all `@olcan/ui-components` imports with `@/components/ui` in app-compass-v2.5 (~30 files, ~2h)
-- **Option C** (risky): Fix the ui-components TypeScript errors and rebuild the package
-
-See `README_ESTADO_REAL.md` and `_REPORTS/OPCAO_B_STATUS.md` for detailed instructions.
-
----
-
-## Monorepo Structure
-
-```
-pnpm-workspace.yaml  →  apps/* and packages/*
-
-apps/
-  site-marketing-v2.5/  ← THE WEBSITE (independent, functional)
-  app-compass-v2.5/     ← THE APP (in development, blocked)
-  api-core-v2.5/        ← THE BACKEND (functional, deploy-ready)
-  app-compass-v2/       ← ⛔ STABLE v2 frontend (do not touch)
-  api-core-v2/          ← ⛔ STABLE v2 backend (do not touch)
-  app-mvp-v1/           ← legacy reference only
-
-packages/
-  ui-components/        ← BROKEN — do not use as dependency until fixed
-  ui/                   ← base UI library
-  types/                ← shared TypeScript types
-  design-tokens/        ← shared design system tokens
-```
-
----
-
-## Key Documents (Read in This Order)
-
-1. `1_Pillars/Context/ARCHITECTURE.md` — how the website, app, and backend connect
-2. `1_Pillars/Context/PRODUCT_TRUTH.md` — honest current feature state, what is and isn't built
-3. `1_Pillars/Context/WEBSITE_V25_BRIDGE.md` — website/app shared layer and public store pages
-4. `1_Pillars/Architecture/README_ESTADO_REAL.md` — latest technical status (ui-components blocker, deploy options)
-5. `1_Pillars/Architecture/STORE_ARCHITECTURE_GUIDE.md` — ecommerce/store architecture
-6. `1_Pillars/Architecture/MARKETPLACE_ECOMMERCE_GUIDE.md` — marketplace architecture
-
-## For Deep Assessment or Planning Work
-
-Read these in `1_Pillars/Context/product-design/` — they are the canonical product and architecture docs, pulled from across all app versions:
-
-- `PRODUCT_ARCHITECTURE_V2_5.md` — the product vision (career mobility OS + companion shell)
-- `IMPLEMENTATION_ROADMAP_V2_5.md` — the intended build sequence
-- `SHARED_SYSTEMS_APP_MARKETING.md` — what the app and website share (archetypes, trust layer)
-- `CANONICAL_STORES_V2_5.md` — state management architecture (Zustand store design)
-- `BACKEND_ARCHITECTURE_SCALE.md` — FastAPI async patterns and event-driven design
-- `VISUAL_DESIGN_GUIDE.md` — liquid-glass design system implementation
-- `1_Pillars/Context/product-design/ASSESSMENT_GUIDE.md` — how to run a plan-vs-reality audit
-
-Session-level reports (what was claimed done per session) are in `3_Vaults/Session_Logs/`.
-Build/audit reports are in `3_Vaults/Historical_Audits/`.
-
----
-
-## What the Product Is
-
-Olcan Compass is a career support platform for immigrants and professionals navigating new markets. It has:
-
-- A **public website** with content, waitlist, and public store pages
-- An **authenticated app** with career companions (RPG gamification), a document forge, interview simulator, and marketplace
-- A **marketplace** connecting users with mentors, lawyers, and translators
-- A **companion system** — 12 archetypes, evolution stages, gamification
-
-The companion system and most app features are scaffolded but incomplete (~20-30%). Authentication and basic companion CRUD work. No revenue features are implemented yet.
-
----
-
-## What NOT to Do
-
-- Do not claim any feature is "100% complete" or "ready" unless you have verified it builds and runs
-- Do not add fake data, placeholder providers, or invented statistics
-- Do not modify the stable v2 apps under any circumstances
-- Do not run `npm install` or `pnpm install` inside individual apps without checking workspace config first
+**For full navigation and detailed documentation, see `START_HERE.md` and the wiki.**

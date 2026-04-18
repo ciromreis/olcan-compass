@@ -1,13 +1,27 @@
 import { type Milestone, type UserRoute } from "@/stores/routes";
 
-export type RouteIntentType = 
-  | "scholarship_chevening" 
-  | "scholarship_daad" 
-  | "scholarship_fulbright" 
-  | "employment" 
-  | "research" 
-  | "startup" 
-  | "exchange";
+export type RouteIntentType =
+  | "scholarship"
+  | "scholarship_chevening"
+  | "scholarship_daad"
+  | "scholarship_fulbright"
+  | "employment"
+  | "research"
+  | "startup"
+  | "exchange"
+  | "job_relocation"
+  | "postdoc"
+  | "academic_visiting"
+  | "professional_certification"
+  | "intracompany_transfer"
+  | "conference_representation"
+  | "corporate_secondment"
+  | "volunteer_abroad"
+  | "ngo_mission"
+  | "retirement_abroad"
+  | "remote_work"
+  | "digital_nomad"
+  | "investor_visa";
 
 export interface RoutePlannerConfig {
   type: RouteIntentType;
@@ -55,6 +69,16 @@ interface RouteTemplate {
 }
 
 const ROUTE_TEMPLATES: Record<RouteIntentType, RouteTemplate> = {
+  scholarship: {
+    typeLabel: "Bolsa de Estudos",
+    namePrefix: "Bolsa",
+    milestoneGroups: [
+      { group: "Estratégia", items: ["Pesquisar programas e universidades-alvo", "Definir requisitos e prazos"] },
+      { group: "Documentação", items: ["Redigir carta de motivação", "Adaptar CV acadêmico", "Solicitar cartas de recomendação"] },
+      { group: "Aplicação", items: ["Preparar proficiência em idioma", "Submeter candidatura completa"] },
+      { group: "Pós-Envio", items: ["Preparar para entrevista", "Organizar documentos de visto"] },
+    ],
+  },
   scholarship_chevening: {
     typeLabel: "Bolsa Chevening (UK)",
     namePrefix: "Chevening",
@@ -133,6 +157,124 @@ const ROUTE_TEMPLATES: Record<RouteIntentType, RouteTemplate> = {
       { group: "Documentação", items: ["Organizar application package", "Preparar idioma e seguro"] },
       { group: "Aplicação", items: ["Enviar candidatura", "Confirmar acomodação e logística"] },
       { group: "Embarque", items: ["Organizar viagem", "Preparar chegada e adaptação"] },
+    ],
+  },
+  job_relocation: {
+    typeLabel: "Relocação por Emprego",
+    namePrefix: "Relocação",
+    milestoneGroups: [
+      { group: "Preparação", items: ["Atualizar CV e perfil LinkedIn", "Mapear empresas com patrocínio de visto"] },
+      { group: "Aplicação", items: ["Conduzir candidaturas estratégicas", "Praticar entrevistas técnicas"] },
+      { group: "Oferta", items: ["Negociar pacote e suporte migratório"] },
+      { group: "Relocação", items: ["Organizar visto e housing", "Planejar chegada"] },
+    ],
+  },
+  postdoc: {
+    typeLabel: "Pós-Doutorado",
+    namePrefix: "Pós-Doc",
+    milestoneGroups: [
+      { group: "Pesquisa", items: ["Mapear laboratórios e orientadores-alvo", "Definir proposta de pesquisa"] },
+      { group: "Documentação", items: ["Redigir research statement", "Solicitar recomendações acadêmicas"] },
+      { group: "Aplicação", items: ["Submeter candidatura e funding"] },
+    ],
+  },
+  academic_visiting: {
+    typeLabel: "Pesquisador Visitante",
+    namePrefix: "Visitante",
+    milestoneGroups: [
+      { group: "Preparação", items: ["Contatar instituição de destino", "Definir período e objetivos"] },
+      { group: "Documentação", items: ["Carta de convite e MOU", "Atualizar CV acadêmico"] },
+      { group: "Execução", items: ["Organizar visto e acomodação"] },
+    ],
+  },
+  professional_certification: {
+    typeLabel: "Certificação Profissional",
+    namePrefix: "Certificação",
+    milestoneGroups: [
+      { group: "Estudo", items: ["Definir certificação-alvo", "Criar plano de estudos"] },
+      { group: "Preparação", items: ["Completar material e simulados", "Agendar exame"] },
+      { group: "Execução", items: ["Realizar exame", "Registrar certificação"] },
+    ],
+  },
+  intracompany_transfer: {
+    typeLabel: "Transferência Intracompanhia",
+    namePrefix: "Transferência",
+    milestoneGroups: [
+      { group: "Estratégia", items: ["Alinhar com RH e gestor", "Mapear vaga-alvo no exterior"] },
+      { group: "Documentação", items: ["Preparar documentação de transferência", "Iniciar processo de visto L-1/ICT"] },
+      { group: "Relocação", items: ["Organizar mudança e housing", "Planejar chegada"] },
+    ],
+  },
+  conference_representation: {
+    typeLabel: "Participação em Conferência",
+    namePrefix: "Conferência",
+    milestoneGroups: [
+      { group: "Submissão", items: ["Escrever e submeter paper/abstract", "Preparar apresentação"] },
+      { group: "Logística", items: ["Organizar passagem e hospedagem", "Solicitar visto de visitante"] },
+      { group: "Execução", items: ["Participar e fazer networking", "Publicar insights pós-evento"] },
+    ],
+  },
+  corporate_secondment: {
+    typeLabel: "Secondment Corporativo",
+    namePrefix: "Secondment",
+    milestoneGroups: [
+      { group: "Alinhamento", items: ["Negociar termo de secondment", "Definir escopo e duração"] },
+      { group: "Documentação", items: ["Preparar contrato e visto de trabalho", "Planejar transição de responsabilidades"] },
+      { group: "Execução", items: ["Instalação no destino", "Integração com time local"] },
+    ],
+  },
+  volunteer_abroad: {
+    typeLabel: "Voluntariado Internacional",
+    namePrefix: "Voluntariado",
+    milestoneGroups: [
+      { group: "Pesquisa", items: ["Escolher organização e programa", "Alinhar com missão pessoal"] },
+      { group: "Aplicação", items: ["Submeter candidatura de voluntário", "Organizar financiamento e seguro"] },
+      { group: "Execução", items: ["Organizar visto e viagem", "Preparar chegada"] },
+    ],
+  },
+  ngo_mission: {
+    typeLabel: "Missão ONG / Humanitária",
+    namePrefix: "Missão",
+    milestoneGroups: [
+      { group: "Alinhamento", items: ["Identificar missão e organização", "Alinhar habilidades necessárias"] },
+      { group: "Preparação", items: ["Completar treinamentos exigidos", "Organizar documentação e vistos"] },
+      { group: "Execução", items: ["Desdobrar missão", "Documentar impacto"] },
+    ],
+  },
+  retirement_abroad: {
+    typeLabel: "Aposentadoria no Exterior",
+    namePrefix: "Aposentadoria",
+    milestoneGroups: [
+      { group: "Pesquisa", items: ["Escolher país e cidade-alvo", "Avaliar custo de vida e qualidade"] },
+      { group: "Legal", items: ["Pesquisar visto de aposentado/renda passiva", "Consultar planejador financeiro"] },
+      { group: "Relocação", items: ["Organizar imóvel e estrutura", "Regularizar documentação fiscal"] },
+    ],
+  },
+  remote_work: {
+    typeLabel: "Trabalho Remoto Internacional",
+    namePrefix: "Remote",
+    milestoneGroups: [
+      { group: "Estratégia", items: ["Validar política de remote com empregador", "Pesquisar país-base e regime fiscal"] },
+      { group: "Legal", items: ["Pesquisar visto digital nomad ou residência", "Regularizar compliance tributário"] },
+      { group: "Execução", items: ["Organizar housing e conectividade", "Planejar chegada"] },
+    ],
+  },
+  digital_nomad: {
+    typeLabel: "Nômade Digital",
+    namePrefix: "Nômade",
+    milestoneGroups: [
+      { group: "Estratégia", items: ["Definir rota de países e janelas", "Mapear vistos de nômade disponíveis"] },
+      { group: "Infraestrutura", items: ["Organizar setup de trabalho remoto", "Definir base financeira e seguros"] },
+      { group: "Execução", items: ["Lançar primeira etapa", "Estruturar rotina de trabalho em trânsito"] },
+    ],
+  },
+  investor_visa: {
+    typeLabel: "Visto de Investidor",
+    namePrefix: "Investidor",
+    milestoneGroups: [
+      { group: "Estratégia", items: ["Pesquisar programas de golden visa / EB-5 / equivalente", "Avaliar requisito de capital"] },
+      { group: "Legal", items: ["Contratar assessoria jurídica e financeira", "Estruturar investimento qualificado"] },
+      { group: "Aplicação", items: ["Submeter processo de visto", "Acompanhar aprovação"] },
     ],
   },
 };

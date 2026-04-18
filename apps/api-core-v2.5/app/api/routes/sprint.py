@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, desc
 
-from app.core.auth import get_current_user
+from app.core.auth import get_current_user, require_admin
 from app.db.session import get_db
 from app.db.models import (
     User,
@@ -102,11 +102,10 @@ async def get_sprint_template(
 @router.post("/templates", response_model=SprintTemplateResponse, status_code=status.HTTP_201_CREATED)
 async def create_sprint_template(
     request: SprintTemplateCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db)
 ):
-    """Create a sprint template (admin only in production)"""
-    # TODO: Add admin check
+    """Create a sprint template (admin only)"""
     
     template = SprintTemplate(**request.model_dump())
     db.add(template)

@@ -1,154 +1,158 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, X, Activity, MessageCircle, Star } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Activity, AlertTriangle, Sparkles, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuraStore } from "@/stores/auraStore";
+import { useRouteStore } from "@/stores/routes";
+import { useForgeStore } from "@/stores/forge";
+import { useInterviewStore } from "@/stores/interviews";
+import { derivePresencePhenotype, deriveRoutePresenceSignals } from "@/lib/presence-phenotype";
+import {
+  derivePresenceProfile,
+  getPresenceReaction,
+  resolvePresenceEvent,
+} from "@/lib/aura-presence";
+import { ProceduralAuraFigure } from "@/components/aura/ProceduralAuraFigure";
+
+const ROTATING_EVENTS = ["idle", "route_focus", "document_focus", "interview_focus"] as const;
 
 export default function GlobalAuraBuddy() {
-  const { aura } = useAuraStore();
   const pathname = usePathname();
+  const { aura } = useAuraStore();
+  const { routes, getRouteProgress } = useRouteStore();
+  const { documents } = useForgeStore();
+  const { sessions } = useInterviewStore();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
+  const [pulseIndex, setPulseIndex] = useState(0);
 
-  // If the user hasn't generated an Aura, don't show the buddy
-  if (!aura) return null;
+  const routeSignals = useMemo(
+    () => deriveRoutePresenceSignals(routes, documents, sessions, getRouteProgress),
+    [routes, documents, sessions, getRouteProgress]
+  );
+  const phenotype = useMemo(() => derivePresencePhenotype(routeSignals), [routeSignals]);
+  const profile = useMemo(
+    () => (aura ? derivePresenceProfile(aura, phenotype) : null),
+    [aura, phenotype]
+  );
 
-  // Derive dynamic color from archetype (defaulting to teal/emerald Liquid-Glass styling)
-  let glowColor = "shadow-brand-500/20";
-  let coreGradient = "from-brand-300 to-brand-500";
-  let ringGradient = "from-brand-400/40 to-brand-600/40";
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setPulseIndex((current) => (current + 1) % ROTATING_EVENTS.length);
+    }, 9000);
+    return () => window.clearInterval(timer);
+  }, []);
 
-  switch (String(aura.archetype).toLowerCase()) {
-    case "creator":
-      coreGradient = "from-indigo-400 to-purple-500";
-      glowColor = "shadow-indigo-500/30";
-      ringGradient = "from-indigo-400/40 to-purple-600/40";
-      break;
-    case "sage":
-      coreGradient = "from-emerald-400 to-teal-500";
-      glowColor = "shadow-emerald-500/30";
-      ringGradient = "from-emerald-400/40 to-teal-600/40";
-      break;
-    case "ruler":
-      coreGradient = "from-brand-500 to-ink-800";
-      glowColor = "shadow-brand-500/30";
-      ringGradient = "from-brand-500/40 to-ink-600/40";
-      break;
-    // other archetypes use default brand-500
-  }
+  if (!aura || !profile) return null;
 
-  // Generate context-aware hint based on current route
-  let hint = "Aqui para guiar a sua jornada hoje.";
-  if (pathname.includes("/dashboard")) hint = "Ótimo progresso! Vamos revisar suas metas de mobilidade.";
-  if (pathname.includes("/routes")) hint = "Analisando padrões complexos para otimizar sua rota internacional...";
-  if (pathname.includes("/forge")) hint = "Pronto para lapidar sua narrativa e validar seus documentos?";
+  const primaryEvent =
+    resolvePresenceEvent({
+      aura,
+      phenotype,
+      pathname,
+    }) ?? "idle";
+
+  const rotatedEvent =
+    primaryEvent === "idle"
+      ? ROTATING_EVENTS[pulseIndex]
+      : primaryEvent;
+
+  const message = getPresenceReaction({
+    aura,
+    phenotype,
+    event: rotatedEvent,
+  });
+
+  const needsAttention = aura.energy <= 24 || (phenotype.urgencyLevel ?? 0) >= 0.72;
 
   return (
     <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          initial={{ opacity: 0, y: 50, scale: 0.8 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end pointer-events-none"
-        >
-          {/* Expanded Dialogue Box */}
+      <motion.div
+        initial={{ opacity: 0, y: 42, scale: 0.92 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.92 }}
+        className="pointer-events-none fixed bottom-6 right-6 z-[9999] flex max-w-sm flex-col items-end lg:hidden"
+      >
           <AnimatePresence>
-            {isExpanded && (
+            {isExpanded ? (
               <motion.div
-                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                initial={{ opacity: 0, y: 12, scale: 0.96 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="mb-4 bg-white/90 backdrop-blur-xl border border-white/40 shadow-2xl rounded-2xl p-4 w-64 pointer-events-auto liquid-glass relative overflow-hidden"
+                exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                className="pointer-events-auto mb-4 w-80 overflow-hidden rounded-[28px] border border-white/70 bg-white/78 p-4 shadow-[0_24px_80px_rgba(15,23,42,0.12)] backdrop-blur-2xl"
               >
-                {/* Subtle gradient background matched to aura */}
-                <div className={`absolute -inset-10 bg-gradient-to-br ${coreGradient} opacity-5 blur-2xl`} />
-
-                <div className="flex justify-between items-start mb-2 relative z-10">
-                  <div className="flex items-center space-x-2">
-                    <Sparkles className="w-4 h-4 text-brand-500" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-ink-900">
-                      Intelecto Aura
-                    </span>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-700">
+                      <Sparkles className="h-3.5 w-3.5" />
+                      Presença em bordo
+                    </div>
+                    <p className="mt-2 text-sm font-medium leading-relaxed text-slate-700">{message}</p>
                   </div>
                   <button
                     onClick={() => setIsExpanded(false)}
-                    className="text-ink-400 hover:text-ink-600 transition-colors"
+                    className="rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="h-4 w-4" />
                   </button>
                 </div>
-                
-                <p className="text-sm text-ink-700 leading-relaxed relative z-10 mb-3 font-medium">
-                  {hint}
-                </p>
 
-                <div className="flex items-center space-x-3 text-xs bg-white/50 rounded-lg p-2 border border-white/60">
-                   <div className="flex flex-col">
-                     <span className="font-bold text-ink-900">Nível {aura.level}</span>
-                     <span className="text-ink-500">{aura.experiencePoints} XP</span>
-                   </div>
-                   <div className="h-full w-px bg-white" />
-                   <div className="flex items-center space-x-1 text-emerald-600">
-                     <Activity className="w-3 h-3" />
-                     <span className="font-semibold capitalize">{aura.archetype || "Iniciado"}</span>
-                   </div>
+                <div className="mt-4 grid grid-cols-3 gap-2">
+                  <Metric label="Adaptação" value={`${Math.round((phenotype.adaptationLevel ?? 0.18) * 100)}%`} />
+                  <Metric label="Documento" value={`${Math.round((phenotype.documentReadiness ?? 0.22) * 100)}%`} />
+                  <Metric label="Entrevista" value={`${Math.round((phenotype.interviewReadiness ?? 0.18) * 100)}%`} />
+                </div>
+
+                <div className="mt-4 flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-2">
+                  <div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Rota ativa</div>
+                    <div className="mt-1 text-sm font-semibold text-slate-900">{phenotype.routeLabel || "Sem rota ativa"}</div>
+                  </div>
+                  <div className="rounded-full bg-slate-900 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+                    Nv. {aura.level}
+                  </div>
                 </div>
               </motion.div>
-            )}
+            ) : null}
           </AnimatePresence>
 
-          {/* The Creature Sphere / Floating Core */}
           <motion.button
-            onClick={() => setIsExpanded(!isExpanded)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className={`pointer-events-auto relative w-16 h-16 rounded-full flex items-center justify-center shadow-2xl ${glowColor}`}
+            onClick={() => setIsExpanded((current) => !current)}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="pointer-events-auto relative overflow-hidden rounded-[26px] border border-white/70 bg-white/70 px-3 py-3 shadow-[0_18px_52px_rgba(15,23,42,0.12)] backdrop-blur-2xl"
           >
-            {/* Outer Rotating Glass Ring */}
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              className={`absolute inset-0 rounded-full border border-t-[1.5px] border-l-[1px] bg-gradient-to-br ${ringGradient} backdrop-blur-md`}
-            />
+            <div className="flex items-center gap-3">
+              <div className="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-[radial-gradient(circle_at_center,_rgba(59,130,246,0.12),_rgba(255,255,255,0.6))]">
+                <ProceduralAuraFigure spec={profile.figure} size={62} active />
+              </div>
 
-            {/* Pulsing Core */}
-            <motion.div
-              animate={{ 
-                scale: [1, 1.1, 1],
-                opacity: [0.8, 1, 0.8] 
-              }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              className={`absolute w-10 h-10 rounded-full bg-gradient-to-tr ${coreGradient} blur-[2px] opacity-90 mix-blend-screen shadow-inner`}
-            />
-            
-            {/* Creature Avatar */}
-            <motion.div 
-              className="absolute inset-0 flex items-center justify-center p-2 z-10"
-              animate={{ y: [0, -3, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <Image 
-                src={String(aura.archetype).toLowerCase().includes('scholar') || String(aura.archetype).toLowerCase().includes('sage') ? "/images/creature-scholar.png" : "/images/creature-compass.png"}
-                alt="Aura Companion"
-                width={48}
-                height={48}
-                className="object-contain drop-shadow-lg"
-              />
-            </motion.div>
+              <div className="w-40 text-left">
+                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                  {needsAttention ? <AlertTriangle className="h-3.5 w-3.5 text-clay-600" /> : <Activity className="h-3.5 w-3.5 text-brand-600" />}
+                  {profile.mood}
+                </div>
+                <p className="mt-1 line-clamp-2 text-sm font-medium leading-snug text-slate-700">{message}</p>
+              </div>
+            </div>
 
-            {/* Notifications Badge */}
-            {!isExpanded && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white shadow-sm">
-                1
+            {needsAttention ? (
+              <span className="absolute right-2 top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-clay-600 px-1.5 text-[10px] font-semibold text-white">
+                !
               </span>
-            )}
+            ) : null}
           </motion.button>
         </motion.div>
-      )}
     </AnimatePresence>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white/80 px-3 py-2">
+      <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">{label}</div>
+      <div className="mt-1 text-sm font-semibold text-slate-900">{value}</div>
+    </div>
   );
 }

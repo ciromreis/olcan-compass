@@ -12,6 +12,10 @@
 // export { LevelBadge } from './components/gamification/LevelBadge'
 // export { AchievementCard } from './components/gamification/AchievementCard'
 export { ProgressBar } from './components/gamification/ProgressBar'
+export * from './gamification'
+
+// Cross-Subdomain Event Bridge
+export * from './events'
 
 // Liquid Glass Components - ESSENTIAL FOR V2.5
 export { GlassCard } from './components/liquid-glass/GlassCard'

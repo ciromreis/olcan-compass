@@ -21,6 +21,8 @@ class DocumentCreate(BaseModel):
     target_word_count: Optional[int] = None
     tags: List[str] = []
     notes: Optional[str] = None
+    route_id: Optional[UUID] = None
+    scope: str = "universal"
 
 
 class DocumentUpdate(BaseModel):
@@ -34,6 +36,8 @@ class DocumentUpdate(BaseModel):
     target_word_count: Optional[int] = None
     tags: Optional[List[str]] = None
     notes: Optional[str] = None
+    route_id: Optional[UUID] = None
+    scope: Optional[str] = None
 
 
 class DocumentResponse(BaseModel):
@@ -62,6 +66,8 @@ class DocumentResponse(BaseModel):
     tags: List[str]
     notes: Optional[str]
     focus_mode_time_seconds: int
+    route_id: Optional[UUID] = None
+    scope: str = "universal"
     created_at: datetime
     updated_at: datetime
     last_edited_at: Optional[datetime]
@@ -141,6 +147,21 @@ class ATSAnalysisResponse(BaseModel):
     readability_score: Optional[float]
     structure_score: Optional[float]
     keyword_density: dict
+
+
+# --- Narrative Analysis Schemas ---
+
+class AnalysisResponse(BaseModel):
+    """Result of Narrative AI analysis"""
+    clarity_score: int
+    coherence_score: int
+    authenticity_score: int
+    narrative_arc: str
+    key_strengths: List[str]
+    areas_for_improvement: List[str]
+    suggested_edits: List[dict]
+    overall_feedback: str
+    confidence: float
 
 
 # --- Version History Schemas ---
@@ -227,6 +248,26 @@ class CharacterCountResponse(BaseModel):
     characters_over: Optional[int]
     characters_under: Optional[int]
     percentage_complete: Optional[float]
+
+
+# --- Dossier Schemas ---
+
+class DossierDocumentSummary(BaseModel):
+    id: str
+    title: str
+    document_type: str
+    ats_score: Optional[float]
+    word_count: int
+    status: str
+
+
+class DossierDataResponse(BaseModel):
+    documents: List[DossierDocumentSummary]
+    archetype: Optional[str]
+    fear_cluster: Optional[str]
+    mobility_state: Optional[str]
+    avg_competitiveness_score: float
+    document_count: int
 
 
 # --- Focus Mode Schemas ---

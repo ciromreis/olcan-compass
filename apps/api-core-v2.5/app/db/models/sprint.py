@@ -5,7 +5,7 @@ import enum
 from datetime import datetime, timezone, date
 
 from sqlalchemy import DateTime, String, Text, ForeignKey, JSON, Enum, Float, Integer, Boolean, Date
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
@@ -102,6 +102,10 @@ class UserSprint(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
+    # Relationships
+    user = relationship("User", back_populates="sprints")
+    tasks = relationship("SprintTask", back_populates="sprint", lazy="noload")
+
 
 class SprintTask(Base):
     """Individual tasks within a sprint"""
@@ -148,6 +152,9 @@ class SprintTask(Base):
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    
+    # Relationships
+    sprint = relationship("UserSprint", back_populates="tasks")
 
 
 class ReadinessAssessment(Base):
@@ -183,6 +190,9 @@ class ReadinessAssessment(Base):
     __table_args__ = (
         {'sqlite_autoincrement': True},
     )
+    
+    # Relationships
+    user = relationship("User", back_populates="readiness_assessments")
 
 
 class GapAnalysis(Base):
@@ -217,6 +227,9 @@ class GapAnalysis(Base):
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    
+    # Relationships
+    user = relationship("User", back_populates="gap_analyses")
 
 
 class SprintActivityLog(Base):
@@ -235,3 +248,6 @@ class SprintActivityLog(Base):
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    
+    # Relationships
+    user = relationship("User", back_populates="sprint_activity_logs")

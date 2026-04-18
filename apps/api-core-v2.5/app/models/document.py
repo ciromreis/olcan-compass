@@ -70,7 +70,7 @@ class Document(Base):
     completed_at = Column(DateTime, nullable=True)
     
     # Relationships
-    user = relationship("User", back_populates="documents")
+    user = relationship("User", foreign_keys=[user_id], lazy="noload")
     companion = relationship("Companion", back_populates="documents")
     versions = relationship("Document", remote_side=[id], backref="parent")
     reviews = relationship("DocumentReview", back_populates="document", cascade="all, delete-orphan")

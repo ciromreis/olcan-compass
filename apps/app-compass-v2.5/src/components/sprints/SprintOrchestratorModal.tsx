@@ -5,8 +5,10 @@ import { Dialog } from "@headlessui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, X, Target, GitMerge, Loader2, ArrowRight } from "lucide-react";
 import { useAuthStore } from "@/stores/auth";
+import { usePsychStore } from "@/stores/psych";
 import { useSprintStore } from "@/stores/sprints";
 import { useRouter } from "next/navigation";
+import { formatOiosArchetypeLabel } from "@/lib/oios-archetype-display";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -23,13 +25,21 @@ const ORCHESTRATOR_TEMPLATES = [
 export function SprintOrchestratorModal({ isOpen, onClose }: Props) {
   const router = useRouter();
   const { user } = useAuthStore();
+  const oiosArchetypeKey = usePsychStore((s) => s.oiosSnapshot?.dominant_archetype);
   const { addSprint } = useSprintStore();
   const [selectedTemplate, setSelectedTemplate] = useState(ORCHESTRATOR_TEMPLATES[0]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedSteps, setGeneratedSteps] = useState<{name: string, daysOut: number}[]>([]);
 
-  // @ts-ignore
-  const archetype = user?.dominant_archetype || user?.psychProfile?.dominant_archetype || "The Pioneer";
+  const profile = user as
+    | { dominant_archetype?: string; psychProfile?: { dominant_archetype?: string } }
+    | null
+    | undefined;
+  const archetype =
+    profile?.dominant_archetype ||
+    profile?.psychProfile?.dominant_archetype ||
+    (oiosArchetypeKey ? formatOiosArchetypeLabel(oiosArchetypeKey) : null) ||
+    "The Pioneer";
 
   const handleGenerateDAG = () => {
     setIsGenerating(true);
@@ -107,12 +117,12 @@ export function SprintOrchestratorModal({ isOpen, onClose }: Props) {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-2xl bg-slate-900 border border-nanobanana-500/30 rounded-2xl shadow-2xl shadow-nanobanana-500/10 overflow-hidden"
+              className="w-full max-w-2xl bg-slate-900 border border-white/20 rounded-2xl shadow-2xl shadow-white/5 overflow-hidden"
             >
               <div className="flex items-center justify-between p-6 border-b border-white/5">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-nanobanana-500/20 flex items-center justify-center">
-                    <Sparkles className="w-5 h-5 text-nanobanana-400" />
+                  <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-white" />
                   </div>
                   <div>
                     <Dialog.Title className="font-heading text-h4 text-white">
@@ -140,25 +150,25 @@ export function SprintOrchestratorModal({ isOpen, onClose }: Props) {
                           className={cn(
                             "p-4 rounded-xl border text-left transition-all",
                             selectedTemplate.id === tpl.id 
-                              ? "bg-nanobanana-500/10 border-nanobanana-500 shadow-[0_0_15px_rgba(255,235,59,0.15)]" 
+                              ? "bg-white/10 border-white shadow-[0_0_15px_rgba(255,255,255,0.1)]" 
                               : "bg-white/5 border-white/10 hover:border-white/30"
                           )}
                         >
-                          <tpl.icon className={cn("w-6 h-6 mb-2", selectedTemplate.id === tpl.id ? "text-nanobanana-400" : "text-slate-400")} />
+                          <tpl.icon className={cn("w-6 h-6 mb-2", selectedTemplate.id === tpl.id ? "text-white" : "text-slate-400")} />
                           <p className="font-heading font-medium text-white text-sm">{tpl.label}</p>
                         </button>
                       ))}
                     </div>
 
                     <div className="p-4 rounded-xl bg-slate-800/50 border border-white/5 text-sm text-slate-300">
-                      Perfil ativo: <span className="text-nanobanana-400 font-medium">{archetype}</span>.<br />
+                      Perfil ativo: <span className="text-white font-medium">{archetype}</span>.<br />
                       A inteligência irá orquestrar sua rota compensando as vulnerabilidades deste arquétipo.
                     </div>
 
                     <button
                       onClick={handleGenerateDAG}
                       disabled={isGenerating}
-                      className="w-full py-3 px-4 flex items-center justify-center gap-2 bg-nanobanana-500 hover:bg-nanobanana-600 text-slate-900 font-heading font-bold rounded-xl transition-all disabled:opacity-50"
+                      className="w-full py-3 px-4 flex items-center justify-center gap-2 bg-white hover:bg-slate-200 text-slate-900 font-heading font-bold rounded-xl transition-all disabled:opacity-50"
                     >
                       {isGenerating ? <><Loader2 className="w-5 h-5 animate-spin" /> Mapeando Rotas...</> : <><GitMerge className="w-5 h-5" /> Gerar Rota Personalizada</>}
                     </button>
@@ -169,7 +179,7 @@ export function SprintOrchestratorModal({ isOpen, onClose }: Props) {
                     <div className="space-y-2 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
                       {generatedSteps.map((step, idx) => (
                         <div key={idx} className="flex items-center gap-4 p-3 rounded-lg bg-white/5 border border-white/10">
-                          <div className="w-6 h-6 rounded-full bg-nanobanana-500/20 text-nanobanana-400 flex items-center justify-center text-xs font-bold">
+                          <div className="w-6 h-6 rounded-full bg-white/20 text-white flex items-center justify-center text-xs font-bold">
                             {idx + 1}
                           </div>
                           <p className="flex-1 text-sm text-white">{step.name}</p>
@@ -181,7 +191,7 @@ export function SprintOrchestratorModal({ isOpen, onClose }: Props) {
                     <button
                       onClick={handleCommit}
                       disabled={isGenerating}
-                      className="w-full py-3 px-4 mt-4 flex items-center justify-center gap-2 bg-nanobanana-500 hover:bg-nanobanana-600 text-slate-900 font-heading font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(255,235,59,0.3)] disabled:opacity-50"
+                      className="w-full py-3 px-4 mt-4 flex items-center justify-center gap-2 bg-white hover:bg-slate-200 text-slate-900 font-heading font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] disabled:opacity-50"
                     >
                       {isGenerating ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Submeter Sprint em Massa <ArrowRight className="w-5 h-5" /></>}
                     </button>

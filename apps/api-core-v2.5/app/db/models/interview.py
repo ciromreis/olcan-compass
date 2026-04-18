@@ -5,7 +5,7 @@ import enum
 from datetime import datetime, timezone
 
 from sqlalchemy import DateTime, String, Text, ForeignKey, JSON, Enum, Float, Integer, Boolean
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
@@ -103,6 +103,10 @@ class InterviewSession(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
+    # Relationships
+    user = relationship("User", back_populates="interview_sessions")
+    answers = relationship("InterviewAnswer", back_populates="session", cascade="all, delete-orphan")
+
 
 class InterviewAnswer(Base):
     """User's recorded answer to an interview question"""
@@ -144,6 +148,9 @@ class InterviewAnswer(Base):
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     analyzed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    # Relationships
+    session = relationship("InterviewSession", back_populates="answers")
 
 
 class InterviewFeedbackTemplate(Base):

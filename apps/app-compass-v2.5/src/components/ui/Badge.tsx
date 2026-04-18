@@ -10,14 +10,14 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  default: "bg-cream-200 text-text-secondary",
+  default: "bg-slate-100 text-slate-700",
   success: "bg-green-50 text-green-700 border border-green-200",
-  warning: "bg-amber-50 text-amber-700 border border-amber-200",
+  warning: "bg-slate-50 text-slate-700 border border-slate-200",
   error: "bg-red-50 text-red-700 border border-red-200",
   info: "bg-blue-50 text-blue-700 border border-blue-200",
-  moss: "bg-brand-50 text-brand-600 border border-brand-200",
-  clay: "bg-clay-50 text-clay-600 border border-clay-200",
-  outline: "bg-transparent border border-cream-500 text-text-secondary",
+  moss: "bg-slate-100 text-slate-600 border border-slate-200",
+  clay: "bg-slate-200 text-slate-800 border border-slate-300",
+  outline: "bg-transparent border border-slate-200 text-slate-600",
 };
 
 const sizeStyles = {

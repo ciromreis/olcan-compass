@@ -37,7 +37,7 @@ const NOTIFICATION_ICONS: Record<NotificationType, React.ReactNode> = {
 }
 
 const NOTIFICATION_COLORS: Record<NotificationType, { gradient: string; glow: string }> = {
-  achievement: { gradient: 'from-yellow-500 to-orange-500', glow: 'shadow-yellow-500/50' },
+  achievement: { gradient: 'from-slate-500 to-slate-500', glow: 'shadow-slate-500/50' },
   level_up: { gradient: 'from-purple-500 to-pink-500', glow: 'shadow-purple-500/50' },
   evolution: { gradient: 'from-blue-500 to-cyan-500', glow: 'shadow-blue-500/50' },
   quest_complete: { gradient: 'from-green-500 to-emerald-500', glow: 'shadow-green-500/50' },

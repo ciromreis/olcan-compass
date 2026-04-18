@@ -3,9 +3,9 @@
   "configurations": [
     {
       "name": "app-compass-v2.5",
-      "runtimeExecutable": "/opt/homebrew/opt/node@24/bin/node",
-      "runtimeArgs": ["/opt/homebrew/opt/node@24/bin/npx", "next", "dev", "-p", "3002"],
-      "port": 3002
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000
     }
   ]
 }

@@ -1,5 +1,29 @@
 from app.db.models.user import User, UserRole
+from app.db.models.analytics import (
+    Experiment,
+    ExperimentAssignment,
+    ExperimentStatus,
+    ProductEvent,
+    UserAttribute,
+)
+from app.db.models.crm import CrmIdentityLink
 from app.db.models.organization import Organization, OrganizationMember, OrganizationType, OrganizationMemberRole
+from app.db.models.companion import (
+    Companion,
+    CompanionActivity,
+    CompanionEvolution,
+    CompanionMessage,
+    CompanionMood,
+    CompanionActivityType,
+)
+from app.db.models.quest import (
+    QuestTemplate,
+    UserQuest,
+    QuestProgressEvent,
+    QuestType,
+    QuestStatus,
+    QuestCategory,
+)
 
 from app.db.models.psychology import (
     PsychProfile,
@@ -117,9 +141,77 @@ from app.db.models.document import (
     PolishStatus,
 )
 
+from app.db.models.billing import (
+    ForgeUsageLog,
+    CreditPurchase,
+)
+
+from app.db.models.social import (
+    UserPost,
+    PostLike,
+    PostComment,
+    UserBoard,
+    BoardItem,
+    BoardFollower,
+    SavedReference,
+    Question,
+    Answer,
+    QuestionUpvote,
+    AnswerUpvote,
+)
+
+from app.db.models.guild import (
+    Guild,
+    GuildMember,
+    GuildEvent,
+    GuildRole,
+)
+
+from app.db.models.recruitment import (
+    JobRoute,
+    RecruitmentDocument,
+    RecruitmentActivity,
+    RecruitmentProgress,
+    JobRouteStatus,
+    JobType,
+    DocumentType as RecruitmentDocumentType,
+    InterviewType,
+    ApplicationMethod,
+)
+
+from app.db.models.task import (
+    Task,
+    SubTask,
+    UserProgress,
+    Achievement,
+    UserAchievement,
+    TaskStatus,
+    TaskPriority,
+    TaskCategory,
+    AchievementCategory,
+)
+
 __all__ = [
     "User",
     "UserRole",
+    "Experiment",
+    "ExperimentAssignment",
+    "ExperimentStatus",
+    "ProductEvent",
+    "UserAttribute",
+    "CrmIdentityLink",
+    "Companion",
+    "CompanionActivity",
+    "CompanionEvolution",
+    "CompanionMessage",
+    "CompanionMood",
+    "CompanionActivityType",
+    "QuestTemplate",
+    "UserQuest",
+    "QuestProgressEvent",
+    "QuestType",
+    "QuestStatus",
+    "QuestCategory",
     "PsychProfile",
     "PsychQuestion",
     "PsychQuestionType",
@@ -208,4 +300,39 @@ __all__ = [
     "DocumentType",
     "DocumentStatus",
     "PolishStatus",
+    "ForgeUsageLog",
+    "CreditPurchase",
+    "UserPost",
+    "PostLike",
+    "PostComment",
+    "UserBoard",
+    "BoardItem",
+    "BoardFollower",
+    "SavedReference",
+    "Question",
+    "Answer",
+    "QuestionUpvote",
+    "AnswerUpvote",
+    "Guild",
+    "GuildMember",
+    "GuildEvent",
+    "GuildRole",
+    "JobRoute",
+    "RecruitmentDocument",
+    "RecruitmentActivity",
+    "RecruitmentProgress",
+    "JobRouteStatus",
+    "JobType",
+    "RecruitmentDocumentType",
+    "InterviewType",
+    "ApplicationMethod",
+    "Task",
+    "SubTask",
+    "UserProgress",
+    "Achievement",
+    "UserAchievement",
+    "TaskStatus",
+    "TaskPriority",
+    "TaskCategory",
+    "AchievementCategory",
 ]

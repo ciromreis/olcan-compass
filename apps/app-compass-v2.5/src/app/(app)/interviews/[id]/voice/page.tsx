@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { Volume2, AlertTriangle, Mic } from "lucide-react";
 import { useSession } from "@/hooks";
 import { useHydration } from "@/hooks";
+import { ComingSoonBanner } from "@/components/product/ComingSoonPanel";
 import { PageHeader, Skeleton, EmptyState } from "@/components/ui";
 import { formatDate } from "@/lib/format";
 
@@ -50,6 +51,11 @@ export default function VoiceAnalysisPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <PageHeader backHref={`/interviews/${sessionId}`} title="Análise de Voz" subtitle={`Métricas vocais da sessão de ${formatDate(session.startedAt)}`} />
+
+      <ComingSoonBanner
+        title="Indicadores ilustrativos"
+        description="Não há gravação de áudio nesta versão: as métricas abaixo são derivadas da pontuação geral da sessão para orientar prática. Análise vocal real virá em uma próxima entrega."
+      />
 
       <div className="card-surface p-6">
         <h3 className="font-heading text-h4 text-text-primary mb-2">Waveform da Sessão</h3>

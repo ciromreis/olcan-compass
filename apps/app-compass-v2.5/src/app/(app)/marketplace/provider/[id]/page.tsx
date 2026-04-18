@@ -9,7 +9,6 @@ import { Skeleton, EmptyState } from "@/components/ui";
 import { formatDate } from "@/lib/format";
 import Link from "next/link";
 
-const MOCK_ARCHETYPES = ["Ponte Técnica", "Cartógrafo de Bolsas", "Virada de Carreira", "Mobilidade Executiva"];
 
 export default function ProviderProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -62,7 +61,9 @@ export default function ProviderProfilePage() {
     );
   }
 
-  const archetype = MOCK_ARCHETYPES[Math.floor(Math.random() * MOCK_ARCHETYPES.length)];
+  const archetype = provider.specialties?.[0]
+    ? CATEGORY_LABELS[provider.specialties[0]]
+    : "Especialista";
 
   const handleContact = () => {
     const conversation = ensureConversation(provider.id);
@@ -73,7 +74,7 @@ export default function ProviderProfilePage() {
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       {/* Back Link */}
-      <Link href="/marketplace" className="inline-flex items-center gap-2 text-slate-400 hover:text-nanobanana-400 font-medium transition-colors">
+      <Link href="/marketplace" className="inline-flex items-center gap-2 text-slate-400 hover:text-white font-medium transition-colors">
         <ArrowLeft className="w-4 h-4" /> Voltar para o Hub
       </Link>
 
@@ -82,10 +83,10 @@ export default function ProviderProfilePage() {
         {/* Banner Gradient */}
         <div className="h-40 sm:h-56 bg-gradient-to-br from-slate-800 to-slate-950 relative border-b border-white/5 overflow-hidden">
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-nanobanana-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white/5 rounded-full blur-[120px] pointer-events-none"></div>
           
           <div className="absolute top-6 left-6 sm:top-8 sm:left-8">
-            <span className="px-3 py-1.5 rounded-full bg-slate-900/80 border border-nanobanana-500/50 text-xs sm:text-sm uppercase font-bold text-nanobanana-400 tracking-wider flex items-center gap-1.5 backdrop-blur-md">
+            <span className="px-3 py-1.5 rounded-full bg-slate-900/80 border border-white/40 text-xs sm:text-sm uppercase font-bold text-white tracking-wider flex items-center gap-1.5 backdrop-blur-md">
               <Zap className="w-4 h-4" /> {archetype}
             </span>
           </div>
@@ -102,7 +103,7 @@ export default function ProviderProfilePage() {
             )}
             
             {provider.verified && (
-              <div className="absolute bottom-2 right-2 bg-nanobanana-500 text-slate-900 p-2 rounded-xl border-2 border-slate-900 shadow-xl">
+              <div className="absolute bottom-2 right-2 bg-white text-slate-900 p-2 rounded-xl border-2 border-slate-900 shadow-xl">
                 <ShieldCheck className="w-6 h-6" />
               </div>
             )}
@@ -110,13 +111,13 @@ export default function ProviderProfilePage() {
 
           <div className="flex-1 text-center sm:text-left pt-2 sm:pt-24 min-w-0">
             <h1 className="font-heading text-h2 text-white mb-2 leading-tight">{provider.name}</h1>
-            <p className="text-lg text-nanobanana-400 font-medium mb-4">
+            <p className="text-lg text-white/90 font-medium mb-4">
               {provider.specialties.map((s) => CATEGORY_LABELS[s]).join(" · ")}
             </p>
             
             <div className="flex flex-wrap justify-center sm:justify-start gap-4 sm:gap-6 text-sm text-slate-300 font-medium mb-6">
               <span className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
-                <Star className="w-4 h-4 text-nanobanana-500 fill-nanobanana-500" />
+                <Star className="w-4 h-4 text-white fill-white" />
                 <span className="text-white">{provider.rating}</span> 
                 <span className="text-slate-500">({provider.reviewCount})</span>
               </span>
@@ -147,8 +148,8 @@ export default function ProviderProfilePage() {
             <h3 className="font-heading text-h3 text-white">Serviços Disponíveis</h3>
             <div className="grid gap-4">
               {provider.services.filter((s) => s.isActive).map((svc) => (
-                <div key={svc.id} className="group p-6 rounded-2xl bg-slate-900 border border-white/5 hover:border-nanobanana-500/50 transition-all flex flex-col sm:flex-row sm:items-center gap-6 shadow-xl hover:shadow-[0_10px_40px_-15px_rgba(255,235,59,0.15)] relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-nanobanana-500/5 rounded-full blur-3xl group-hover:bg-nanobanana-500/10 transition-colors pointer-events-none"></div>
+                <div key={svc.id} className="group p-6 rounded-2xl bg-slate-900 border border-white/5 hover:border-white/40 transition-all flex flex-col sm:flex-row sm:items-center gap-6 shadow-xl hover:shadow-[0_10px_40px_-15px_rgba(255,255,255,0.05)] relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors pointer-events-none"></div>
 
                   <div className="flex-1 relative z-10">
                     <h4 className="font-heading text-xl text-white font-bold mb-1">{svc.title}</h4>
@@ -157,13 +158,13 @@ export default function ProviderProfilePage() {
                   
                   <div className="flex flex-col sm:items-end gap-3 flex-shrink-0 relative z-10 w-full sm:w-auto">
                     <div className="flex justify-between sm:flex-col sm:items-end w-full sm:w-auto">
-                      <p className="font-heading font-black text-2xl text-nanobanana-400">R$ {svc.price.toLocaleString("pt-BR")}</p>
+                      <p className="font-heading font-black text-2xl text-white">R$ {svc.price.toLocaleString("pt-BR")}</p>
                       {svc.duration > 0 && <p className="text-caption text-slate-500 flex items-center gap-1 font-medium tracking-wide uppercase"><Clock className="w-3.5 h-3.5" />{svc.duration} min</p>}
                     </div>
 
                     <button 
                       onClick={() => router.push(`/marketplace/provider/${provider.id}/book?service=${svc.id}`)} 
-                      className="w-full sm:w-auto px-6 py-3 rounded-xl bg-nanobanana-500 text-slate-900 font-heading font-bold text-sm hover:bg-nanobanana-400 transition-colors shadow-[0_0_20px_rgba(255,235,59,0.2)]"
+                      className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white text-slate-900 font-heading font-bold text-sm hover:bg-slate-200 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.1)]"
                     >
                       Reservar atendimento
                     </button>
@@ -178,13 +179,13 @@ export default function ProviderProfilePage() {
             <section className="space-y-4">
               <h3 className="font-heading text-h3 text-white">O que dizem os clientes</h3>
               <div className="grid gap-4">
-                {provider.reviews.map((r, i) => (
+                {provider.reviews.map((r) => (
                   <div key={r.id} className="p-6 rounded-2xl bg-slate-900/50 border border-white/5 relative">
                     <div className="absolute top-6 right-6 text-slate-800">
                       <MessageSquare className="w-12 h-12 opacity-50" />
                     </div>
                     <div className="flex items-center gap-4 mb-4 relative z-10">
-                      <div className="w-10 h-10 rounded-full bg-nanobanana-500/20 text-nanobanana-400 flex items-center justify-center font-bold">
+                      <div className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center font-bold">
                         {r.userName.charAt(0)}
                       </div>
                       <div>
@@ -197,10 +198,10 @@ export default function ProviderProfilePage() {
                     </div>
                     <div className="flex mb-3 relative z-10">
                       {Array.from({ length: 5 }).map((_, j) => (
-                        <Star key={j} className={`w-4 h-4 ${j < r.rating ? "text-nanobanana-500 fill-nanobanana-500" : "text-slate-700"}`} />
+                        <Star key={j} className={`w-4 h-4 ${j < r.rating ? "text-white fill-white" : "text-slate-700"}`} />
                       ))}
                     </div>
-                    <p className="text-body-sm text-slate-300 relative z-10 italic">"{r.comment}"</p>
+                    <p className="text-body-sm text-slate-300 relative z-10 italic">&ldquo;{r.comment}&rdquo;</p>
                   </div>
                 ))}
               </div>
@@ -213,7 +214,7 @@ export default function ProviderProfilePage() {
           <div className="pb-6 border-b border-white/5 text-center">
             <h4 className="font-heading text-sm font-bold text-slate-400 uppercase tracking-widest mb-2">Ponte de Evolução</h4>
             <p className="text-body-sm text-slate-500">
-              O perfil <strong className="text-nanobanana-400">{archetype}</strong> deste especialista indica senioridade prática para orientar decisões de mobilidade e posicionamento internacional.
+              O perfil <strong className="text-white">{archetype}</strong> deste especialista indica senioridade prática para orientar decisões de mobilidade e posicionamento internacional.
             </p>
           </div>
           

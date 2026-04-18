@@ -5,9 +5,10 @@ import { useParams, useRouter } from "next/navigation";
 import { Calendar, Clock, Shield, Star, MessageSquare, CheckCircle, Download, XCircle, Briefcase, FileText } from "lucide-react";
 import { useMarketplaceStore, type EscrowStatus } from "@/stores/canonicalMarketplaceProviderStore";
 import { useHydration } from "@/hooks";
-import { ConfirmationModal, EmptyState, PageHeader, Skeleton, useToast } from "@/components/ui";
+import { ConfirmationModal, EmptyState, PageHeader, Skeleton, useToast, Modal } from "@/components/ui";
 import { formatDate } from "@/lib/format";
 import { downloadFile } from "@/lib/file-export";
+import { ReviewForm } from "@/components/marketplace/ReviewForm";
 
 const ESCROW_LABELS: Record<EscrowStatus, { label: string; color: string }> = {
   pending: { label: "Pendente", color: "text-text-muted" },
@@ -21,11 +22,10 @@ export default function BookingDetailPage() {
   const router = useRouter();
   const hydrated = useHydration();
   const { toast } = useToast();
-  const { getBookingById, updateBookingStatus, rateBooking, ensureConversation, getConversation } = useMarketplaceStore();
-  const [hoveredStar, setHoveredStar] = useState(0);
-  const [selectedRating, setSelectedRating] = useState(0);
+  const { getBookingById, updateBookingStatus, ensureConversation, getConversation } = useMarketplaceStore();
   const [completeOpen, setCompleteOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
 
   const booking = hydrated ? getBookingById(id) : undefined;
 
@@ -87,17 +87,6 @@ export default function BookingDetailPage() {
     });
   };
 
-  const handleRate = () => {
-    if (selectedRating > 0) {
-      rateBooking(booking.id, selectedRating);
-      toast({
-        title: "Avaliação enviada",
-        description: `Você avaliou ${booking.providerName} com ${selectedRating} estrela${selectedRating > 1 ? "s" : ""}.`,
-        variant: "success",
-      });
-    }
-  };
-
   const handleMessage = () => {
     const conversation = ensureConversation(booking.providerId);
     if (!conversation) return;
@@ -122,6 +111,15 @@ export default function BookingDetailPage() {
     ].join("\n");
 
     downloadFile(manifest, `${deliverable.name}.txt`, "text/plain;charset=utf-8");
+  };
+
+  const handleReviewSuccess = () => {
+    setReviewModalOpen(false);
+    toast({
+      title: "Avaliação enviada",
+      description: "Obrigado por compartilhar sua experiência!",
+      variant: "success",
+    });
   };
 
   return (
@@ -220,21 +218,15 @@ export default function BookingDetailPage() {
       {canRate && (
         <div className="card-surface p-6 bg-cream-100">
           <h3 className="font-heading text-h4 text-text-primary mb-3">Avaliar Profissional</h3>
-          <div className="flex gap-1 mb-3">
-            {[1, 2, 3, 4, 5].map((s) => (
-              <button
-                key={s}
-                className="p-1"
-                onMouseEnter={() => setHoveredStar(s)}
-                onMouseLeave={() => setHoveredStar(0)}
-                onClick={() => setSelectedRating(s)}
-              >
-                <Star className={`w-6 h-6 transition-colors ${s <= (hoveredStar || selectedRating) ? "text-clay-500 fill-current" : "text-cream-400"}`} />
-              </button>
-            ))}
-          </div>
-          <button onClick={handleRate} disabled={selectedRating === 0} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-500 text-white text-body-sm font-semibold hover:bg-brand-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-            Enviar Avaliação
+          <p className="text-body-sm text-text-muted mb-4">
+            Compartilhe sua experiência com {booking.providerName} para ajudar outros usuários.
+          </p>
+          <button 
+            onClick={() => setReviewModalOpen(true)} 
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-500 text-white text-body-sm font-semibold hover:bg-brand-600 transition-colors"
+          >
+            <Star className="w-4 h-4" />
+            Deixar Avaliação
           </button>
         </div>
       )}
@@ -271,6 +263,21 @@ export default function BookingDetailPage() {
         cancelLabel="Manter contratação"
         variant="destructive"
       />
+
+      <Modal
+        open={reviewModalOpen}
+        onClose={() => setReviewModalOpen(false)}
+        title="Avaliar Profissional"
+        description={`Compartilhe sua experiência com ${booking.providerName}`}
+        size="md"
+      >
+        <ReviewForm
+          bookingId={booking.id}
+          providerId={booking.providerId}
+          onSuccess={handleReviewSuccess}
+          onCancel={() => setReviewModalOpen(false)}
+        />
+      </Modal>
     </div>
   );
 }

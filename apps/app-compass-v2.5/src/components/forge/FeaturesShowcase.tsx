@@ -70,16 +70,16 @@ const features = [
     icon: Zap,
     title: "Editor Robusto",
     description: "TipTap com 15+ ferramentas. Formatação rica, auto-save, undo/redo ilimitado e contador de palavras em tempo real.",
-    gradient: "from-amber-500 to-amber-600",
+    gradient: "from-slate-500 to-slate-600",
     image: (
       <svg viewBox="0 0 200 200" className="w-full h-full">
-        <rect x="30" y="40" width="140" height="120" rx="8" fill="currentColor" className="text-amber-50" />
-        <rect x="40" y="50" width="20" height="20" rx="4" fill="currentColor" className="text-amber-300" />
-        <rect x="65" y="50" width="20" height="20" rx="4" fill="currentColor" className="text-amber-300" />
-        <rect x="90" y="50" width="20" height="20" rx="4" fill="currentColor" className="text-amber-300" />
-        <rect x="40" y="85" width="120" height="4" rx="2" fill="currentColor" className="text-amber-200" />
-        <rect x="40" y="95" width="100" height="4" rx="2" fill="currentColor" className="text-amber-200" />
-        <rect x="40" y="105" width="110" height="4" rx="2" fill="currentColor" className="text-amber-200" />
+        <rect x="30" y="40" width="140" height="120" rx="8" fill="currentColor" className="text-slate-50" />
+        <rect x="40" y="50" width="20" height="20" rx="4" fill="currentColor" className="text-slate-300" />
+        <rect x="65" y="50" width="20" height="20" rx="4" fill="currentColor" className="text-slate-300" />
+        <rect x="90" y="50" width="20" height="20" rx="4" fill="currentColor" className="text-slate-300" />
+        <rect x="40" y="85" width="120" height="4" rx="2" fill="currentColor" className="text-slate-200" />
+        <rect x="40" y="95" width="100" height="4" rx="2" fill="currentColor" className="text-slate-200" />
+        <rect x="40" y="105" width="110" height="4" rx="2" fill="currentColor" className="text-slate-200" />
       </svg>
     )
   },

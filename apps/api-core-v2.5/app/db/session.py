@@ -1,7 +1,9 @@
 import re
+import sys
 from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.pool import NullPool
 
 from app.core.config import get_settings
 
@@ -47,13 +49,25 @@ def get_engine() -> AsyncEngine:
     if _engine is None:
         settings = get_settings()
         url, connect_args = _sanitize_asyncpg_url(settings.database_url)
-        _engine = create_async_engine(
-            url,
-            pool_pre_ping=True,
-            pool_size=5,
-            max_overflow=10,
-            connect_args=connect_args,
-        )
+        engine_kwargs = {
+            "pool_pre_ping": True,
+            "connect_args": connect_args,
+        }
+
+        # pytest drives the ASGI app through multiple event loops/threads.
+        # Reusing pooled asyncpg connections in that context causes
+        # "Future attached to a different loop" errors.
+        if "pytest" in sys.modules:
+            engine_kwargs["poolclass"] = NullPool
+        else:
+            engine_kwargs.update(
+                {
+                    "pool_size": 5,
+                    "max_overflow": 10,
+                }
+            )
+
+        _engine = create_async_engine(url, **engine_kwargs)
     return _engine
 
 
@@ -78,4 +92,3 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
         except Exception:
             await session.rollback()
             raise
-

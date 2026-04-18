@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ArrowLeft, Plus, Minus } from "lucide-react";
 import { useForgeStore } from "@/stores/forge";
+import { useEffectivePlan } from "@/hooks/use-effective-plan";
+import { canUseForgeVersionCompare } from "@/lib/entitlements";
 
 function computeDiff(oldText: string, newText: string): { type: "context" | "added" | "removed"; text: string }[] {
   const oldLines = oldText.split("\n");
@@ -41,6 +43,7 @@ export default function ComparePage() {
   const params = useParams();
   const docId = params.id as string;
   const { getDocById } = useForgeStore();
+  const plan = useEffectivePlan();
   const doc = getDocById(docId);
 
   const [leftIdx, setLeftIdx] = useState(0);
@@ -59,13 +62,39 @@ export default function ComparePage() {
   const removedCount = diff.filter((d) => d.type === "removed").length;
   const wordDelta = (rightVersion?.wordCount || 0) - (leftVersion?.wordCount || 0);
 
-  if (!doc || doc.versions.length < 2) {
+  if (!doc) {
     return (
       <div className="max-w-4xl mx-auto py-12 text-center">
-        <p className="text-body text-text-muted mb-4">
-          {!doc ? "Documento não encontrado." : "Precisa de pelo menos 2 versões salvas para comparar."}
+        <p className="text-body text-text-muted mb-4">Documento não encontrado.</p>
+        <Link href="/forge" className="text-brand-500 font-medium hover:underline">← Voltar</Link>
+      </div>
+    );
+  }
+
+  if (!canUseForgeVersionCompare(plan)) {
+    return (
+      <div className="max-w-lg mx-auto py-12 text-center space-y-4">
+        <h1 className="font-heading text-h2 text-text-primary">Comparar versões</h1>
+        <p className="text-body text-text-secondary">
+          O diff entre versões do Forge está nos planos Navegador e Comandante.
         </p>
-        <Link href={doc ? `/forge/${docId}` : "/forge"} className="text-brand-500 font-medium hover:underline">← Voltar</Link>
+        <div className="flex flex-wrap justify-center gap-3">
+          <Link href="/subscription" className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3 text-body-sm font-semibold text-white hover:bg-brand-600">
+            Ver planos
+          </Link>
+          <Link href={`/forge/${docId}`} className="inline-flex items-center gap-2 rounded-xl border border-cream-500 px-6 py-3 text-body-sm text-text-secondary hover:bg-cream-100">
+            Voltar ao documento
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (doc.versions.length < 2) {
+    return (
+      <div className="max-w-4xl mx-auto py-12 text-center">
+        <p className="text-body text-text-muted mb-4">Precisa de pelo menos 2 versões salvas para comparar.</p>
+        <Link href={`/forge/${docId}`} className="text-brand-500 font-medium hover:underline">← Voltar</Link>
       </div>
     );
   }

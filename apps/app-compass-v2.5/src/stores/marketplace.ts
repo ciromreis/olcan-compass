@@ -302,6 +302,15 @@ function mapRemoteConversation(conversation: RemoteConversation): Conversation {
 
 // --- Store ---
 
+export interface ConnectOnboardingStatus {
+  hasAccount: boolean;
+  accountId?: string;
+  onboardingComplete: boolean;
+  chargesEnabled: boolean;
+  payoutsEnabled: boolean;
+  detailsSubmitted?: boolean;
+}
+
 interface MarketplaceState {
   providers: Provider[];
   bookings: Booking[];
@@ -310,6 +319,7 @@ interface MarketplaceState {
   activeProviderId: string | null;
   myProviderProfile: Provider | null;
   myServices: ServiceListing[];
+  connectStatus: ConnectOnboardingStatus | null;
   isSyncing: boolean;
   syncError: string | null;
 
@@ -331,6 +341,10 @@ interface MarketplaceState {
   createService: (service: Omit<ServiceListing, "id" | "providerId">) => Promise<void>;
   updateService: (id: string, updates: Partial<ServiceListing>) => Promise<void>;
   deleteService: (id: string) => Promise<void>;
+
+  // Stripe Connect
+  startConnectOnboarding: () => Promise<string | null>;
+  refreshConnectStatus: () => Promise<ConnectOnboardingStatus | null>;
 
   // Bookings
   createBooking: (booking: Omit<Booking, "id" | "createdAt">) => Promise<Booking>;
@@ -399,6 +413,7 @@ const initialState = {
   activeProviderId: null,
   myProviderProfile: null,
   myServices: [],
+  connectStatus: null,
   isSyncing: false,
   syncError: null,
 };
@@ -589,6 +604,44 @@ export const useMarketplaceStore = create<MarketplaceState>()(
         } catch (err) {
           console.error("deleteService error:", err);
           throw err;
+        }
+      },
+
+      startConnectOnboarding: async () => {
+        try {
+          const { data } = await marketplaceApi.startConnectOnboarding();
+          const resp = data as unknown as { onboarding_url: string; account_id: string };
+          return resp.onboarding_url;
+        } catch (err) {
+          console.error("startConnectOnboarding error:", err);
+          return null;
+        }
+      },
+
+      refreshConnectStatus: async () => {
+        try {
+          const { data } = await marketplaceApi.getConnectOnboardingStatus();
+          const resp = data as unknown as {
+            has_account: boolean;
+            account_id?: string;
+            onboarding_complete: boolean;
+            charges_enabled: boolean;
+            payouts_enabled: boolean;
+            details_submitted?: boolean;
+          };
+          const status: ConnectOnboardingStatus = {
+            hasAccount: resp.has_account,
+            accountId: resp.account_id,
+            onboardingComplete: resp.onboarding_complete,
+            chargesEnabled: resp.charges_enabled,
+            payoutsEnabled: resp.payouts_enabled,
+            detailsSubmitted: resp.details_submitted,
+          };
+          set({ connectStatus: status });
+          return status;
+        } catch (err) {
+          console.error("refreshConnectStatus error:", err);
+          return null;
         }
       },
 

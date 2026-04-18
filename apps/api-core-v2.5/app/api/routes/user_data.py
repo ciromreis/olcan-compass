@@ -20,6 +20,14 @@ from app.db.models.economics import (
     OpportunityCostWidgetEvent
 )
 from app.db.models.psychology import PsychProfile
+from app.db.models.analytics import (
+    Experiment,
+    ExperimentAssignment,
+    ProductEvent,
+    UserAttribute,
+)
+
+MAX_ANALYTICS_EVENTS_EXPORT = 100_000
 
 router = APIRouter(prefix="/me", tags=["User Data Management"])
 
@@ -279,4 +287,119 @@ async def delete_economics_data(
         'message': 'Dados de economia excluídos com sucesso',
         'deleted_at': datetime.now(timezone.utc).isoformat(),
         'summary': deleted_counts
+    }
+
+
+@router.get("/analytics-data/export")
+async def export_analytics_data(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Dict[str, Any]:
+    """
+    Exporta dados de analytics armazenados no Compass (eventos de produto, atributos, testes A/B).
+    Limite de linhas em `product_events` para esta resposta: ver `events_truncated`.
+    """
+    user_id = current_user.id
+
+    pe_result = await db.execute(
+        select(ProductEvent)
+        .where(ProductEvent.user_id == user_id)
+        .order_by(ProductEvent.occurred_at.desc())
+        .limit(MAX_ANALYTICS_EVENTS_EXPORT + 1)
+    )
+    pe_rows = pe_result.scalars().all()
+    truncated = len(pe_rows) > MAX_ANALYTICS_EVENTS_EXPORT
+    if truncated:
+        pe_rows = pe_rows[:MAX_ANALYTICS_EVENTS_EXPORT]
+
+    product_events_data = [
+        {
+            "id": str(e.id),
+            "event_name": e.event_name,
+            "occurred_at": e.occurred_at.isoformat(),
+            "properties": e.properties,
+            "session_id": e.session_id,
+            "client_source": e.client_source,
+            "app_release": e.app_release,
+            "created_at": e.created_at.isoformat(),
+        }
+        for e in pe_rows
+    ]
+
+    ua_result = await db.execute(
+        select(UserAttribute).where(UserAttribute.user_id == user_id)
+    )
+    ua_rows = ua_result.scalars().all()
+    attributes_data = [
+        {
+            "namespace": a.namespace,
+            "key": a.key,
+            "value": a.value_text,
+            "updated_at": a.updated_at.isoformat(),
+        }
+        for a in ua_rows
+    ]
+
+    ea_result = await db.execute(
+        select(ExperimentAssignment, Experiment.slug)
+        .join(Experiment, ExperimentAssignment.experiment_id == Experiment.id)
+        .where(ExperimentAssignment.user_id == user_id)
+    )
+    assignments_data = [
+        {
+            "experiment_slug": slug,
+            "variant": assignment.variant,
+            "assigned_at": assignment.assigned_at.isoformat(),
+        }
+        for assignment, slug in ea_result.all()
+    ]
+
+    return {
+        "user_id": str(user_id),
+        "export_date": datetime.now(timezone.utc).isoformat(),
+        "events_truncated": truncated,
+        "events_limit": MAX_ANALYTICS_EVENTS_EXPORT,
+        "data": {
+            "product_events": product_events_data,
+            "user_attributes": attributes_data,
+            "experiment_assignments": assignments_data,
+        },
+    }
+
+
+@router.delete("/analytics-data")
+async def delete_analytics_data(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Dict[str, Any]:
+    """
+    Remove eventos de produto, atributos de segmentação e atribuições de experimento do usuário.
+    Não remove definições globais de experimentos (`experiments`).
+    """
+    user_id = current_user.id
+    deleted_counts: Dict[str, int] = {}
+
+    r1 = await db.execute(
+        delete(ProductEvent).where(ProductEvent.user_id == user_id).returning(ProductEvent.id)
+    )
+    deleted_counts["product_events"] = len(r1.all())
+
+    r2 = await db.execute(
+        delete(UserAttribute).where(UserAttribute.user_id == user_id).returning(UserAttribute.id)
+    )
+    deleted_counts["user_attributes"] = len(r2.all())
+
+    r3 = await db.execute(
+        delete(ExperimentAssignment)
+        .where(ExperimentAssignment.user_id == user_id)
+        .returning(ExperimentAssignment.id)
+    )
+    deleted_counts["experiment_assignments"] = len(r3.all())
+
+    await db.commit()
+
+    return {
+        "message": "Dados de analytics excluídos com sucesso",
+        "deleted_at": datetime.now(timezone.utc).isoformat(),
+        "summary": deleted_counts,
     }

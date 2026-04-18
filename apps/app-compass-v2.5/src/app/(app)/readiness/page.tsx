@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Gauge, TrendingUp, AlertTriangle, Target, Calculator, History, ArrowRight, DollarSign, FileText, Languages, Brain, Truck, Zap, Mic, Star } from "lucide-react";
 import { useSprintStore } from "@/stores/sprints";
 import { useRouteStore } from "@/stores/routes";
-import { usePsychStore } from "@/stores/psych";
+import { psychologicalReadinessScore, usePsychStore } from "@/stores/psych";
 import { useCommunityStore } from "@/stores/community";
 import { useInterviewStore } from "@/stores/interviews";
 import { useHydration } from "@/hooks";
@@ -37,13 +37,21 @@ export default function ReadinessOverviewPage() {
   const hydrated = useHydration();
   const { sprints } = useSprintStore();
   const { routes, getRouteProgress } = useRouteStore();
-  const { getOverallScore, isComplete } = usePsychStore();
+  const {
+    getOverallScore,
+    isComplete,
+    oiosAssessmentComplete,
+    oiosSnapshot,
+  } = usePsychStore();
   const { items } = useCommunityStore();
   const { sessions: interviewSessions } = useInterviewStore();
 
   const dimensions: ReadinessDimension[] = useMemo(() => {
     if (!hydrated) return [];
-    const psychScore = isComplete() ? getOverallScore() : 0;
+    const psychScore = psychologicalReadinessScore(isComplete(), getOverallScore(), {
+      oiosAssessmentComplete,
+      oiosSnapshot,
+    });
 
     const routeProgress = routes.length > 0
       ? Math.round(routes.reduce((s, r) => s + getRouteProgress(r.id), 0) / routes.length)
@@ -56,7 +64,16 @@ export default function ReadinessOverviewPage() {
       { id: "psychological", label: "Psicológica", icon: Brain, weight: 15, score: psychScore, sprintDimension: "Psicológica" },
       { id: "logistical", label: "Logística", icon: Truck, weight: 10, score: Math.min(routeProgress, 100), sprintDimension: "Logística" },
     ];
-  }, [hydrated, sprints, routes, getRouteProgress, getOverallScore, isComplete]);
+  }, [
+    hydrated,
+    sprints,
+    routes,
+    getRouteProgress,
+    getOverallScore,
+    isComplete,
+    oiosAssessmentComplete,
+    oiosSnapshot,
+  ]);
 
   const totalScore = useMemo(() => {
     if (dimensions.length === 0) return 0;

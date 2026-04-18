@@ -125,7 +125,7 @@ export default function OpportunitiesPage() {
       if (existing) router.push(`/applications/${existing.id}`);
       return;
     }
-    const created = await addApplication(buildApp(opp, ""));
+    const created = await addApplication(buildApp(opp, "Criado a partir de uma aspiracao convertida em oportunidade operacional."));
     if (!created) return;
     router.push(`/applications/${created.id}`);
   };
@@ -134,6 +134,14 @@ export default function OpportunitiesPage() {
     <div className="max-w-5xl mx-auto space-y-6">
       <PageHeader title="Explorar Oportunidades" subtitle="Programas, bolsas e vagas compatíveis com seu perfil" backHref="/applications" />
 
+      <div className="card-surface p-5">
+        <h2 className="font-heading text-h4 text-text-primary">Comece pelo alvo, nao pelo documento</h2>
+        <p className="mt-2 text-body-sm text-text-secondary">
+          Traga uma vaga, bolsa, scholarship, edital ou sonho ainda difuso. O Compass transforma esse ponto de partida
+          em oportunidade observavel, com dossier, tarefas, readiness, entrevistas e exportacoes conectadas.
+        </p>
+      </div>
+
       <div className="grid md:grid-cols-3 gap-4">
         <div className="card-surface p-4 text-center">
           <p className="font-heading text-h3 text-text-primary">{loading ? "…" : filtered.length}</p>
@@ -141,7 +149,7 @@ export default function OpportunitiesPage() {
         </div>
         <div className="card-surface p-4 text-center">
           <p className="font-heading text-h3 text-brand-500">{applications.length}</p>
-          <p className="text-caption text-text-muted">Já na sua lista</p>
+          <p className="text-caption text-text-muted">Ja no pipeline</p>
         </div>
         <div className="card-surface p-4 text-center">
           <p className="font-heading text-h3 text-text-primary">{filter}</p>
@@ -154,6 +162,7 @@ export default function OpportunitiesPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar oportunidades..."
+          aria-label="Buscar oportunidades"
           icon={<Search className="w-4 h-4" />}
           className="flex-1"
         />

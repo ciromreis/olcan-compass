@@ -143,7 +143,7 @@ export default function BudgetSimulatorPage() {
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-green-600";
-    if (score >= 60) return "text-yellow-600";
+    if (score >= 60) return "text-slate-600";
     return "text-red-600";
   };
 
@@ -329,12 +329,12 @@ export default function BudgetSimulatorPage() {
                     {analysis.recommendations.map((rec, index) => (
                       <div key={index} className={cn(
                         "p-4 rounded-lg border",
-                        rec.type === "warning" && "border-yellow-200 bg-yellow-50",
+                        rec.type === "warning" && "border-slate-200 bg-slate-50",
                         rec.type === "alert" && "border-red-200 bg-red-50",
                         rec.type === "info" && "border-blue-200 bg-blue-50"
                       )}>
                         <div className="flex items-start gap-3">
-                          {rec.type === "warning" && <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5" />}
+                          {rec.type === "warning" && <AlertTriangle className="w-5 h-5 text-slate-600 mt-0.5" />}
                           {rec.type === "alert" && <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />}
                           {rec.type === "info" && <Target className="w-5 h-5 text-blue-600 mt-0.5" />}
                           

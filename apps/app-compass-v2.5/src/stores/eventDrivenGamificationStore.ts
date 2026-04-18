@@ -23,7 +23,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import type { AuraEvent } from './canonicalCompanionStore'
+import type { AuraEvent } from './auraStore'
 
 // ============================================================================
 // TYPES - Achievement and Quest System
@@ -656,7 +656,7 @@ export const useGamificationStore = create<
         // ========================================================================
         
         checkAchievementProgress: (key: string, value: number = 1) => {
-          const { achievements, userProgress } = get()
+          const { achievements } = get()
           
           achievements.forEach(achievement => {
             if (achievement.isUnlocked) return
@@ -1021,7 +1021,7 @@ export const useGamificationStore = create<
           }
         },
         
-        handleProductEvent: (eventType: string, payload: Record<string, unknown>) => {
+        handleProductEvent: (eventType: string, _payload: Record<string, unknown>) => {
           switch (eventType) {
             // Execution events
             case 'document.created':
@@ -1053,8 +1053,13 @@ export const useGamificationStore = create<
               
             // Marketplace events
             case 'marketplace.booking.created':
-              get().addXP(50, 'service_booked')
+              get().addXP(150, 'service_booked')
               get().unlockAchievement('first_booking')
+              break
+              
+            case 'marketplace.booking.completed':
+              get().addXP(500, 'service_completed')
+              get().checkAchievementProgress('marketplace.service.completed', 1)
               break
               
             case 'marketplace.review.submitted':
@@ -1149,7 +1154,7 @@ export const useCurrentStreakMultiplier = () =>
 export function useAuraGamificationIntegration() {
   const handleAuraEvent = useGamificationStore((state) => state.handleAuraEvent)
   
-  // This would be imported from canonicalCompanionStore
+  // This would be imported from auraStore (AuraEvent)
   // and subscribed to events
   return { handleAuraEvent }
 }

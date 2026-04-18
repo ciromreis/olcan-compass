@@ -14,14 +14,18 @@ from app.core.database import get_db
 from app.api.v1.auth import get_current_user
 from app.models.user import User
 from app.db.models.document import Document, PolishRequest, DocumentTemplate, DocumentStatus, PolishStatus
+from app.db.models.narrative import Narrative
+from app.core.ai_engines import NarrativeAnalysisEngine
 from app.schemas.document import (
     DocumentCreate, DocumentUpdate, DocumentResponse, DocumentListResponse,
     DocumentSummary, PolishRequest as PolishRequestSchema, PolishResponse,
     PolishFeedback, ATSAnalysisRequest, ATSAnalysisResponse,
     VersionHistoryResponse, DocumentVersion, DocumentTemplateResponse,
     TemplateListResponse, CreateFromTemplate, DocumentStats,
-    CharacterCountUpdate, CharacterCountResponse, FocusModeSession, FocusModeStats
+    CharacterCountUpdate, CharacterCountResponse, FocusModeSession, FocusModeStats,
+    AnalysisResponse, DossierDataResponse, DossierDocumentSummary
 )
+from app.db.models.psychology import PsychProfile
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 
@@ -52,6 +56,8 @@ async def create_document(
         current_word_count=word_count,
         tags=request.tags,
         notes=request.notes,
+        route_id=request.route_id,
+        scope=request.scope or "universal",
         last_edited_at=datetime.now(timezone.utc)
     )
     
@@ -176,7 +182,13 @@ async def update_document(
     
     if request.notes is not None:
         document.notes = request.notes
-    
+
+    if request.route_id is not None:
+        document.route_id = request.route_id
+
+    if request.scope is not None:
+        document.scope = request.scope
+
     document.updated_at = datetime.now(timezone.utc)
     
     await db.commit()
@@ -211,6 +223,43 @@ async def delete_document(
 
 
 # --- AI Polish ---
+
+@router.post("/{document_id}/analyze", response_model=AnalysisResponse, status_code=status.HTTP_200_OK)
+async def analyze_document(
+    document_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Request AI analysis for document"""
+    # Get document
+    result = await db.execute(
+        select(Document).where(
+            Document.id == document_id,
+            Document.user_id == current_user.id
+        )
+    )
+    document = result.scalar_one_or_none()
+    
+    if not document:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Document not found"
+        )
+    
+    # Initialize engine
+    engine = NarrativeAnalysisEngine(db)
+    
+    # We pass the document.content via a mock Narrative wrapper, since analyze_narrative expects a Narrative object
+    narrative_mock = Narrative(
+        id=document.id,
+        content=document.content,
+        narrative_type=document.document_type
+    )
+    
+    analysis_result = await engine.analyze_narrative(narrative_mock, current_user, document.document_type)
+    
+    return analysis_result
+
 
 @router.post("/{document_id}/polish", response_model=PolishResponse, status_code=status.HTTP_201_CREATED)
 async def polish_document(
@@ -546,6 +595,145 @@ async def list_templates(
     templates = result.scalars().all()
     
     return TemplateListResponse(templates=templates, total=len(templates))
+
+
+@router.post("/{document_id}/ats-analyze", response_model=ATSAnalysisResponse)
+async def ats_analyze_document(
+    document_id: UUID,
+    request: ATSAnalysisRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """ATS keyword analysis: match resume content against job description, persist score"""
+    result = await db.execute(
+        select(Document).where(
+            Document.id == document_id,
+            Document.user_id == current_user.id
+        )
+    )
+    document = result.scalar_one_or_none()
+    if not document:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+
+    content_lower = document.content.lower()
+    job_desc_lower = (request.job_description or "").lower()
+
+    # Build keyword set: user-provided + extracted from job description
+    _STOPWORDS = {
+        "with", "that", "this", "from", "have", "will", "been", "your", "they",
+        "their", "about", "which", "when", "what", "where", "into", "also", "more",
+        "some", "than", "then", "each", "both", "only", "over", "such", "like",
+        "most", "very", "just", "also", "other", "would", "could", "should",
+    }
+    all_keywords: set[str] = set(kw.lower() for kw in request.target_keywords)
+    if job_desc_lower:
+        extracted = [
+            w.strip(".,;:!?()[]\"'").lower()
+            for w in job_desc_lower.split()
+            if len(w) > 4
+        ]
+        all_keywords.update(w for w in extracted if w not in _STOPWORDS)
+
+    # Match keywords against document content
+    keywords_found = sorted(kw for kw in all_keywords if kw in content_lower)
+    keywords_missing = sorted(kw for kw in all_keywords if kw not in content_lower)
+
+    total = len(all_keywords) if all_keywords else 1
+    score = round(len(keywords_found) / total * 100, 1)
+
+    # Keyword density per found keyword
+    word_list = content_lower.split()
+    keyword_density: dict[str, float] = {
+        kw: round(content_lower.count(kw) / max(1, len(word_list)) * 100, 2)
+        for kw in keywords_found
+    }
+
+    # Readability: penalise long sentences
+    sentences = [s.strip() for s in document.content.split(".") if s.strip()]
+    avg_sent_len = sum(len(s.split()) for s in sentences) / max(1, len(sentences))
+    readability_score = round(max(0.0, min(100.0, 100.0 - (avg_sent_len - 15) * 2)), 1)
+
+    # Structure score: presence of standard resume sections
+    _STRUCTURE_MARKERS = ["experience", "education", "skills", "summary", "objective", "profile"]
+    structure_found = sum(1 for m in _STRUCTURE_MARKERS if m in content_lower)
+    structure_score = round(structure_found / len(_STRUCTURE_MARKERS) * 100, 1)
+
+    # Actionable suggestions
+    suggestions: list[dict] = []
+    if keywords_missing:
+        sample = ", ".join(list(keywords_missing)[:6])
+        suggestions.append({"type": "keywords", "message": f"Adicione estas palavras-chave ao documento: {sample}"})
+    if readability_score < 60:
+        suggestions.append({"type": "readability", "message": "Reduza o tamanho médio das frases para melhorar a legibilidade ATS."})
+    if structure_score < 50:
+        suggestions.append({"type": "structure", "message": "Adicione seções claras (Experiência, Formação, Habilidades) para melhor varredura ATS."})
+    if score >= 80:
+        suggestions.append({"type": "strength", "message": "Excelente cobertura de palavras-chave. Seu documento está bem otimizado."})
+
+    # Persist ATS result back to document record
+    document.ats_score = score
+    document.ats_keywords = keywords_found[:50]  # cap stored list
+    document.ats_suggestions = [s["message"] for s in suggestions]
+    document.updated_at = datetime.now(timezone.utc)
+    await db.commit()
+
+    return ATSAnalysisResponse(
+        score=score,
+        keywords_found=keywords_found,
+        keywords_missing=keywords_missing,
+        suggestions=suggestions,
+        readability_score=readability_score,
+        structure_score=structure_score,
+        keyword_density=keyword_density,
+    )
+
+
+@router.get("/dossier", response_model=DossierDataResponse)
+async def get_dossier_data(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Assemble dossier data from real backend records (top docs + psych profile)"""
+    # Top 6 documents ordered by ATS score then recency
+    doc_result = await db.execute(
+        select(Document).where(
+            Document.user_id == current_user.id,
+            Document.is_latest_version == True
+        ).order_by(
+            desc(Document.ats_score.is_(None)),  # nulls last
+            desc(Document.ats_score),
+            desc(Document.updated_at)
+        ).limit(6)
+    )
+    documents = doc_result.scalars().all()
+
+    # Psych profile (nullable — user may not have completed diagnostic)
+    profile_result = await db.execute(
+        select(PsychProfile).where(PsychProfile.user_id == current_user.id)
+    )
+    profile = profile_result.scalar_one_or_none()
+
+    scored = [d.ats_score for d in documents if d.ats_score is not None]
+    avg_score = round(sum(scored) / len(scored), 1) if scored else 0.0
+
+    return DossierDataResponse(
+        documents=[
+            DossierDocumentSummary(
+                id=str(d.id),
+                title=d.title,
+                document_type=str(d.document_type.value) if hasattr(d.document_type, "value") else str(d.document_type),
+                ats_score=d.ats_score,
+                word_count=d.current_word_count,
+                status=str(d.status.value) if hasattr(d.status, "value") else str(d.status),
+            )
+            for d in documents
+        ],
+        archetype=str(profile.dominant_archetype.value) if profile and profile.dominant_archetype and hasattr(profile.dominant_archetype, "value") else (str(profile.dominant_archetype) if profile and profile.dominant_archetype else None),
+        fear_cluster=str(profile.primary_fear_cluster.value) if profile and profile.primary_fear_cluster and hasattr(profile.primary_fear_cluster, "value") else (str(profile.primary_fear_cluster) if profile and profile.primary_fear_cluster else None),
+        mobility_state=profile.mobility_state if profile else None,
+        avg_competitiveness_score=avg_score,
+        document_count=len(documents),
+    )
 
 
 @router.post("/from-template", response_model=DocumentResponse, status_code=status.HTTP_201_CREATED)

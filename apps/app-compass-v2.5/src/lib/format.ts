@@ -64,17 +64,17 @@ export function scoreTier(score: number, highThreshold = 70, midThreshold = 50):
 
 export function scoreColor(score: number, highThreshold = 70, midThreshold = 50): string {
   const tier = scoreTier(score, highThreshold, midThreshold);
-  return tier === "high" ? "text-brand-500" : tier === "mid" ? "text-amber-500" : "text-clay-500";
+  return tier === "high" ? "text-slate-900" : tier === "mid" ? "text-slate-500" : "text-slate-400";
 }
 
 export function scoreBgColor(score: number, highThreshold = 70, midThreshold = 50): string {
   const tier = scoreTier(score, highThreshold, midThreshold);
-  return tier === "high" ? "bg-brand-500" : tier === "mid" ? "bg-amber-400" : "bg-clay-400";
+  return tier === "high" ? "bg-slate-900" : tier === "mid" ? "bg-slate-400" : "bg-slate-200";
 }
 
 export function scoreBarColor(score: number, highThreshold = 75, midThreshold = 60): string {
   const tier = scoreTier(score, highThreshold, midThreshold);
-  return tier === "high" ? "bg-brand-500" : tier === "mid" ? "bg-clay-300" : "bg-clay-500";
+  return tier === "high" ? "bg-slate-900" : tier === "mid" ? "bg-slate-300" : "bg-slate-200";
 }
 
 // ── Text utilities ───────────────────────────────────────────────────────────
@@ -114,9 +114,9 @@ export function deadlineUrgency(date: string | Date, urgentDays = 14, soonDays =
 
 export function deadlineColor(urgency: DeadlineUrgency): string {
   switch (urgency) {
-    case "overdue": return "text-clay-500";
-    case "urgent": return "text-clay-500";
-    case "soon": return "text-amber-500";
+    case "overdue": return "text-slate-900 font-bold";
+    case "urgent": return "text-slate-700 font-semibold";
+    case "soon": return "text-slate-500";
     case "normal": return "text-text-muted";
   }
 }

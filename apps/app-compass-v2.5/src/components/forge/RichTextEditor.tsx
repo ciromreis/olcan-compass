@@ -169,7 +169,7 @@ export function RichTextEditor({
             onClick={() => editor.chain().focus().toggleHighlight().run()}
             className={cn(
               "p-2 rounded hover:bg-cream-200 transition-colors",
-              editor.isActive("highlight") && "bg-amber-100 text-amber-600"
+              editor.isActive("highlight") && "bg-slate-100 text-slate-600"
             )}
             title="Destacar"
           >

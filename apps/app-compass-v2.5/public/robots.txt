@@ -1,10 +1,34 @@
-# Olcan Compass - App
+# Olcan Compass v2.5 - Robots.txt
+
+# Allow all crawlers
 User-agent: *
 Allow: /
+
+# Disallow admin and API routes
 Disallow: /api/
 Disallow: /admin/
-Disallow: /settings/
 Disallow: /_next/
-Disallow: /static/
+Disallow: /settings/
 
-Sitemap: https://app.olcan.com/sitemap.xml
+# Disallow user-specific pages
+Disallow: /profile/
+Disallow: /dashboard/
+Disallow: /applications/
+Disallow: /interviews/
+Disallow: /forge/
+Disallow: /routes/
+Disallow: /sprints/
+Disallow: /tasks/
+Disallow: /aura/
+
+# Allow public pages
+Allow: /login
+Allow: /register
+Allow: /sobre
+Allow: /precos
+Allow: /faq
+Allow: /blog
+Allow: /marketplace
+
+# Sitemap
+Sitemap: https://compass.olcan.com.br/sitemap.xml

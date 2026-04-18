@@ -36,6 +36,7 @@ export interface CommunityItem {
   replies?: CommunityReply[];
   isSaved?: boolean;
   isLiked?: boolean;
+  isOfficial?: boolean;
 }
 
 export interface CommunityCollection {
@@ -369,20 +370,20 @@ export const useCommunityStore = create<CommunityState>()(
         try {
           const docs = await fetchCommunityChronicles();
 
-          const payloadItems: CommunityItem[] = docs.map((doc: any) => ({
+          const payloadItems: CommunityItem[] = docs.map((doc) => ({
             id: doc.id,
-            type: "olcan_post",
+            type: "olcan_post" as const,
             title: doc.title,
             description:
               doc.excerpt ||
               (typeof doc.content === "string" ? doc.content : "Conteúdo editorial da Olcan"),
             author: "Equipe Olcan",
-            topic: doc.category || "community",
+            topic: (doc.category || "community") as CommunityItemTopic,
             savedCount: 0,
             likeCount: 0,
             replyCount: 0,
-            createdAt: doc.published_at || doc.createdAt,
-            tags: doc.tags?.map((t: any) => t.label).filter(Boolean) || [],
+            createdAt: doc.published_at || doc.createdAt || new Date().toISOString(),
+            tags: doc.tags?.map((t) => t.label).filter((v): v is string => Boolean(v)) || [],
             replies: [],
           }));
 

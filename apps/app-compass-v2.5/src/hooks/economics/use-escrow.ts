@@ -5,7 +5,7 @@ export function useEscrow() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [escrowStatus, setEscrowStatus] = useState<string>('idle');
 
-  const initiateEscrow = useCallback(async (amount: number, serviceId: string) => {
+  const initiateEscrow = useCallback(async (_amount: number, _serviceId: string) => {
     setIsProcessing(true);
     try {
       // Mock initiate escrow

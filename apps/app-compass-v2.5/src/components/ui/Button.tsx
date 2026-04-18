@@ -1,7 +1,7 @@
 import { forwardRef, type ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "accent";
+type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "accent" | "outline";
 type ButtonSize = "sm" | "md" | "lg" | "icon";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -12,15 +12,17 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    "btn-liquid bg-gradient-to-br from-brand-500 to-brand-700 text-white border border-brand-400/20",
+    "btn-liquid bg-gradient-to-br from-slate-800 to-slate-950 text-white border border-slate-700/20",
   secondary:
-    "bg-white/90 backdrop-blur-sm border border-cream-400/60 text-text-primary hover:bg-white hover:border-cream-500 active:bg-cream-50 shadow-sm",
+    "bg-white/90 backdrop-blur-sm border border-slate-200 text-slate-900 hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 shadow-sm transition-all",
   ghost:
-    "text-text-secondary hover:bg-cream-200/80 hover:backdrop-blur-sm hover:text-text-primary active:bg-cream-300/80",
+    "text-slate-600 hover:bg-slate-100/80 hover:backdrop-blur-sm hover:text-slate-900 active:bg-slate-200/80",
   danger:
     "bg-gradient-to-br from-error to-red-700 text-white hover:from-red-700 hover:to-red-800 active:from-red-800 active:to-red-900 shadow-sm border border-red-400/20",
   accent:
-    "bg-gradient-to-br from-clay-500 to-clay-700 text-white hover:from-clay-600 hover:to-clay-800 active:from-clay-700 active:to-clay-900 shadow-sm border border-clay-400/20",
+    "bg-gradient-to-br from-slate-700 to-slate-900 text-white hover:from-slate-800 hover:to-slate-950 active:from-slate-900 shadow-sm border border-slate-700/20",
+  outline:
+    "bg-transparent border border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 active:bg-slate-100",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {

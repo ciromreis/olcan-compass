@@ -9,7 +9,7 @@ import enum
 from datetime import datetime, timezone
 
 from sqlalchemy import DateTime, ForeignKey, Integer, String, JSON, Numeric, Boolean, Float, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
@@ -70,6 +70,9 @@ class UserConstraintProfile(Base):
         onupdate=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
+    
+    # Relationships
+    user = relationship("User", back_populates="constraint_profile", uselist=False)
 
 
 class OpportunityPruningLog(Base):
@@ -101,6 +104,9 @@ class OpportunityPruningLog(Base):
     processing_time_ms: Mapped[int] = mapped_column(Integer, nullable=True)  # Processing time in milliseconds
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    
+    # Relationships
+    user = relationship("User", back_populates="opportunity_pruning_logs")
 
 
 class ConstraintFeedback(Base):
@@ -119,4 +125,7 @@ class ConstraintFeedback(Base):
     suggested_constraints: Mapped[dict] = mapped_column(JSON, default=dict)  # Suggested constraint changes
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    
+    # Relationships
+    user = relationship("User", back_populates="constraint_feedbacks")
 

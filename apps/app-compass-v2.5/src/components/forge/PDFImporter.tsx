@@ -31,7 +31,8 @@ export function PDFImporter({ onImport, className = "" }: PDFImporterProps) {
       const page = await pdf.getPage(i);
       const textContent = await page.getTextContent();
       const pageText = textContent.items
-        .map((item: any) => item.str)
+        .map((item) => ('str' in item ? item.str : ''))
+        .filter(Boolean)
         .join(" ");
       fullText += pageText + "\n\n";
     }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Search, Star, Shield, MapPin, ArrowRight, SlidersHorizontal } from "lucide-react";
 import { useMarketplaceStore, CATEGORY_LABELS, type ServiceCategory } from "@/stores/canonicalMarketplaceProviderStore";
+import { useAuthStore } from "@/stores/auth";
 import { useHydration } from "@/hooks";
 import { EmptyState, Input, PageHeader, Skeleton } from "@/components/ui";
 
@@ -21,7 +22,12 @@ const CATEGORY_FILTER_OPTIONS: { key: "all" | ServiceCategory; label: string }[]
 function MarketplaceSearchContent() {
   const hydrated = useHydration();
   const searchParams = useSearchParams();
-  const { providers } = useMarketplaceStore();
+  const { providers, syncFromApi } = useMarketplaceStore();
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    if (user?.id) syncFromApi();
+  }, [user?.id, syncFromApi]);
   const initialQuery = searchParams.get("q") ?? "";
   const [query, setQuery] = useState(initialQuery);
   const [catFilter, setCatFilter] = useState<"all" | ServiceCategory>("all");
@@ -67,6 +73,7 @@ function MarketplaceSearchContent() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Buscar por nome, país ou especialidade..."
+          aria-label="Buscar prestadores de serviço"
           icon={<Search className="w-4 h-4" />}
           className="flex-1"
         />

@@ -6,8 +6,10 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
+import { apiClient } from '@/lib/api-client'
 import { 
   Heart, 
   MessageCircle, 
@@ -41,7 +43,7 @@ interface Activity {
   activity_type: ActivityType
   title: string
   description?: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
   like_count: number
   comment_count: number
   created_at: string
@@ -67,72 +69,30 @@ const ACTIVITY_ICONS: Record<ActivityType, typeof Award> = {
 }
 
 const ACTIVITY_COLORS: Record<ActivityType, string> = {
-  achievement_unlocked: 'text-amber-500',
+  achievement_unlocked: 'text-slate-500',
   level_up: 'text-green-500',
   companion_evolved: 'text-purple-500',
   quest_completed: 'text-blue-500',
   document_created: 'text-indigo-500',
   interview_completed: 'text-pink-500',
   resource_published: 'text-teal-500',
-  guild_joined: 'text-orange-500',
+  guild_joined: 'text-slate-500',
   guild_event: 'text-cyan-500'
 }
 
-export function ActivityFeed({ 
-  userId, 
+export function ActivityFeed({
+  userId,
   includeFollowing = true,
-  limit = 20 
+  limit: _limit = 20
 }: ActivityFeedProps) {
   const [activities, setActivities] = useState<Activity[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    loadActivities()
-  }, [userId, includeFollowing])
-
-  const loadActivities = async () => {
+  const loadActivities = useCallback(async () => {
     setIsLoading(true)
     try {
-      // TODO: Fetch from API
-      // Placeholder data
-      setActivities([
-        {
-          id: '1',
-          user_id: 'user1',
-          user_name: 'Sarah Chen',
-          activity_type: 'achievement_unlocked',
-          title: 'Unlocked "Document Master" achievement',
-          description: 'Created 10 professional documents',
-          like_count: 12,
-          comment_count: 3,
-          created_at: new Date(Date.now() - 3600000).toISOString(),
-          metadata: { achievement_name: 'Document Master', rarity: 'rare' }
-        },
-        {
-          id: '2',
-          user_id: 'user2',
-          user_name: 'Alex Rodriguez',
-          activity_type: 'level_up',
-          title: 'Reached Level 15!',
-          description: 'Gained 500 XP from completing quests',
-          like_count: 24,
-          comment_count: 7,
-          created_at: new Date(Date.now() - 7200000).toISOString(),
-          metadata: { level: 15, xp_gained: 500 }
-        },
-        {
-          id: '3',
-          user_id: 'user3',
-          user_name: 'Maria Silva',
-          activity_type: 'interview_completed',
-          title: 'Completed Technical Interview Practice',
-          description: 'Scored 85/100 with excellent communication',
-          like_count: 8,
-          comment_count: 2,
-          created_at: new Date(Date.now() - 10800000).toISOString(),
-          metadata: { score: 85, interview_type: 'technical' }
-        }
-      ])
+      const data = await apiClient.getSocialPosts({ limit: _limit }) as Activity[]
+      setActivities(data || [])
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Failed to load activities:', error)
@@ -140,15 +100,25 @@ export function ActivityFeed({
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [userId, includeFollowing, _limit])
+
+  useEffect(() => {
+    void loadActivities()
+  }, [loadActivities])
 
   const handleLike = async (activityId: string) => {
-    // TODO: Call API to like activity
-    setActivities(activities.map(a => 
-      a.id === activityId 
-        ? { ...a, like_count: a.is_liked ? a.like_count - 1 : a.like_count + 1, is_liked: !a.is_liked }
-        : a
-    ))
+    try {
+      await apiClient.likePost(activityId)
+      setActivities(activities.map(a =>
+        a.id === activityId
+          ? { ...a, like_count: a.is_liked ? a.like_count - 1 : a.like_count + 1, is_liked: !a.is_liked }
+          : a
+      ))
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to like post:', error)
+      }
+    }
   }
 
   if (isLoading) {
@@ -220,9 +190,11 @@ function ActivityCard({
         {/* User Avatar */}
         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold flex-shrink-0">
           {activity.user_avatar ? (
-            <img 
-              src={activity.user_avatar} 
-              alt={activity.user_name} 
+            <Image
+              src={activity.user_avatar}
+              alt={activity.user_name ?? 'User avatar'}
+              width={48}
+              height={48}
               className="w-full h-full rounded-full object-cover"
             />
           ) : (
@@ -260,7 +232,7 @@ function ActivityCard({
           {activity.metadata && (
             <div className="mb-3 flex flex-wrap gap-2">
               {Object.entries(activity.metadata).map(([key, value]) => (
-                <span 
+                <span
                   key={key}
                   className="px-2 py-1 rounded-full bg-foreground/10 text-xs font-medium"
                 >

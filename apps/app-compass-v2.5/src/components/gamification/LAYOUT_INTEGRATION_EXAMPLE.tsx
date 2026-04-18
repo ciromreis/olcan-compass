@@ -11,7 +11,7 @@
 'use client'
 
 import { ReactNode } from 'react'
-import { GamificationIntegration, GamificationDebugger } from '@/components/gamification'
+import { GamificationIntegration } from '@/components/gamification'
 
 interface AppLayoutProps {
   children: ReactNode
@@ -27,10 +27,9 @@ export default function AppLayoutWithGamification({ children }: AppLayoutProps) 
       <GamificationIntegration />
       
       {/* 
-        Optional: Debug overlay for development.
-        Remove or conditionally render in production.
+        Optional: Debug overlay for development (not yet implemented).
+        {process.env.NODE_ENV === 'development' && <GamificationDebugger />}
       */}
-      {process.env.NODE_ENV === 'development' && <GamificationDebugger />}
       
       {/* Your existing layout content */}
       <div className="min-h-screen bg-surface-bg">

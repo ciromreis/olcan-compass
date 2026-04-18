@@ -71,6 +71,16 @@ export interface ArchetypeDefinition {
   abilities: string[]
 }
 
+export interface ArchetypeCMSOverride {
+  key: ArchetypeId
+  name?: string
+  description?: string
+  context?: string
+  creature?: AuraCreature
+  abilities?: string[]
+  gradient?: string
+}
+
 export const ARCHETYPES: Record<ArchetypeId, ArchetypeDefinition> = {
   institutional_escapee: {
     id: 'institutional_escapee',
@@ -165,9 +175,9 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeDefinition> = {
       to: 'Arquiteto de Fronteira'
     },
     colors: {
-      primary: '#F97316',
-      secondary: '#EA580C',
-      gradient: 'from-orange-600 to-orange-800'
+      primary: '#64748B',
+      secondary: '#475569',
+      gradient: 'from-slate-600 to-slate-800'
     },
     abilities: ['Excelência Técnica', 'Design de Sistemas', 'Liderança de Equipe']
   },
@@ -205,9 +215,9 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeDefinition> = {
       to: 'Guardiã do Futuro Global'
     },
     colors: {
-      primary: '#8B4513',
-      secondary: '#A0522D',
-      gradient: 'from-amber-700 to-orange-800'
+      primary: '#475569',
+      secondary: '#334155',
+      gradient: 'from-slate-700 to-slate-800'
     },
     abilities: ['Planejamento Familiar', 'Gestão de Recursos', 'Resiliência']
   },
@@ -265,9 +275,9 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeDefinition> = {
       to: 'Gestor Consciente'
     },
     colors: {
-      primary: '#F59E0B',
-      secondary: '#D97706',
-      gradient: 'from-yellow-600 to-amber-700'
+      primary: '#94A3B8',
+      secondary: '#64748B',
+      gradient: 'from-slate-600 to-slate-700'
     },
     abilities: ['Liderança Estratégica', 'Equilíbrio Vida-Trabalho', 'Gestão de Patrimônio']
   },
@@ -331,4 +341,30 @@ export const getArchetypesByMotivator = (motivator: Motivator): ArchetypeDefinit
 
 export const getArchetypesByFearCluster = (fear: FearCluster): ArchetypeDefinition[] => {
   return Object.values(ARCHETYPES).filter(a => a.fearCluster === fear)
+}
+
+export const mergeArchetypeOverrides = (
+  overrides: ArchetypeCMSOverride[] = [],
+): ArchetypeDefinition[] => {
+  const byKey = new Map(overrides.map((item) => [item.key, item]))
+
+  return getAllArchetypes().map((archetype) => {
+    const override = byKey.get(archetype.id)
+    if (!override) {
+      return archetype
+    }
+
+    return {
+      ...archetype,
+      name: override.name || archetype.name,
+      description: override.description || archetype.description,
+      context: override.context || archetype.context,
+      creature: override.creature || archetype.creature,
+      abilities: override.abilities?.length ? override.abilities : archetype.abilities,
+      colors: {
+        ...archetype.colors,
+        gradient: override.gradient || archetype.colors.gradient,
+      },
+    }
+  })
 }

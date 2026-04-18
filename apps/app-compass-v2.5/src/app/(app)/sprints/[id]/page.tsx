@@ -52,7 +52,7 @@ function KanbanView({ tasks, onToggle }: { tasks: SprintTask[]; onToggle: (id: s
             {col.tasks.length === 0 ? (
               <p className="text-center text-caption text-text-muted py-6">Nenhuma tarefa aqui</p>
             ) : (
-              col.tasks.map((task: any) => (
+              col.tasks.map((task: { id: string; name: string; done: boolean; dueDate?: string }) => (
                 <div
                   key={task.id}
                   className={`p-3 rounded-lg bg-white border shadow-sm hover:shadow-md transition-all cursor-pointer group ${task.done ? "border-sage-200 opacity-75" : "border-cream-300 hover:border-brand-300"}`}
@@ -71,7 +71,9 @@ function KanbanView({ tasks, onToggle }: { tasks: SprintTask[]; onToggle: (id: s
                   <div className="flex items-center gap-1 mt-1.5 ml-6">
                     <CalendarDays className="w-3 h-3 text-text-muted" />
                     <span className="text-[11px] text-text-muted">
-                      {new Date(task.dueDate).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}
+                      {task.dueDate
+                        ? new Date(task.dueDate).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
+                        : "Sem prazo"}
                     </span>
                   </div>
                 </div>
@@ -368,7 +370,7 @@ export default function SprintDetailPage() {
         </div>
         <div className="card-surface p-4 text-center">
           <p className="text-caption text-text-muted mb-1">Prazo</p>
-          <p className={`font-heading text-h2 ${daysLeft <= 7 ? "text-clay-500" : daysLeft <= 30 ? "text-amber-500" : "text-text-primary"}`}>{daysLeft}</p>
+          <p className={`font-heading text-h2 ${daysLeft <= 7 ? "text-clay-500" : daysLeft <= 30 ? "text-slate-500" : "text-text-primary"}`}>{daysLeft}</p>
           <p className="text-caption text-text-muted">dias</p>
         </div>
         <div className="card-surface p-4 text-center">

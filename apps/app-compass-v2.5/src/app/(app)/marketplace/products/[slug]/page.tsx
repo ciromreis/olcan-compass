@@ -23,10 +23,10 @@ import {
   Star,
 } from 'lucide-react'
 import { GlassButton, GlassCard } from '@/components/ui'
-import { useEcommerceStore } from '@/stores/ecommerceStore'
+import { useCommerceStore } from '@/stores/canonicalMarketplaceEconomyStore'
 import { useAuthStore } from '@/stores/auth'
-import { apiClient } from '@/lib/api-client'
 import { getStorefrontCatalogUrl } from '@/lib/storefront-links'
+import Image from 'next/image'
 
 function formatBRL(value: number) {
   return new Intl.NumberFormat('pt-BR', {
@@ -60,9 +60,9 @@ export default function ProductDetailPage() {
     currentProduct,
     isLoading,
     error,
-    fetchProductBySlug,
+    fetchProduct: fetchProductBySlug,
     clearError,
-  } = useEcommerceStore()
+  } = useCommerceStore()
 
   const [selectedImage, setSelectedImage] = useState(0)
   const [isStartingCheckout, setIsStartingCheckout] = useState(false)
@@ -129,8 +129,10 @@ export default function ProductDetailPage() {
 
   const handleCheckout = async () => {
     setCheckoutError(null)
+    setIsStartingCheckout(true)
 
     if (!isAuthenticated) {
+      setIsStartingCheckout(false)
       router.push(`/login?redirect=${encodeURIComponent(`/marketplace/products/${slug}`)}`)
       return
     }
@@ -159,10 +161,11 @@ export default function ProductDetailPage() {
             <GlassCard className="mb-4 p-4">
               <div className="relative aspect-square overflow-hidden rounded-lg bg-gradient-to-br from-foreground/5 to-foreground/10">
                 {images[selectedImage] ? (
-                  <img
+                  <Image
                     src={images[selectedImage]}
                     alt={currentProduct.name}
-                    className="h-full w-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center">
@@ -235,9 +238,11 @@ export default function ProductDetailPage() {
                         : 'border-foreground/20 hover:border-foreground/40'
                     }`}
                   >
-                    <img
+                    <Image
                       src={image}
                       alt={`${currentProduct.name} ${index + 1}`}
+                      width={80}
+                      height={80}
                       className="h-full w-full object-cover"
                     />
                   </button>
@@ -256,7 +261,7 @@ export default function ProductDetailPage() {
 
                 <div className="mb-4 flex items-center gap-4">
                   <div className="flex items-center gap-1">
-                    <Star className="h-5 w-5 fill-amber-500 text-amber-500" />
+                    <Star className="h-5 w-5 fill-slate-500 text-slate-500" />
                     <span className="font-semibold">{currentProduct.rating.toFixed(1)}</span>
                     <span className="text-foreground/60">
                       ({currentProduct.review_count} avaliações)

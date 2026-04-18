@@ -42,6 +42,10 @@ class Settings(BaseSettings):
     max_login_attempts: int = 5
     lockout_duration_minutes: int = 30
 
+    # Defaults for new user profiles (Olcan Compass primary locale)
+    default_user_language: str = "pt-BR"
+    default_user_timezone: str = "America/Sao_Paulo"
+
     # Frontend / transactional email
     frontend_url: str = "http://localhost:3000"
     email_from: str = "noreply@olcan.com"
@@ -68,12 +72,50 @@ class Settings(BaseSettings):
     # Encryption (for PII hashing)
     encryption_key: str = "your-32-byte-encryption-key-change-in-production"
 
+    # ============================================================
+    # CRM Integration (Twenty + Mautic bridge)
+    # ============================================================
+    twenty_base_url: str | None = None  # e.g. https://crm.olcan.com.br
+    twenty_api_key: str | None = None   # Settings → APIs & Webhooks → API Keys
+    twenty_webhook_secret: str | None = None
+
+    mautic_base_url: str | None = None  # e.g. https://mautic.olcan.com.br
+    mautic_api_key: str | None = None   # Mautic API key (Basic Auth token or OAuth, depending on setup)
+
+    # ============================================================
+    # AI Provider Configuration
+    # ============================================================
+    # Which AI backend to use: "simulation" | "openclaw" | "openai" | "anthropic"
+    # In development, defaults to "simulation" (no API keys needed).
+    # Set AI_PROVIDER env var to switch.
+    ai_provider: str = "simulation"
+
+    # OpenClaw — future primary provider
+    openclaw_api_key: str | None = None
+    openclaw_base_url: str = "https://api.openclaw.ai"
+    openclaw_default_model: str = "openclaw-v1"
+
+    # OpenAI (fallback / alternative)
+    openai_api_key: str | None = None
+    openai_default_model: str = "gpt-4o"
+
+    # Anthropic (fallback / alternative)
+    anthropic_api_key: str | None = None
+    anthropic_default_model: str = "claude-sonnet-4-20250514"
+
     # Feature Flags
     feature_credentials_enabled: bool = True
     feature_temporal_matching_enabled: bool = True
     feature_opportunity_cost_enabled: bool = True
     feature_escrow_enabled: bool = True
     feature_scenario_optimization_enabled: bool = True
+    
+    # CRM Sync Feature Flags (control automatic sync behavior)
+    feature_crm_sync_registration_enabled: bool = False  # Auto-sync on registration
+    feature_crm_sync_email_verification_enabled: bool = False  # Auto-sync on email verify
+    feature_crm_sync_subscription_enabled: bool = False  # Auto-sync on subscription changes
+    feature_crm_sync_booking_enabled: bool = False  # Auto-sync on booking completion
+    feature_crm_sync_queue_enabled: bool = False  # Use Celery queue for sync (prod recommendation)
 
     @property
     def cors_origins(self) -> List[str]:
@@ -111,3 +153,7 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+
+
+# Singleton instance — import as `from app.core.config import settings`
+settings = get_settings()

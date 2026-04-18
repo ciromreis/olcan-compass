@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 
 from sqlalchemy import DateTime, String, Text, ForeignKey, JSON, Float, Integer, Boolean, Numeric, ARRAY
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.db.base import Base
@@ -65,6 +65,9 @@ class VerificationCredential(Base):
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    
+    # Relationships
+    user = relationship("User", back_populates="verification_credentials")
 
 
 class EscrowTransaction(Base):
@@ -105,6 +108,9 @@ class EscrowTransaction(Base):
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    
+    # Relationships
+    client = relationship("User", foreign_keys=[client_id], back_populates="escrow_transactions")
 
 
 class ScenarioSimulation(Base):
@@ -129,6 +135,9 @@ class ScenarioSimulation(Base):
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    
+    # Relationships
+    user = relationship("User", back_populates="scenario_simulations")
 
 
 class CredentialUsageTracking(Base):
@@ -171,3 +180,6 @@ class OpportunityCostWidgetEvent(Base):
     event_metadata: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    
+    # Relationships
+    user = relationship("User", back_populates="opportunity_cost_widget_events")

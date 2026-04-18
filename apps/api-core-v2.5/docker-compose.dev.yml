@@ -1,0 +1,43 @@
+# Local dev dependencies for api-core-v2.5
+# Matches credentials in .env (DATABASE_URL and REDIS_URL)
+#
+# Usage:
+#   docker-compose -f docker-compose.dev.yml up -d
+#   cd apps/api-core-v2.5 && source .venv/bin/activate
+#   alembic upgrade head
+#   uvicorn app.main:app --reload --port 8001
+#
+# Migrations 0010+ use PostgreSQL-specific types (ARRAY, JSONB).
+# Do NOT run these against SQLite. This compose file is required for local dev.
+
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: olcan_compass_db
+    environment:
+      POSTGRES_USER: olcan_app
+      POSTGRES_PASSWORD: olcan_app_secure_2026
+      POSTGRES_DB: olcan_production
+    ports:
+      - "5432:5432"
+    volumes:
+      - compass_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U olcan_app -d olcan_production"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: olcan_compass_redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - compass_redis_data:/data
+
+volumes:
+  compass_db_data:
+  compass_redis_data:

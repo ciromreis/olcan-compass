@@ -183,12 +183,22 @@ export const useSprintStore = create<SprintState>()(
       },
 
       addSprint: async (sprint) => {
+        // Build the local sprint object with a stable local ID up-front.
+        // We use this immediately if the API is unavailable, and replace it
+        // with the server-assigned ID once the backend responds.
+        const localSprint: Sprint = {
+          ...sprint,
+          id: sprint.id || `local_s_${Date.now()}`,
+          createdAt: sprint.createdAt || new Date().toISOString().slice(0, 10),
+          status: "active",
+        };
+
         try {
           const response = await sprintsApi.create({
             name: sprint.name,
             route_id: sprint.routeId || null,
             gap_category: DIMENSION_TO_GAP_CATEGORY[sprint.dimension] || "general",
-            start_date: sprint.createdAt || new Date().toISOString().slice(0, 10),
+            start_date: localSprint.createdAt,
             target_end_date: sprint.targetDate || null,
             description: `Sprint criado no workspace Compass para a dimensão ${sprint.dimension}.`,
           });
@@ -215,8 +225,13 @@ export const useSprintStore = create<SprintState>()(
           }));
           return mapped;
         } catch {
-          set({ syncError: "Não foi possível criar o sprint na API." });
-          return null;
+          // API unavailable — persist locally so the user can still work offline.
+          // The sprint will be synced to the backend when it comes back online.
+          set((state) => ({
+            sprints: [localSprint, ...state.sprints.filter((item) => item.id !== localSprint.id)],
+            syncError: null,
+          }));
+          return localSprint;
         }
       },
 

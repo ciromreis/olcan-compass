@@ -1,12 +1,31 @@
 # 🧭 Olcan Compass Monorepo
 
-Welcome to the central repository for the **Olcan Compass Ecosystem**. This monorepo is organized to separate production stability from active growth, following a high-signal "Intelligence Hub" structure.
+Welcome to the central repository for the **Olcan Compass Ecosystem**.
 
-## 🚀 Mission Status: v2.5 Transition
-We are currently in the middle of a major transition from the stable v2 environment to the consolidated v2.5 platform (Marketplace + Career Companions).
+> **🚀 NEW AGENT / DEVELOPER?** Start here: [`START_HERE.md`](./START_HERE.md)  
+> **🤖 AI AGENT?** Read: [`CLAUDE.md`](./CLAUDE.md) then [`START_HERE.md`](./START_HERE.md)
 
-- **Production (v2)**: `apps/app-compass-v2` | `apps/api-core-v2` -> **Stable / Leave Unchanged**
-- **Active Development (v2.5)**: `apps/site-marketing-v2.5` -> **High Activity**
+---
+
+##  Current Status (April 10, 2026)
+
+- **Build:** ✅ PASSING (142 pages)
+- **Stores:** 33 (Nexus & Zenith modules integrated)
+- **Database:** 84 tables (Community & Ritual Affinity schemas added)
+- **Next:** Scalability audit + Advanced Route Automation + Revenue optimization
+
+---
+
+## 🎯 Active Development
+
+- **App (v2.5)**: `apps/app-compass-v2.5/` → ✅ Build active
+- **Backend (v2.5)**: `apps/api-core-v2.5/` → FastAPI
+- **Website & CMS (Zenith)**: `apps/site-marketing-v2.5/` → Zenith Hub deployed
+
+## 🔒 Protected (Read-Only)
+
+- **App (v2)**: `apps/app-compass-v2/` → Frozen
+- **Backend (v2)**: `apps/api-core-v2/` → Frozen
 
 ---
 
@@ -16,10 +35,11 @@ All session history and "consolidations of consolidations" have been moved to pr
 
 | Category | Purpose | Key Document |
 | :--- | :--- | :--- |
-| **`00_Mission_Control`** | Current state, tasks, and audit. | [ULTIMATE_TRUTH_V2.5.md](./00_Mission_Control/ULTIMATE_TRUTH_V2.5.md) |
-| **`01_Business_Strategy`** | Marketing, Copywriting, and Architecture. | [MARKETING_ARCHITECTURE.md](./01_Business_Strategy/MARKETING_WEBSITE_ARCHITECTURE.md) |
-| **`02_Tech_Orientation`** | Dev guides and implementation logs. | [DEVELOPMENT_GUIDE.md](./02_Tech_Orientation/DEVELOPMENT_GUIDE.md) |
-| **`90_Archive_Logs`** | Session history and past handoff reports. | [SESSION_CHRONICLE.md](./90_Archive_Logs/Session_History/CONSOLIDATED_CHRONICLE.md) |
+| **`00_SOVEREIGN`** | **Master PRD (Omega Sovereign Edition)** | [**Olcan_Master_PRD_v2_5.md**](./wiki/Olcan_Master_PRD_v2_5.md) |
+| **`01_Strategy`** | Marketing & Architecture Hubs. | [Strategic Pillar](./wiki/01_Visao_Estrategica/Verdade_Final_v2_5.md) |
+| **`02_Reference`** | Design System & Dev Guides. | [Ethereal Glass Spec](./wiki/03_Produto_Forge/PRD_Master_Ethereal_Glass.md) |
+| **`90_Archive`** | Historical Logs & Legacy PRDs. | [Permanent Archive](./wiki/10_Arquivo_Permanente/00_MASTER_INDEX.md) |
+
 
 ---
 
@@ -44,5 +64,5 @@ All session history and "consolidations of consolidations" have been moved to pr
 
 ---
 
-**Last Organized**: March 28, 2026  
-**Identity**: Olcan Catalyst AI
+**Last Organized**: April 12, 2026  
+**Identity**: Olcan Catalyst AI / Antigravity Agent

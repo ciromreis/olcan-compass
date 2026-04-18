@@ -58,6 +58,11 @@ export function CommunityFeedItem({
             <span className="rounded-full bg-[#001338]/5 px-2.5 py-1 text-caption font-semibold text-[#001338]">{typeLabels[item.type]}</span>
             <span className="rounded-full bg-[#001338]/5 px-2.5 py-1 text-caption text-[#001338]/60">{topicLabels[item.topic]}</span>
             {item.source ? <span className="rounded-full bg-[#001338]/5 px-2.5 py-1 text-caption text-[#001338]/60">{item.source}</span> : null}
+            {item.isOfficial ? (
+               <span className="rounded-full bg-steel-500/10 border border-steel-500/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-steel-600 flex items-center gap-1">
+                 <Bookmark className="w-3 h-3 fill-steel-500" /> Oficial Olcan
+               </span>
+            ) : null}
             {engineLabel ? <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-caption font-semibold text-emerald-700">Origem: {engineLabel}</span> : null}
           </div>
           <Link href={detailHref} className="block group">

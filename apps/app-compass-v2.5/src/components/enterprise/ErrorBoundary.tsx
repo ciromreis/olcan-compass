@@ -177,8 +177,8 @@ export class ErrorBoundary extends Component<Props, State> {
   private getErrorIcon = (severity: 'low' | 'medium' | 'high' | 'critical') => {
     return <AlertTriangle className={`w-12 h-12 ${
       severity === 'critical' ? 'text-red-500' :
-      severity === 'high' ? 'text-orange-500' :
-      severity === 'medium' ? 'text-yellow-500' :
+      severity === 'high' ? 'text-slate-500' :
+      severity === 'medium' ? 'text-slate-500' :
       'text-blue-500'
     }`} />;
   };

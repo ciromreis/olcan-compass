@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import json
 from http.client import RemoteDisconnected
-from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from functools import lru_cache
+from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
@@ -13,68 +13,24 @@ from urllib.request import Request, urlopen
 from app.core.config import get_settings
 
 
-@dataclass(frozen=True)
-class CommerceOverlay:
-    handle: str
-    title: str
-    short_description: str
-    product_type: str
-    category: str
-    price_brl: int | None
-    compare_at_price_brl: int | None = None
-    is_featured: bool = False
-    is_olcan_official: bool = True
-    is_bestseller: bool = False
-    is_new: bool = False
-    checkout_mode: str = "external"
-    checkout_url: str | None = None
-    tags: tuple[str, ...] = ()
+CATALOG_PATH = (
+    Path(__file__).resolve().parents[4] / "data" / "commerce" / "olcan-products.json"
+)
 
 
-def _overlay_catalog() -> dict[str, CommerceOverlay]:
-    settings = get_settings()
-    return {
-        "curso-cidadao-mundo": CommerceOverlay(
-            handle="curso-cidadao-mundo",
-            title="Curso Cidadão do Mundo",
-            short_description="Mapeamento estratégico e preparo mental para uma carreira internacional sustentável.",
-            product_type="digital",
-            category="Cursos",
-            price_brl=497,
-            compare_at_price_brl=697,
-            is_featured=True,
-            is_bestseller=True,
-            checkout_url=settings.commerce_checkout_curso_cidadao_mundo_url,
-            tags=("curso", "mobilidade", "carreira"),
-        ),
-        "kit-application": CommerceOverlay(
-            handle="kit-application",
-            title="Kit Application",
-            short_description="Documentos-base e estrutura narrativa para candidaturas internacionais mais consistentes.",
-            product_type="digital",
-            category="Ferramentas",
-            price_brl=997,
-            compare_at_price_brl=None,
-            is_featured=True,
-            checkout_url=settings.commerce_checkout_kit_application_url,
-            tags=("curriculo", "cover-letter", "application"),
-        ),
-        "rota-internacionalizacao": CommerceOverlay(
-            handle="rota-internacionalizacao",
-            title="Rota de Internacionalização",
-            short_description="Mentoria estratégica para organizar decisão, artefatos e execução da sua rota.",
-            product_type="service",
-            category="Mentorias",
-            price_brl=4500,
-            compare_at_price_brl=None,
-            is_featured=True,
-            checkout_url=settings.commerce_checkout_rota_internacionalizacao_url,
-            tags=("mentoria", "estrategia", "rota"),
-        ),
-    }
+def _load_catalog() -> list[dict[str, Any]]:
+    with CATALOG_PATH.open("r", encoding="utf-8") as catalog_file:
+        data = json.load(catalog_file)
+        if not isinstance(data, list):
+            raise ValueError("Canonical commerce catalog must be a list.")
+        return data
 
 
-def _format_brl(amount: int | None, currency: str = "BRL") -> str:
+def _catalog_by_handle() -> dict[str, dict[str, Any]]:
+    return {item["handle"]: item for item in _load_catalog()}
+
+
+def _format_brl(amount: int | None) -> str:
     if amount is None:
         return "Sob consulta"
 
@@ -91,10 +47,10 @@ def _extract_variant_price(product: dict[str, Any]) -> tuple[int | None, str]:
         currency = calculated.get("currency_code")
         if amount is not None:
             try:
-                cents = int(Decimal(str(amount)) / Decimal("100"))
+                normalized = int(Decimal(str(amount)) / Decimal("100"))
             except (InvalidOperation, ValueError):
                 continue
-            return cents, (currency or "BRL").upper()
+            return normalized, (currency or "BRL").upper()
 
         prices = variant.get("prices") or []
         for price in prices:
@@ -103,10 +59,10 @@ def _extract_variant_price(product: dict[str, Any]) -> tuple[int | None, str]:
             if amount is None:
                 continue
             try:
-                cents = int(Decimal(str(amount)) / Decimal("100"))
+                normalized = int(Decimal(str(amount)) / Decimal("100"))
             except (InvalidOperation, ValueError):
                 continue
-            return cents, (currency or "BRL").upper()
+            return normalized, (currency or "BRL").upper()
 
     return None, "BRL"
 
@@ -116,7 +72,15 @@ class CommerceBridgeService:
         self.settings = get_settings()
         self.base_url = self.settings.marketplace_engine_url.rstrip("/")
 
-    def _request_json(self, path: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
+    def _headers(self) -> dict[str, str]:
+        headers = {"Content-Type": "application/json"}
+        if self.settings.marketplace_publishable_key:
+            headers["x-publishable-api-key"] = self.settings.marketplace_publishable_key
+        return headers
+
+    def _request_json(
+        self, path: str, params: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         query = f"?{urlencode(params or {})}" if params else ""
         request = Request(
             f"{self.base_url}{path}{query}",
@@ -128,94 +92,113 @@ class CommerceBridgeService:
             payload = response.read().decode("utf-8")
             return json.loads(payload) if payload else {}
 
-    def _headers(self) -> dict[str, str]:
-        headers = {"Content-Type": "application/json"}
-        if self.settings.marketplace_publishable_key:
-            headers["x-publishable-api-key"] = self.settings.marketplace_publishable_key
-        return headers
-
     def _catalog_url_for(self, handle: str) -> str:
         return f"{self.settings.commerce_catalog_url.rstrip('/')}/{handle}"
 
-    def _merge_product(self, product: dict[str, Any], overlay: CommerceOverlay | None) -> dict[str, Any]:
-        price_amount, price_currency = _extract_variant_price(product)
+    def _compose_product(
+        self, medusa_product: dict[str, Any] | None, catalog_item: dict[str, Any]
+    ) -> dict[str, Any]:
+        medusa_product = medusa_product or {}
+        price_amount, price_currency = _extract_variant_price(medusa_product)
+        overlay_price = catalog_item.get("price_brl")
 
-        if overlay and price_amount is None:
-            price_amount = overlay.price_brl
+        if price_amount is None and overlay_price is not None:
+            price_amount = int(overlay_price)
             price_currency = "BRL"
 
-        checkout_mode = overlay.checkout_mode if overlay else "catalog_only"
-        checkout_url = overlay.checkout_url if overlay else self._catalog_url_for(product.get("handle", ""))
+        checkout_url = catalog_item.get("checkout_url")
+        handle = medusa_product.get("handle") or catalog_item["handle"]
+        title = medusa_product.get("title") or catalog_item["title"]
+        description = medusa_product.get("description") or catalog_item["description"]
 
         return {
-            "id": product.get("id") or (overlay.handle if overlay else None),
-            "source": "medusa",
-            "title": product.get("title") or (overlay.title if overlay else ""),
-            "handle": product.get("handle") or (overlay.handle if overlay else ""),
-            "slug": product.get("handle") or (overlay.handle if overlay else ""),
-            "description": product.get("description") or (overlay.short_description if overlay else None),
-            "short_description": overlay.short_description if overlay else (product.get("subtitle") or product.get("description")),
-            "thumbnail": product.get("thumbnail"),
-            "images": [image.get("url") for image in product.get("images", []) if image.get("url")],
-            "product_type": overlay.product_type if overlay else "digital",
-            "category": overlay.category if overlay else "Marketplace",
-            "tags": list(overlay.tags) if overlay else [],
-            "is_featured": overlay.is_featured if overlay else False,
-            "is_olcan_official": overlay.is_olcan_official if overlay else False,
-            "is_bestseller": overlay.is_bestseller if overlay else False,
-            "is_new": overlay.is_new if overlay else False,
+            "id": medusa_product.get("id") or catalog_item["id"],
+            "source": "medusa" if medusa_product else "catalog",
+            "title": title,
+            "legacy_title": catalog_item.get("legacy_title"),
+            "handle": handle,
+            "slug": handle,
+            "description": description,
+            "short_description": catalog_item.get("short_description"),
+            "thumbnail": medusa_product.get("thumbnail"),
+            "images": [
+                image.get("url")
+                for image in medusa_product.get("images", [])
+                if image.get("url")
+            ],
+            "product_type": catalog_item.get("product_type", "digital"),
+            "category": catalog_item.get("category", "Marketplace"),
+            "area": catalog_item.get("area"),
+            "format": catalog_item.get("format"),
+            "language": catalog_item.get("language"),
+            "version": catalog_item.get("version"),
+            "phase": catalog_item.get("phase"),
+            "status": catalog_item.get("status"),
+            "revenue_model": catalog_item.get("revenue_model"),
+            "platform_sale": catalog_item.get("platform_sale"),
+            "tags": list(catalog_item.get("tags", [])),
+            "features": list(catalog_item.get("features", [])),
+            "specifications": list(catalog_item.get("specifications", [])),
+            "modules": list(catalog_item.get("modules", [])),
+            "audience": list(catalog_item.get("audience", [])),
+            "cta_label": catalog_item.get("cta_label"),
+            "catalog_visibility": catalog_item.get("catalog_visibility", "public"),
+            "is_featured": bool(catalog_item.get("is_featured")),
+            "is_olcan_official": bool(catalog_item.get("is_olcan_official", True)),
+            "is_bestseller": bool(catalog_item.get("is_bestseller")),
+            "is_new": bool(catalog_item.get("is_new")),
             "price_amount": price_amount,
             "price_currency": price_currency,
-            "price_display": _format_brl(price_amount, price_currency),
-            "compare_at_price_amount": overlay.compare_at_price_brl if overlay else None,
-            "compare_at_price_display": _format_brl(overlay.compare_at_price_brl, "BRL") if overlay and overlay.compare_at_price_brl else None,
-            "checkout_mode": checkout_mode,
+            "price_display": catalog_item.get("price_display_override")
+            or _format_brl(price_amount),
+            "compare_at_price_amount": catalog_item.get("compare_at_price_brl"),
+            "compare_at_price_display": _format_brl(
+                catalog_item["compare_at_price_brl"]
+            )
+            if catalog_item.get("compare_at_price_brl")
+            else None,
+            "checkout_mode": catalog_item.get("checkout_mode", "catalog_only"),
             "checkout_url": checkout_url,
-            "catalog_url": self._catalog_url_for(product.get("handle") or (overlay.handle if overlay else "")),
+            "catalog_url": self._catalog_url_for(handle),
         }
 
     def list_public_products(self, limit: int = 24) -> list[dict[str, Any]]:
-        overlays = _overlay_catalog()
+        catalog = _catalog_by_handle()
         products_by_handle: dict[str, dict[str, Any]] = {}
 
         try:
             data = self._request_json("/store/products", {"limit": limit})
             for product in data.get("products", []):
                 handle = product.get("handle")
-                if not handle:
+                if not handle or handle not in catalog:
                     continue
-                products_by_handle[handle] = self._merge_product(product, overlays.get(handle))
+                products_by_handle[handle] = self._compose_product(product, catalog[handle])
         except (HTTPError, URLError, TimeoutError, RemoteDisconnected, json.JSONDecodeError):
             pass
 
-        for handle, overlay in overlays.items():
+        for handle, catalog_item in catalog.items():
+            if catalog_item.get("catalog_visibility") != "public":
+                continue
             if handle not in products_by_handle:
-                products_by_handle[handle] = self._merge_product(
-                    {"id": handle, "handle": handle, "title": overlay.title, "description": overlay.short_description, "images": [], "variants": []},
-                    overlay,
-                )
+                products_by_handle[handle] = self._compose_product(None, catalog_item)
 
-        return list(products_by_handle.values())
+        return list(products_by_handle.values())[:limit]
 
     def get_public_product(self, handle: str) -> dict[str, Any] | None:
-        overlays = _overlay_catalog()
+        catalog = _catalog_by_handle()
+        catalog_item = catalog.get(handle)
+        if not catalog_item or catalog_item.get("catalog_visibility") != "public":
+            return None
 
         try:
             data = self._request_json(f"/store/products/{handle}")
             product = data.get("product")
             if product:
-                return self._merge_product(product, overlays.get(handle))
+                return self._compose_product(product, catalog_item)
         except (HTTPError, URLError, TimeoutError, RemoteDisconnected, json.JSONDecodeError):
             pass
 
-        overlay = overlays.get(handle)
-        if not overlay:
-            return None
-
-        return self._merge_product(
-            {"id": handle, "handle": handle, "title": overlay.title, "description": overlay.short_description, "images": [], "variants": []},
-            overlay,
-        )
+        return self._compose_product(None, catalog_item)
 
 
 @lru_cache

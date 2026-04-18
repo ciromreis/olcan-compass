@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Download, FileText, Printer } from "lucide-react";
+import { FileText, Printer } from "lucide-react";
 import { Button } from "@/components/ui";
 
 interface PDFExporterProps {

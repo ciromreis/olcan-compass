@@ -26,17 +26,22 @@
   --ink-800: #040405;
   --ink-900: #020203;
 
-  /* Gold (Premium Accent / Critical Actions) */
-  --gold-50: #FAF7EC;
-  --gold-100: #F1E9BF;
-  --gold-200: #E8DB92;
-  --gold-300: #DFCD65;
-  --gold-400: #D6BF38;
-  --gold-500: #D4AF37;
-  --gold-600: #AB8D2C;
-  --gold-700: #826B21;
-  --gold-800: #594917;
-  --gold-900: #30270D;
+  /* Titanium & Steel (Premium Accent / Structural) */
+  --steel-50: #F8FAFC;
+  --steel-100: #F1F5F9;
+  --steel-200: #E2E8F0;
+  --steel-300: #CBD5E1;
+  --steel-400: #94A3B8;
+  --steel-500: #64748B;
+  --steel-600: #475569;
+  --steel-700: #334155;
+  --steel-800: #1E293B;
+  --steel-900: #0F172A;
+
+  /* Polished Silver (Highlights) */
+  --silver-100: #F5F7FA;
+  --silver-500: #A3AAB2;
+  --silver-900: #3C4146;
 
   /* Silver & Slate (Secondary/Metadata) */
   --silver-400: #CED4DA;
@@ -55,11 +60,11 @@
   --text-secondary: var(--ink-300);
   --text-muted: var(--slate-500);
   --text-inverse: var(--bone-50);
-  --text-accent: var(--gold-500);
+  --text-accent: var(--steel-600);
 
   /* Semantic */
   --success: #3D8B5E;
-  --warning: var(--gold-500);
+  --warning: var(--silver-500);
   --error: #962D2D;
   --info: #4A7A5C;
 

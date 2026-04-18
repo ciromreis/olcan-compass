@@ -1,0 +1,220 @@
+{
+  "main": {
+    "id": "cf0e8c71537f0317",
+    "type": "split",
+    "children": [
+      {
+        "id": "522d26f048c4feac",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f69c93e32d4fcc05",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Visualização em gráfico"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "cd6b46080fd6989d",
+    "type": "split",
+    "children": [
+      {
+        "id": "ca99c4265ddd8272",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "41ecd16a6add7097",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Explorador de arquivos"
+            }
+          },
+          {
+            "id": "4de71af6984f156f",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Procurar"
+            }
+          },
+          {
+            "id": "ef96bb8190c9a315",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Marcadores"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "597a30f9294a280f",
+    "type": "split",
+    "children": [
+      {
+        "id": "030f629a4beb3dba",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "fb51b3c96b972c09",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "2026-04-14.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Links inversos para 2026-04-14"
+            }
+          },
+          {
+            "id": "4919b650c92e833d",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "2026-04-14.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Links de saída para 2026-04-14"
+            }
+          },
+          {
+            "id": "270054b8726465fe",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Etiquetas"
+            }
+          },
+          {
+            "id": "3be2feb9b72c7a07",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Todas as propriedades"
+            }
+          },
+          {
+            "id": "8e31daa31f4c1659",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "2026-04-14.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Sumário de 2026-04-14"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Abrir a troca rápida": false,
+      "graph:Abrir visualização em gráfico": false,
+      "canvas:Criar novo canvas": false,
+      "daily-notes:Abrir a nota de hoje": false,
+      "templates:Inserir modelo": false,
+      "command-palette:Abrir paleta de comandos": false,
+      "bases:Criar nova base": false
+    }
+  },
+  "active": "f69c93e32d4fcc05",
+  "lastOpenFiles": [
+    "apps/site-marketing-v2.5/node_modules/eslint-plugin-react/README.md",
+    "wiki/10_Arquivo_Permanente/PAGE-STRUCTURE.md",
+    "Prototype.md",
+    "wiki/00_SOVEREIGN/Agent_Knowledge_Handbook.md",
+    "wiki/00_Onboarding_Inicio/Guia_de_Testes_Geral.md",
+    "wiki/00_Onboarding_Inicio/Guia_de_Testes_de_Integracao.md",
+    "wiki/00_Onboarding_Inicio/Guia_de_Desenvolvimento.md",
+    "wiki/00_Onboarding_Inicio/Guia_de_Avaliacao_Tecnica.md",
+    "wiki/00_Onboarding_Inicio/Fluxo_Git_Olcan.md",
+    "wiki/00_Onboarding_Inicio/Checklist_Seguranca_Compass.md",
+    "wiki/00_Onboarding_Inicio/Checklist_Producao_Marketing.md",
+    "wiki/_templates/nota.md",
+    "wiki/02_Arquitetura_Compass/Arquitetura_v2_5_Compass.md",
+    "node_modules/ms/license.md",
+    "apps/app-compass-v2.5/src/components/ui/Breadcrumbs.tsx",
+    "apps/app-compass-v2.5/SESSION_HANDOFF_2026_04_17.md",
+    "apps/app-compass-v2.5/src/types/dossier.ts",
+    "apps/app-compass-v2.5/src/types",
+    "apps/app-compass-v2.5/ROUTE_AUDIT.md",
+    "apps/app-compass-v2.5/IMPLEMENTATION_VISION.md",
+    "wiki/00_Onboarding_Inicio/Plano_GoLive_v2_5_Abril_2026.md",
+    "CLAUDE.md",
+    "START_HERE.md",
+    "wiki/02_Arquitetura_Compass/Guia_de_Operacoes_Database.md",
+    "wiki/02_Arquitetura_Compass/Guia_Tecnico_CRM_Integration.md",
+    "wiki/01_Visao_Estrategica/Verdade_Final_v2_5.md",
+    "wiki/00_Onboarding_Inicio/Visao_Mestra_CEO.md",
+    "REPO_CLEANUP_COMPLETE.md",
+    "wiki/03_Produto_Forge/Blueprint_Sistema_de_Tarefas.md",
+    "apps/app-compass-v2.5/src/app/api/dossier/export/route.ts",
+    "apps/app-compass-v2.5/src/app/api/dossier/export",
+    "apps/app-compass-v2.5/src/app/api/dossier",
+    "apps/app-compass-v2.5/src/lib/dossier-builder.ts",
+    "apps/app-compass-v2.5/src/lib/aura-behavioral-traits.ts",
+    "Sem título.canvas"
+  ]
+}

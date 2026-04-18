@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { apiClient } from '@/lib/api-client';
 
 export interface Credential {
   id: string;
@@ -21,31 +22,33 @@ interface EconomicsState {
 }
 
 export const useEconomicsStore = create<EconomicsState>((set, get) => ({
-  credentials: [
-    {
-      id: 'demo-cred-1',
-      credential_type: 'readiness',
-      score_value: 85,
-      is_active: true,
-      issued_at: new Date().toISOString(),
-      verification_url: 'https://olcan.app/verify/demo-cred-1',
-      verification_clicks: 12,
-    }
-  ],
+  credentials: [],
   isLoading: false,
   error: null,
-  
+
   hasActiveCredential: () => {
     return get().credentials.some(c => c.is_active);
   },
 
   fetchCredentials: async () => {
-    set({ isLoading: true });
+    set({ isLoading: true, error: null });
     try {
-      // TODO: Connect to actual backend GET /api/economics/credentials
-      set({ isLoading: false });
-    } catch (err: any) {
-      set({ error: err.message, isLoading: false });
+      const data = await apiClient.getEconomicsCredentials();
+      const remoteCredentials: Credential[] = (
+        (data as { credentials?: Credential[] }).credentials ?? []
+      ).map((c) => ({
+        id: c.id,
+        credential_type: c.credential_type as Credential['credential_type'],
+        score_value: c.score_value,
+        is_active: c.is_active,
+        issued_at: typeof c.issued_at === 'string' ? c.issued_at : new Date(c.issued_at as unknown as string).toISOString(),
+        expires_at: c.expires_at ? (typeof c.expires_at === 'string' ? c.expires_at : new Date(c.expires_at as unknown as string).toISOString()) : undefined,
+        verification_url: c.verification_url,
+        verification_clicks: c.verification_clicks ?? 0,
+      }));
+      set({ credentials: remoteCredentials, isLoading: false });
+    } catch (err: unknown) {
+      set({ error: (err as Error).message, isLoading: false });
     }
   },
 

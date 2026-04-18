@@ -154,7 +154,7 @@ class Product(Base):
     published_at = Column(DateTime, nullable=True)
     
     # Relationships
-    seller = relationship("User", foreign_keys=[seller_id])
+    user = relationship("User", foreign_keys=[seller_id])
     order_items = relationship("OrderItem", back_populates="product")
     reviews = relationship("ProductReview", back_populates="product", cascade="all, delete-orphan")
     cart_items = relationship("CartItem", back_populates="product", cascade="all, delete-orphan")
@@ -203,7 +203,7 @@ class ServiceProvider(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
-    user = relationship("User", back_populates="service_provider")
+    user = relationship("User", foreign_keys=[user_id], lazy="noload")
     bookings = relationship("ServiceBooking", back_populates="provider")
 
 
@@ -258,7 +258,7 @@ class ShoppingCart(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
-    # user = relationship("User", back_populates="shopping_cart")  # Commented out due to ID type mismatch
+    # user = relationship("User", back_populates="shopping_cart")  # viewonly on User side
     items = relationship("CartItem", back_populates="cart", cascade="all, delete-orphan")
 
 
@@ -329,7 +329,7 @@ class Order(Base):
     cancelled_at = Column(DateTime, nullable=True)
     
     # Relationships
-    # user = relationship("User", back_populates="orders")  # Commented out due to ID type mismatch
+    # user = relationship("User", back_populates="orders")  # viewonly on User side
     items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
 
 

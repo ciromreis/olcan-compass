@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { interviewsApi } from "@/lib/api";
+import { interviewsApi, resolveApiBaseUrl } from "@/lib/api";
+import { apiClient } from "@/lib/api-client";
+import { eventBus } from "@/lib/event-bus";
 
 export type InterviewType = "academic" | "visa" | "job" | "scholarship" | "panel";
 
@@ -88,6 +90,17 @@ interface StartSessionConfig {
   sourceDocumentTitle?: string;
 }
 
+export interface AudioAnalysisResult {
+  answer_id: string;
+  transcript: string;
+  overall_score: number;
+  delivery: Record<string, unknown>;
+  content: Record<string, unknown>;
+  strengths: string[];
+  improvements: string[];
+  next_steps: string[];
+}
+
 interface InterviewState {
   sessions: InterviewSession[];
   activeSessionId: string | null;
@@ -96,6 +109,7 @@ interface InterviewState {
   syncFromApi: () => Promise<void>;
   startSession: (config: StartSessionConfig) => Promise<string | null>;
   submitAnswer: (sessionId: string, answer: InterviewAnswer) => Promise<InterviewAnswer | null>;
+  submitAudioAnswer: (sessionId: string, answerIndex: number, audioBlob: Blob, language?: string) => Promise<AudioAnalysisResult | null>;
   completeSession: (sessionId: string) => Promise<void>;
   getSessionById: (id: string) => InterviewSession | undefined;
   getActiveSession: () => InterviewSession | undefined;
@@ -461,6 +475,25 @@ export const useInterviewStore = create<InterviewState>()(
       },
 
       startSession: async (config) => {
+        // Build a local session up-front with questions from the local bank.
+        // This is used as fallback when the API is unavailable.
+        const localSessionId = `local_i_${Date.now()}`;
+        const localQuestions = getCachedQuestions(config.type, 5);
+        const localSession: InterviewSession = {
+          id: localSessionId,
+          type: config.type,
+          typeLabel: config.typeLabel,
+          target: config.target,
+          language: config.language,
+          difficulty: config.difficulty,
+          sourceDocumentId: config.sourceDocumentId,
+          sourceDocumentTitle: config.sourceDocumentTitle,
+          status: "in_progress",
+          questions: localQuestions,
+          answers: [],
+          startedAt: new Date().toISOString(),
+        };
+
         try {
           const createResponse = await interviewsApi.createSession({
             session_type: config.type,
@@ -513,8 +546,13 @@ export const useInterviewStore = create<InterviewState>()(
 
           return mapped.id;
         } catch {
-          set({ syncError: "Não foi possível iniciar a sessão de entrevista." });
-          return null;
+          // API unavailable — start a local session using the built-in question bank.
+          set((state) => ({
+            sessions: [localSession, ...state.sessions.filter((s) => s.id !== localSession.id)],
+            activeSessionId: localSession.id,
+            syncError: null,
+          }));
+          return localSession.id;
         }
       },
 
@@ -547,10 +585,68 @@ export const useInterviewStore = create<InterviewState>()(
 
           return latestAnswer;
         } catch {
-          set({
-            sessions: previousSessions,
-            syncError: "Não foi possível enviar a resposta da entrevista.",
-          });
+          // API unavailable — keep the answer locally with a placeholder score/feedback.
+          const localAnswer: InterviewAnswer = {
+            ...answer,
+            score: 0,
+            feedback: "Resposta registrada localmente. A análise de IA estará disponível quando a conexão for restaurada.",
+          };
+          set((state) => ({
+            sessions: state.sessions.map((session) =>
+              session.id === sessionId
+                ? {
+                    ...session,
+                    answers: [
+                      ...session.answers.filter((a) => a.questionIndex !== answer.questionIndex),
+                      localAnswer,
+                    ],
+                  }
+                : session
+            ),
+            syncError: null,
+          }));
+          return localAnswer;
+        }
+      },
+
+      submitAudioAnswer: async (sessionId, answerIndex, audioBlob, language = "pt") => {
+        try {
+          const formData = new FormData();
+          formData.append("audio", audioBlob, "recording.webm");
+          formData.append("language", language);
+
+          const token = apiClient.getToken();
+          const res = await fetch(
+            `${resolveApiBaseUrl()}/interviews/sessions/${sessionId}/answers/${answerIndex}/audio`,
+            {
+              method: "POST",
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
+              body: formData,
+            },
+          );
+
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({ detail: "Audio upload failed" }));
+            throw new Error(err.detail || `HTTP ${res.status}`);
+          }
+
+          const result: AudioAnalysisResult = await res.json();
+
+          // Refresh session to get updated answer data
+          try {
+            const detailResponse = await interviewsApi.getSession(sessionId);
+            const previous = get().sessions.find((s) => s.id === sessionId);
+            const mapped = mapRemoteSession(detailResponse.data as RemoteInterviewSession, previous);
+            set((state) => ({
+              sessions: state.sessions.map((s) => (s.id === sessionId ? mapped : s)),
+            }));
+          } catch {
+            // Non-critical — analysis result is still returned
+          }
+
+          return result;
+        } catch {
+          set({ syncError: "Não foi possível processar o áudio." });
           return null;
         }
       },
@@ -568,6 +664,12 @@ export const useInterviewStore = create<InterviewState>()(
             activeSessionId: state.activeSessionId === sessionId ? null : state.activeSessionId,
             syncError: null,
           }));
+          // Emit product event for gamification
+          eventBus.emit("interview.completed", {
+            sessionId,
+            overallScore: mapped.overallScore ?? null,
+            type: mapped.type,
+          });
         } catch {
           set({
             sessions: previousSessions,

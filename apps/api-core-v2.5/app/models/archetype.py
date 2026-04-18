@@ -27,7 +27,7 @@ class Archetype(Base):
     companion_description = Column(String(500), nullable=False)
     
     # Metadata
-    is_active = Column(String(10), default=True, nullable=False)  # Using String to avoid Boolean issues
+    is_active = Column(String(10), default="True", nullable=False)  # Using String to avoid Boolean issues
     sort_order = Column(Integer, default=0, nullable=False)
     
     # Timestamps
@@ -35,7 +35,7 @@ class Archetype(Base):
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
     
     # Relationships
-    companions = relationship("Companion", back_populates="archetype")
+    # companions = relationship("Companion", back_populates="archetype")  # Disabled - using new companion system
 
 class Ability(Base):
     __tablename__ = "abilities"

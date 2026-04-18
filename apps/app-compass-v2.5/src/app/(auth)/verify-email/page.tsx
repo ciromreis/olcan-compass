@@ -96,8 +96,16 @@ export default function VerifyEmailPage() {
         <RefreshCw className={`w-4 h-4 ${resending ? "animate-spin" : ""}`} />
         {resending ? "Reenviando..." : "Reenviar e-mail"}
       </button>
-      <div className="mt-8">
-        <Link href="/login" className="text-body-sm text-text-secondary hover:text-brand-500 transition-colors">Voltar para o login</Link>
+      <div className="mt-8 flex flex-col items-center gap-3">
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center justify-center rounded-lg bg-brand-600 px-6 py-2.5 text-body-sm font-semibold text-white transition-colors hover:bg-brand-700"
+        >
+          Entrar no Compass
+        </Link>
+        <Link href="/login" className="text-body-sm text-text-secondary hover:text-brand-500 transition-colors">
+          Voltar para o login
+        </Link>
       </div>
     </div>
   );

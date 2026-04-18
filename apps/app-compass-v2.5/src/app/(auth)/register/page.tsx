@@ -31,7 +31,7 @@ export default function RegisterPage() {
 
     try {
       await register(form.email, form.password, form.name);
-      router.push(DEMO_MODE ? "/onboarding" : "/verify-email");
+      router.push(DEMO_MODE ? "/aura/discover" : "/dashboard?welcome=1");
     } catch {
       // error is set in the store
     }

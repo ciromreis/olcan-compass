@@ -1,0 +1,80 @@
+# .claudeignore — Claude Code Dead Zone
+# Files and directories in this list are excluded from Claude's context scanning.
+# This prevents AI agents from wasting tokens on archives, historical docs, and noise.
+# Last updated: 2026-04-15 (deep reorganization session)
+
+# ─── DEAD ZONES ──────────────────────────────────────────────────────────────
+# External repos, legacy apps, IDE junk, personal files — see _GRAVEYARD/README.md
+_GRAVEYARD/
+
+# Historical session logs and archive — 2275+ files, all outdated
+# Truth lives in 1_Pillars/ and CLAUDE.md, not here
+3_Vaults/
+
+# ─── FROZEN CODE ─────────────────────────────────────────────────────────────
+# These apps are live/protected. Read source sparingly, never modify.
+apps/app-compass-v2/
+apps/api-core-v2/
+
+# ─── BUILD ARTIFACTS ─────────────────────────────────────────────────────────
+node_modules/
+.next/
+.vercel/
+dist/
+build/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Python virtual environments (equivalent to node_modules)
+.venv/
+venv/
+env/
+
+# Test result artifacts
+test-results/
+playwright-report/
+
+# ─── ENVIRONMENT FILES ───────────────────────────────────────────────────────
+# Never read .env files — they may contain secrets
+.env
+.env.local
+.env.production
+.env.preview
+.secrets/
+
+# ─── IDE / TOOL CONFIG ───────────────────────────────────────────────────────
+.vscode/
+.obsidian/
+.github/
+.netlify/
+.playwright-cli/
+.mcp.example.json
+
+# ─── SESSION ARCHIVES ────────────────────────────────────────────────────────
+# Historical session logs, changelogs, and legacy docs moved to wiki archive
+# These are preserved for history but excluded from AI context to save tokens
+wiki/10_Arquivo_Permanente/sessions/
+wiki/10_Arquivo_Permanente/changelogs/
+wiki/10_Arquivo_Permanente/legacy-readmes/
+wiki/10_Arquivo_Permanente/PHASE_REPORTS/
+wiki/10_Arquivo_Permanente/LEGACY_*/
+wiki/10_Arquivo_Permanente/SYSTEM_ORCHESTRATION/
+wiki/10_Arquivo_Permanente/LINT_AND_CONVENTIONS/
+wiki/10_Arquivo_Permanente/apps_docs/
+
+# Operational procedures (read only when needed, not for general context)
+# These are "HOW" docs - important but lower priority than "WHY" docs
+wiki/00_Onboarding_Inicio/Runbook_*.md
+wiki/00_Onboarding_Inicio/Checklist_*.md
+wiki/00_Onboarding_Inicio/Plano_de_Testes_*.md
+wiki/00_Onboarding_Inicio/Guia_de_Testes_*.md
+
+# Test documentation (necessary for developers but not for main AI context)
+**/tests/**/README.md
+**/.pytest_cache/
+
+# Package lock files (huge files, not needed for context understanding)
+pnpm-lock.yaml
+package-lock.json
+yarn.lock

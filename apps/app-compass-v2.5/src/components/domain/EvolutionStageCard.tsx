@@ -14,7 +14,7 @@ export const EvolutionStageCard: React.FC<EvolutionStageCardProps> = ({
   className = "",
   onClickUpgrade
 }) => {
-  const { evolutionStage, kineticEnergy, getArchetypeData, fearCluster, getFearClusterName } = useNudgeStore();
+  const { evolutionStage, kineticEnergy, getArchetypeData, getFearClusterName } = useNudgeStore();
   const archetype = getArchetypeData();
   const fearName = getFearClusterName();
 
@@ -29,18 +29,18 @@ export const EvolutionStageCard: React.FC<EvolutionStageCardProps> = ({
 
   const progressCopy = useMemo(() => {
     if (kineticEnergy >= 100) {
-      return "Sua atividade recente já permite liberar uma nova leitura do companion.";
+      return "Sua atividade recente já permite liberar uma nova leitura da presença.";
     }
 
     if (kineticEnergy >= 70) {
-      return "Seu companion já percebe consistência. Falta pouco para abrir a próxima leitura.";
+      return "Sua presença já percebe consistência. Falta pouco para abrir a próxima leitura.";
     }
 
     if (kineticEnergy >= 35) {
       return "Os sinais estão ficando mais claros conforme você fecha entregas práticas.";
     }
 
-    return "Quando você conclui etapas reais do plano, o companion ganha contexto para orientar melhor seus próximos movimentos.";
+    return "Quando você conclui etapas reais do plano, a presença ganha contexto para orientar melhor seus próximos movimentos.";
   }, [kineticEnergy]);
 
   return (
@@ -57,7 +57,7 @@ export const EvolutionStageCard: React.FC<EvolutionStageCardProps> = ({
             <span className="z-10 font-heading text-body-sm font-bold text-brand-700">{evolutionStage}</span>
           </div>
           <div>
-            <h3 className="font-heading text-h4 text-text-primary">Leitura do companion</h3>
+            <h3 className="font-heading text-h4 text-text-primary">Leitura da presença</h3>
             <p className="text-caption text-text-secondary">{stageLabel}</p>
           </div>
         </div>

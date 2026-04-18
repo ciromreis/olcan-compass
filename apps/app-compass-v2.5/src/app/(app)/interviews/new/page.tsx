@@ -60,6 +60,7 @@ export default function NewInterviewPage() {
     } else if (documentTitleParam) {
       setSourceDocumentTitle(documentTitleParam);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const selectedType = INTERVIEW_TYPES.find((t) => t.id === selected);

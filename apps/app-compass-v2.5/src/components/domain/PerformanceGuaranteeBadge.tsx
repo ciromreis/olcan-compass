@@ -31,7 +31,7 @@ export const PerformanceGuaranteeBadge: React.FC<PerformanceGuaranteeBadgeProps>
     if (!rate) return "text-cream-400";
     if (rate >= 90) return "text-sage-500";
     if (rate >= 75) return "text-brand-400";
-    return "text-amber-500";
+    return "text-slate-500";
   };
 
   const badgeContent = (
@@ -79,7 +79,7 @@ export const PerformanceGuaranteeBadge: React.FC<PerformanceGuaranteeBadgeProps>
               <div className="w-full bg-slate-800 rounded-full h-1.5">
                 <div
                   className={`h-1.5 rounded-full transition-all ${
-                    successRate >= 90 ? "bg-sage-500" : successRate >= 75 ? "bg-brand-500" : "bg-amber-500"
+                    successRate >= 90 ? "bg-sage-500" : successRate >= 75 ? "bg-brand-500" : "bg-slate-500"
                   }`}
                   style={{ width: `${Math.min(successRate, 100)}%` }}
                 />

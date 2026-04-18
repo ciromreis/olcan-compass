@@ -7,13 +7,16 @@
 'use client'
 
 import { useState } from 'react'
+import { ComingSoonPanel } from '@/components/product/ComingSoonPanel'
+import { productSurface } from '@/lib/product-flags'
+import { apiClient } from '@/lib/api-client'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Users, Globe, Lock, Plus, X } from 'lucide-react'
-import { GlassCard, GlassButton } from '@/components/ui'
+import { GlassCard } from '@/components/ui'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
-export default function CreateGuildPage() {
+function CreateGuildForm() {
   const router = useRouter()
   const [isCreating, setIsCreating] = useState(false)
   const [formData, setFormData] = useState({
@@ -47,19 +50,12 @@ export default function CreateGuildPage() {
     setIsCreating(true)
 
     try {
-      // TODO: Call API to create guild
-      const response = await fetch('/api/guilds', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      })
-
-      if (response.ok) {
-        const guild = await response.json()
-        router.push(`/guilds/${guild.id}`)
-      }
+      const guild = await apiClient.createGuild(formData) as { id: string }
+      router.push(`/guilds/${guild.id}`)
     } catch (error) {
-      console.error('Failed to create guild:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to create guild:', error)
+      }
     } finally {
       setIsCreating(false)
     }
@@ -265,7 +261,7 @@ export default function CreateGuildPage() {
                       Guild Leadership
                     </h4>
                     <p className="text-sm text-foreground/70">
-                      As the founder, you'll be the guild leader with full permissions to manage members, 
+                      As the founder, you&apos;ll be the guild leader with full permissions to manage members,
                       create events, and customize settings. You can promote trusted members to officers later.
                     </p>
                   </div>
@@ -303,4 +299,20 @@ export default function CreateGuildPage() {
       </div>
     </div>
   )
+}
+
+export default function CreateGuildPage() {
+  if (!productSurface.guilds) {
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center p-6">
+        <ComingSoonPanel
+          title="Criação de guildas em breve"
+          description="Quando a API de guildas estiver disponível, você poderá criar e convidar membros por aqui."
+          backHref="/dashboard"
+        />
+      </div>
+    );
+  }
+
+  return <CreateGuildForm />;
 }

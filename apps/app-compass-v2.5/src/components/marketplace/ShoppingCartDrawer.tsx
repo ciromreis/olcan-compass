@@ -11,6 +11,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, ShoppingCart, Trash2, Plus, Minus, ArrowRight, Package } from 'lucide-react'
 import { GlassCard, GlassButton } from '@/components/ui'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import { useCartState, useCommerceActions } from '@/stores/canonicalMarketplaceEconomyStore'
 
 interface CartItem {
   id: string
@@ -40,102 +42,25 @@ interface ShoppingCartDrawerProps {
 
 export function ShoppingCartDrawer({ isOpen, onClose }: ShoppingCartDrawerProps) {
   const router = useRouter()
-  const [cart, setCart] = useState<Cart | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isUpdating, setIsUpdating] = useState<string | null>(null)
+  const { cart, isLoading, isUpdating } = useCartState()
+  const { fetchCart, updateCartItemQuantity, removeFromCart } = useCommerceActions()
 
   useEffect(() => {
-    if (isOpen) {
-      loadCart()
+    if (isOpen && !cart) {
+      fetchCart()
     }
-  }, [isOpen])
-
-  const loadCart = async () => {
-    setIsLoading(true)
-    try {
-      // TODO: Fetch from API
-      const mockCart: Cart = {
-        id: 'cart_123',
-        items: [
-          {
-            id: 'item_1',
-            product_id: 'prod_1',
-            product_name: 'Ultimate Resume Template Pack',
-            product_type: 'digital',
-            quantity: 1,
-            price_at_add: 29.99,
-            currency: 'USD'
-          },
-          {
-            id: 'item_2',
-            product_id: 'prod_2',
-            product_name: 'Career Coaching Session',
-            product_type: 'service',
-            quantity: 1,
-            price_at_add: 99.00,
-            currency: 'USD'
-          }
-        ],
-        subtotal: 128.99,
-        tax: 0,
-        shipping: 0,
-        total: 128.99,
-        item_count: 2
-      }
-      setCart(mockCart)
-    } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Failed to load cart:', error)
-      }
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  }, [isOpen, cart, fetchCart])
 
   const updateQuantity = async (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) {
-      removeItem(itemId)
+      await removeFromCart(itemId)
       return
     }
-
-    setIsUpdating(itemId)
-    try {
-      // TODO: Call API to update quantity
-      if (cart) {
-        setCart({
-          ...cart,
-          items: cart.items.map(item =>
-            item.id === itemId ? { ...item, quantity: newQuantity } : item
-          )
-        })
-      }
-    } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Failed to update quantity:', error)
-      }
-    } finally {
-      setIsUpdating(null)
-    }
+    await updateCartItemQuantity(itemId, newQuantity)
   }
 
-  const removeItem = async (itemId: string) => {
-    setIsUpdating(itemId)
-    try {
-      // TODO: Call API to remove item
-      if (cart) {
-        setCart({
-          ...cart,
-          items: cart.items.filter(item => item.id !== itemId),
-          item_count: cart.item_count - 1
-        })
-      }
-    } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Failed to remove item:', error)
-      }
-    } finally {
-      setIsUpdating(null)
-    }
+  const handleRemoveItem = async (itemId: string) => {
+    await removeFromCart(itemId)
   }
 
   const handleCheckout = () => {
@@ -221,9 +146,11 @@ export function ShoppingCartDrawer({ isOpen, onClose }: ShoppingCartDrawerProps)
                         {/* Image */}
                         <div className="w-20 h-20 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center flex-shrink-0">
                           {item.product_image ? (
-                            <img
+                            <Image
                               src={item.product_image}
-                              alt={item.product_name}
+                              alt={item.product_name ?? "Produto"}
+                              width={80}
+                              height={80}
                               className="w-full h-full object-cover rounded-lg"
                             />
                           ) : (
@@ -264,7 +191,7 @@ export function ShoppingCartDrawer({ isOpen, onClose }: ShoppingCartDrawerProps)
                                 <Plus className="w-4 h-4" />
                               </button>
                               <button
-                                onClick={() => removeItem(item.id)}
+                                onClick={() => handleRemoveItem(item.id)}
                                 disabled={isUpdating === item.id}
                                 className="p-1 hover:bg-red-500/10 text-red-500 rounded transition-colors disabled:opacity-50 ml-2"
                               >

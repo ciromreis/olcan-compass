@@ -1,18 +1,16 @@
 "use client";
 
-import { 
-  ArrowRight, 
-  ExternalLink, 
-  Star, 
-  Zap, 
-  ShieldCheck, 
-  Trophy, 
-  Sparkles 
+import {
+  ArrowRight,
+  Star,
+  Zap,
+  ShieldCheck,
+  Trophy,
+  Sparkles
 } from "lucide-react";
 import Link from "next/link";
-import { Product } from "@/stores/ecommerceStore";
+import type { Product } from "@/services/commerce";
 import { cn } from "@/lib/utils";
-import { getStorefrontProductUrl } from "@/lib/storefront-links";
 
 interface FlagshipProductCardProps {
   product: Product;
@@ -101,6 +99,12 @@ export function FlagshipProductCard({ product, className }: FlagshipProductCardP
               <p className="text-[10px] text-text-muted uppercase tracking-widest font-bold mt-1">
                 Acesso Vitalício + Certificado
               </p>
+              <div className="mt-2 flex items-center gap-1.5 rounded-md bg-steel-500/10 px-2 py-1 w-fit border border-steel-500/20">
+                <Sparkles className="h-3 w-3 text-steel-600" />
+                <span className="text-[10px] font-bold text-steel-600 uppercase tracking-wider">
+                  Rende +{Math.round(product.price * 2)} Aura XP
+                </span>
+              </div>
             </div>
             
             <Link

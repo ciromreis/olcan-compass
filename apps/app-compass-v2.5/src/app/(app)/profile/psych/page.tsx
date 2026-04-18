@@ -1,11 +1,15 @@
 import { Brain, Clock, Shield, ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { OiosEntryPrompt } from "@/components/psych/OiosEntryPrompt";
+import { OiosSnapshotCard } from "@/components/psych/OiosSnapshotCard";
 
 export const metadata = { title: "Diagnóstico Psicológico" };
 
 export default function PsychIntroPage() {
   return (
     <div className="space-y-8">
+      <OiosEntryPrompt />
+      <OiosSnapshotCard variant="intro" />
       <div className="card-surface p-10 text-center">
         <div className="w-16 h-16 rounded-2xl bg-brand-50 flex items-center justify-center mx-auto mb-6">
           <Brain className="w-8 h-8 text-brand-500" />

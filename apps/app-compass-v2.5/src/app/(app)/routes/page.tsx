@@ -1,9 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Plus, Route, MapPin, Clock, DollarSign, ArrowRight, Filter, Search } from "lucide-react";
 import Link from "next/link";
 import { useRouteStore } from "@/stores/routes";
+import { useAuthStore } from "@/stores/auth";
+import { useEffectivePlan } from "@/hooks/use-effective-plan";
+import { canCreateRoute, maxRoutes } from "@/lib/entitlements";
 import { useHydration } from "@/hooks/use-hydration";
 import { EmptyState, Input, PageHeader, Progress, Skeleton } from "@/components/ui";
 
@@ -11,7 +14,16 @@ type RouteFilter = "all" | "active" | "completed";
 
 export default function RoutesListPage() {
   const ready = useHydration();
-  const { routes, getRouteProgress } = useRouteStore();
+  const { routes, getRouteProgress, syncFromApi } = useRouteStore();
+  const { user } = useAuthStore();
+  const plan = useEffectivePlan();
+
+  // Sync routes from backend when authenticated
+  useEffect(() => {
+    if (user?.id) syncFromApi();
+  }, [user?.id, syncFromApi]);
+  const routeAllowed = canCreateRoute(plan, routes.length);
+  const routeCap = maxRoutes(plan);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<RouteFilter>("all");
 
@@ -57,9 +69,15 @@ export default function RoutesListPage() {
         title="Minhas Rotas"
         subtitle="Gerencie seus caminhos de mobilidade"
         actions={
-          <Link href="/routes/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
-            <Plus className="w-4 h-4" /> Nova Rota
-          </Link>
+          routeAllowed ? (
+            <Link href="/routes/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
+              <Plus className="w-4 h-4" /> Nova Rota
+            </Link>
+          ) : (
+            <Link href="/subscription" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 border-slate-500 bg-slate-50 text-slate-950 font-heading font-semibold text-body-sm hover:bg-slate-100 transition-colors">
+              <Plus className="w-4 h-4" /> Upgrade para mais rotas
+            </Link>
+          )
         }
       />
 
@@ -79,11 +97,20 @@ export default function RoutesListPage() {
       </div>
 
       <div className="flex gap-3">
-        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar rotas..." icon={<Search className="w-4 h-4" />} className="flex-1" />
+        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar rotas..." aria-label="Buscar rotas" icon={<Search className="w-4 h-4" />} className="flex-1" />
         <button onClick={() => { setSearch(""); setFilter("all"); }} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-cream-500 text-text-secondary text-body-sm font-medium hover:bg-cream-200 transition-colors">
           <Filter className="w-4 h-4" /> Limpar
         </button>
       </div>
+
+      {!routeAllowed && routes.length > 0 && (
+        <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-body-sm text-slate-950">
+          Seu plano permite até {Number.isFinite(routeCap) ? routeCap : "∞"} rotas.
+          <Link href="/subscription" className="ml-1 font-semibold text-brand-700 underline underline-offset-2">
+            Fazer upgrade
+          </Link>
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-2">
         <button onClick={() => setFilter("all")} className={`px-3 py-1.5 rounded-full text-body-sm font-medium transition-colors ${filter === "all" ? "bg-brand-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>Todas</button>

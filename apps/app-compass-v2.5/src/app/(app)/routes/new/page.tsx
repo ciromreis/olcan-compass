@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, ArrowLeft, GraduationCap, Briefcase, FlaskConical, Rocket, Globe, CheckCircle2, Sparkles } from "lucide-react";
 import { Input, PageHeader } from "@/components/ui";
 import { useRouteStore } from "@/stores/routes";
+import { useEffectivePlan } from "@/hooks/use-effective-plan";
+import { canCreateRoute, maxRoutes } from "@/lib/entitlements";
 import { buildRoutePlan, COUNTRY_OPTIONS, getRouteTypeLabel, previewRouteMilestones, TIMELINE_OPTIONS, type RouteIntentType } from "@/lib/route-planner";
 
 const ROUTE_TYPES = [
@@ -17,7 +20,10 @@ const ROUTE_TYPES = [
 
 export default function NewRoutePage() {
   const router = useRouter();
-  const { addRoute } = useRouteStore();
+  const { addRoute, routes } = useRouteStore();
+  const plan = useEffectivePlan();
+  const allowed = canCreateRoute(plan, routes.length);
+  const cap = maxRoutes(plan);
   const [selected, setSelected] = useState<RouteIntentType | null>(null);
   const [step, setStep] = useState(1);
   const [config, setConfig] = useState({ country: "", budget: "", timeline: "" });
@@ -61,6 +67,33 @@ export default function NewRoutePage() {
     }
     router.push(`/routes/${created.id}`);
   };
+
+  if (!allowed) {
+    return (
+      <div className="max-w-lg mx-auto space-y-6 py-12 text-center">
+        <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-500 text-white">
+          <Globe className="h-7 w-7" />
+        </div>
+        <h1 className="font-heading text-h2 text-text-primary">Limite de rotas no seu plano</h1>
+        <p className="text-body text-text-secondary">
+          Você pode manter até {Number.isFinite(cap) ? cap : "várias"} rotas com o plano atual. Faça upgrade para adicionar
+          mais caminhos de mobilidade.
+        </p>
+        <div className="flex flex-wrap justify-center gap-3">
+          <Link
+            href="/subscription"
+            className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3 text-body-sm font-semibold text-white hover:bg-brand-600"
+          >
+            Ver planos
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+          <Link href="/routes" className="inline-flex items-center gap-2 rounded-xl border border-cream-500 px-6 py-3 text-body-sm text-text-secondary hover:bg-cream-100">
+            Voltar às rotas
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">

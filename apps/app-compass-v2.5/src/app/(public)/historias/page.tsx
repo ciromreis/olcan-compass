@@ -5,7 +5,7 @@ export const metadata = { title: "Histórias de Sucesso" };
 const STORIES = [
   { name: "Marina S.", from: "São Paulo", to: "Berlim", route: "Bolsa de Mestrado", quote: "O Compass me mostrou que eu estava perdendo R$47/dia em custo de inação. Em 8 meses, estava matriculada na TU Berlin.", score: 87, icon: GraduationCap },
   { name: "Rafael T.", from: "Belo Horizonte", to: "Dublin", route: "Relocação por Emprego", quote: "O simulador de entrevista me preparou tão bem que o recrutador comentou que eu era o candidato mais articulado do processo.", score: 92, icon: Briefcase },
-  { name: "Camila L.", from: "Curitiba", to: "Toronto", route: "Startup Visa", quote: "Sem o marketplace, eu teria gasto o dobro em advogado. O escrow me deu segurança para confiar no processo.", score: 78, icon: Briefcase },
+  { name: "Camila L.", from: "Curitiba", to: "Toronto", route: "Startup Visa", quote: "Sem o marketplace, eu teria gasto o dobro em advogado. O pagamento protegido me deu segurança para confiar no processo.", score: 78, icon: Briefcase },
   { name: "Pedro M.", from: "Recife", to: "Amsterdã", route: "PhD em IA", quote: "A análise semântica da minha carta de motivação identificou 3 clichês que eu nunca teria notado. Fui aceito na UvA.", score: 95, icon: GraduationCap },
 ];
 

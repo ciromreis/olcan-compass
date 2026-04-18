@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Send, Sparkles, User, CheckCircle2, Trash2 } from "lucide-react";
+import { PlanGate } from "@/components/ui";
+import { useEntitlement } from "@/hooks";
 import { useDocument } from "@/hooks/use-document";
 import { PageHeader, EmptyState, Button } from "@/components/ui";
 import { generateCoachTips } from "@/lib/analysis";
@@ -40,9 +42,11 @@ function generateReply(input: string, content: string): string {
 }
 
 export default function CoachPage() {
+  const { allowed } = useEntitlement("forge_coach");
   const { docId, doc, stats } = useDocument();
   const { coachThreads, setCoachThread, appendCoachMessage, clearCoachThread } = useForgeStore();
 
+  // All hooks must be called unconditionally before any early return
   const initialMessages = useMemo<CoachMessage[]>(() => {
     if (!doc || !stats) {
       return [{
@@ -69,6 +73,14 @@ export default function CoachPage() {
       setCoachThread(docId, initialMessages);
     }
   }, [coachThreads, doc, docId, initialMessages, setCoachThread, stats]);
+
+  if (!allowed) {
+    return (
+      <div className="max-w-2xl mx-auto py-8">
+        <PlanGate feature="forge_coach" />
+      </div>
+    );
+  }
 
   const handleSend = (preset?: string) => {
     const content = (preset ?? input).trim();

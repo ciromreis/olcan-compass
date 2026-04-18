@@ -9,6 +9,8 @@ from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import os
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from app.models.user import User
 from app.schemas.user import UserCreate, TokenData
@@ -21,6 +23,9 @@ SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-secret-key-change-in-production-mi
 ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("JWT_REFRESH_TOKEN_EXPIRE_DAYS", "7"))
+
+# Bearer token scheme
+security = HTTPBearer()
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -126,3 +131,44 @@ def decode_token(token: str) -> Optional[TokenData]:
         return TokenData(user_id=user_id, username=username)
     except (JWTError, ValueError):
         return None
+
+
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: AsyncSession = None  # Will be injected
+) -> User:
+    """Get current authenticated user from JWT token."""
+    from app.db.session import get_db
+    
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    
+    try:
+        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id_str: str = payload.get("sub")
+        if user_id_str is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    
+    # Get user from database
+    if db is None:
+        raise credentials_exception
+    
+    result = await db.execute(select(User).where(User.id == user_id_str))
+    user = result.scalar_one_or_none()
+    
+    if user is None:
+        raise credentials_exception
+    
+    return user
+
+
+async def get_current_user_id(
+    current_user: User = Depends(get_current_user)
+) -> str:
+    """Extract user ID from authenticated user."""
+    return str(current_user.id)

@@ -20,7 +20,31 @@ export default function LoginPage() {
     try {
       await login(email, password);
       const redirect = new URLSearchParams(window.location.search).get("redirect");
-      const destination = redirect && redirect.startsWith("/") ? redirect : "/dashboard";
+
+      // Allow cross-origin redirects ONLY to trusted *.olcan.com.br subdomains
+      const TRUSTED_ORIGINS = ["olcan.com.br"];
+      let destination = "/dashboard";
+
+      if (redirect) {
+        if (redirect.startsWith("/")) {
+          destination = redirect;
+        } else {
+          try {
+            const url = new URL(redirect);
+            const isTrusted = TRUSTED_ORIGINS.some((domain) =>
+              url.hostname === domain || url.hostname.endsWith(`.${domain}`)
+            );
+            if (isTrusted) {
+              // External redirect to a trusted subdomain
+              window.location.href = redirect;
+              return;
+            }
+          } catch {
+            // Malformed URL — fall through to dashboard
+          }
+        }
+      }
+
       router.push(destination);
     } catch {
       // error is already set in the store

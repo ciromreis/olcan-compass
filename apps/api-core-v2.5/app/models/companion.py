@@ -44,6 +44,7 @@ class Companion(Base):
     archetype = relationship("Archetype")
     activities = relationship("CompanionActivity", back_populates="companion", cascade="all, delete-orphan")
     battles = relationship("CompanionBattle", foreign_keys="[CompanionBattle.companion_id]")
+    documents = relationship("Document", primaryjoin="Companion.id == foreign(Document.companion_id)", lazy="noload", viewonly=True)
 
 class CompanionActivity(Base):
     __tablename__ = "companion_activities"

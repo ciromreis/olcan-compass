@@ -10,7 +10,6 @@ import {
   ExternalLink,
   Globe,
   Search,
-  Shield,
   ShoppingBag,
   Star,
   Users,
@@ -25,18 +24,21 @@ import {
   type ServiceCategory,
   useMarketplaceStore as useProviderStore,
 } from "@/stores/canonicalMarketplaceProviderStore";
-import { useEcommerceStore } from "@/stores/ecommerceStore";
-import { useMarketplaceStore as useEconomyStore } from "@/stores/canonicalMarketplaceEconomyStore";
-import { getStorefrontCatalogUrl, getStorefrontProductUrl } from "@/lib/storefront-links";
+import {
+  useCommerceStore,
+  useMarketplaceStore as useEconomyStore,
+} from "@/stores/canonicalMarketplaceEconomyStore";
+import { getStorefrontCatalogUrl } from "@/lib/storefront-links";
 
 // New Components
 import { EconomyHUD } from "@/components/marketplace/EconomyHUD";
 import { AssetCard } from "@/components/marketplace/AssetCard";
 import { FlagshipProductCard } from "@/components/marketplace/FlagshipProductCard";
+import { AuraSynergyBlock } from "@/components/marketplace/AuraSynergyBlock";
 
 type StoreTab = "products" | "services" | "providers" | "lab";
 
-const TABS: { key: StoreTab; label: string; icon: any }[] = [
+const TABS: { key: StoreTab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { key: "products", label: "Produtos", icon: ShoppingBag },
   { key: "services", label: "Serviços", icon: Calendar },
   { key: "providers", label: "Especialistas", icon: Users },
@@ -61,7 +63,7 @@ export default function MarketplacePage() {
   const [activeCategory, setActiveCategory] = useState<ServiceCategory | "all">("all");
 
   // Provider store
-  const { providers, syncFromApi, isSyncing, getStats } = useProviderStore();
+  const { providers, syncFromApi, isSyncing } = useProviderStore();
   
   // Ecommerce store (Real-world products)
   const {
@@ -69,7 +71,7 @@ export default function MarketplacePage() {
     featuredProducts,
     fetchProducts,
     fetchFeaturedProducts,
-  } = useEcommerceStore();
+  } = useCommerceStore();
 
   // Economy store (Internal assets: Skills/Companions)
   const {
@@ -174,6 +176,7 @@ export default function MarketplacePage() {
           <input
             type="text"
             placeholder="Buscar produtos, serviços ou especialistas..."
+            aria-label="Buscar no marketplace"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full rounded-xl border border-silver-200 bg-white py-2.5 pl-10 pr-4 text-body-sm text-text-primary shadow-xs outline-none placeholder:text-text-muted focus:border-brand-300 focus:ring-1 focus:ring-brand-200"
@@ -222,6 +225,9 @@ export default function MarketplacePage() {
           </div>
         </div>
       </section>
+
+      {/* Gamification Hub */}
+      <AuraSynergyBlock />
 
       {/* Products Tab */}
       {activeTab === "products" && (

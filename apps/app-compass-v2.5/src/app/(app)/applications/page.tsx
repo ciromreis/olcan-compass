@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Plus, FileCheck, Clock, AlertTriangle, Search, Filter, ArrowRight, CheckCircle, Circle, Eye, Send } from "lucide-react";
+import { Plus, FileCheck, Clock, AlertTriangle, Search, Filter, ArrowRight, CheckCircle, Circle, Eye, Send, Compass, FileText, Mic } from "lucide-react";
 import { useApplicationStore, type AppStatus } from "@/stores/applications";
 import { useCommunityStore } from "@/stores/community";
 import { useHydration } from "@/hooks/use-hydration";
@@ -15,7 +15,7 @@ const STATUS_MAP: Record<AppStatus, { label: string; color: string; icon: typeof
   submitted: { label: "Enviada", color: "text-sage-500", icon: Send },
   accepted: { label: "Aceita", color: "text-brand-600", icon: CheckCircle },
   rejected: { label: "Rejeitada", color: "text-clay-500", icon: AlertTriangle },
-  waitlisted: { label: "Lista de espera", color: "text-amber-500", icon: Clock },
+  waitlisted: { label: "Lista de espera", color: "text-slate-500", icon: Clock },
 };
 
 type StatusFilter = "all" | AppStatus;
@@ -66,10 +66,47 @@ export default function ApplicationsListPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading text-h2 text-text-primary">Candidaturas</h1>
-          <p className="text-body text-text-secondary mt-1">Gerencie suas aplicações para programas, bolsas e vagas</p>
+          <p className="text-body text-text-secondary mt-1">
+            Gerencie o pipeline de oportunidades ativas e conecte cada candidatura ao seu dossier, tarefas e preparo de performance.
+          </p>
         </div>
-        <Link href="/applications/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
-          <Plus className="w-4 h-4" /> Nova Candidatura
+        <div className="flex items-center gap-3">
+          <Link href="/applications/opportunities" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-secondary font-heading font-semibold text-body-sm hover:bg-cream-100 transition-colors">
+            <Compass className="w-4 h-4" /> Explorar oportunidades
+          </Link>
+          <Link href="/applications/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
+            <Plus className="w-4 h-4" /> Nova candidatura
+          </Link>
+        </div>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <Link href="/forge" className="card-surface p-5 transition-colors hover:bg-cream-100">
+          <div className="flex items-center gap-3">
+            <FileText className="w-5 h-5 text-brand-500" />
+            <div>
+              <h2 className="font-heading text-h4 text-text-primary">Dossier da candidatura</h2>
+              <p className="text-body-sm text-text-secondary">Gerencie documentos, respostas estruturadas e exportacoes.</p>
+            </div>
+          </div>
+        </Link>
+        <Link href="/tasks" className="card-surface p-5 transition-colors hover:bg-cream-100">
+          <div className="flex items-center gap-3">
+            <Clock className="w-5 h-5 text-sage-500" />
+            <div>
+              <h2 className="font-heading text-h4 text-text-primary">Execucao operacional</h2>
+              <p className="text-body-sm text-text-secondary">Acompanhe checklist, agenda e deadlines do processo.</p>
+            </div>
+          </div>
+        </Link>
+        <Link href="/interviews" className="card-surface p-5 transition-colors hover:bg-cream-100">
+          <div className="flex items-center gap-3">
+            <Mic className="w-5 h-5 text-clay-500" />
+            <div>
+              <h2 className="font-heading text-h4 text-text-primary">Performance</h2>
+              <p className="text-body-sm text-text-secondary">Prepare entrevistas, networking e eventos ligados a cada alvo.</p>
+            </div>
+          </div>
         </Link>
       </div>
 
@@ -89,7 +126,7 @@ export default function ApplicationsListPage() {
       </div>
 
       <div className="flex gap-3">
-        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar candidaturas..." icon={<Search className="w-4 h-4" />} className="flex-1" />
+        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar candidaturas..." aria-label="Buscar candidaturas" icon={<Search className="w-4 h-4" />} className="flex-1" />
         <button onClick={() => { setSearch(""); setStatusFilter("all"); }} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-cream-500 text-text-secondary text-body-sm font-medium hover:bg-cream-200 transition-colors">
           <Filter className="w-4 h-4" /> Limpar
         </button>
@@ -145,12 +182,12 @@ export default function ApplicationsListPage() {
       <div className="grid sm:grid-cols-2 gap-4">
         <Link href="/applications/watchlist" className="card-surface p-5 flex items-center gap-4 hover:bg-cream-100 transition-colors">
           <Eye className="w-6 h-6 text-sage-500" />
-          <div className="flex-1"><h3 className="font-heading text-h4 text-text-primary">Watchlist</h3><p className="text-body-sm text-text-secondary">Oportunidades que você está acompanhando</p></div>
+          <div className="flex-1"><h3 className="font-heading text-h4 text-text-primary">Watchlist</h3><p className="text-body-sm text-text-secondary">Oportunidades em observacao antes de entrarem no pipeline ativo</p></div>
           <ArrowRight className="w-5 h-5 text-text-muted" />
         </Link>
         <Link href="/applications/calendar" className="card-surface p-5 flex items-center gap-4 hover:bg-cream-100 transition-colors">
           <Clock className="w-6 h-6 text-clay-500" />
-          <div className="flex-1"><h3 className="font-heading text-h4 text-text-primary">Calendário de Deadlines</h3><p className="text-body-sm text-text-secondary">Visualização por mês de todos os prazos</p></div>
+          <div className="flex-1"><h3 className="font-heading text-h4 text-text-primary">Calendario de deadlines</h3><p className="text-body-sm text-text-secondary">Visualizacao temporal dos prazos que governam o seu dossie</p></div>
           <ArrowRight className="w-5 h-5 text-text-muted" />
         </Link>
       </div>

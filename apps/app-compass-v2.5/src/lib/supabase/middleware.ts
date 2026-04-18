@@ -52,24 +52,42 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getUser();
   const user = data.user;
 
-  // Protected routes — redirect to login if not authenticated
-  const isProtectedRoute =
-    request.nextUrl.pathname.startsWith("/dashboard") ||
-    request.nextUrl.pathname.startsWith("/profile") ||
-    request.nextUrl.pathname.startsWith("/routes") ||
-    request.nextUrl.pathname.startsWith("/readiness") ||
-    request.nextUrl.pathname.startsWith("/forge") ||
-    request.nextUrl.pathname.startsWith("/interviews") ||
-    request.nextUrl.pathname.startsWith("/applications") ||
-    request.nextUrl.pathname.startsWith("/sprints") ||
-    request.nextUrl.pathname.startsWith("/community") ||
-    request.nextUrl.pathname.startsWith("/marketplace") ||
-    request.nextUrl.pathname.startsWith("/provider") ||
-    request.nextUrl.pathname.startsWith("/org") ||
-    request.nextUrl.pathname.startsWith("/shop") ||
-    request.nextUrl.pathname.startsWith("/settings") ||
-    request.nextUrl.pathname.startsWith("/subscription") ||
-    request.nextUrl.pathname.startsWith("/admin");
+  const pathname = request.nextUrl.pathname;
+
+  /** All authenticated-app prefixes (must stay aligned with `src/app/(app)` routes). */
+  const PROTECTED_PREFIXES = [
+    "/dashboard",
+    "/profile",
+    "/routes",
+    "/readiness",
+    "/forge",
+    "/interviews",
+    "/applications",
+    "/sprints",
+    "/community",
+    "/marketplace",
+    "/provider",
+    "/org",
+    "/shop",
+    "/settings",
+    "/subscription",
+    "/admin",
+    "/aura",
+    "/companion",
+    "/onboarding",
+    "/documents",
+    "/guilds",
+    "/institutional",
+    "/nudge-engine",
+    "/tools",
+    "/youtube",
+    "/analytics",
+    "/export",
+  ] as const;
+
+  const isProtectedRoute = PROTECTED_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  );
 
   if (isProtectedRoute && !user) {
     const url = request.nextUrl.clone();
@@ -80,8 +98,9 @@ export async function updateSession(request: NextRequest) {
 
   // Auth routes — redirect to dashboard if already authenticated
   const isAuthRoute =
-    request.nextUrl.pathname === "/login" ||
-    request.nextUrl.pathname === "/register";
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname.startsWith("/register/");
 
   if (isAuthRoute && user) {
     const url = request.nextUrl.clone();

@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { CheckCircle, ArrowRight, CreditCard, Sparkles, BarChart3 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth";
 import { useProfileStore, type UserPlan } from "@/stores/profile";
-import { useHydration } from "@/hooks";
+import { useEffectivePlan, useHydration } from "@/hooks";
 import { PageHeader, Skeleton, UpgradeModal, useToast } from "@/components/ui";
 import { formatDate } from "@/lib/format";
 
@@ -21,8 +21,9 @@ export default function SubscriptionPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { user } = useAuthStore();
+  const activePlanId = useEffectivePlan();
   const {
-    plan: activePlanId,
+    plan: storedPlan,
     subscriptionStatus,
     renewalDate,
     cancellationEffectiveDate,
@@ -30,10 +31,10 @@ export default function SubscriptionPage() {
   } = useProfileStore();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
 
-  const currentPlan = useMemo(() => PLANS.find((p) => p.id === activePlanId) ?? PLANS[1], [activePlanId]);
+  const currentPlan = useMemo(() => PLANS.find((p) => p.id === activePlanId) ?? PLANS[0], [activePlanId]);
   const latestInvoice = invoices[0];
   const billingSummary =
-    activePlanId === "free"
+    storedPlan === "free"
       ? "Sem cobrança recorrente no momento"
       : subscriptionStatus === "cancel_at_period_end" && cancellationEffectiveDate
         ? `Cancelamento agendado para ${formatDate(cancellationEffectiveDate)}`

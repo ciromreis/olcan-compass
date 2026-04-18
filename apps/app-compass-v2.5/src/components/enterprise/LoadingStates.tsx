@@ -185,7 +185,7 @@ export function ProgressBar({
     primary: 'bg-brand-500',
     secondary: 'bg-gray-500',
     success: 'bg-green-500',
-    warning: 'bg-yellow-500',
+    warning: 'bg-slate-500',
     error: 'bg-red-500'
   };
 

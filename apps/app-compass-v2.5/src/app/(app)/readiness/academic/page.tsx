@@ -123,7 +123,7 @@ export default function AcademicReadinessPage() {
             <BookOpen className="w-5 h-5 text-blue-500 flex-shrink-0" />
             <div>
               <h4 className="font-heading text-body-sm font-semibold text-blue-800">Dica Olcan</h4>
-              <p className="text-caption text-blue-600 mt-1">Apenas envie traduções juramentadas quando a universidade exigir explicitamente. "Certified Translations" costumam ser suficientes e são mais baratas.</p>
+              <p className="text-caption text-blue-600 mt-1">Apenas envie traduções juramentadas quando a universidade exigir explicitamente. &ldquo;Certified Translations&rdquo; costumam ser suficientes e são mais baratas.</p>
             </div>
           </div>
         </div>

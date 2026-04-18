@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 
 from app.core.auth import get_current_user
+from app.core.entitlements import assert_can_create_route
 from app.db.session import get_db
 from app.db.models import (
     User,
@@ -112,6 +113,13 @@ async def create_route(
     db: AsyncSession = Depends(get_db)
 ):
     """Criar nova rota para o usuário"""
+    # Entitlement check — enforce plan route limit server-side
+    route_count_result = await db.execute(
+        select(func.count(Route.id)).where(Route.user_id == current_user.id)
+    )
+    current_route_count = route_count_result.scalar() or 0
+    assert_can_create_route(current_user.subscription_plan, current_route_count)
+
     # Verify template exists
     result = await db.execute(
         select(RouteTemplate).where(RouteTemplate.id == request.template_id)

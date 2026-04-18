@@ -11,14 +11,12 @@ const config: Config = {
         // Metamodern MMXD Palette
         bone: tokens.colors.bone,
         ink: tokens.colors.ink,
-        gold: tokens.colors.gold,
+        steel: tokens.colors.steel,
         silver: tokens.colors.silver,
         slate: tokens.colors.slate,
 
         // v2 component palette (Button, Badge, Input, etc.)
         brand: tokens.colors.brand,
-        cream: tokens.colors.cream,
-        clay: tokens.colors.clay,
         
         // Semantic
         success: tokens.colors.semantic.success,
@@ -120,7 +118,7 @@ const config: Config = {
       },
       backgroundImage: {
         "gradient-premium": "linear-gradient(135deg, #0A0A0B 0%, #1A1A1F 100%)",
-        "gradient-gold": "linear-gradient(135deg, #D4AF37 0%, #AB8D2C 100%)",
+        "gradient-steel": "linear-gradient(135deg, #64748B 0%, #334155 100%)",
         "gradient-glass": "linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)",
         "noise-texture":
           "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E\")",

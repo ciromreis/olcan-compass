@@ -43,6 +43,7 @@ export function CommunityFeedFilters({
           value={search}
           onChange={(event) => onSearchChange(event.target.value)}
           placeholder="Buscar referências, perguntas, autores ou tags..."
+          aria-label="Buscar na comunidade"
           icon={<Search className="h-4 w-4" />}
           className="flex-1"
         />

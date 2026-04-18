@@ -3,11 +3,11 @@
 import { Suspense, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, CheckCircle, CreditCard, Lock, Shield } from "lucide-react";
-import { useAuthStore } from "@/stores/auth";
-import { useProfileStore, type UserPlan } from "@/stores/profile";
+import { ArrowLeft, ArrowRight, CheckCircle, CreditCard, ExternalLink, Lock, Shield } from "lucide-react";
+import { useProfileStore } from "@/stores/profile";
 import { useHydration } from "@/hooks";
-import { Button, Input, PageHeader, Skeleton, useToast } from "@/components/ui";
+import { Button, PageHeader, Skeleton, useToast } from "@/components/ui";
+import { apiClient } from "@/lib/api-client";
 
 const PLAN_MAP = {
   free: {
@@ -33,24 +33,13 @@ const PLAN_MAP = {
   },
 } as const;
 
-function parseExpiryYear(raw: string) {
-  const trimmed = raw.trim();
-  if (trimmed.length === 4) return Number(trimmed);
-  return Number(`20${trimmed.slice(-2)}`);
-}
-
 function SubscriptionCheckoutContent() {
   const hydrated = useHydration();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const { user } = useAuthStore();
-  const { plan: currentPlan, changePlan } = useProfileStore();
+  const { changePlan } = useProfileStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [name, setName] = useState(user?.full_name || "");
-  const [cardNumber, setCardNumber] = useState("4242 4242 4242 4242");
-  const [expiry, setExpiry] = useState("12/27");
-  const [cvc, setCvc] = useState("123");
 
   const planId = (searchParams.get("plan") || "pro") as keyof typeof PLAN_MAP;
   const plan = useMemo(() => PLAN_MAP[planId] ?? PLAN_MAP.pro, [planId]);
@@ -60,60 +49,44 @@ function SubscriptionCheckoutContent() {
       <div className="max-w-4xl mx-auto space-y-6">
         <Skeleton className="h-10 w-64" />
         <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-6">
-          <Skeleton className="h-[420px]" />
-          <Skeleton className="h-[320px]" />
+          <Skeleton className="h-[300px]" />
+          <Skeleton className="h-[260px]" />
         </div>
       </div>
     );
   }
 
   const handleConfirm = async () => {
-    if (plan.id !== "free") {
-      const digits = cardNumber.replace(/\D/g, "");
-      const [monthRaw, yearRaw] = expiry.split("/");
-      const month = Number(monthRaw);
-      const year = parseExpiryYear(yearRaw || "");
-      const cvcDigits = cvc.replace(/\D/g, "");
-
-      if (!name.trim() || digits.length < 4 || month < 1 || month > 12 || cvcDigits.length < 3) {
-        toast({
-          title: "Dados incompletos",
-          description: "Revise os dados de cobrança antes de confirmar.",
-          variant: "warning",
-        });
-        return;
-      }
-
-      if (!year || year < new Date().getFullYear()) {
-        toast({
-          title: "Validade inválida",
-          description: "Informe uma validade futura para concluir a assinatura.",
-          variant: "warning",
-        });
-        return;
-      }
+    // Free plan: just update locally
+    if (plan.id === "free") {
+      changePlan({ plan: "free" });
+      toast({ title: "Plano Explorador ativado", description: "Seu plano foi rebaixado para o nível gratuito.", variant: "success" });
+      router.push("/subscription/manage");
+      return;
     }
 
+    // Paid plans: redirect to Stripe Checkout
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 900));
-    changePlan({
-      plan: planId as UserPlan,
-      paymentMethod: plan.id === "free"
-        ? undefined
-        : {
-            holderName: name.trim(),
-            last4: cardNumber.replace(/\D/g, "").slice(-4),
-            expMonth: Number(expiry.split("/")[0]),
-            expYear: parseExpiryYear(expiry.split("/")[1] || ""),
-          },
-    });
-    toast({
-      title: `Plano ${plan.name} confirmado`,
-      description: currentPlan === planId ? "Sua assinatura foi renovada com os dados atualizados." : "Seu plano foi atualizado com sucesso.",
-      variant: "success",
-    });
-    setIsSubmitting(false);
-    router.push("/subscription/manage");
+    try {
+      const result = await apiClient.createSubscriptionCheckout(planId as "pro" | "premium");
+      window.location.href = result.checkout_url;
+    } catch (err: unknown) {
+      const detail = (err as { message?: string })?.message || "";
+      if (detail.includes("not configured")) {
+        toast({
+          title: "Checkout via Stripe em breve",
+          description: "A integração de pagamento está em configuração. Tente novamente em breve.",
+          variant: "warning",
+        });
+      } else {
+        toast({
+          title: "Erro ao redirecionar para o pagamento",
+          description: "Tente novamente em alguns instantes.",
+          variant: "warning",
+        });
+      }
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -127,37 +100,36 @@ function SubscriptionCheckoutContent() {
       <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-6">
         <div className="card-surface p-6 space-y-5">
           <div>
-            <h2 className="font-heading text-h3 text-text-primary">Dados de cobrança</h2>
+            <h2 className="font-heading text-h3 text-text-primary">
+              {plan.id === "free" ? "Cancelar assinatura" : "Prosseguir para pagamento seguro"}
+            </h2>
             <p className="text-body-sm text-text-secondary mt-1">
               {plan.id === "free"
-                ? "Você pode mover sua conta para o plano gratuito sem cobrança."
-                : "Este fluxo continua local nesta etapa, mas agora persiste o plano e o método de cobrança na área de assinatura."}
+                ? "Você pode mover sua conta para o plano gratuito sem cobrança adicional."
+                : "Você será redirecionado para o checkout seguro da Stripe para inserir seus dados de pagamento."}
             </p>
           </div>
 
-          {plan.id === "free" ? (
-            <div className="rounded-xl bg-cream-50 border border-cream-300 p-4 text-body-sm text-text-secondary">
-              O downgrade remove a renovação recorrente e mantém o histórico local de faturamento para consulta futura.
-            </div>
-          ) : (
-            <>
-              <Input label="Nome no cartão" value={name} onChange={(e) => setName(e.target.value)} />
-              <Input label="Número do cartão" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} />
-              <div className="grid grid-cols-2 gap-4">
-                <Input label="Validade" value={expiry} onChange={(e) => setExpiry(e.target.value)} />
-                <Input label="CVC" value={cvc} onChange={(e) => setCvc(e.target.value)} />
+          {plan.id !== "free" && (
+            <div className="rounded-xl bg-brand-50 border border-brand-200 p-4 space-y-2">
+              <div className="flex items-center gap-2 text-body-sm font-semibold text-brand-700">
+                <ExternalLink className="w-4 h-4" />
+                Redirecionamento seguro via Stripe
               </div>
-            </>
+              <p className="text-caption text-text-muted">
+                Seus dados de cartão são processados diretamente pela Stripe — o Olcan nunca armazena informações de pagamento.
+              </p>
+            </div>
           )}
 
           <div className="rounded-xl bg-cream-50 border border-cream-300 p-4 space-y-3">
             <div className="flex items-start gap-3 text-body-sm text-text-secondary">
               <Shield className="w-4 h-4 mt-0.5 text-brand-500" />
-              <span>{plan.id === "free" ? "Seu acesso será ajustado imediatamente após a confirmação." : "Dados protegidos por um fluxo seguro de checkout."}</span>
+              <span>{plan.id === "free" ? "Seu acesso será ajustado ao final do ciclo de cobrança." : "Pagamento protegido por criptografia SSL via Stripe."}</span>
             </div>
             <div className="flex items-start gap-3 text-body-sm text-text-secondary">
               <Lock className="w-4 h-4 mt-0.5 text-brand-500" />
-              <span>Você pode ajustar ou cancelar sua assinatura depois em gerenciamento.</span>
+              <span>Você pode cancelar sua assinatura a qualquer momento na área de gerenciamento.</span>
             </div>
           </div>
 
@@ -166,7 +138,10 @@ function SubscriptionCheckoutContent() {
               <ArrowLeft className="w-4 h-4" /> Voltar
             </Link>
             <Button onClick={handleConfirm} loading={isSubmitting} className="flex-1">
-              <CreditCard className="w-4 h-4" /> Confirmar assinatura
+              {plan.id === "free"
+                ? <><CheckCircle className="w-4 h-4" /> Confirmar downgrade</>
+                : <><CreditCard className="w-4 h-4" /> Ir para pagamento <ArrowRight className="w-4 h-4" /></>
+              }
             </Button>
           </div>
         </div>
@@ -183,15 +158,11 @@ function SubscriptionCheckoutContent() {
           <div className="space-y-3">
             <div className="flex items-start gap-2 text-body-sm text-text-secondary">
               <CheckCircle className="w-4 h-4 mt-0.5 text-brand-500" />
-              <span>{plan.id === "free" ? "Sem renovação recorrente no plano Explorador." : "Renovação mensal com gestão posterior em um clique."}</span>
+              <span>{plan.id === "free" ? "Sem cobrança adicional no downgrade." : "Acesso imediato após confirmação do pagamento."}</span>
             </div>
             <div className="flex items-start gap-2 text-body-sm text-text-secondary">
               <CheckCircle className="w-4 h-4 mt-0.5 text-brand-500" />
-              <span>{plan.id === "free" ? "Seu downgrade é registrado imediatamente no perfil." : "Upgrade imediato do acesso após confirmação."}</span>
-            </div>
-            <div className="flex items-start gap-2 text-body-sm text-text-secondary">
-              <CheckCircle className="w-4 h-4 mt-0.5 text-brand-500" />
-              <span>Histórico e cobrança visíveis na área de gerenciamento.</span>
+              <span>Renovação mensal automática, cancelável a qualquer momento.</span>
             </div>
           </div>
         </div>

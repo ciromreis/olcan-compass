@@ -1,234 +1,414 @@
-"""
-Structured Logging Configuration
+"""Comprehensive logging infrastructure for Olcan Compass.
 
-Configura logging estruturado usando structlog para melhor observabilidade.
+Provides structured logging with context, performance tracking,
+and integration with Sentry for error tracking.
+
+Usage:
+    from app.core.logging import get_logger
+    
+    logger = get_logger(__name__)
+    
+    logger.info("User registered", extra={"user_id": str(user.id)})
+    logger.warning("Rate limit approaching", extra={"ip": request.client.host})
+    logger.error("Payment failed", exc_info=True, extra={"stripe_error": str(e)})
 """
 
 import logging
 import sys
-from typing import Any
+import time
+import json
+from contextvars import ContextVar
+from datetime import datetime, timezone
+from typing import Any, Optional
 
-import structlog
-from structlog.types import EventDict
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
 
 
-def add_app_context(logger: Any, method_name: str, event_dict: EventDict) -> EventDict:
-    """
-    Adiciona contexto da aplicação aos logs.
-    
-    Args:
-        logger: Logger instance
-        method_name: Nome do método de log
-        event_dict: Dicionário do evento
+# ============================================================
+# Request Context (for correlation IDs)
+# ============================================================
+
+request_id_var: ContextVar[str] = ContextVar("request_id", default="")
+user_id_var: ContextVar[Optional[str]] = ContextVar("user_id", default=None)
+
+
+# ============================================================
+# Custom JSON Formatter
+# ============================================================
+
+class JSONFormatter(logging.Formatter):
+    """Format logs as JSON for easy parsing and aggregation."""
+
+    def format(self, record: logging.LogRecord) -> str:
+        log_data = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
+            "module": record.module,
+            "function": record.funcName,
+            "line": record.lineno,
+        }
+
+        # Add request context
+        request_id = request_id_var.get()
+        if request_id:
+            log_data["request_id"] = request_id
+
+        user_id = user_id_var.get()
+        if user_id:
+            log_data["user_id"] = user_id
+
+        # Add exception info
+        if record.exc_info:
+            log_data["exception"] = self.formatException(record.exc_info)
+
+        # Add extra fields
+        if hasattr(record, "extra_data"):
+            log_data.update(record.extra_data)
+
+        return json.dumps(log_data)
+
+
+class ColoredFormatter(logging.Formatter):
+    """Format logs with colors for development."""
+
+    COLORS = {
+        "DEBUG": "\033[36m",      # Cyan
+        "INFO": "\033[32m",       # Green
+        "WARNING": "\033[33m",    # Yellow
+        "ERROR": "\033[31m",      # Red
+        "CRITICAL": "\033[35m",   # Magenta
+    }
+    RESET = "\033[0m"
+
+    def format(self, record: logging.LogRecord) -> str:
+        color = self.COLORS.get(record.levelname, self.RESET)
+        timestamp = datetime.now(timezone.utc).strftime("%H:%M:%S")
         
+        message = f"{color}[{timestamp}] {record.levelname:8s}{self.RESET} {record.name}: {record.getMessage()}"
+
+        # Add request context
+        request_id = request_id_var.get()
+        if request_id:
+            message += f" {self.COLORS.get('DEBUG', '')}[{request_id[:8]}]{self.RESET}"
+
+        # Add exception
+        if record.exc_info:
+            message += f"\n{self.formatException(record.exc_info)}"
+
+        return message
+
+
+# ============================================================
+# Logger Factory
+# ============================================================
+
+def get_logger(name: str, structured: bool = False) -> logging.Logger:
+    """Get a logger with proper configuration.
+    
+    Args:
+        name: Logger name (usually __name__)
+        structured: Use JSON formatting (True for production)
+    
     Returns:
-        Event dict com contexto adicional
+        Configured logger instance
     """
-    event_dict["app"] = "olcan-compass-api"
-    event_dict["environment"] = "development"  # TODO: Pegar do config
-    return event_dict
-
-
-def configure_logging(log_level: str = "INFO") -> None:
-    """
-    Configura logging estruturado para a aplicação.
+    logger = logging.getLogger(name)
     
-    Args:
-        log_level: Nível de log (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-    """
-    # Configurar logging padrão do Python
-    logging.basicConfig(
-        format="%(message)s",
-        stream=sys.stdout,
-        level=getattr(logging, log_level.upper())
-    )
-    
-    # Configurar structlog
-    structlog.configure(
-        processors=[
-            structlog.contextvars.merge_contextvars,
-            structlog.stdlib.filter_by_level,
-            structlog.stdlib.add_logger_name,
-            structlog.stdlib.add_log_level,
-            structlog.stdlib.PositionalArgumentsFormatter(),
-            structlog.processors.TimeStamper(fmt="iso"),
-            structlog.processors.StackInfoRenderer(),
-            structlog.processors.format_exc_info,
-            structlog.processors.UnicodeDecoder(),
-            add_app_context,
-            structlog.processors.JSONRenderer()
-        ],
-        wrapper_class=structlog.stdlib.BoundLogger,
-        context_class=dict,
-        logger_factory=structlog.stdlib.LoggerFactory(),
-        cache_logger_on_first_use=True,
-    )
-
-
-def get_logger(name: str) -> structlog.stdlib.BoundLogger:
-    """
-    Obtém um logger estruturado.
-    
-    Args:
-        name: Nome do logger (geralmente __name__)
+    # Avoid duplicate handlers
+    if not logger.handlers:
+        logger.setLevel(logging.DEBUG)
         
-    Returns:
-        Logger estruturado
-    """
-    return structlog.get_logger(name)
+        # Console handler
+        handler = logging.StreamHandler(sys.stdout)
+        
+        if structured:
+            handler.setFormatter(JSONFormatter())
+        else:
+            handler.setFormatter(ColoredFormatter())
+        
+        logger.addHandler(handler)
+    
+    return logger
 
 
-# Funções auxiliares para logging de eventos específicos
-def log_credential_generated(
-    logger: structlog.stdlib.BoundLogger,
-    user_id: str,
-    credential_type: str,
-    score_value: int
-) -> None:
-    """
-    Loga geração de credencial.
+# ============================================================
+# Request Logging Middleware
+# ============================================================
+
+class RequestLoggingMiddleware(BaseHTTPMiddleware):
+    """Middleware to log all requests with timing and context."""
+
+    async def dispatch(self, request: Request, call_next) -> Response:
+        import uuid
+        
+        # Generate request ID
+        request_id = str(uuid.uuid4())
+        request_id_var.set(request_id)
+
+        # Start timing
+        start_time = time.time()
+
+        # Get logger
+        logger = get_logger("http")
+
+        # Log request
+        logger.info(
+            f"{request.method} {request.url.path}",
+            extra={
+                "extra_data": {
+                    "method": request.method,
+                    "path": request.url.path,
+                    "query_params": dict(request.query_params),
+                    "client_ip": request.client.host if request.client else None,
+                    "user_agent": request.headers.get("user-agent"),
+                }
+            }
+        )
+
+        try:
+            # Process request
+            response = await call_next(request)
+
+            # Calculate duration
+            duration = time.time() - start_time
+
+            # Log response
+            log_level = "INFO"
+            if response.status_code >= 500:
+                log_level = "ERROR"
+            elif response.status_code >= 400:
+                log_level = "WARNING"
+
+            getattr(logger, log_level.lower())(
+                f"{request.method} {request.url.path} - {response.status_code}",
+                extra={
+                    "extra_data": {
+                        "status_code": response.status_code,
+                        "duration_ms": round(duration * 1000, 2),
+                        "content_length": response.headers.get("content-length"),
+                    }
+                }
+            )
+
+            # Add request ID to response headers
+            response.headers["X-Request-ID"] = request_id
+
+            return response
+
+        except Exception as e:
+            # Calculate duration
+            duration = time.time() - start_time
+
+            # Log error
+            logger.error(
+                f"{request.method} {request.url.path} - Exception",
+                exc_info=True,
+                extra={
+                    "extra_data": {
+                        "duration_ms": round(duration * 1000, 2),
+                        "error": str(e),
+                    }
+                }
+            )
+
+            # Re-raise
+            raise
+
+
+# ============================================================
+# Performance Tracking
+# ============================================================
+
+class PerformanceTimer:
+    """Context manager for timing operations."""
+
+    def __init__(self, logger: logging.Logger, operation: str):
+        self.logger = logger
+        self.operation = operation
+        self.start_time = None
+
+    def __enter__(self):
+        self.start_time = time.time()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        duration = time.time() - self.start_time
+        duration_ms = round(duration * 1000, 2)
+
+        if exc_type:
+            self.logger.error(
+                f"{self.operation} failed after {duration_ms}ms",
+                exc_info=(exc_type, exc_val, exc_tb),
+            )
+        else:
+            self.logger.info(f"{self.operation} completed in {duration_ms}ms")
+
+        return False
+
+
+# ============================================================
+# Audit Logging
+# ============================================================
+
+class AuditLogger:
+    """Logger for audit trails (user actions, admin operations)."""
+
+    def __init__(self):
+        self.logger = get_logger("audit", structured=True)
+
+    def log_action(
+        self,
+        action: str,
+        user_id: str,
+        resource_type: str,
+        resource_id: str,
+        details: Optional[dict] = None,
+    ):
+        """Log an audit event."""
+        self.logger.info(
+            f"Audit: {action}",
+            extra={
+                "extra_data": {
+                    "event_type": "audit",
+                    "action": action,
+                    "user_id": user_id,
+                    "resource_type": resource_type,
+                    "resource_id": resource_id,
+                    "details": details or {},
+                }
+            }
+        )
+
+
+# Global audit logger instance
+audit_logger = AuditLogger()
+
+
+# ============================================================
+# Security Event Logging
+# ============================================================
+
+class SecurityLogger:
+    """Logger for security events (auth failures, rate limits, etc.)."""
+
+    def __init__(self):
+        self.logger = get_logger("security", structured=True)
+
+    def log_auth_failure(self, email: str, ip: str, reason: str):
+        """Log authentication failure."""
+        self.logger.warning(
+            "Authentication failure",
+            extra={
+                "extra_data": {
+                    "event_type": "auth_failure",
+                    "email": email,
+                    "ip": ip,
+                    "reason": reason,
+                }
+            }
+        )
+
+    def log_rate_limit(self, ip: str, endpoint: str, limit: str):
+        """Log rate limit exceeded."""
+        self.logger.warning(
+            "Rate limit exceeded",
+            extra={
+                "extra_data": {
+                    "event_type": "rate_limit",
+                    "ip": ip,
+                    "endpoint": endpoint,
+                    "limit": limit,
+                }
+            }
+        )
+
+    def log_entitlement_violation(self, user_id: str, feature: str, plan: str):
+        """Log entitlement violation (user tried to access premium feature)."""
+        self.logger.warning(
+            "Entitlement violation",
+            extra={
+                "extra_data": {
+                    "event_type": "entitlement_violation",
+                    "user_id": user_id,
+                    "feature": feature,
+                    "plan": plan,
+                }
+            }
+        )
+
+
+# Global security logger instance
+security_logger = SecurityLogger()
+
+
+# ============================================================
+# Database Query Logging
+# ============================================================
+
+class DatabaseQueryLogger:
+    """Logger for database queries (development only)."""
+
+    def __init__(self):
+        self.logger = get_logger("database")
+
+    def log_query(self, query: str, params: Optional[dict] = None, duration_ms: Optional[float] = None):
+        """Log database query."""
+        extra_data = {
+            "query": query,
+        }
+        if params:
+            extra_data["params"] = params
+        if duration_ms:
+            extra_data["duration_ms"] = duration_ms
+
+        self.logger.debug("Database query", extra={"extra_data": extra_data})
+
+
+# Global database logger instance
+db_query_logger = DatabaseQueryLogger()
+
+
+# ============================================================
+# Logging Configuration
+# ============================================================
+
+def configure_logging(
+    level: str = "INFO",
+    structured: bool = False,
+    enable_sql_logging: bool = False,
+):
+    """Configure global logging settings.
     
     Args:
-        logger: Logger estruturado
-        user_id: UUID do usuário
-        credential_type: Tipo da credencial
-        score_value: Valor do score
+        level: Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+        structured: Use JSON formatting
+        enable_sql_logging: Enable SQLAlchemy query logging
     """
-    logger.info(
-        "credential_generated",
-        feature="trust_signals",
-        user_id=user_id,
-        credential_type=credential_type,
-        score_value=score_value
-    )
+    # Root logger
+    root_logger = logging.getLogger()
+    root_logger.setLevel(getattr(logging, level))
 
+    # Clear existing handlers
+    root_logger.handlers.clear()
 
-def log_escrow_resolved(
-    logger: structlog.stdlib.BoundLogger,
-    escrow_id: str,
-    booking_id: str,
-    status: str,
-    improvement_achieved: int
-) -> None:
-    """
-    Loga resolução de escrow.
-    
-    Args:
-        logger: Logger estruturado
-        escrow_id: UUID do escrow
-        booking_id: UUID da reserva
-        status: Status final (released/refunded)
-        improvement_achieved: Melhoria de prontidão alcançada
-    """
-    logger.info(
-        "escrow_resolved",
-        feature="performance_marketplace",
-        escrow_id=escrow_id,
-        booking_id=booking_id,
-        status=status,
-        improvement_achieved=improvement_achieved
-    )
+    # Add handler
+    handler = logging.StreamHandler(sys.stdout)
+    if structured:
+        handler.setFormatter(JSONFormatter())
+    else:
+        handler.setFormatter(ColoredFormatter())
+    root_logger.addHandler(handler)
 
+    # SQLAlchemy logging
+    if enable_sql_logging:
+        logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
+    else:
+        logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
-def log_frontier_calculated(
-    logger: structlog.stdlib.BoundLogger,
-    user_id: str,
-    total_opportunities: int,
-    pareto_optimal_count: int,
-    calculation_time_ms: float
-) -> None:
-    """
-    Loga cálculo de fronteira viável.
-    
-    Args:
-        logger: Logger estruturado
-        user_id: UUID do usuário
-        total_opportunities: Total de oportunidades analisadas
-        pareto_optimal_count: Número de oportunidades Pareto-ótimas
-        calculation_time_ms: Tempo de cálculo em milissegundos
-    """
-    logger.info(
-        "frontier_calculated",
-        feature="scenario_optimization",
-        user_id=user_id,
-        total_opportunities=total_opportunities,
-        pareto_optimal_count=pareto_optimal_count,
-        calculation_time_ms=calculation_time_ms
-    )
-
-
-def log_temporal_match(
-    logger: structlog.stdlib.BoundLogger,
-    user_id: str,
-    temporal_preference: int,
-    matched_routes_count: int
-) -> None:
-    """
-    Loga matching temporal.
-    
-    Args:
-        logger: Logger estruturado
-        user_id: UUID do usuário
-        temporal_preference: Preferência temporal do usuário
-        matched_routes_count: Número de rotas matched
-    """
-    logger.info(
-        "temporal_match_calculated",
-        feature="temporal_matching",
-        user_id=user_id,
-        temporal_preference=temporal_preference,
-        matched_routes_count=matched_routes_count
-    )
-
-
-def log_widget_conversion(
-    logger: structlog.stdlib.BoundLogger,
-    user_id: str,
-    upgrade_tier: str,
-    conversion_value: float,
-    momentum_score: int
-) -> None:
-    """
-    Loga conversão do widget de custo de oportunidade.
-    
-    Args:
-        logger: Logger estruturado
-        user_id: UUID do usuário
-        upgrade_tier: Tier do upgrade (pro/premium)
-        conversion_value: Valor da conversão
-        momentum_score: Score de momentum no momento da conversão
-    """
-    logger.info(
-        "widget_conversion",
-        feature="opportunity_cost",
-        user_id=user_id,
-        upgrade_tier=upgrade_tier,
-        conversion_value=conversion_value,
-        momentum_score=momentum_score
-    )
-
-
-def log_error(
-    logger: structlog.stdlib.BoundLogger,
-    error_type: str,
-    error_message: str,
-    feature: str,
-    **kwargs: Any
-) -> None:
-    """
-    Loga erro com contexto completo.
-    
-    Args:
-        logger: Logger estruturado
-        error_type: Tipo do erro
-        error_message: Mensagem de erro
-        feature: Feature onde ocorreu o erro
-        **kwargs: Contexto adicional
-    """
-    logger.error(
-        "error_occurred",
-        error_type=error_type,
-        error_message=error_message,
-        feature=feature,
-        **kwargs
-    )
+    # Suppress noisy loggers
+    logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+    logging.getLogger("asyncio").setLevel(logging.WARNING)

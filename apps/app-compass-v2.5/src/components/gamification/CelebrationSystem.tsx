@@ -9,23 +9,21 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Trophy, 
-  Star, 
-  Sparkles, 
-  Zap, 
-  Target, 
+import {
+  Trophy,
+  Star,
+  Sparkles,
+  Zap,
+  Target,
   Flame,
   X,
   ChevronRight,
-  Crown
+  Crown,
 } from 'lucide-react'
 import { GlassCard, GlassButton } from '@/components/ui'
 import { 
   useGamificationStore,
   type GamificationEvent,
-  type Achievement,
-  type Quest 
 } from '@/stores/eventDrivenGamificationStore'
 
 // ============================================================================
@@ -52,7 +50,23 @@ export function CelebrationToastContainer() {
 
   // Get the event subscription function from the store
   const gamificationStore = useGamificationStore()
-  
+
+  const removeToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id))
+  }, [])
+
+  const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
+    const id = Math.random().toString(36).substring(7)
+    const newToast = { ...toast, id, duration: toast.duration || 5000 }
+
+    setToasts((prev) => [...prev, newToast])
+
+    // Auto-remove after duration
+    setTimeout(() => {
+      removeToast(id)
+    }, newToast.duration)
+  }, [removeToast])
+
   useEffect(() => {
     const unsubscribe = gamificationStore.onGamificationEvent((event: GamificationEvent) => {
       const toast = createToastFromEvent(event)
@@ -60,25 +74,9 @@ export function CelebrationToastContainer() {
         addToast(toast)
       }
     })
-    
+
     return unsubscribe
-  }, [gamificationStore])
-
-  const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
-    const id = Math.random().toString(36).substring(7)
-    const newToast = { ...toast, id, duration: toast.duration || 5000 }
-    
-    setToasts((prev) => [...prev, newToast])
-
-    // Auto-remove after duration
-    setTimeout(() => {
-      removeToast(id)
-    }, newToast.duration)
-  }, [])
-
-  const removeToast = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id))
-  }, [])
+  }, [gamificationStore, addToast])
 
   return (
     <div className="fixed top-4 right-4 z-50 flex flex-col gap-3 pointer-events-none">
@@ -142,7 +140,7 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
                   </span>
                 )}
                 {meta.coinReward && (
-                  <span className="flex items-center gap-1 text-amber-400">
+                  <span className="flex items-center gap-1 text-slate-400">
                     <Star className="w-3 h-3" />
                     +{String(meta.coinReward)} coins
                   </span>
@@ -187,11 +185,11 @@ const TOAST_CONFIG: Record<ToastType, {
 }> = {
   achievement: {
     icon: Trophy,
-    iconColor: 'text-amber-400',
-    bgColor: 'bg-amber-500/10',
-    borderColor: 'border-l-amber-400',
-    titleColor: 'text-amber-400',
-    progressColor: 'bg-amber-400',
+    iconColor: 'text-slate-400',
+    bgColor: 'bg-slate-500/10',
+    borderColor: 'border-l-slate-400',
+    titleColor: 'text-slate-400',
+    progressColor: 'bg-slate-400',
   },
   levelup: {
     icon: Crown,
@@ -211,11 +209,11 @@ const TOAST_CONFIG: Record<ToastType, {
   },
   streak: {
     icon: Flame,
-    iconColor: 'text-orange-400',
-    bgColor: 'bg-orange-500/10',
-    borderColor: 'border-l-orange-400',
-    titleColor: 'text-orange-400',
-    progressColor: 'bg-orange-400',
+    iconColor: 'text-slate-400',
+    bgColor: 'bg-slate-500/10',
+    borderColor: 'border-l-slate-400',
+    titleColor: 'text-slate-400',
+    progressColor: 'bg-slate-400',
   },
   reward: {
     icon: Sparkles,
@@ -231,7 +229,7 @@ const RARITY_COLORS: Record<string, string> = {
   common: 'text-slate-400',
   rare: 'text-blue-400',
   epic: 'text-purple-400',
-  legendary: 'text-amber-400',
+  legendary: 'text-slate-400',
 }
 
 interface ToastData {
@@ -408,7 +406,7 @@ export function LevelUpModal({ isOpen, onClose, level, title, xpToNext }: LevelU
                 <span>New title unlocked: {title}</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-foreground/80 justify-center">
-                <Trophy className="w-4 h-4 text-amber-400" />
+                <Trophy className="w-4 h-4 text-slate-400" />
                 <span>+50 XP bonus awarded</span>
               </div>
             </motion.div>

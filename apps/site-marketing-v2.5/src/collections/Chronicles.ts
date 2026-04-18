@@ -55,6 +55,18 @@ export const Chronicles: CollectionConfig = {
       defaultValue: 'draft',
     },
     {
+      name: 'isAppFeed',
+      type: 'checkbox',
+      label: 'Mostrar no App (Compass Feed)',
+      defaultValue: false,
+    },
+    {
+      name: 'isBlog',
+      type: 'checkbox',
+      label: 'Mostrar no Blog (Marketing Site)',
+      defaultValue: true,
+    },
+    {
       name: 'tags',
       type: 'array',
       fields: [

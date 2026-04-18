@@ -7,7 +7,7 @@ import uuid
 import enum
 from datetime import datetime, timezone
 from sqlalchemy import DateTime, String, Text, ForeignKey, JSON, Enum, Boolean
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
@@ -83,3 +83,6 @@ class OrganizationMember(Base):
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    
+    # Relationships
+    user = relationship("User", back_populates="organization_memberships")

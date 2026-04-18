@@ -4,7 +4,7 @@ export const metadata = { title: "Para Profissionais" };
 
 const BENEFITS = [
   { icon: Users, title: "Clientes qualificados", description: "Receba leads de pessoas que já sabem exatamente o que precisam — sem cold calls." },
-  { icon: Shield, title: "Pagamento garantido", description: "Escrow protege seu tempo. O cliente paga antes, você recebe quando entrega." },
+  { icon: Shield, title: "Pagamento garantido", description: "Sistema de garantia protege seu tempo. O cliente paga antes, você recebe quando entrega." },
   { icon: TrendingUp, title: "PEI — Índice de Efetividade", description: "Sua reputação cresce com base em resultados reais mensurados pela plataforma." },
   { icon: DollarSign, title: "Sem mensalidade", description: "Você só paga comissão quando fecha um serviço. Zero custo fixo." },
 ];

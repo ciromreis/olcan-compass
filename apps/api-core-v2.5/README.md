@@ -1,6 +1,12 @@
-# API (FastAPI)
+# Olcan API Core v2.5
 
-## Run with Docker
+**Status:** ✅ Active Development  
+**Documentation:** See [../../wiki/02_Arquitetura_Compass/API_Core_v2_5_Overview.md](../../wiki/02_Arquitetura_Compass/API_Core_v2_5_Overview.md)  
+**Database:** PostgreSQL with Alembic migrations
+
+## Quick Start
+
+### Run with Docker (Recommended)
 
 From repo root:
 
@@ -10,24 +16,9 @@ docker compose up --build
 
 Open:
 - Health: http://localhost:8000/api/health
+- Docs: http://localhost:8000/docs
 
-## Database migrations (Alembic)
-
-You can run migrations without installing Python locally.
-
-From repo root:
-
-```bash
-docker compose run --rm api alembic upgrade head
-```
-
-To create a new migration (for future development):
-
-```bash
-docker compose run --rm api alembic revision -m "your_message" --autogenerate
-```
-
-## Run locally (python)
+### Run Locally (Python)
 
 ```bash
 python3 -m venv .venv
@@ -37,8 +28,21 @@ cp .env.example .env
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-## Auth reset emails (dev note)
+## Database Migrations (Alembic)
 
-- Transactional emails (forgot-password / verify-email) are not integrated yet.
-- For local development, keep `ENV=development` in `apps/api/.env`.
-- When `ENV != production`, `/api/auth/forgot-password` may return a `reset_url` so you can complete the reset flow without email delivery.
+Run migrations without installing Python locally:
+
+```bash
+# Apply migrations
+docker compose run --rm api alembic upgrade head
+
+# Create new migration
+docker compose run --rm api alembic revision -m "your_message" --autogenerate
+```
+
+## Development Notes
+
+- **Auth emails:** Transactional emails not integrated yet. In development mode, `/api/auth/forgot-password` returns `reset_url` for testing.
+- **Environment:** Keep `ENV=development` in `.env` for local development.
+
+**Full API documentation, architecture, and deployment guides in wiki.**

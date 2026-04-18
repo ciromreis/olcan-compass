@@ -140,6 +140,7 @@ export default function AdminOrganizationsPage() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Buscar organização por nome..."
+            aria-label="Buscar organizações"
             className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent"
           />
         </div>

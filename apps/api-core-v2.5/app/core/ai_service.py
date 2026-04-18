@@ -1,19 +1,32 @@
 """AI Service Abstraction Layer
 
-Provides a unified interface for multiple AI providers (OpenAI, Anthropic, etc.)
+Provides a unified interface for multiple AI providers (OpenAI, Anthropic, OpenClaw, etc.)
 with adapter pattern for easy provider switching.
+
+Provider selection is driven by the AI_PROVIDER env var (see config.py).
+Default: "simulation" — no API keys needed, returns hardcoded scores.
+
+To add a new provider:
+  1. Create a class extending AIProviderAdapter
+  2. Register it in AIServiceFactory._adapters
+  3. Add its API key / config fields to config.py Settings
+  4. The get_ai_service() singleton will pick it up automatically
 """
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Optional, List, Dict, Any, AsyncGenerator
 from enum import Enum
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class AIProvider(str, Enum):
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
     GOOGLE = "google"
+    OPENCLAW = "openclaw"
     SIMULATION = "simulation"  # For testing/development
 
 
@@ -75,7 +88,7 @@ class SimulationAdapter(AIProviderAdapter):
     
     provider = AIProvider.SIMULATION
     
-    def __init__(self, default_model: str = "simulation"):
+    def __init__(self, default_model: str = "simulation", **kwargs: Any):
         super().__init__(api_key="simulation", default_model=default_model)
     
     async def complete(self, request: AICompletionRequest) -> AICompletionResponse:
@@ -91,6 +104,8 @@ class SimulationAdapter(AIProviderAdapter):
             content = self._simulate_readiness_analysis()
         elif "score" in last_message.lower() or "rate" in last_message.lower():
             content = self._simulate_scoring()
+        elif "polish" in last_message.lower() or "rewrite" in last_message.lower():
+            content = self._simulate_forge_polish(last_message)
         else:
             content = '{"result": "Simulated AI response", "confidence": 0.85}'
         
@@ -174,6 +189,29 @@ class SimulationAdapter(AIProviderAdapter):
             "confidence": 0.79
         })
     
+    def _simulate_forge_polish(self, prompt: str) -> str:
+        import json
+        # Extract a snippet of the input text from the prompt if present
+        snippet = prompt[200:400] if len(prompt) > 200 else prompt
+        polished = (
+            f"[Polished by Olcan Forge — SIMULATION MODE]\n\n"
+            f"My journey began with a transformative realization: the gap between where I stood "
+            f"and where I aspired to be was not defined by circumstance, but by deliberate action. "
+            f"Through systematic preparation and focused effort, I developed the resilience and "
+            f"clarity necessary to pursue this opportunity with conviction.\n\n"
+            f"{snippet}\n\n"
+            f"This experience crystallized my commitment to excellence and reinforced my belief "
+            f"that meaningful impact emerges from the intersection of preparation, purpose, and persistence."
+        )
+        return json.dumps({
+            "polished_content": polished,
+            "changes_summary": "Enhanced opening impact, strengthened narrative arc, clarified motivation, improved conclusion coherence.",
+            "word_count_before": len(prompt.split()),
+            "word_count_after": len(polished.split()),
+            "methodology_applied": "STAR",
+            "confidence": 0.88
+        })
+
     def _simulate_scoring(self) -> str:
         import json
         return json.dumps({
@@ -188,52 +226,209 @@ class SimulationAdapter(AIProviderAdapter):
         })
 
 
+class OpenClawAdapter(AIProviderAdapter):
+    """OpenClaw adapter — Olcan's future primary AI provider.
+
+    When the OpenClaw API is ready, implement the HTTP calls here.
+    Until then, this adapter validates that an API key is configured and
+    falls back to raising a clear error so callers know the provider
+    isn't live yet.
+
+    Env vars needed:
+        OPENCLAW_API_KEY   — the secret key
+        OPENCLAW_BASE_URL  — defaults to https://api.openclaw.ai
+    """
+
+    provider = AIProvider.OPENCLAW
+
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        default_model: Optional[str] = None,
+        base_url: str = "https://api.openclaw.ai",
+    ):
+        if not api_key:
+            raise ValueError(
+                "OpenClaw API key is required. Set the OPENCLAW_API_KEY env var."
+            )
+        super().__init__(api_key=api_key, default_model=default_model or "openclaw-v1")
+        self.base_url = base_url.rstrip("/")
+
+    async def complete(self, request: AICompletionRequest) -> AICompletionResponse:
+        """Send completion to OpenClaw.
+
+        TODO: Replace stub with real HTTP call when OpenClaw API is available.
+        The request/response shapes are modelled after the OpenAI-compatible
+        chat completions format, which OpenClaw is expected to follow.
+        """
+        # ── Stub implementation — replace with httpx call ──
+        # import httpx
+        # async with httpx.AsyncClient() as client:
+        #     resp = await client.post(
+        #         f"{self.base_url}/v1/chat/completions",
+        #         headers={"Authorization": f"Bearer {self.api_key}"},
+        #         json={
+        #             "model": request.model or self.default_model,
+        #             "messages": [{"role": m.role, "content": m.content} for m in request.messages],
+        #             "temperature": request.temperature,
+        #             "max_tokens": request.max_tokens,
+        #         },
+        #         timeout=60.0,
+        #     )
+        #     resp.raise_for_status()
+        #     data = resp.json()
+        #     return AICompletionResponse(
+        #         content=data["choices"][0]["message"]["content"],
+        #         model=data["model"],
+        #         provider=self.provider,
+        #         usage=data.get("usage", {}),
+        #         finish_reason=data["choices"][0].get("finish_reason", "stop"),
+        #         raw_response=data,
+        #     )
+
+        raise NotImplementedError(
+            "OpenClaw API integration is pending. "
+            "Uncomment the httpx implementation above once the API is live. "
+            "In the meantime, set AI_PROVIDER=simulation in your .env file."
+        )
+
+    async def complete_stream(
+        self, request: AICompletionRequest
+    ) -> AsyncGenerator[str, None]:
+        raise NotImplementedError("OpenClaw streaming not yet implemented.")
+        yield  # noqa: unreachable — makes this a valid generator
+
+    async def health_check(self) -> bool:
+        """Check if OpenClaw API is reachable."""
+        try:
+            import httpx
+            async with httpx.AsyncClient() as client:
+                resp = await client.get(
+                    f"{self.base_url}/health",
+                    headers={"Authorization": f"Bearer {self.api_key}"},
+                    timeout=5.0,
+                )
+                return resp.status_code == 200
+        except Exception:
+            return False
+
+
 class AIServiceFactory:
-    """Factory for creating AI service instances"""
-    
+    """Factory for creating AI service instances.
+
+    All known adapters are registered here. The get_ai_service() singleton
+    reads AI_PROVIDER from config.py to decide which one to instantiate.
+    """
+
     _adapters: Dict[AIProvider, type] = {
         AIProvider.SIMULATION: SimulationAdapter,
+        AIProvider.OPENCLAW: OpenClawAdapter,
     }
-    
+
     @classmethod
     def register_adapter(cls, provider: AIProvider, adapter_class: type):
         """Register a new provider adapter"""
         cls._adapters[provider] = adapter_class
-    
+
     @classmethod
     def create(
         cls,
         provider: AIProvider,
         api_key: Optional[str] = None,
-        default_model: Optional[str] = None
+        default_model: Optional[str] = None,
+        **kwargs: Any,
     ) -> AIProviderAdapter:
         """Create an AI provider adapter instance"""
         if provider not in cls._adapters:
-            raise ValueError(f"Unknown AI provider: {provider}")
-        
+            raise ValueError(
+                f"Unknown AI provider: {provider}. "
+                f"Available: {list(cls._adapters.keys())}"
+            )
+
         adapter_class = cls._adapters[provider]
-        return adapter_class(api_key=api_key, default_model=default_model)
-    
+        return adapter_class(api_key=api_key, default_model=default_model, **kwargs)
+
     @classmethod
     def get_available_providers(cls) -> List[AIProvider]:
         """Get list of available providers"""
         return list(cls._adapters.keys())
 
 
-# Global service instance
+# ---------------------------------------------------------------------------
+# Global singleton — reads provider choice from config.py
+# ---------------------------------------------------------------------------
 _ai_service: Optional[AIProviderAdapter] = None
 
 
 def get_ai_service() -> AIProviderAdapter:
-    """Get or create default AI service instance"""
+    """Get or create the global AI service instance.
+
+    Provider is determined by settings.ai_provider (env var AI_PROVIDER).
+    Falls back to SIMULATION if the configured provider can't be initialised.
+    """
     global _ai_service
-    if _ai_service is None:
-        # Default to simulation for development
+    if _ai_service is not None:
+        return _ai_service
+
+    from app.core.config import settings
+
+    provider_name = settings.ai_provider.lower().strip()
+
+    try:
+        provider = AIProvider(provider_name)
+    except ValueError:
+        logger.warning(
+            "Unknown AI_PROVIDER '%s' — falling back to simulation.", provider_name
+        )
+        provider = AIProvider.SIMULATION
+
+    # Build kwargs depending on provider
+    kwargs: Dict[str, Any] = {}
+
+    if provider == AIProvider.OPENCLAW:
+        kwargs["api_key"] = settings.openclaw_api_key
+        kwargs["default_model"] = settings.openclaw_default_model
+        kwargs["base_url"] = settings.openclaw_base_url
+    elif provider == AIProvider.OPENAI:
+        kwargs["api_key"] = settings.openai_api_key
+        kwargs["default_model"] = settings.openai_default_model
+    elif provider == AIProvider.ANTHROPIC:
+        kwargs["api_key"] = settings.anthropic_api_key
+        kwargs["default_model"] = settings.anthropic_default_model
+
+    try:
+        _ai_service = AIServiceFactory.create(provider, **kwargs)
+        logger.info("AI service initialised: provider=%s", provider.value)
+    except (ValueError, NotImplementedError) as exc:
+        logger.warning(
+            "Failed to initialise AI provider '%s': %s — falling back to simulation.",
+            provider.value,
+            exc,
+        )
         _ai_service = AIServiceFactory.create(AIProvider.SIMULATION)
+
     return _ai_service
 
 
+def get_ai_provider_enum() -> AIProvider:
+    """Return the AIProvider enum for the currently active service.
+
+    Useful for logging which provider was used in usage logs.
+    """
+    service = get_ai_service()
+    return service.provider
+
+
 def set_ai_service(service: AIProviderAdapter):
-    """Set the global AI service instance"""
+    """Set the global AI service instance (useful for tests)."""
     global _ai_service
     _ai_service = service
+
+
+def reset_ai_service():
+    """Reset the singleton so the next call to get_ai_service() re-reads config.
+
+    Call this after changing settings.ai_provider at runtime (e.g. in tests).
+    """
+    global _ai_service
+    _ai_service = None

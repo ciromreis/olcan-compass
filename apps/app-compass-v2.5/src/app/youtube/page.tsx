@@ -1,16 +1,14 @@
 "use client"
 
 import React, { useState, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Play, 
-  Pause, 
-  Square, 
-  Circle, 
-  Download, 
-  Upload, 
-  Mic, 
-  MicOff,
+import { motion } from 'framer-motion'
+import {
+  Play,
+  Pause,
+  Square,
+  Circle,
+  Download,
+  Mic,
   Video,
   Settings,
   Share2,
@@ -24,7 +22,7 @@ import {
   Monitor,
   Smartphone
 } from 'lucide-react'
-import { GlassCard, GlassButton, ProgressBar, GlassModal } from '@/components/ui'
+import { GlassCard, GlassButton, GlassModal } from '@/components/ui'
 
 interface RecordingSession {
   id: string
@@ -63,8 +61,8 @@ const YouTubeStudio = () => {
   
   const [selectedTemplate, setSelectedTemplate] = useState<VideoTemplate | null>(null)
   const [showSettings, setShowSettings] = useState(false)
-  const [recordedVideos, setRecordedVideos] = useState<any[]>([])
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [recordedVideos, setRecordedVideos] = useState<{ url: string; title: string; duration: number; timestamp: string }[]>([])
+  const [_isAnalyzing, _setIsAnalyzing] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
@@ -285,14 +283,14 @@ const YouTubeStudio = () => {
     return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
 
-  const downloadVideo = (video: any) => {
+  const downloadVideo = (video: { url: string; title: string }) => {
     const a = document.createElement('a')
     a.href = video.url
     a.download = `${video.title}.webm`
     a.click()
   }
 
-  const shareVideo = (video: any) => {
+  const shareVideo = (video: { url: string; title: string }) => {
     const shareText = `Check out my YouTube video: ${video.title}`
     
     if (navigator.share) {
@@ -420,7 +418,7 @@ const YouTubeStudio = () => {
                             key={value}
                             onClick={() => setRecordingSession(prev => ({
                               ...prev,
-                              videoSource: value as any
+                              videoSource: value as 'screen' | 'camera' | 'both'
                             }))}
                             className={`p-2 liquid-glass rounded-xl border transition-all duration-300 ${
                               recordingSession.videoSource === value
@@ -443,7 +441,7 @@ const YouTubeStudio = () => {
                         value={recordingSession.quality}
                         onChange={(e) => setRecordingSession(prev => ({
                           ...prev,
-                          quality: e.target.value as any
+                          quality: e.target.value as 'low' | 'medium' | 'high' | '4k'
                         }))}
                         className="w-full px-3 py-2 liquid-glass rounded-xl border border-white/20 focus:border-companion-primary/50 focus:outline-none"
                       >

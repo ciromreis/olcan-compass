@@ -3,13 +3,15 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { ComingSoonPanel } from "@/components/product/ComingSoonPanel";
+import { productSurface } from "@/lib/product-flags";
 import {
   ArrowLeft, Save, Sparkles, AlertTriangle,
   TrendingUp, Target,
   Bold, Italic, List, Quote, Undo2, Redo2
 } from "lucide-react";
 import { Button, Card, LoadingSpinner } from "@/components/ui";
-import { useForgeStore } from "@/stores/forge-enhanced";
+import { useForgeStore } from "@/stores/forge";
 
 interface WritingCoachProps {
   document: {
@@ -23,7 +25,7 @@ interface WritingCoachProps {
       suggestions: string[];
       wordCount: number;
       readabilityScore: number;
-    };
+    } | null;
   };
   onAnalyze: () => void;
   isAnalyzing: boolean;
@@ -63,7 +65,7 @@ function WritingCoach({ document, onAnalyze, isAnalyzing }: WritingCoachProps) {
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-green-600";
-    if (score >= 60) return "text-yellow-600";
+    if (score >= 60) return "text-slate-600";
     return "text-red-600";
   };
 
@@ -99,7 +101,7 @@ function WritingCoach({ document, onAnalyze, isAnalyzing }: WritingCoachProps) {
                   strokeLinecap="round"
                   strokeDasharray={351.86}
                   strokeDashoffset={351.86 - (metrics.score / 100) * 351.86}
-                  className={getScoreVariant(metrics.score) === "moss" ? "stroke-green-500" : getScoreVariant(metrics.score) === "amber" ? "stroke-yellow-500" : "stroke-red-500"}
+                  className={getScoreVariant(metrics.score) === "moss" ? "stroke-green-500" : getScoreVariant(metrics.score) === "amber" ? "stroke-slate-500" : "stroke-red-500"}
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
@@ -119,16 +121,16 @@ function WritingCoach({ document, onAnalyze, isAnalyzing }: WritingCoachProps) {
         {metrics.issues.length > 0 && (
           <div className="space-y-3">
             <h4 className="font-heading text-h5 text-text-primary flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-500" />
+              <AlertTriangle className="w-4 h-4 text-slate-500" />
               Pontos a Melhorar
             </h4>
             <div className="space-y-2">
               {metrics.issues.map((issue, index) => (
-                <div key={index} className="p-3 rounded-lg bg-amber-50 border border-amber-200">
+                <div key={index} className="p-3 rounded-lg bg-slate-50 border border-slate-200">
                   <div className="flex items-start gap-2">
                     <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
                       issue.severity === 'high' ? 'bg-red-500' :
-                      issue.severity === 'medium' ? 'bg-yellow-500' : 'bg-blue-500'
+                      issue.severity === 'medium' ? 'bg-slate-500' : 'bg-blue-500'
                     }`} />
                     <div className="flex-1">
                       <p className="text-body-sm text-text-secondary">{issue.message}</p>
@@ -174,7 +176,7 @@ function WritingCoach({ document, onAnalyze, isAnalyzing }: WritingCoachProps) {
   );
 }
 
-export default function ForgeWritingLabPage() {
+function ForgeWritingLabInner() {
   const params = useParams();
   const docId = params.id as string;
   
@@ -198,7 +200,7 @@ export default function ForgeWritingLabPage() {
     
     // Set new timeout for auto-save
     saveTimeout.current = setTimeout(() => {
-      updateContent(docId, newContent);
+      void updateContent(docId, newContent);
       setLastSaved(new Date());
     }, 2000);
   }, [docId, updateContent]);
@@ -213,7 +215,7 @@ export default function ForgeWritingLabPage() {
   }, [docId, analyzeDocument]);
 
   const handleSave = useCallback(() => {
-    saveVersion(docId);
+    void saveVersion(docId);
     setLastSaved(new Date());
   }, [docId, saveVersion]);
 
@@ -255,7 +257,8 @@ export default function ForgeWritingLabPage() {
           <div>
             <h1 className="font-heading text-h2 text-text-primary">{document.title}</h1>
             <p className="text-body text-text-secondary">
-              {document.type} • {document.wordCount} palavras
+              {document.type} •{" "}
+              {content.split(/\s+/).filter((word) => word.length > 0).length} palavras
             </p>
           </div>
         </div>
@@ -331,4 +334,21 @@ export default function ForgeWritingLabPage() {
       </div>
     </div>
   );
+}
+
+export default function ForgeWritingLabPage() {
+  if (!productSurface.forgeLab) {
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center p-6">
+        <ComingSoonPanel
+          title="Forge Lab (experimental)"
+          description="Editor avançado separado do Forge principal. Ative com NEXT_PUBLIC_FEATURE_FORGE_LAB=true apenas quando for testar este fluxo."
+          backHref="/forge"
+          backLabel="Voltar ao Forge"
+        />
+      </div>
+    );
+  }
+
+  return <ForgeWritingLabInner />;
 }

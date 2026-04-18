@@ -1,21 +1,17 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  FileText, 
-  TrendingUp, 
-  Clock, 
-  Hash, 
-  BookOpen, 
+import {
+  FileText,
+  Clock,
   Target,
   BarChart3,
   Download,
   Share2,
-  Eye,
   Zap
 } from 'lucide-react'
-import { GlassCard, GlassButton, ProgressBar, GlassModal } from '@/components/ui'
+import { GlassCard, GlassButton, ProgressBar } from '@/components/ui'
 
 interface DocumentAnalytics {
   wordCount: number
@@ -40,8 +36,6 @@ const DocumentAnalytics = () => {
   const [docText, setDocument] = useState('')
   const [analytics, setAnalytics] = useState<DocumentAnalytics | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [showModal, setShowModal] = useState(false)
-  const [selectedMetric, setSelectedMetric] = useState<string | null>(null)
 
   const analyzeDocument = async () => {
     if (!docText.trim()) return
@@ -272,7 +266,7 @@ const DocumentAnalytics = () => {
                     
                     <div className="text-center">
                       <div className="flex items-center justify-center mb-2">
-                        <Zap className="w-5 h-5 text-yellow-500 mr-2" />
+                        <Zap className="w-5 h-5 text-slate-500 mr-2" />
                         <span className="text-2xl font-bold text-foreground">
                           {Math.round(analytics.complexity)}
                         </span>
@@ -300,7 +294,7 @@ const DocumentAnalytics = () => {
                   </h3>
                   
                   <div className="space-y-3">
-                    {analytics.keywords.map((keyword, index) => (
+                    {analytics.keywords.map((keyword) => (
                       <div key={keyword.word} className="flex items-center gap-3">
                         <span className="text-sm font-medium text-foreground w-20">
                           {keyword.word}

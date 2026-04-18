@@ -9,9 +9,9 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Sparkles, Star, Crown, Zap, Heart, Trophy } from 'lucide-react'
+import { Sparkles, Zap, Trophy } from 'lucide-react'
 import { GlassButton } from '@/components/ui'
-import type { EvolutionStage, ArchetypeType } from '@/stores/canonicalCompanionStore'
+import type { EvolutionStage, ArchetypeType } from '@/stores/auraStore'
 
 interface EvolutionCeremonyProps {
   isOpen: boolean
@@ -29,60 +29,60 @@ interface EvolutionCeremonyProps {
 }
 
 const STAGE_CONFIG: Record<EvolutionStage, {
-  emoji: string
   color: string
   glowColor: string
   title: string
   description: string
   particleCount: number
+  emoji: string
 }> = {
   egg: {
-    emoji: '🥚',
-    color: '#E8E4E1',
-    glowColor: 'rgba(232, 228, 225, 0.5)',
-    title: 'Egg',
-    description: 'A new beginning awaits',
+    color: '#F8FAFC',
+    glowColor: 'rgba(248, 250, 252, 0.4)',
+    title: 'Nascimento',
+    description: 'Um novo início despertou',
     particleCount: 20,
+    emoji: '🥚',
   },
   sprout: {
-    emoji: '🌱',
-    color: '#4ADE80',
-    glowColor: 'rgba(74, 222, 128, 0.5)',
-    title: 'Sprout',
-    description: 'First growth emerges',
+    color: '#94A3B8',
+    glowColor: 'rgba(148, 163, 184, 0.4)',
+    title: 'Broto',
+    description: 'O primeiro crescimento emerge',
     particleCount: 40,
+    emoji: '🌱',
   },
   young: {
-    emoji: '🌿',
-    color: '#22C55E',
-    glowColor: 'rgba(34, 197, 94, 0.5)',
-    title: 'Young',
-    description: 'Growing stronger every day',
+    color: '#64748B',
+    glowColor: 'rgba(100, 116, 139, 0.4)',
+    title: 'Jovem',
+    description: 'Fortalecendo-se a cada dia',
     particleCount: 60,
+    emoji: '⚡',
   },
   mature: {
-    emoji: '🌳',
-    color: '#16A34A',
-    glowColor: 'rgba(22, 163, 74, 0.5)',
-    title: 'Mature',
-    description: 'Fully developed and capable',
+    color: '#475569',
+    glowColor: 'rgba(71, 85, 105, 0.4)',
+    title: 'Maturo',
+    description: 'Plenamente desenvolvido e capaz',
     particleCount: 80,
+    emoji: '🔮',
   },
   master: {
-    emoji: '🌲',
-    color: '#15803D',
-    glowColor: 'rgba(21, 128, 61, 0.5)',
-    title: 'Master',
-    description: 'Wisdom and power combined',
+    color: '#334155',
+    glowColor: 'rgba(51, 65, 85, 0.4)',
+    title: 'Mestre',
+    description: 'Sabedoria e poder combinados',
     particleCount: 100,
+    emoji: '👑',
   },
   legendary: {
-    emoji: '👑',
-    color: '#F59E0B',
-    glowColor: 'rgba(245, 158, 11, 0.6)',
-    title: 'Legendary',
-    description: 'A legend among companions',
+    color: '#F1F5F9',
+    glowColor: 'rgba(241, 245, 249, 0.62)',
+    title: 'Lendário',
+    description: 'Uma lenda entre os companheiros',
     particleCount: 150,
+    emoji: '✨',
   },
 }
 
@@ -92,7 +92,7 @@ export function EvolutionCeremony({
   fromStage,
   toStage,
   companionName,
-  archetype,
+  archetype: _archetype,
   newStats,
 }: EvolutionCeremonyProps) {
   const [phase, setPhase] = useState<'intro' | 'transition' | 'reveal' | 'complete'>('intro')
@@ -172,20 +172,10 @@ export function EvolutionCeremony({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.5 }}
             >
-              <motion.div
-                className="text-8xl mb-4"
-                animate={{ 
-                  rotate: [0, -10, 10, -10, 10, 0],
-                  scale: [1, 1.1, 1],
-                }}
-                transition={{ duration: 1.5, ease: 'easeInOut' }}
-              >
-                {fromConfig.emoji}
-              </motion.div>
               <h2 className="text-2xl font-bold text-white/80 mb-2">
-                {companionName} is ready to evolve!
+                {companionName} está pronto para evoluir!
               </h2>
-              <p className="text-white/60">Something magical is happening...</p>
+              <p className="text-white/60">Algo extraordinário está acontecendo...</p>
             </motion.div>
           )}
 
@@ -232,7 +222,7 @@ export function EvolutionCeremony({
                 animate={{ opacity: [0, 1, 0] }}
                 transition={{ duration: 0.5, delay: 1 }}
               >
-                <Sparkles className="w-16 h-16 text-yellow-400" />
+                <Sparkles className="w-16 h-16 text-slate-400" />
               </motion.div>
             </motion.div>
           )}
@@ -267,16 +257,16 @@ export function EvolutionCeremony({
                 transition={{ delay: 0.5 }}
               >
                 <h2 className="text-4xl font-bold text-white mb-2">
-                  Evolution Complete!
+                  Evolução Concluída!
                 </h2>
                 <p className="text-xl text-white/80 mb-1">
-                  {companionName} evolved into
+                  {companionName} evoluiu para
                 </p>
                 <p 
                   className="text-3xl font-bold"
                   style={{ color: toConfig.color }}
                 >
-                  {toConfig.title} Stage
+                  Estágio {toConfig.title}
                 </p>
                 <p className="text-white/60 mt-2">{toConfig.description}</p>
               </motion.div>
@@ -344,11 +334,11 @@ export function EvolutionCeremony({
                 className="flex justify-center gap-4"
               >
                 <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10">
-                  <Zap className="w-5 h-5 text-yellow-400" />
+                  <Zap className="w-5 h-5 text-slate-400" />
                   <span className="text-white">+200 XP</span>
                 </div>
                 <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10">
-                  <Trophy className="w-5 h-5 text-amber-400" />
+                  <Trophy className="w-5 h-5 text-slate-400" />
                   <span className="text-white">Achievement Unlocked</span>
                 </div>
               </motion.div>
@@ -362,7 +352,7 @@ export function EvolutionCeremony({
                   onClick={onClose}
                   className="px-8 py-3 text-lg"
                 >
-                  Continue Journey
+                  Retomar Jornada
                 </GlassButton>
               </motion.div>
             </motion.div>

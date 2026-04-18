@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import {
   MapPin, CheckCircle, Circle, AlertTriangle,
   Upload, Settings, FileCheck, Send, Loader2, Pencil,
+  FileEdit, Plus, ChevronRight,
 } from "lucide-react";
 import { useSprintStore } from "@/stores/sprints";
 import { useRouteStore } from "@/stores/routes";
@@ -43,7 +44,7 @@ const STATUS_CONFIG: Record<AppStatus, { label: string; color: string; bg: strin
   submitted: { label: "Enviada", color: "text-sage-500", bg: "bg-sage-50" },
   accepted: { label: "Aceita!", color: "text-brand-600", bg: "bg-brand-50" },
   rejected: { label: "Rejeitada", color: "text-clay-500", bg: "bg-clay-50" },
-  waitlisted: { label: "Lista de espera", color: "text-amber-500", bg: "bg-amber-50" },
+  waitlisted: { label: "Lista de espera", color: "text-slate-500", bg: "bg-slate-50" },
 };
 
 export default function ApplicationDetailPage() {
@@ -54,7 +55,7 @@ export default function ApplicationDetailPage() {
   const { sprints } = useSprintStore();
   const { routes, getRouteProgress } = useRouteStore();
   const { isComplete, getOverallScore } = usePsychStore();
-  const { documents: forgeDocuments } = useForgeStore();
+  const { documents: forgeDocuments, getDocsByOpportunity } = useForgeStore();
   const { items } = useCommunityStore();
   const { saveCommunityArtifact } = useCommunityArtifactSave({ kind: "applications" });
   const app = getById(appId);
@@ -192,17 +193,75 @@ export default function ApplicationDetailPage() {
         </div>
         <div className="card-surface p-4 text-center">
           <p className="text-caption text-text-muted mb-1">Match Score</p>
-          <p className={`font-heading text-h3 ${app.match >= 75 ? "text-brand-500" : "text-amber-500"}`}>{app.match}%</p>
+          <p className={`font-heading text-h3 ${app.match >= 75 ? "text-brand-500" : "text-slate-500"}`}>{app.match}%</p>
         </div>
         <div className="card-surface p-4 text-center">
           <p className="text-caption text-text-muted mb-1">Probabilidade</p>
-          <p className={`font-heading text-h3 ${probabilityScore >= 60 ? "text-brand-500" : "text-amber-500"}`}>{probabilityScore}%</p>
+          <p className={`font-heading text-h3 ${probabilityScore >= 60 ? "text-brand-500" : "text-slate-500"}`}>{probabilityScore}%</p>
         </div>
       </div>
 
+      {/* Dossier Assets */}
+      {app.opportunityId && (() => {
+        const boundDocs = getDocsByOpportunity(app.opportunityId);
+        return boundDocs.length > 0 ? (
+          <div className="card-surface p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-heading text-h4 text-text-primary">Dossier desta Oportunidade</h3>
+              <Link
+                href={`/forge/new?opportunityId=${app.opportunityId}&opportunityTitle=${encodeURIComponent(app.program)}`}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-500 text-white text-sm font-medium hover:bg-brand-600 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Criar Ativo
+              </Link>
+            </div>
+            <div className="space-y-2">
+              {boundDocs.map((doc) => (
+                <Link
+                  key={doc.id}
+                  href={`/forge/${doc.id}`}
+                  className="flex items-center justify-between p-3 rounded-lg border border-slate-200 hover:border-brand-300 hover:bg-brand-50/50 transition-colors group"
+                >
+                  <div className="flex items-center gap-3 flex-1">
+                    <FileEdit className="w-5 h-5 text-brand-500" />
+                    <div>
+                      <div className="font-medium text-text-primary">{doc.title}</div>
+                      <div className="text-sm text-text-muted">
+                        {doc.readinessLevel === "export_ready" ? "✓ Pronto para exportar" :
+                         doc.readinessLevel === "review" ? "Em revisão" :
+                         doc.readinessLevel === "submitted" ? "✓ Submetido" : "Rascunho"}
+                      </div>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-brand-500" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="card-surface p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-heading text-h4 text-text-primary">Dossier desta Oportunidade</h3>
+            </div>
+            <div className="text-center py-8">
+              <FileEdit className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+              <p className="text-text-muted mb-4">Nenhum ativo criado ainda para esta oportunidade.</p>
+              <Link
+                href={`/forge/new?opportunityId=${app.opportunityId}&opportunityTitle=${encodeURIComponent(app.program)}`}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-brand-500 text-white font-medium hover:bg-brand-600 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Criar Primeiro Ativo
+              </Link>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Documents */}
       <div className="card-surface p-6">
-        <h3 className="font-heading text-h4 text-text-primary mb-4">Documentos Necessários</h3>
+        <h3 className="font-heading text-h4 text-text-primary mb-4">Checklist de Requisitos</h3>
         <div className="space-y-3">
           {app.documents.map((doc) => (
             <div key={doc.id} className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${

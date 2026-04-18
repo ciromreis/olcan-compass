@@ -15,6 +15,7 @@ import { devtools } from 'zustand/middleware'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import { type ArchetypeId } from '@/lib/archetypes'
 import { auraApi } from '@/lib/api'
+import { RecombinationProfile } from '@/lib/recombination'
 
 // ============================================================================
 // TYPES - Aligned with Backend API Contract
@@ -42,6 +43,8 @@ export interface Aura {
   createdAt: string
   updatedAt: string
   lastCaredAt: string | null
+  ritualAffinity?: Record<string, number>
+  recombination?: RecombinationProfile
 }
 
 export type EvolutionStage = 'egg' | 'sprout' | 'young' | 'mature' | 'master' | 'legendary'
@@ -123,6 +126,10 @@ interface AuraStoreState {
   error: string | null
   lastSyncAt: string | null
   
+  // Ritual State
+  isRitualInProgress: boolean
+  ritualAffinity: Record<string, number> | null
+  
   // Computed Getters
   canPerformCare: (activityType: CareActivityType) => boolean
   getEvolutionProgress: () => number
@@ -143,7 +150,11 @@ interface AuraStoreActions {
   
   // Evolution
   checkEvolutionEligibility: () => Promise<boolean>
-  triggerEvolution: () => Promise<void>
+  prepareRitual: () => void
+  triggerEvolution: (payload?: Record<string, unknown>) => Promise<void>
+  
+  // Marketplace XP Integration
+  addExperience: (amount: number) => void
   
   // UI Actions
   selectAura: (id: string | null) => void
@@ -180,6 +191,15 @@ function makeDemoAura(name: string, archetype: ArchetypeType): Aura {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     lastCaredAt: null,
+    recombination: {
+      weights: [
+        { id: archetype, weight: 100, label: archetype.replace(/_/g, ' ') }
+      ],
+      dominantId: archetype,
+      secondaryId: archetype,
+      tertiaryId: archetype,
+      manifestationSeed: 123
+    }
   }
 }
 
@@ -297,8 +317,8 @@ class AuraApiClient {
     throw new Error('Atualização parcial da Aura ainda não está exposta pela API v2.5.')
   }
 
-  static async triggerEvolution(auraId: string): Promise<Aura> {
-    const { data } = await auraApi.evolve(auraId)
+  static async triggerEvolution(auraId: string, payload?: Record<string, unknown>): Promise<Aura> {
+    const { data } = await auraApi.evolve(auraId, payload)
     return data as Aura
   }
 }
@@ -350,6 +370,8 @@ const initialState: Omit<
   isLoading: false,
   error: null,
   lastSyncAt: null,
+  isRitualInProgress: false,
+  ritualAffinity: null,
   
   canPerformCare: () => false,
   getEvolutionProgress: () => 0,
@@ -628,8 +650,12 @@ export const useAuraStore = create<
             return false
           }
         },
+
+        prepareRitual: () => {
+          set({ isRitualInProgress: true, ritualAffinity: {} })
+        },
         
-        triggerEvolution: async () => {
+        triggerEvolution: async (payload?: Record<string, unknown>) => {
           const { aura } = get()
           if (!aura) {
             throw new Error('No aura found')
@@ -638,10 +664,15 @@ export const useAuraStore = create<
           set({ isLoading: true, error: null })
           
           try {
-            const evolvedAura = await AuraApiClient.triggerEvolution(aura.id)
+            const evolvedAura = await AuraApiClient.triggerEvolution(aura.id, payload)
             
             set({
-              aura: evolvedAura,
+              aura: {
+                ...evolvedAura,
+                ritualAffinity: payload as Record<string, number> || evolvedAura.ritualAffinity
+              },
+              isRitualInProgress: false,
+              ritualAffinity: null,
               isLoading: false,
             })
             
@@ -654,6 +685,7 @@ export const useAuraStore = create<
                 fromStage: aura.evolutionStage,
                 toStage: evolvedAura.evolutionStage,
                 levelAtEvolution: evolvedAura.level,
+                ritualPayload: payload,
               },
             })
           } catch (error) {
@@ -662,6 +694,47 @@ export const useAuraStore = create<
               isLoading: false,
             })
             throw error
+          }
+        },
+        
+        // Marketplace XP - optimistic local update (no API call)
+        addExperience: (amount: number) => {
+          const { aura } = get()
+          if (!aura || amount <= 0) return
+
+          let newXp = aura.experiencePoints + amount
+          let newLevel = aura.level
+          let newXpToNext = aura.xpToNextLevel
+
+          // Handle level-ups
+          while (newXp >= newXpToNext) {
+            newXp -= newXpToNext
+            newLevel += 1
+            newXpToNext = Math.floor(newXpToNext * 1.15) // 15% scaling per level
+          }
+
+          const updatedAura: Aura = {
+            ...aura,
+            experiencePoints: newXp,
+            level: newLevel,
+            xpToNextLevel: newXpToNext,
+            updatedAt: new Date().toISOString(),
+          }
+
+          set({ aura: updatedAura })
+
+          if (newLevel > aura.level) {
+            eventEmitter.emit({
+              type: "aura.leveled",
+              auraId: aura.id,
+              userId: aura.userId,
+              timestamp: new Date().toISOString(),
+              payload: {
+                previousLevel: aura.level,
+                newLevel,
+                xpAdded: amount,
+              },
+            })
           }
         },
         
@@ -712,8 +785,3 @@ export const useCareStreak = () => useAuraStore((state) => state.getCareStreak()
 export const useEvolutionProgress = () => useAuraStore((state) => state.getEvolutionProgress())
 export const useCanPerformCare = (activityType: CareActivityType) => useAuraStore((state) => state.canPerformCare(activityType))
 
-/**
- * @deprecated Use useAuraStore instead.
- */
-export const useCompanionStore = useAuraStore
-export const useCanonicalCompanionStore = useAuraStore

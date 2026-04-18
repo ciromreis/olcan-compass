@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
@@ -14,11 +14,11 @@ from app.core.auth import (
     authenticate_user, 
     validate_password_strength
 )
+from app.core.rate_limit import limiter
 from app.db.session import get_db
 from app.db.models.user import User
 from app.schemas.token import (
     AuthRegisterRequest,
-    AuthLoginRequest,
     AuthResponse,
     Token,
     UserProfileResponse,
@@ -38,10 +38,79 @@ from app.services.email import (
     send_password_reset_email,
     send_verification_email,
 )
+from app.services.opportunity_cost import (
+    calculate_cumulative_opportunity_cost,
+    calculate_user_momentum,
+)
+from app.db.models.psychology import PsychProfile
+from sqlalchemy import select
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 settings = get_settings()
 security = HTTPBearer()
+
+
+def _user_profile_response(user: User) -> UserProfileResponse:
+    return UserProfileResponse(
+        id=str(user.id),
+        email=user.email,
+        full_name=user.full_name,
+        avatar_url=user.avatar_url,
+        language=user.language,
+        timezone=user.timezone,
+        role=user.role.value,
+        is_verified=user.is_verified,
+        is_premium=user.is_premium,
+        created_at=user.created_at,
+    )
+
+
+async def _build_user_profile_response(user: User, db: AsyncSession) -> UserProfileResponse:
+    profile = _user_profile_response(user)
+    
+    # Economics Telemetry
+    try:
+        # Get active route to find an opportunity for cost calculation
+        # If no routes, use defaults in service
+        from app.db.models.route import Route
+        route_result = await db.execute(
+            select(Route).where(Route.user_id == user.id, Route.is_active == True).limit(1)
+        )
+        active_route = route_result.scalar_one_or_none()
+        
+        # Calculate Economics
+        momentum = await calculate_user_momentum(user.id, db)
+        profile.momentum = {"momentum_score": momentum, "last_activity_days": 0} # Simplified for now
+        
+        if active_route and active_route.opportunity_id:
+            econ_data = await calculate_cumulative_opportunity_cost(user.id, active_route.opportunity_id, db)
+            profile.economics = econ_data
+        else:
+            # Default/Fallback economics if no active route
+            profile.economics = {
+                'daily_cost': 136.98, # R$ 50k / 365 default
+                'monthly_cost': 4109.58,
+                'yearly_cost': 50000.0,
+                'cumulative_cost': 0.0,
+                'days_since_start': 0,
+                'currency': 'BRL'
+            }
+    except Exception:
+        # Silent fail for telemetry logic to avoid breaking login
+        pass
+
+    # Psychology / OIOS Archetype
+    try:
+        psych_result = await db.execute(
+            select(PsychProfile).where(PsychProfile.user_id == user.id)
+        )
+        psych = psych_result.scalar_one_or_none()
+        if psych:
+            profile.psychology = psych
+    except Exception:
+        pass
+
+    return profile
 
 
 def build_verification_url(token: str) -> str:
@@ -53,12 +122,14 @@ def build_password_reset_url(token: str) -> str:
 
 
 @router.post("/register", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit("10/minute")
 async def register(
-    request: AuthRegisterRequest,
+    request: Request,
+    payload: AuthRegisterRequest,
     db: AsyncSession = Depends(get_db)
 ):
     """Registrar novo usuário com email e senha"""
-    normalized_email = request.email.strip().lower()
+    normalized_email = payload.email.strip().lower()
 
     # Check if user already exists
     result = await db.execute(
@@ -73,7 +144,7 @@ async def register(
         )
     
     # Validate password strength
-    if not validate_password_strength(request.password):
+    if not validate_password_strength(payload.password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Senha não atende aos requisitos"
@@ -83,10 +154,12 @@ async def register(
     verification_token, verification_expires = generate_verification_token()
     new_user = User(
         email=normalized_email,
-        hashed_password=hash_password(request.password),
-        full_name=request.full_name,
+        hashed_password=hash_password(payload.password),
+        full_name=payload.full_name,
         verification_token=verification_token,
         verification_token_expires=verification_expires,
+        language=settings.default_user_language,
+        timezone=settings.default_user_timezone,
     )
     
     db.add(new_user)
@@ -117,43 +190,61 @@ async def register(
         user_id=str(new_user.id),
         email=new_user.email,
         role=new_user.role.value,
-        token=Token(
-            access_token=access_token,
-            refresh_token=refresh_token
-        )
+        access_token=access_token,
+        refresh_token=refresh_token,
     )
 
 
 @router.post("/login", response_model=AuthResponse)
-async def login(
-    request: AuthLoginRequest,
-    db: AsyncSession = Depends(get_db)
-):
-    """Login com email e senha"""
-    user = await authenticate_user(request.email, request.password, db)
-    
+@limiter.limit("5/minute")
+async def login(request: Request, db: AsyncSession = Depends(get_db)):
+    """Login com email e senha — aceita JSON (`email`/`password`) ou form OAuth2 (`username`/`password`)."""
+    content_type = (request.headers.get("content-type") or "").lower()
+    email: str | None = None
+    password: str | None = None
+
+    if "application/json" in content_type:
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        if isinstance(body, dict):
+            email = body.get("email")
+            password = body.get("password")
+    else:
+        form = await request.form()
+        raw_user = form.get("username") or form.get("email")
+        email = str(raw_user) if raw_user is not None else None
+        raw_pw = form.get("password")
+        password = str(raw_pw) if raw_pw is not None else None
+
+    if not email or not password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email e senha são obrigatórios",
+        )
+
+    user = await authenticate_user(str(email), str(password), db)
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Email ou senha incorretos",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
-    # Create tokens
+
     access_token, refresh_token = create_token_pair(
         str(user.id),
         user.email,
-        user.role.value
+        user.role.value,
     )
-    
+
     return AuthResponse(
         user_id=str(user.id),
         email=user.email,
         role=user.role.value,
-        token=Token(
-            access_token=access_token,
-            refresh_token=refresh_token
-        )
+        access_token=access_token,
+        refresh_token=refresh_token,
     )
 
 
@@ -230,51 +321,38 @@ async def logout():
 
 
 @router.get("/me", response_model=UserProfileResponse)
-async def get_me(current_user: User = Depends(get_current_user)):
-    """Obter perfil do usuário atual"""
-    return UserProfileResponse(
-        id=str(current_user.id),
-        email=current_user.email,
-        full_name=current_user.full_name,
-        avatar_url=current_user.avatar_url,
-        language=current_user.language,
-        timezone=current_user.timezone,
-        role=current_user.role.value,
-        is_verified=current_user.is_verified,
-        created_at=current_user.created_at
-    )
+async def get_me(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Obter perfil do usuário atual com telemetria Omega"""
+    return await _build_user_profile_response(current_user, db)
 
 
 @router.put("/me", response_model=UserProfileResponse)
 async def update_me(
-    request: UpdateProfileRequest,
+    payload: UpdateProfileRequest,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Atualizar perfil do usuário atual"""
-    if request.full_name is not None:
-        current_user.full_name = request.full_name
-    if request.avatar_url is not None:
-        current_user.avatar_url = request.avatar_url
-    if request.language is not None:
-        current_user.language = request.language
-    if request.timezone is not None:
-        current_user.timezone = request.timezone
-    
+    data = payload.model_dump(exclude_unset=True)
+    for key in ("language", "timezone"):
+        if key in data and data[key] is None:
+            del data[key]
+    if "full_name" in data:
+        current_user.full_name = data["full_name"]
+    if "avatar_url" in data:
+        current_user.avatar_url = data["avatar_url"]
+    if "language" in data:
+        current_user.language = data["language"]
+    if "timezone" in data:
+        current_user.timezone = data["timezone"]
+
     await db.commit()
     await db.refresh(current_user)
-    
-    return UserProfileResponse(
-        id=str(current_user.id),
-        email=current_user.email,
-        full_name=current_user.full_name,
-        avatar_url=current_user.avatar_url,
-        language=current_user.language,
-        timezone=current_user.timezone,
-        role=current_user.role.value,
-        is_verified=current_user.is_verified,
-        created_at=current_user.created_at
-    )
+
+    return await _build_user_profile_response(current_user, db)
 
 
 @router.put("/me/password")
@@ -419,12 +497,14 @@ async def request_organization_access(
 # --- Password Reset Endpoints ---
 
 @router.post("/forgot-password", response_model=dict)
+@limiter.limit("3/minute")
 async def forgot_password(
-    request: ForgotPasswordRequest,
+    request: Request,
+    payload: ForgotPasswordRequest,
     db: AsyncSession = Depends(get_db)
 ):
     """Solicitar recuperação de senha"""
-    normalized_email = request.email.strip().lower()
+    normalized_email = payload.email.strip().lower()
 
     result = await db.execute(
         select(User).where(func.lower(User.email) == normalized_email)

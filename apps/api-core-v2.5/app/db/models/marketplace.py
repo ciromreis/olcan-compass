@@ -9,7 +9,7 @@ from datetime import datetime, timezone, date
 from decimal import Decimal
 
 from sqlalchemy import DateTime, String, Text, ForeignKey, JSON, Enum, Float, Integer, Boolean, Date, Numeric
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
@@ -115,6 +115,10 @@ class ProviderProfile(Base):
     profile_video_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     portfolio_links: Mapped[list] = mapped_column(JSON, default=list)
     
+    # Stripe Connect
+    stripe_connect_account_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    stripe_connect_onboarding_complete: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+
     # Application
     application_answers: Mapped[dict | None] = mapped_column(JSON, nullable=True)  # Their responses to vetting questions
     reviewed_by_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
@@ -123,6 +127,9 @@ class ProviderProfile(Base):
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+    # Relationships
+    user = relationship("User", foreign_keys=[user_id], back_populates="provider_profile")
 
 
 class ProviderCredential(Base):
@@ -276,6 +283,9 @@ class Booking(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
+    # Relationships
+    client = relationship("User", foreign_keys=[client_id], back_populates="bookings_as_client")
+
 
 class Review(Base):
     """Reviews and ratings for completed bookings"""
@@ -312,6 +322,9 @@ class Review(Base):
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    
+    # Relationships
+    client = relationship("User", foreign_keys=[client_id], back_populates="reviews")
 
 
 class Conversation(Base):

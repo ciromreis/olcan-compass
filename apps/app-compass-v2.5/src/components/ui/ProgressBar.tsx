@@ -35,7 +35,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     primary: 'bg-gradient-to-r from-companion-primary to-companion-secondary',
     secondary: 'bg-gradient-to-r from-blue-500 to-purple-500',
     success: 'bg-gradient-to-r from-green-500 to-emerald-500',
-    warning: 'bg-gradient-to-r from-yellow-500 to-orange-500',
+    warning: 'bg-gradient-to-r from-slate-500 to-slate-500',
     error: 'bg-gradient-to-r from-red-500 to-pink-500'
   }
 

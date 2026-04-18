@@ -10,7 +10,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Flame, Shield, AlertTriangle, Trophy, Calendar } from 'lucide-react'
-import { GlassCard, GlassButton } from '@/components/ui'
+import { GlassCard } from '@/components/ui'
 
 interface StreakVisualizerProps {
   currentStreak: number
@@ -190,12 +190,12 @@ export function StreakVisualizer({
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-start gap-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 mb-4"
+            className="flex items-start gap-3 p-3 rounded-xl bg-slate-500/10 border border-slate-500/20 mb-4"
           >
-            <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+            <AlertTriangle className="w-5 h-5 text-slate-400 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-amber-400">Streak in danger!</p>
-              <p className="text-xs text-amber-300/80">
+              <p className="text-sm font-medium text-slate-400">Streak in danger!</p>
+              <p className="text-xs text-slate-300/80">
                 {hoursUntilReset} hours left to maintain your streak
               </p>
             </div>
@@ -308,10 +308,10 @@ export function StreakBadge({
 /**
  * Streak calendar visualization
  */
-export function StreakCalendar({ 
-  streakDays,
+export function StreakCalendar({
+  streakDays: _streakDays,
   caredDays,
-}: { 
+}: {
   streakDays: number
   caredDays: boolean[] // Array of 7 days, true if care was given
 }) {
@@ -329,7 +329,7 @@ export function StreakCalendar({
           <div 
             className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-medium transition-all ${
               rotatedCared[i]
-                ? 'bg-orange-500 text-white'
+                ? 'bg-slate-500 text-white'
                 : 'bg-foreground/10 text-foreground/40'
             }`}
           >

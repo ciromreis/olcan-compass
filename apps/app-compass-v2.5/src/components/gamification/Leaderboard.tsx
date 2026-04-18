@@ -8,8 +8,8 @@
 'use client'
 
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Trophy, Medal, Award, ChevronRight, Crown, Star, Zap } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Trophy, Medal, Award, ChevronRight, Crown, Zap } from 'lucide-react'
 import { GlassCard, GlassButton } from '@/components/ui'
 import { AuraVisual } from '@/components/aura/AuraVisual'
 import Link from 'next/link'
@@ -61,7 +61,7 @@ export function Leaderboard({
   onTypeChange,
   onPeriodChange,
 }: LeaderboardProps) {
-  const [selectedEntry, setSelectedEntry] = useState<LeaderboardEntry | null>(null)
+  const [_selectedEntry, _setSelectedEntry] = useState<LeaderboardEntry | null>(null)
 
   const podium = entries.slice(0, 3)
   const rest = entries.slice(3)
@@ -73,7 +73,7 @@ export function Leaderboard({
       <GlassCard className="p-8 rounded-[3rem] bg-bone-50/20 border border-bone-500/10 backdrop-blur-xl">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
           <div>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-caption font-semibold uppercase tracking-wide text-gold-600 mb-4">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-steel-500/10 border border-steel-500/20 text-caption font-semibold uppercase tracking-wide text-steel-600 mb-4">
               <Trophy className="w-4 h-4" />
               Arena de Prestígio
             </div>
@@ -83,7 +83,7 @@ export function Leaderboard({
             <p className="text-sm text-ink-400 font-medium mt-3">
               Período: <span className="text-ink-950 font-semibold uppercase tracking-tight">{PERIOD_LABELS[period]}</span>
               {currentUserRank && (
-                <span className="ml-3 text-gold-600 font-semibold">
+                <span className="ml-3 text-steel-600 font-semibold">
                    • Sua Posição: #{currentUserRank}
                 </span>
               )}
@@ -114,7 +114,7 @@ export function Leaderboard({
                   onClick={() => onPeriodChange?.(p)}
                   className={`px-4 py-2.5 rounded-xl text-caption font-semibold uppercase tracking-tight transition-all duration-300 ${
                     period === p
-                      ? 'bg-gold-500 text-ink-950 shadow-xl'
+                      ? 'bg-steel-500 text-ink-950 shadow-xl'
                       : 'text-ink-300 hover:text-ink-950'
                   }`}
                 >
@@ -130,7 +130,7 @@ export function Leaderboard({
       {podium.length > 0 && (
         <div className="flex justify-center items-end gap-6 md:gap-12 py-12 relative">
           {/* Background Highlight */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[80%] h-64 bg-gold-500/5 blur-[120px] rounded-full pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[80%] h-64 bg-steel-500/5 blur-[120px] rounded-full pointer-events-none" />
 
           {/* 2nd place */}
           {podium[1] && (
@@ -157,7 +157,7 @@ export function Leaderboard({
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-xl font-display text-ink-950 group-hover:text-gold-500 transition-colors uppercase tracking-tight">{podium[1].username}</div>
+                <div className="text-xl font-display text-ink-950 group-hover:text-steel-500 transition-colors uppercase tracking-tight">{podium[1].username}</div>
                 <div className="text-caption font-semibold text-ink-300 uppercase tracking-widest mt-1">Nível {podium[1].level}</div>
               </div>
             </motion.div>
@@ -174,7 +174,7 @@ export function Leaderboard({
                 <motion.div
                   animate={{ y: [0, -15, 0] }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  className="w-32 h-32 rounded-[2rem] bg-ink-950 border-4 border-gold-500 shadow-glass flex items-center justify-center overflow-hidden scale-110"
+                  className="w-32 h-32 rounded-[2rem] bg-ink-950 border-4 border-steel-500 shadow-glass flex items-center justify-center overflow-hidden scale-110"
                 >
                   <AuraVisual 
                     evolutionStage={podium[0].companionStage} 
@@ -186,16 +186,16 @@ export function Leaderboard({
                     energy={100}
                   />
                 </motion.div>
-                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-gold-500 drop-shadow-lg">
+                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-steel-500 drop-shadow-lg">
                   <Crown className="w-12 h-12 fill-current" />
                 </div>
-                <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-14 h-14 rounded-full bg-gold-500 border-4 border-ink-950 flex items-center justify-center shadow-2xl">
+                <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-14 h-14 rounded-full bg-steel-500 border-4 border-ink-950 flex items-center justify-center shadow-2xl">
                   <Trophy className="w-7 h-7 text-ink-950" />
                 </div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-display text-ink-950 uppercase tracking-tighter leading-none">{podium[0].username}</div>
-                <div className="inline-flex items-center gap-2 mt-2 px-3 py-1 rounded-full bg-gold-500/10 border border-gold-500/20 text-caption font-semibold text-gold-600 uppercase tracking-widest">
+                <div className="inline-flex items-center gap-2 mt-2 px-3 py-1 rounded-full bg-steel-500/10 border border-steel-500/20 text-caption font-semibold text-steel-600 uppercase tracking-widest">
                   Campeão do Ciclo
                 </div>
               </div>
@@ -211,7 +211,7 @@ export function Leaderboard({
               className="flex flex-col items-center group"
             >
               <div className="relative mb-6">
-                <div className="w-20 h-20 rounded-2xl bg-white border-2 border-amber-100 shadow-glass flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform duration-500">
+                <div className="w-20 h-20 rounded-2xl bg-white border-2 border-slate-100 shadow-glass flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform duration-500">
                   <AuraVisual 
                     evolutionStage={podium[2].companionStage} 
                     archetype="global_nomad"
@@ -222,12 +222,12 @@ export function Leaderboard({
                     energy={100}
                   />
                 </div>
-                <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full bg-amber-50 border-2 border-amber-200 flex items-center justify-center shadow-lg">
-                  <Award className="w-4 h-4 text-amber-600" />
+                <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full bg-slate-50 border-2 border-slate-200 flex items-center justify-center shadow-lg">
+                  <Award className="w-4 h-4 text-slate-600" />
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-display text-ink-950 group-hover:text-gold-500 transition-colors uppercase tracking-tight">{podium[2].username}</div>
+                <div className="text-lg font-display text-ink-950 group-hover:text-steel-500 transition-colors uppercase tracking-tight">{podium[2].username}</div>
                 <div className="text-caption font-semibold text-ink-300 uppercase tracking-widest mt-1">Nível {podium[2].level}</div>
               </div>
             </motion.div>
@@ -244,12 +244,12 @@ export function Leaderboard({
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
-              className={`flex items-center gap-6 p-6 hover:bg-gold-500/5 transition-all duration-500 cursor-pointer group ${
-                entry.isCurrentUser ? 'bg-gold-500/10' : ''
+              className={`flex items-center gap-6 p-6 hover:bg-steel-500/5 transition-all duration-500 cursor-pointer group ${
+                entry.isCurrentUser ? 'bg-steel-500/10' : ''
               }`}
-              onClick={() => setSelectedEntry(entry)}
+              onClick={() => _setSelectedEntry(entry)}
             >
-              <div className="w-12 text-center font-display text-2xl text-ink-200 group-hover:text-gold-500 transition-colors">
+              <div className="w-12 text-center font-display text-2xl text-ink-200 group-hover:text-steel-500 transition-colors">
                 #{entry.rank}
               </div>
 
@@ -270,7 +270,7 @@ export function Leaderboard({
                 <div className="text-lg font-display text-ink-950 uppercase tracking-tight truncate flex items-center gap-3">
                   {entry.username}
                   {entry.isCurrentUser && (
-                    <span className="px-2 py-0.5 rounded bg-gold-500 text-ink-950 text-[8px] font-semibold uppercase tracking-tight">VOCÊ</span>
+                    <span className="px-2 py-0.5 rounded bg-steel-500 text-ink-950 text-[8px] font-semibold uppercase tracking-tight">VOCÊ</span>
                   )}
                 </div>
                 <div className="text-caption font-semibold text-ink-300 uppercase tracking-widest mt-1">
@@ -293,16 +293,16 @@ export function Leaderboard({
                 </div>
               </div>
 
-              <ChevronRight className="w-6 h-6 text-bone-500 group-hover:text-gold-500 group-hover:translate-x-1 transition-all" />
+              <ChevronRight className="w-6 h-6 text-bone-500 group-hover:text-steel-500 group-hover:translate-x-1 transition-all" />
             </motion.div>
           ))}
         </div>
 
         {/* Floating User Recap if not in top list */}
         {currentUserEntry && !entries.slice(0, 10).find(e => e.isCurrentUser) && (
-          <div className="sticky bottom-0 bg-ink-950 text-white p-6 shadow-2xl border-t border-gold-500/20">
+          <div className="sticky bottom-0 bg-ink-950 text-white p-6 shadow-2xl border-t border-steel-500/20">
             <div className="flex items-center gap-6">
-              <div className="w-12 text-center font-display text-2xl text-gold-500">
+              <div className="w-12 text-center font-display text-2xl text-steel-500">
                 #{currentUserEntry.rank}
               </div>
               <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center overflow-hidden border border-white/10">
@@ -324,9 +324,9 @@ export function Leaderboard({
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right hidden sm:block">
-                  <p className="text-caption font-semibold text-gold-500 uppercase tracking-widest">Em Ascensão</p>
+                  <p className="text-caption font-semibold text-steel-500 uppercase tracking-widest">Em Ascensão</p>
                 </div>
-                <Zap className="w-6 h-6 text-gold-500 animate-pulse" />
+                <Zap className="w-6 h-6 text-steel-500 animate-pulse" />
               </div>
             </div>
           </div>
@@ -352,10 +352,10 @@ export function LeaderboardPreview({
     <GlassCard className="p-8 rounded-[2.5rem] bg-white border border-bone-500/10 shadow-sm group">
       <div className="flex items-center justify-between mb-8">
         <h3 className="text-xl font-display text-ink-950 flex items-center gap-3 uppercase tracking-tight">
-          <Trophy className="w-6 h-6 text-gold-500" />
+          <Trophy className="w-6 h-6 text-steel-500" />
           Mestres da Aura
         </h3>
-        <div className="px-3 py-1 rounded-lg bg-gold-500/10 text-gold-600 text-caption font-semibold uppercase tracking-widest">
+        <div className="px-3 py-1 rounded-lg bg-steel-500/10 text-steel-600 text-caption font-semibold uppercase tracking-widest">
           Sua Posição: #{currentUserRank}
         </div>
       </div>
@@ -364,9 +364,9 @@ export function LeaderboardPreview({
         {top3.map((entry) => (
           <div
             key={entry.userId}
-            className="flex items-center gap-4 p-4 rounded-3xl bg-bone-50/50 border border-bone-500/5 hover:border-gold-500/20 transition-all group/item"
+            className="flex items-center gap-4 p-4 rounded-3xl bg-bone-50/50 border border-bone-500/5 hover:border-steel-500/20 transition-all group/item"
           >
-            <div className="w-10 text-center font-display text-xl text-ink-200 group-hover/item:text-gold-500 transition-colors">
+            <div className="w-10 text-center font-display text-xl text-ink-200 group-hover/item:text-steel-500 transition-colors">
               #{entry.rank}
             </div>
             <div className="w-10 h-10 rounded-lg bg-ink-950/5 flex items-center justify-center overflow-hidden border border-bone-500/10">
@@ -391,7 +391,7 @@ export function LeaderboardPreview({
       </div>
 
       <Link href="/aura/leaderboard">
-        <GlassButton className="w-full h-14 mt-8 rounded-2xl bg-ink-950 text-white font-semibold text-caption uppercase tracking-widest hover:bg-gold-500 hover:text-ink-950 transition-all shadow-lg group">
+        <GlassButton className="w-full h-14 mt-8 rounded-2xl bg-ink-950 text-white font-semibold text-caption uppercase tracking-widest hover:bg-steel-500 hover:text-ink-950 transition-all shadow-lg group">
           Ver Ranking Completo
           <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
         </GlassButton>

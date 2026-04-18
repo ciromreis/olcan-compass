@@ -61,7 +61,7 @@ export function AssetCard({ asset }: AssetCardProps) {
     <div className={cn(
       "group relative flex flex-col overflow-hidden rounded-2xl border bg-white/90 p-4 transition-all hover:-translate-y-1 hover:shadow-lg",
       asset.rarity === 'mythic' ? "border-red-200 bg-gradient-to-br from-white to-red-50" :
-      asset.rarity === 'legendary' ? "border-amber-200 bg-gradient-to-br from-white to-amber-50" :
+      asset.rarity === 'legendary' ? "border-slate-200 bg-gradient-to-br from-white to-slate-50" :
       asset.rarity === 'epic' ? "border-purple-200 bg-gradient-to-br from-white to-purple-50" :
       "border-silver-200"
     )}>
@@ -72,7 +72,7 @@ export function AssetCard({ asset }: AssetCardProps) {
           `text-[${rarityInfo.color}]`
         )}>
           {getRarityIcon()}
-          {rarityInfo.name}
+          {rarityInfo.label}
         </span>
         <span className="rounded-lg bg-silver-50 px-2 py-0.5 text-[10px] font-semibold text-text-muted">
           {asset.assetType.toUpperCase()}
@@ -98,18 +98,24 @@ export function AssetCard({ asset }: AssetCardProps) {
 
       {/* Stats/Abilities (Optional) */}
       <div className="mt-4 flex flex-1 flex-col gap-2">
-        {asset.assetType === 'skill' && asset.metadata?.powerLevel && (
+        {asset.assetType === 'skill' && !!asset.metadata?.powerLevel && (
           <div className="flex items-center justify-between rounded-lg bg-silver-50 px-3 py-1.5 text-caption">
             <span className="text-text-secondary">Poder</span>
-            <span className="font-bold text-brand-500">Lv.{asset.metadata.powerLevel}</span>
+            <span className="font-bold text-brand-500">Lv.{String(asset.metadata.powerLevel)}</span>
           </div>
         )}
       </div>
 
       {/* Footer / CTA */}
       <div className="mt-4 flex flex-col gap-2 border-t border-silver-100 pt-4">
-        <div className="flex items-center justify-center gap-1.5 font-heading text-body-sm font-bold text-brand-500">
-          {formatCurrency(asset.price, asset.currency)}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5 font-heading text-body-sm font-bold text-brand-500">
+            {formatCurrency(asset.price, asset.currency)}
+          </div>
+          <div className="flex items-center gap-1 text-steel-500">
+            <Sparkles className="h-3.5 w-3.5" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">+{Math.round(asset.price * 5)} XP</span>
+          </div>
         </div>
         
         <Button

@@ -46,7 +46,7 @@ export function VoiceRecorder({
 
   const handleStop = async () => {
     try {
-      const { blob, metadata } = await stopRecording();
+      const { blob, metadata: _metadata } = await stopRecording();
       setAudioBlob(blob);
       setAudioURL(URL.createObjectURL(blob));
     } catch (error) {

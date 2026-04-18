@@ -1,72 +1,66 @@
 "use client";
 
-/**
- * APP LAYOUT v2.5 - METAMODERN REALIGNMENT
- * Features: Floating Navigation Deck, Liquid Glass Aesthetics, Performance Optimized Syncing
- */
- 
-// Keep demo mode OFF in production.
-// For this client component we rely on `NEXT_PUBLIC_DEMO_MODE` so Next can inline the value.
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { monitor } from "@/lib/monitoring";
-import {
-  Settings,
-  User,
-  Menu,
-  X,
-  LogOut,
-  Bell,
-  Search,
-  ChevronRight,
-  LayoutDashboard,
-  Compass,
-  Zap,
-  Shield,
-  Star,
-  Layers,
-  FileText,
-  Users,
-  Briefcase,
-  History,
-  MessageSquare,
-} from "lucide-react";
+import { Bell, ChevronRight, Compass, LogOut, Menu, PanelLeft, PanelRight, PanelRightClose, Search, Settings } from "lucide-react";
+import type { AppNavItem } from "@/lib/navigation";
 import { motion } from "framer-motion";
-import { useAuthStore } from "@/stores/auth";
-import { useApplicationStore } from "@/stores/applications";
-import { useMarketplaceStore } from "@/stores/canonicalMarketplaceProviderStore";
-import { useRouteStore } from "@/stores/routes";
-import { useSprintStore } from "@/stores/sprints";
-import { useInterviewStore } from "@/stores/interviews";
-import { useForgeStore } from "@/stores/forge";
-import { apiClient } from "@/lib/api-client";
-import { Avatar, Input } from "@/components/ui";
+import { Avatar } from "@/components/ui";
+import AuraRail from "@/components/aura/AuraRail";
+import { AuraFloatingChat } from "@/components/aura/AuraFloatingChat";
+import { MarketplaceXPListener } from "@/components/aura/MarketplaceXPListener";
+import { AuraNotificationSystem } from "@/components/aura/AuraNotificationSystem";
+import { GamificationIntegration, CelebrationToastContainer } from "@/components/gamification";
+import { CompanionSidebar } from "@/components/companion/CompanionSidebar";
 import { ErrorBoundary } from "@/components/enterprise/ErrorBoundary";
+import { AppCommandPalette } from "@/components/layout/AppCommandPalette";
 import { useHydration } from "@/hooks";
-import { buildLoginRedirect } from "@/lib/auth-redirect";
+import { apiClient } from "@/lib/api-client";
 import {
+  getBottomItemsForRole,
   getNavigationSectionsForRole,
   isNavItemActive,
   MOBILE_PRIMARY_ITEMS,
 } from "@/lib/navigation";
+import { monitor } from "@/lib/monitoring";
+import { trackProductPageView } from "@/lib/product-analytics";
+import { initGamificationBridge, initCompanionEvolutionBridge } from "@/lib/event-bus";
+import { useApplicationStore } from "@/stores/applications";
+import { useAuthStore } from "@/stores/auth";
+import { useForgeStore } from "@/stores/forge";
+import { useInterviewStore } from "@/stores/interviews";
+import { useMarketplaceStore } from "@/stores/canonicalMarketplaceProviderStore";
+import { useRouteStore } from "@/stores/routes";
+import { useSprintStore } from "@/stores/sprints";
+import { usePsychStore } from "@/stores/psych";
 
 const BREADCRUMB_LABELS: Record<string, string> = {
   dashboard: "Painel",
-  profile: "Perfil",
-  psych: "Aura",
-  results: "Diagnóstico",
   routes: "Caminhos",
   readiness: "Prontidão",
-  gaps: "Lacunas",
+  sprints: "Sprints",
+  applications: "Candidaturas",
+  tasks: "Tarefas",
   forge: "Documentos",
   interviews: "Sessões",
-  applications: "Candidaturas",
-  marketplace: "Mercado",
+  atlas: "Atlas",
+  wiki: "Diagnóstico",
+  aura: "Aura",
+  profile: "Perfil",
   settings: "Ajustes",
+  community: "Rede",
+  onboarding: "Integração",
+  tools: "Ferramentas",
+  documents: "Documentos",
+  subscription: "Assinatura",
+  admin: "Admin",
+  provider: "Profissional",
+  org: "Organização",
+  guilds: "Guildas",
+  "forge-lab": "Forge Lab",
 };
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -74,309 +68,508 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout, fetchProfile } = useAuthStore();
-  
-  const effectiveUser = useMemo(() => (DEMO_MODE ? {
-    id: "demo-user",
-    full_name: "Operador de Sistema",
-    email: "demo@olcan.com",
-    role: "user",
-    avatar_url: null,
-  } : user), [user]);
-
-  // Pull each sync fn individually — stable selector references prevent re-render loops
   const syncApplications = useApplicationStore((state) => state.syncFromApi);
   const syncMarketplace = useMarketplaceStore((state) => state.syncFromApi);
   const syncRoutes = useRouteStore((state) => state.syncFromApi);
   const syncSprint = useSprintStore((state) => state.syncFromApi);
   const syncInterview = useInterviewStore((state) => state.syncFromApi);
   const syncForge = useForgeStore((state) => state.syncFromApi);
+  const syncPsych = usePsychStore((state) => state.syncFromApi);
+  const syncStarted = useRef(false);
+  const productPageViewSentForPath = useRef<string | null>(null);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [authBootstrapDone, setAuthBootstrapDone] = useState(false);
-  const syncStarted = useRef(false);
-  const userMenuRef = useRef<HTMLDivElement>(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [auraRailOpen, setAuraRailOpen] = useState(true);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [submenu, setSubmenu] = useState<{ item: AppNavItem; top: number; left: number } | null>(null);
+  const submenuTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Auth Bootstrap Logic
+  const openSubmenu = useCallback((item: AppNavItem, e: React.MouseEvent) => {
+    if (!item.children?.length) return;
+    if (submenuTimer.current) clearTimeout(submenuTimer.current);
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    setSubmenu({ item, top: rect.top, left: rect.right + 8 });
+  }, []);
+
+  const closeSubmenu = useCallback(() => {
+    submenuTimer.current = setTimeout(() => setSubmenu(null), 120);
+  }, []);
+
+  const keepSubmenu = useCallback(() => {
+    if (submenuTimer.current) clearTimeout(submenuTimer.current);
+  }, []);
+
+  const effectiveUser = useMemo(
+    () =>
+      DEMO_MODE
+        ? {
+            id: "demo-user",
+            full_name: "Operador de Sistema",
+            email: "demo@olcan.com",
+            role: "user",
+            avatar_url: null,
+          }
+        : user,
+    [user]
+  );
+
+  const navSections = getNavigationSectionsForRole(effectiveUser?.role);
+  const bottomNavItems = getBottomItemsForRole(effectiveUser?.role);
+
+  useEffect(() => {
+    const unsubGamification = initGamificationBridge();
+    const unsubCompanion = initCompanionEvolutionBridge();
+    return () => {
+      unsubGamification();
+      unsubCompanion();
+    };
+  }, []);
+
   useEffect(() => {
     if (!hydrated) return;
-    
+
     const bootstrap = async () => {
       if (DEMO_MODE) {
         setAuthBootstrapDone(true);
         return;
       }
 
-      const hasSession = !!apiClient.getToken();
-      
+      const hasSession = Boolean(apiClient.getToken());
       if (hasSession && !user) {
         try {
           const success = await fetchProfile();
-          if (!success) {
-            logout();
-          }
-        } catch (err) {
-          console.error("Auth bootstrap failure:", err);
+          if (!success) logout();
+        } catch {
           logout();
         }
       }
-      
+
       setAuthBootstrapDone(true);
     };
 
-    bootstrap();
+    void bootstrap();
   }, [hydrated, user, fetchProfile, logout]);
-
-  // Layout UI State
-  const navSections = getNavigationSectionsForRole(effectiveUser?.role);
 
   useEffect(() => {
     if (!hydrated || !authBootstrapDone || syncStarted.current) return;
     syncStarted.current = true;
-    
-    // Batch sync to prevent waterfall and multiple re-renders
-    const performSync = async () => {
-      try {
-        await Promise.allSettled([
-          syncApplications(),
-          syncMarketplace(),
-          syncRoutes(),
-          syncSprint(),
-          syncInterview(),
-          syncForge(),
-        ]);
-      } catch (err) {
-        console.error("Sync error:", err);
-      }
-    };
-    performSync();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authBootstrapDone, hydrated]);
-
+    void Promise.allSettled([
+      syncApplications(),
+      syncMarketplace(),
+      syncRoutes(),
+      syncSprint(),
+      syncInterview(),
+      syncForge(),
+      syncPsych(),
+    ]);
+  }, [
+    authBootstrapDone,
+    hydrated,
+    syncApplications,
+    syncMarketplace,
+    syncRoutes,
+    syncSprint,
+    syncInterview,
+    syncForge,
+    syncPsych,
+  ]);
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
-        setUserMenuOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Track page navigation
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    monitor.trackUserAction('page_view', { page: pathname });
+    if (typeof window === "undefined") return;
+    monitor.trackUserAction("page_view", { page: pathname });
   }, [pathname]);
 
-  const handleLogout = () => {
-    logout();
-    router.push("/login");
-  };
+  useEffect(() => {
+    if (!hydrated || !authBootstrapDone || DEMO_MODE) return;
+    if (!user) return;
+    const dedupeKey = `${user.id}:${pathname}`;
+    if (productPageViewSentForPath.current === dedupeKey) return;
+    productPageViewSentForPath.current = dedupeKey;
+    void trackProductPageView(pathname);
+  }, [hydrated, authBootstrapDone, user, pathname]);
 
-  // Build breadcrumbs
-  const segments = pathname.split("/").filter(Boolean);
-  const breadcrumbs = segments.map((seg, i) => {
-    const href = "/" + segments.slice(0, i + 1).join("/");
-    const label = BREADCRUMB_LABELS[seg] || (seg.charAt(0).toUpperCase() + seg.slice(1));
-    return { href, label };
-  });
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setCommandPaletteOpen((open) => !open);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  const breadcrumbs = pathname
+    .split("/")
+    .filter(Boolean)
+    .map((segment, index, all) => ({
+      href: `/${all.slice(0, index + 1).join("/")}`,
+      label: BREADCRUMB_LABELS[segment] || segment,
+    }));
 
   if (!hydrated || !authBootstrapDone) {
     return (
-      <div className="min-h-screen bg-surface-bg flex flex-col items-center justify-center p-8">
-        <div className="w-full max-w-sm space-y-4 text-center">
-          <div className="inline-block w-12 h-12 rounded-2xl bg-brand-100 border border-brand-200 animate-pulse" />
-          <div className="space-y-2">
-            <div className="h-4 w-32 bg-ink-100 rounded-full mx-auto animate-pulse" />
-            <div className="h-3 w-48 bg-ink-50 rounded-full mx-auto animate-pulse opacity-50" />
-          </div>
+      <div className="flex min-h-screen items-center justify-center bg-surface-bg p-8">
+        <div className="space-y-4 text-center">
+          <div className="mx-auto h-12 w-12 animate-pulse rounded-2xl bg-slate-200" />
+          <div className="h-4 w-40 animate-pulse rounded-full bg-slate-200" />
+          <div className="h-3 w-56 animate-pulse rounded-full bg-slate-100" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-surface-bg flex text-ink-500 font-sans selection:bg-brand-100">
-      {/* Liquid Mesh Background Layer */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.03] bg-noise-texture z-0" />
-      
-      {/* Mobile overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-ink-500/10 backdrop-blur-sm z-40 lg:hidden"
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      {/* Background decoration neutralized for High-End look */}
+
+      {sidebarOpen ? (
+        <button
+          type="button"
+          className="fixed inset-0 z-40 bg-slate-950/10 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
+          aria-label="Fechar menu"
         />
-      )}
+      ) : null}
 
-      {/* FLOATING NAVIGATION DECK (The New Sidebar) */}
-      <aside
-        className={`
-          fixed lg:sticky top-0 left-0 z-50 h-screen w-72 lg:w-80 flex flex-col p-4 lg:p-6
-          transition-all duration-500 ease-soft
-          ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-        `}
-      >
-        <div className="flex-1 flex flex-col bg-surface-card/70 backdrop-blur-3xl border border-white/60 shadow-glass rounded-[2.5rem] overflow-hidden">
-          {/* Deck Header */}
-          <div className="px-6 py-8 border-b border-ink-500/5">
-            <Link href="/dashboard" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-2xl bg-ink-500 flex items-center justify-center transition-transform group-hover:scale-110 shadow-lg">
-                <Compass className="text-white w-6 h-6" />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-display text-xl tracking-tight text-ink-500">Olcan Compass</span>
-                <span className="text-caption uppercase tracking-wide text-ink-300 font-bold opacity-70">Core Engine 2.5</span>
-              </div>
-            </Link>
-          </div>
-
-          {/* Nav Items Scrollable Area */}
-          <nav className="flex-1 px-4 py-6 space-y-8 overflow-y-auto no-scrollbar">
-            {navSections.map((section) => (
-              <div key={section.id} className="space-y-2">
-                <div className="px-3 mb-4">
-                  <p className="text-caption font-bold uppercase tracking-[0.25em] text-ink-300 opacity-60">
-                    {section.label}
-                  </p>
+      <div className={`mx-auto flex min-h-screen max-w-[1700px] gap-4 px-3 py-3 lg:px-5 lg:py-5 transition-all duration-300`}>
+        <aside
+          className={`fixed inset-y-3 left-3 z-50 rounded-[2rem] border border-white/70 bg-white/82 p-4 shadow-[0_20px_70px_rgba(15,23,42,0.08)] backdrop-blur-2xl transition-all duration-300 lg:sticky lg:top-5 lg:translate-x-0 ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-[120%]"
+          } ${sidebarCollapsed ? "lg:w-[4.5rem]" : "w-[17rem]"}`}
+        >
+          <div className="flex h-full flex-col">
+            {/* Logo + collapse toggle */}
+            <div className={`border-b border-slate-100 pb-4 ${sidebarCollapsed ? "px-0 flex justify-center" : "px-2"}`}>
+              {sidebarCollapsed ? (
+                <button
+                  type="button"
+                  onClick={() => setSidebarCollapsed(false)}
+                  className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-lg hover:bg-slate-800 transition-colors"
+                  title="Expandir menu"
+                >
+                  <Compass className="h-5 w-5" />
+                </button>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <Link href="/dashboard" className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-lg">
+                      <Compass className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-base font-semibold tracking-tight text-slate-950">Olcan Compass</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
+                        v2.5
+                      </p>
+                    </div>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setSidebarCollapsed(true)}
+                    className="hidden lg:flex h-8 w-8 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors"
+                    title="Recolher menu"
+                  >
+                    <PanelLeft className="h-4 w-4" />
+                  </button>
                 </div>
-                <div className="space-y-1">
-                  {section.items.map((item) => {
-                    const active = isNavItemActive(pathname, item);
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setSidebarOpen(false)}
-                        className={`
-                          group flex items-center gap-4 px-4 py-3 rounded-2xl text-sm font-medium
-                          transition-all duration-300 relative
-                          ${
-                            active
-                              ? "bg-ink-500 text-white shadow-xl"
-                              : "text-ink-400 hover:bg-ink-500/5 hover:text-ink-500"
-                          }
-                        `}
-                      >
-                        <item.icon
-                          className={`w-5 h-5 flex-shrink-0 transition-transform group-hover:scale-110 ${
-                            active ? "text-white" : "text-ink-300 group-hover:text-ink-500"
-                          }`}
-                        />
-                        <span className="flex-1 truncate tracking-tight">{item.label}</span>
-                        {active && (
-                          <motion.div 
-                            layoutId="active-pill"
-                            className="bg-white w-1.5 h-1.5 rounded-full"
-                          />
-                        )}
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </nav>
-
-          {/* User Profile Hook (Integrated in Deck) */}
-          <div className="mt-auto p-4 border-t border-ink-500/5 bg-ink-500/5">
-            <div className="flex items-center gap-3 p-3 rounded-[1.5rem] bg-white/40 border border-white/60">
-              <Avatar name={effectiveUser?.full_name} size="sm" className="ring-2 ring-brand-200" />
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-ink-500 truncate">{effectiveUser?.full_name}</p>
-                <p className="text-caption text-ink-300 font-medium truncate">Assinatura Basic</p>
-              </div>
-              <button 
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="p-1.5 rounded-xl hover:bg-ink-500/5 text-ink-300"
-              >
-                <Settings className="w-4 h-4" />
-              </button>
+              )}
             </div>
+
+            <nav className={`flex-1 overflow-y-auto py-4 ${sidebarCollapsed ? "space-y-1 px-0" : "space-y-6 px-1"}`}>
+              {sidebarCollapsed ? (
+                // Icon-only mode
+                <>
+                  {navSections.flatMap((section) =>
+                    section.items.map((item) => {
+                      const active = isNavItemActive(pathname, item);
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setSidebarOpen(false)}
+                          title={item.label}
+                          className={`flex h-10 w-10 mx-auto items-center justify-center rounded-[1rem] transition-all ${
+                            active ? "bg-slate-950 text-white shadow-md" : "text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                          }`}
+                        >
+                          <item.icon className="h-4.5 w-4.5" />
+                        </Link>
+                      );
+                    })
+                  )}
+                </>
+              ) : (
+                // Full mode — sub-items shown in hover popover, not inline
+                navSections.map((section) => (
+                  <div key={section.id} className="space-y-0.5">
+                    <p className="px-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400 mb-1">
+                      {section.label}
+                    </p>
+                    {section.items.map((item) => {
+                      const active = isNavItemActive(pathname, item);
+                      const hasChildren = Boolean(item.children?.length);
+                      const childActive = hasChildren && item.children!.some((c) => pathname.startsWith(c.href) && c.href !== "/");
+                      return (
+                        <div
+                          key={item.href}
+                          onMouseEnter={(e) => openSubmenu(item, e)}
+                          onMouseLeave={closeSubmenu}
+                        >
+                          <Link
+                            href={item.href}
+                            onClick={() => setSidebarOpen(false)}
+                            className={`group flex items-center gap-3 rounded-[1.2rem] px-3 py-2.5 text-sm transition-all ${
+                              active
+                                ? "bg-slate-950 text-white shadow-lg"
+                                : childActive
+                                ? "bg-slate-100 text-slate-800"
+                                : "text-slate-600 hover:bg-slate-100 hover:text-slate-950"
+                            }`}
+                          >
+                            <item.icon
+                              className={`h-4 w-4 shrink-0 ${
+                                active ? "text-white" : "text-slate-400 group-hover:text-slate-700"
+                              }`}
+                            />
+                            <span className="font-semibold truncate flex-1">{item.label}</span>
+                            {hasChildren && (
+                              <ChevronRight
+                                className={`h-3 w-3 shrink-0 transition-colors ${
+                                  active ? "text-white/60" : "text-slate-300 group-hover:text-slate-500"
+                                }`}
+                              />
+                            )}
+                          </Link>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))
+              )}
+            </nav>
+
+            {!sidebarCollapsed && bottomNavItems.length > 0 ? (
+              <div className="space-y-1 border-t border-slate-100 px-1 pt-3">
+                {bottomNavItems.map((item) => {
+                  const active = isNavItemActive(pathname, item);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setSidebarOpen(false)}
+                      className={`group flex items-center gap-3 rounded-[1.2rem] px-3 py-2.5 text-sm transition-all ${
+                        active
+                          ? "bg-slate-950 text-white shadow-md"
+                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-950"
+                      }`}
+                    >
+                      <item.icon
+                        className={`h-4 w-4 ${active ? "text-white" : "text-slate-400 group-hover:text-slate-700"}`}
+                      />
+                      <span className="font-semibold">{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            ) : null}
+
+            <div className={`border-t border-slate-100 pt-3 ${sidebarCollapsed ? "flex justify-center" : ""}`}>
+              {sidebarCollapsed ? (
+                <button
+                  type="button"
+                  onClick={() => setUserMenuOpen((current) => !current)}
+                  className="flex h-10 w-10 items-center justify-center rounded-[1rem] text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors"
+                  title={effectiveUser?.full_name ?? "Conta"}
+                >
+                  <Avatar name={effectiveUser?.full_name} size="sm" />
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setUserMenuOpen((current) => !current)}
+                    className="flex w-full items-center gap-3 rounded-[1.3rem] border border-slate-200 bg-slate-50 px-3 py-3 text-left hover:bg-slate-100 transition-colors"
+                  >
+                    <Avatar name={effectiveUser?.full_name} size="sm" className="ring-2 ring-white" />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-slate-950">
+                        {effectiveUser?.full_name || "Conta Olcan"}
+                      </p>
+                      <p className="truncate text-xs text-slate-500">{effectiveUser?.email}</p>
+                    </div>
+                    <Settings className="h-4 w-4 text-slate-400" />
+                  </button>
+
+                  {userMenuOpen ? (
+                    <div className="mt-2 space-y-1 rounded-[1.2rem] border border-slate-200 bg-white p-2 text-sm shadow-sm">
+                      <Link href="/profile" className="block rounded-xl px-3 py-2 text-slate-600 hover:bg-slate-50">
+                        Perfil
+                      </Link>
+                      <Link href="/settings" className="block rounded-xl px-3 py-2 text-slate-600 hover:bg-slate-50">
+                        Ajustes
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          logout();
+                          router.push("/login");
+                        }}
+                        className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-rose-600 hover:bg-rose-50"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Sair
+                      </button>
+                    </div>
+                  ) : null}
+                </>
+              )}
+            </div>
+          </div>
+        </aside>
+
+        <div className="min-w-0 flex-1">
+          <div className={`grid gap-4 ${auraRailOpen ? "lg:grid-cols-[minmax(0,1fr)_22rem] xl:grid-cols-[minmax(0,1fr)_24rem]" : ""}`}>
+            <div className="min-w-0 space-y-4">
+              <header className="sticky top-3 z-30 rounded-[1.8rem] border border-white/70 bg-white/72 px-4 py-3 shadow-sm backdrop-blur-2xl lg:px-6">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setSidebarOpen(true)}
+                        className="rounded-2xl border border-slate-200 bg-white p-2 text-slate-600 lg:hidden"
+                      >
+                        <Menu className="h-5 w-5" />
+                      </button>
+                      <nav className="hidden flex-wrap items-center gap-2 text-sm lg:flex">
+                        <Link href="/dashboard" className="text-slate-400 transition-colors hover:text-slate-950">
+                          Olcan
+                        </Link>
+                        {breadcrumbs.map((crumb, index) => (
+                          <div key={crumb.href} className="flex items-center gap-2">
+                            <ChevronRight className="h-4 w-4 text-slate-300" />
+                            {index === breadcrumbs.length - 1 ? (
+                              <span className="font-semibold text-slate-950">{crumb.label}</span>
+                            ) : (
+                              <Link href={crumb.href} className="text-slate-400 transition-colors hover:text-slate-950">
+                                {crumb.label}
+                              </Link>
+                            )}
+                          </div>
+                        ))}
+                      </nav>
+                    </div>
+                    <p className="mt-2 text-xs uppercase tracking-[0.2em] text-slate-400 lg:hidden">
+                      {breadcrumbs[breadcrumbs.length - 1]?.label || "Today"}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      className="rounded-2xl border border-slate-200 bg-white p-2 text-slate-500 transition-colors hover:text-slate-950"
+                      title="Busca e navegação rápida (⌘K)"
+                      aria-label="Abrir busca e navegação rápida"
+                      onClick={() => setCommandPaletteOpen(true)}
+                    >
+                      <Search className="h-4.5 w-4.5" />
+                    </button>
+                    <button
+                      type="button"
+                      className="rounded-2xl border border-slate-200 bg-white p-2 text-slate-500 transition-colors hover:text-slate-950"
+                      title="Central de alertas (em breve)"
+                      aria-label="Alertas, recurso em breve"
+                      disabled
+                    >
+                      <Bell className="h-4.5 w-4.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAuraRailOpen((v) => !v)}
+                      className="hidden lg:flex rounded-2xl border border-slate-200 bg-white p-2 text-slate-500 transition-colors hover:text-slate-950"
+                      title={auraRailOpen ? "Esconder painel Aura" : "Mostrar painel Aura"}
+                    >
+                      {auraRailOpen ? <PanelRightClose className="h-4.5 w-4.5" /> : <PanelRight className="h-4.5 w-4.5" />}
+                    </button>
+                  </div>
+                </div>
+              </header>
+
+              <main className="min-w-0 pb-28">
+                <ErrorBoundary>
+                  <div className="animate-reveal rounded-[2rem] border border-white/70 bg-white/58 p-4 shadow-sm backdrop-blur-xl lg:p-6">
+                    {children}
+                  </div>
+                </ErrorBoundary>
+              </main>
+            </div>
+
+            {auraRailOpen && <AuraRail />}
           </div>
         </div>
-      </aside>
-
-      {/* MAIN VIEWPORT */}
-      <div className="flex-1 flex flex-col min-w-0 relative z-10">
-        {/* Floating Header Bar */}
-        <header className="sticky top-0 z-30 h-20 px-6 lg:px-12 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-2xl bg-white/60 border border-white/80 shadow-sm text-ink-500 hover:bg-white"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-
-            {/* Breadcrumbs — Minimalist */}
-            <nav className="hidden lg:flex items-center gap-3 text-sm font-medium">
-              <Link href="/dashboard" className="text-ink-300 hover:text-ink-500 transition-colors">Olcan</Link>
-              {breadcrumbs.map((crumb, i) => (
-                <div key={crumb.href} className="flex items-center gap-3">
-                  <ChevronRight className="w-4 h-4 text-ink-200" />
-                  <span className={`${i === breadcrumbs.length - 1 ? "text-ink-500 font-bold" : "text-ink-300 opacity-60"}`}>
-                    {crumb.label}
-                  </span>
-                </div>
-              ))}
-            </nav>
-          </div>
-
-          {/* Status Actions */}
-          <div className="flex items-center gap-3">
-            <button className="p-2.5 rounded-2xl bg-white/60 border border-white/80 text-ink-400 hover:text-ink-500 transition-all hover:shadow-sm">
-              <Search className="w-5 h-5" />
-            </button>
-            <button className="p-2.5 rounded-2xl bg-white/60 border border-white/80 text-ink-400 hover:text-ink-500 transition-all relative">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-brand-400 ring-2 ring-white" />
-            </button>
-            <button 
-              onClick={handleLogout}
-              className="lg:flex hidden items-center justify-center p-2.5 rounded-2xl bg-white/60 border border-white/80 text-ink-400 hover:text-error transition-all"
-              title="Sair"
-            >
-              <LogOut className="w-5 h-5" />
-            </button>
-          </div>
-        </header>
-
-        {/* Global Page Content Container */}
-        <main className="flex-1 px-6 pb-32 lg:px-12 pt-4 max-w-[1600px] mx-auto w-full">
-          <ErrorBoundary>
-            <div className="animate-reveal">
-              {children}
-            </div>
-          </ErrorBoundary>
-        </main>
-
-        {/* Mobile Navigation Dock (Bottom Glass) */}
-        <nav className="fixed inset-x-6 bottom-6 z-40 lg:hidden">
-          <div className="bg-ink-500/90 backdrop-blur-2xl px-6 py-4 rounded-[2rem] shadow-2xl border border-white/10 flex justify-between items-center">
-            {MOBILE_PRIMARY_ITEMS.map((item) => {
-              const active = isNavItemActive(pathname, item);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`relative flex flex-col items-center justify-center p-2 transition-transform duration-300 ${active ? "scale-110" : "opacity-60"}`}
-                >
-                  <item.icon className={`h-6 w-6 ${active ? "text-white" : "text-white"}`} />
-                  {active && (
-                    <motion.div 
-                      layoutId="mobile-active"
-                      className="absolute -bottom-1 w-1 h-1 rounded-full bg-white" 
-                    />
-                  )}
-                </Link>
-              );
-            })}
-          </div>
-        </nav>
       </div>
+
+      <nav className="fixed inset-x-4 bottom-4 z-40 lg:hidden">
+        <div className="flex items-center justify-between rounded-[2rem] border border-white/10 bg-slate-950/92 px-5 py-4 shadow-2xl backdrop-blur-2xl">
+          {MOBILE_PRIMARY_ITEMS.map((item) => {
+            const active = isNavItemActive(pathname, item);
+            return (
+              <Link key={item.href} href={item.href} className="relative flex flex-col items-center gap-1">
+                <item.icon className={`h-5 w-5 ${active ? "text-white" : "text-slate-400"}`} />
+                <span className={`text-[10px] uppercase tracking-[0.18em] ${active ? "text-white" : "text-slate-500"}`}>
+                  {item.label}
+                </span>
+                {active ? (
+                  <motion.div layoutId="mobile-nav-active" className="absolute -bottom-1 h-1 w-6 rounded-full bg-white" />
+                ) : null}
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
+
+      {/* Floating submenu popover — rendered outside sidebar to avoid overflow clipping */}
+      {submenu && !sidebarCollapsed && (
+        <div
+          className="fixed z-[300] w-52 rounded-[1.4rem] border border-white/80 bg-white/95 p-2 shadow-[0_8px_40px_rgba(15,23,42,0.12)] backdrop-blur-2xl"
+          style={{ top: submenu.top, left: submenu.left }}
+          onMouseEnter={keepSubmenu}
+          onMouseLeave={closeSubmenu}
+        >
+          <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+            {submenu.item.label}
+          </p>
+          {submenu.item.children!.map((child) => {
+            const childActive = pathname === child.href || pathname.startsWith(child.href + "/");
+            return (
+              <Link
+                key={child.href}
+                href={child.href}
+                onClick={() => { setSidebarOpen(false); setSubmenu(null); }}
+                className={`flex items-center gap-2.5 rounded-[1rem] px-3 py-2 text-sm font-medium transition-colors ${
+                  childActive
+                    ? "bg-slate-950 text-white"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-950"
+                }`}
+              >
+                <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${childActive ? "bg-white" : "bg-slate-300"}`} />
+                {child.label}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+
+      <GamificationIntegration />
+      <CelebrationToastContainer />
+      <CompanionSidebar />
+      <AuraFloatingChat />
+      <MarketplaceXPListener />
+      <AuraNotificationSystem />
+      <AppCommandPalette open={commandPaletteOpen} onClose={() => setCommandPaletteOpen(false)} />
     </div>
   );
 }

@@ -67,6 +67,12 @@ class Document(Base):
     target_word_count: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     current_word_count: Mapped[int] = mapped_column(Integer, default=0)
     
+    # Route binding (nullable — document may be universal or route-scoped)
+    route_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        ForeignKey("routes.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    scope: Mapped[str] = mapped_column(String(20), default="universal", nullable=False)
+
     # ATS Analysis
     ats_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     ats_keywords: Mapped[list] = mapped_column(JSON, default=list)
@@ -94,6 +100,7 @@ class Document(Base):
     last_edited_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     
     # Relationships
+    user = relationship("User", back_populates="documents")
     polish_requests: Mapped[list["PolishRequest"]] = relationship("PolishRequest", back_populates="document", cascade="all, delete-orphan")
     versions: Mapped[list["Document"]] = relationship("Document", remote_side=[parent_version_id])
 

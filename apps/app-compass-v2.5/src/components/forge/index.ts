@@ -10,3 +10,5 @@ export { FeaturesShowcase } from "./FeaturesShowcase";
 export { TemplateGallery } from "./TemplateGallery";
 export { EmptyState } from "./EmptyStates";
 export { FocusMode } from "./FocusMode";
+export { DocxImporter } from "./DocxImporter";
+export { RecruitmentFormHelper } from "./RecruitmentFormHelper";

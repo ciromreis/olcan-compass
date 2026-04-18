@@ -30,7 +30,7 @@ import {
 const QUEST_TYPE_CONFIG: Record<QuestType, { label: string; color: string; icon: typeof Target }> = {
   daily: { label: 'Daily', color: 'text-blue-400', icon: Calendar },
   weekly: { label: 'Weekly', color: 'text-purple-400', icon: Clock },
-  special: { label: 'Special', color: 'text-amber-400', icon: Gift },
+  special: { label: 'Special', color: 'text-slate-400', icon: Gift },
   event: { label: 'Event', color: 'text-pink-400', icon: Zap },
 }
 
@@ -38,7 +38,7 @@ export function QuestDashboard() {
   const [filter, setFilter] = useState<QuestType | 'all'>('all')
   
   const quests = useAvailableQuests()
-  const { completeQuest, claimQuestReward } = useGamificationStore()
+  const { completeQuest: _completeQuest, claimQuestReward } = useGamificationStore()
   
   const filteredQuests = filter === 'all' 
     ? quests 
@@ -65,7 +65,7 @@ export function QuestDashboard() {
               <p className="text-sm text-foreground/60">
                 {completedCount} of {quests.length} completed
                 {claimableCount > 0 && (
-                  <span className="text-amber-400 ml-2">
+                  <span className="text-slate-400 ml-2">
                     ({claimableCount} ready to claim!)
                   </span>
                 )}
@@ -120,7 +120,7 @@ export function QuestDashboard() {
         <GlassButton
           size="sm"
           onClick={() => setFilter('special')}
-          className={filter === 'special' ? 'bg-amber-500/20' : ''}
+          className={filter === 'special' ? 'bg-slate-500/20' : ''}
         >
           Special
         </GlassButton>
@@ -231,7 +231,7 @@ function QuestCard({
                 </span>
               )}
               {isCompleted && !isClaimed && (
-                <span className="flex items-center gap-1 text-xs text-amber-400">
+                <span className="flex items-center gap-1 text-xs text-slate-400">
                   <Gift className="w-4 h-4" />
                   Ready!
                 </span>
@@ -271,7 +271,7 @@ function QuestCard({
                 </span>
                 {quest.coinReward && (
                   <span className="flex items-center gap-1 text-foreground/60">
-                    <Coins className="w-4 h-4 text-amber-400" />
+                    <Coins className="w-4 h-4 text-slate-400" />
                     {quest.coinReward} coins
                   </span>
                 )}

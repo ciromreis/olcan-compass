@@ -153,7 +153,7 @@ export default function ManageSubscriptionPage() {
               </div>
               <div className="flex items-center gap-4">
                 <span className="text-body-sm font-medium text-text-primary">{formatMoney(inv.amount)}</span>
-                <span className={`text-caption font-medium ${inv.status === "paid" ? "text-brand-500" : inv.status === "pending" ? "text-amber-500" : "text-text-muted"}`}>
+                <span className={`text-caption font-medium ${inv.status === "paid" ? "text-brand-500" : inv.status === "pending" ? "text-slate-500" : "text-text-muted"}`}>
                   {inv.status === "paid" ? "Pago" : inv.status === "pending" ? "Pendente" : "Sem cobrança"}
                 </span>
                 <button

@@ -15,6 +15,7 @@ from app.db.models import (
     PsychAnswer,
     PsychScoreHistory,
 )
+from app.db.models.psychology import ProfessionalArchetype, FearCluster
 from app.schemas.psychology import (
     PsychProfileResponse,
     PsychProfileUpdate,
@@ -369,8 +370,12 @@ async def _compute_and_save_profile(session: PsychAssessmentSession, user_id: UU
     else:
         profile.risk_profile = "medium"
     
+    # Assign OIOS dominant archetype and primary fear cluster
+    profile.dominant_archetype = _assign_archetype(avg_scores)
+    profile.primary_fear_cluster = _assign_fear_cluster(avg_scores)
+
     profile.last_assessment_at = datetime.now(timezone.utc)
-    
+
     # Save score history
     history = PsychScoreHistory(
         user_id=user_id,
@@ -408,6 +413,61 @@ async def _compute_and_save_profile(session: PsychAssessmentSession, user_id: UU
     background_tasks.add_task(dispatch_economics_tasks, str(user_id), previous_readiness, new_readiness)
 
 
+def _assign_archetype(scores: dict) -> ProfessionalArchetype:
+    """Score each OIOS archetype against the user's dimension scores.
+
+    Each archetype is defined by a weight vector across the 10 dimensions.
+    Positive weight = this trait increases likelihood. Negative = decreases.
+    Returns the archetype with the highest score sum.
+    """
+    conf = scores.get("confidence", 50)
+    anx = scores.get("anxiety", 50)
+    disc = scores.get("discipline", 50)
+    risk = scores.get("risk_tolerance", 50)
+    narr = scores.get("narrative_clarity", 50)
+    inanx = scores.get("interview_anxiety", 50)
+    fin = scores.get("financial_resilience", 50)
+    cult = scores.get("cultural_adaptability", 50)
+    comm = scores.get("communication_style", 50)
+    dec = scores.get("decision_style", 50)
+
+    archetype_scores: dict[ProfessionalArchetype, float] = {
+        ProfessionalArchetype.INDIVIDUAL_SOVEREIGNTY:   anx * 0.3 + risk * 0.3 + fin * 0.2 - disc * 0.2,
+        ProfessionalArchetype.ACADEMIC_ELITE: disc * 0.3 + narr * 0.3 + cult * 0.2 + conf * 0.2,
+        ProfessionalArchetype.CAREER_MASTERY:            risk * 0.3 + conf * 0.3 + narr * 0.2 - anx * 0.2,
+        ProfessionalArchetype.GLOBAL_PRESENCE:            cult * 0.4 + risk * 0.3 + fin * 0.2 - anx * 0.1,
+        ProfessionalArchetype.FRONTIER_ARCHITECT: disc * 0.3 + narr * 0.3 + conf * 0.3 - inanx * 0.1,
+        ProfessionalArchetype.VERIFIED_TALENT:  anx * 0.3 + inanx * 0.3 - conf * 0.2 - risk * 0.2,
+        ProfessionalArchetype.FUTURE_GUARDIAN:   anx * 0.3 + fin * 0.3 - risk * 0.2 - disc * 0.2,
+        ProfessionalArchetype.CHANGE_AGENT:  anx * 0.3 - risk * 0.3 - disc * 0.3 + inanx * 0.1,
+        ProfessionalArchetype.KNOWLEDGE_NODE:         disc * 0.4 + narr * 0.3 - comm * 0.2 - risk * 0.1,
+        ProfessionalArchetype.CONSCIOUS_LEADER:       conf * 0.3 + fin * 0.3 + risk * 0.3 - anx * 0.1,
+        ProfessionalArchetype.CULTURAL_PROTAGONIST:      narr * 0.3 + cult * 0.3 + risk * 0.2 + comm * 0.2,
+        ProfessionalArchetype.DESTINY_ARBITRATOR:     fin * 0.3 + cult * 0.3 + conf * 0.2 + dec * 0.2,
+    }
+    return max(archetype_scores, key=lambda k: archetype_scores[k])
+
+
+def _assign_fear_cluster(scores: dict) -> FearCluster:
+    """Assign the dominant fear cluster based on dimension scores."""
+    risk = scores.get("risk_tolerance", 50)
+    cult = scores.get("cultural_adaptability", 50)
+    conf = scores.get("confidence", 50)
+    disc = scores.get("discipline", 50)
+    narr = scores.get("narrative_clarity", 50)
+    fin = scores.get("financial_resilience", 50)
+    anx = scores.get("anxiety", 50)
+    inanx = scores.get("interview_anxiety", 50)
+
+    cluster_scores: dict[FearCluster, float] = {
+        FearCluster.FREEDOM:     risk * 0.4 + cult * 0.4 + fin * 0.2,
+        FearCluster.SUCCESS:     conf * 0.3 + disc * 0.4 + narr * 0.3,
+        FearCluster.STABILITY:   fin * 0.4 + (100 - risk) * 0.4 + anx * 0.2,
+        FearCluster.VALIDATION:  inanx * 0.5 + (100 - conf) * 0.3 + anx * 0.2,
+    }
+    return max(cluster_scores, key=lambda k: cluster_scores[k])
+
+
 def _determine_mobility_state(scores: dict) -> str:
     """Determine mobility state based on scores"""
     readiness = scores.get("confidence", 50) + scores.get("discipline", 50)
@@ -438,6 +498,41 @@ def _determine_psychological_state(scores: dict) -> str:
         return "executing"
     else:
         return "resilient"
+
+
+# --- Result endpoint ---
+
+@router.get("/assessment/{session_id}/result")
+async def get_assessment_result(
+    session_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Return archetype assignment after a completed assessment."""
+    result = await db.execute(
+        select(PsychAssessmentSession).where(
+            PsychAssessmentSession.id == session_id,
+            PsychAssessmentSession.user_id == current_user.id,
+        )
+    )
+    session = result.scalar_one_or_none()
+    if not session:
+        raise HTTPException(status_code=404, detail="Sessão não encontrada")
+    if session.status != "completed":
+        raise HTTPException(status_code=400, detail="Avaliação ainda não concluída")
+
+    result = await db.execute(
+        select(PsychProfile).where(PsychProfile.user_id == current_user.id)
+    )
+    profile = result.scalar_one_or_none()
+
+    return {
+        "session_id": session.id,
+        "dominant_archetype": profile.dominant_archetype if profile else None,
+        "primary_fear_cluster": profile.primary_fear_cluster if profile else None,
+        "mobility_state": profile.mobility_state if profile else None,
+        "scores_snapshot": session.scores_snapshot or {},
+    }
 
 
 # --- History Endpoints ---

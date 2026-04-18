@@ -5,7 +5,7 @@ import Link from "next/link";
 import { AlertTriangle, Shield, ArrowRight } from "lucide-react";
 import { useSprintStore } from "@/stores/sprints";
 import { useRouteStore } from "@/stores/routes";
-import { usePsychStore } from "@/stores/psych";
+import { hasOiosArchetypeEstablished, usePsychStore } from "@/stores/psych";
 import { useApplicationStore } from "@/stores/applications";
 import { useHydration } from "@/hooks";
 import { EmptyState, PageHeader, Progress, ProgressRing, Skeleton } from "@/components/ui";
@@ -35,7 +35,16 @@ export default function ReadinessRiskPage() {
   const hydrated = useHydration();
   const { sprints } = useSprintStore();
   const { routes, getRouteProgress } = useRouteStore();
-  const { isComplete, getOverallScore } = usePsychStore();
+  const {
+    isComplete,
+    getOverallScore,
+    oiosAssessmentComplete,
+    oiosSnapshot,
+  } = usePsychStore();
+  const hasOiosArchetype = hasOiosArchetypeEstablished({
+    oiosAssessmentComplete,
+    oiosSnapshot,
+  });
   const { applications } = useApplicationStore();
 
   const risks = useMemo(() => {
@@ -59,6 +68,19 @@ export default function ReadinessRiskPage() {
       result.push({ category: "Documental", risk: "Documentação incompleta", probability: 40, impact: "Alto", mitigation: "Use o Forge para redigir e revisar documentos pendentes.", link: "/sprints/new?template=documental", linkLabel: "Iniciar Sprint Documental" });
     }
 
+    if (!hasOiosArchetype) {
+      result.push({
+        category: "Psicológico",
+        risk: "Diagnóstico de mobilidade não realizado",
+        probability: 42,
+        impact: "Médio",
+        mitigation:
+          "O diagnóstico de mobilidade orienta presença, entrevistas e mensagens — faça antes ou em paralelo ao mapeamento Likert.",
+        link: "/onboarding/quiz",
+        linkLabel: "Fazer diagnóstico",
+      });
+    }
+
     if (!isComplete()) {
       result.push({ category: "Psicológico", risk: "Diagnóstico psicológico não realizado", probability: 50, impact: "Alto", mitigation: "Complete o diagnóstico para identificar pontos de atenção antes da mudança.", link: "/profile/psych", linkLabel: "Fazer Diagnóstico" });
     } else if (getOverallScore() < 40) {
@@ -75,7 +97,16 @@ export default function ReadinessRiskPage() {
 
     result.sort((a, b) => b.probability - a.probability);
     return result;
-  }, [hydrated, sprints, routes, getRouteProgress, isComplete, getOverallScore, applications]);
+  }, [
+    hydrated,
+    sprints,
+    routes,
+    getRouteProgress,
+    hasOiosArchetype,
+    isComplete,
+    getOverallScore,
+    applications,
+  ]);
 
   if (!hydrated) {
     return <div className="max-w-4xl mx-auto space-y-6"><Skeleton className="h-10 w-64" />{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-40" />)}</div>;

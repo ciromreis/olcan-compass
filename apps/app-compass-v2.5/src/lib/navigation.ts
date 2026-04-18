@@ -1,27 +1,24 @@
 import {
-  Building2,
   Briefcase,
+  CheckSquare,
   FileEdit,
   Gauge,
-  Heart,
   LayoutDashboard,
   type LucideIcon,
   MessageSquare,
-  PanelLeft,
-  ShieldCheck,
   Route,
+  ScanFace,
   Settings,
-  Store,
-  Users,
-  User,
-  Wallet,
-  Wrench,
-  Zap,
   Sparkles,
+  Store,
+  User,
+  Zap,
 } from "lucide-react";
-import { normalizeUserRole } from "@/lib/roles";
 
-export type AppRole = "END_USER" | "PROVIDER" | "ORG_MEMBER" | "ORG_COORDINATOR" | "ORG_ADMIN" | "SUPER_ADMIN";
+export interface AppNavChild {
+  href: string;
+  label: string;
+}
 
 export interface AppNavItem {
   href: string;
@@ -29,6 +26,8 @@ export interface AppNavItem {
   icon: LucideIcon;
   description?: string;
   aliases?: string[];
+  /** Sub-navigation items shown when this section is active */
+  children?: AppNavChild[];
 }
 
 export interface AppNavSection {
@@ -52,17 +51,10 @@ export const END_USER_NAV_SECTIONS: AppNavSection[] = [
         aliases: ["/dashboard"],
       },
       {
-        href: "/aura",
-        label: "Aura",
-        icon: Sparkles,
-        description: "Sua identidade evolutiva e manifesto de competências.",
-        aliases: ["/aura", "/aura/achievements", "/aura/quests"],
-      },
-      {
         href: "/profile",
-        label: "Contexto",
+        label: "Perfil",
         icon: User,
-        description: "Atualize sua realidade e acompanhe sua evolução psicológica.",
+        description: "Atualize sua realidade e acompanhe sua evolução.",
         aliases: ["/profile"],
       },
     ],
@@ -78,13 +70,17 @@ export const END_USER_NAV_SECTIONS: AppNavSection[] = [
         icon: Route,
         description: "Modele caminhos de mobilidade e acompanhe milestones.",
         aliases: ["/routes"],
+        children: [
+          { href: "/routes", label: "Meus Caminhos" },
+          { href: "/routes/new", label: "Novo Caminho" },
+        ],
       },
       {
-        href: "/readiness",
+        href: "/readiness/gate",
         label: "Prontidão",
         icon: Gauge,
-        description: "Entenda lacunas, riscos e simulações da sua preparação.",
-        aliases: ["/readiness"],
+        description: "Verifique se está pronto para submeter sua candidatura.",
+        aliases: ["/readiness", "/readiness/gate"],
       },
       {
         href: "/sprints",
@@ -106,6 +102,10 @@ export const END_USER_NAV_SECTIONS: AppNavSection[] = [
         icon: FileEdit,
         description: "Evolua narrativa, versões e qualidade dos materiais.",
         aliases: ["/forge"],
+        children: [
+          { href: "/forge", label: "Meus Documentos" },
+          { href: "/forge/new", label: "Novo Documento" },
+        ],
       },
       {
         href: "/interviews",
@@ -113,13 +113,19 @@ export const END_USER_NAV_SECTIONS: AppNavSection[] = [
         icon: MessageSquare,
         description: "Pratique respostas, feedback e histórico de evolução.",
         aliases: ["/interviews"],
+        children: [
+          { href: "/interviews", label: "Minhas Sessões" },
+          { href: "/interviews/new", label: "Nova Sessão" },
+          { href: "/interviews/question-bank", label: "Banco de Perguntas" },
+          { href: "/interviews/history", label: "Histórico" },
+        ],
       },
       {
-        href: "/community",
-        label: "Rede",
-        icon: PanelLeft,
-        description: "Referências, conteúdo Olcan e discussões temáticas.",
-        aliases: ["/community"],
+        href: "/wiki",
+        label: "Perfil OIOS",
+        icon: ScanFace,
+        description: "Seu arquétipo de mobilidade e orientação psicológica.",
+        aliases: ["/wiki"],
       },
     ],
   },
@@ -136,11 +142,24 @@ export const END_USER_NAV_SECTIONS: AppNavSection[] = [
         aliases: ["/applications"],
       },
       {
+        href: "/tasks",
+        label: "Tarefas",
+        icon: CheckSquare,
+        description: "Organize os passos da sua jornada de mobilidade.",
+        aliases: ["/tasks"],
+      },
+      {
         href: "/marketplace",
         label: "Mercado",
         icon: Store,
         description: "Acesse suporte especializado para sua jornada.",
         aliases: ["/marketplace"],
+        children: [
+          { href: "/marketplace", label: "Explorar" },
+          { href: "/marketplace/search", label: "Buscar Especialistas" },
+          { href: "/marketplace/bookings", label: "Minhas Reservas" },
+          { href: "/marketplace/messages", label: "Mensagens" },
+        ],
       },
     ],
   },
@@ -155,78 +174,6 @@ export const END_USER_BOTTOM_ITEMS: AppNavItem[] = [
   },
 ];
 
-export const PROVIDER_NAV_SECTIONS: AppNavSection[] = [
-  {
-    id: "provider",
-    label: "Gestão Operacional",
-    description: "Sua atuação no ecossistema Olcan.",
-    items: [
-      {
-        href: "/provider",
-        label: "Resumo",
-        icon: ShieldCheck,
-        description: "Acompanhe ocupação, desempenho e ações pendentes.",
-        aliases: ["/provider"],
-      },
-      {
-        href: "/provider/services",
-        label: "Catálogo",
-        icon: Wrench,
-        description: "Gerencie disponibilidade e status dos serviços.",
-        aliases: ["/provider/services"],
-      },
-    ],
-  },
-];
-
-export const ORG_NAV_SECTIONS: AppNavSection[] = [
-  {
-    id: "org",
-    label: "Governança Org",
-    description: "Coordene membros e políticas da organização.",
-    items: [
-      {
-        href: "/org",
-        label: "Executivo",
-        icon: Building2,
-        description: "Visão consolidada da organização e do pipeline.",
-        aliases: ["/org"],
-      },
-      {
-        href: "/org/members",
-        label: "Time",
-        icon: Users,
-        description: "Gestão de papéis e status de participação.",
-        aliases: ["/org/members"],
-      },
-    ],
-  },
-];
-
-export const ADMIN_NAV_SECTIONS: AppNavSection[] = [
-  {
-    id: "admin",
-    label: "Governança Central",
-    description: "Controle da plataforma e observabilidade.",
-    items: [
-      {
-        href: "/admin",
-        label: "Admin",
-        icon: ShieldCheck,
-        description: "Painel executivo de governança global.",
-        aliases: ["/admin"],
-      },
-      {
-        href: "/admin/observability",
-        label: "Vitals",
-        icon: Gauge,
-        description: "Monitoramento técnico e incidentes operacionais.",
-        aliases: ["/admin/observability"],
-      },
-    ],
-  },
-];
-
 export const MOBILE_PRIMARY_ITEMS: AppNavItem[] = [
   {
     href: "/dashboard",
@@ -235,52 +182,74 @@ export const MOBILE_PRIMARY_ITEMS: AppNavItem[] = [
     aliases: ["/dashboard"],
   },
   {
-    href: "/aura",
-    label: "Aura",
-    icon: Sparkles,
-    aliases: ["/aura"],
-  },
-  {
     href: "/routes",
-    label: "Plano",
+    label: "Rotas",
     icon: Route,
     aliases: ["/routes"],
   },
   {
     href: "/applications",
-    label: "Status",
+    label: "Apps",
     icon: Briefcase,
     aliases: ["/applications"],
+  },
+  {
+    href: "/forge",
+    label: "Docs",
+    icon: FileEdit,
+    aliases: ["/forge"],
   },
   {
     href: "/marketplace",
     label: "Mais",
     icon: Store,
-    aliases: ["/marketplace", "/profile", "/settings"],
+    aliases: ["/marketplace", "/profile", "/settings", "/aura"],
   },
 ];
 
-export function getNavigationSectionsForRole(role?: string | null): AppNavSection[] {
-  switch (normalizeUserRole(role)) {
-    case "PROVIDER":
-      return [...PROVIDER_NAV_SECTIONS, ...END_USER_NAV_SECTIONS];
-    case "ORG_MEMBER":
-    case "ORG_COORDINATOR":
-    case "ORG_ADMIN":
-      return [...ORG_NAV_SECTIONS, ...END_USER_NAV_SECTIONS];
-    case "SUPER_ADMIN":
-      return [...ADMIN_NAV_SECTIONS, ...END_USER_NAV_SECTIONS];
-    case "END_USER":
-    default:
-      return END_USER_NAV_SECTIONS;
-  }
+export function getNavigationSectionsForRole(_role?: string | null): AppNavSection[] {
+  return END_USER_NAV_SECTIONS;
 }
 
-export function getBottomItemsForRole(role?: string | null): AppNavItem[] {
+export function getBottomItemsForRole(_role?: string | null): AppNavItem[] {
   return END_USER_BOTTOM_ITEMS;
 }
 
 export function isNavItemActive(pathname: string, item: AppNavItem): boolean {
   const aliases = item.aliases?.length ? item.aliases : [item.href];
-  return aliases.some((alias) => pathname === alias || pathname.startsWith(alias + "/"));
+  return aliases.some((alias) => pathname === alias || pathname.startsWith(`${alias}/`));
+}
+
+export interface CommandPaletteEntry {
+  href: string;
+  label: string;
+  group: string;
+}
+
+const COMMAND_PALETTE_EXTRAS: CommandPaletteEntry[] = [
+  { href: "/sprints", label: "Sprints", group: "Arquitetura" },
+  { href: "/onboarding/quiz", label: "Quiz de integração", group: "Integração" },
+  { href: "/subscription", label: "Assinatura", group: "Conta" },
+  { href: "/settings/billing", label: "Faturamento", group: "Conta" },
+];
+
+/** Flat list for quick navigation (⌘K / busca). Deduped by `href`. */
+export function getCommandPaletteEntries(): CommandPaletteEntry[] {
+  const out: CommandPaletteEntry[] = [];
+  for (const section of END_USER_NAV_SECTIONS) {
+    for (const item of section.items) {
+      out.push({ href: item.href, label: item.label, group: section.label });
+    }
+  }
+  for (const item of END_USER_BOTTOM_ITEMS) {
+    out.push({ href: item.href, label: item.label, group: "Conta" });
+  }
+  out.push(...COMMAND_PALETTE_EXTRAS);
+
+  const seen = new Set<string>();
+  return out.filter((e) => {
+    if (seen.has(e.href)) return false;
+    seen.add(e.href);
+    return true;
+  });
 }

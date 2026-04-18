@@ -1,0 +1,29 @@
+# Testing Dependencies
+# Olcan Compass v2.5
+
+# Core testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+
+# Load testing
+locust==2.17.0
+
+# Security testing
+safety==2.3.5
+bandit==1.7.5
+
+# API testing
+httpx==0.25.1
+requests==2.31.0
+
+# Code quality
+black==23.11.0
+isort==5.12.0
+flake8==6.1.0
+mypy==1.7.0
+
+# Performance profiling
+py-spy==0.3.14
+memory-profiler==0.61.0

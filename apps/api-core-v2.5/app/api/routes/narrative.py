@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, desc, or_
 
 from app.core.auth import get_current_user
+from app.core.entitlements import assert_can_create_forge_document
 from app.db.session import get_db
 from app.db.models import (
     User,
@@ -206,6 +207,13 @@ async def create_narrative(
     db: AsyncSession = Depends(get_db)
 ):
     """Create a new narrative document with initial version"""
+    # Entitlement check — enforce plan document limit server-side
+    doc_count_result = await db.execute(
+        select(func.count(Narrative.id)).where(Narrative.user_id == current_user.id)
+    )
+    current_doc_count = doc_count_result.scalar() or 0
+    assert_can_create_forge_document(current_user.subscription_plan, current_doc_count)
+
     # Create narrative
     narrative = Narrative(
         user_id=current_user.id,

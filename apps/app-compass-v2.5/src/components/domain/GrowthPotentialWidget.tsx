@@ -11,7 +11,7 @@ interface Opportunity {
   market_demand?: "low" | "medium" | "high";
   alignment_score?: number;
   location?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface GrowthPotentialWidgetProps {

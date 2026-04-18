@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
-import { CheckCircle2, Calendar, MessageSquare, ArrowRight } from "lucide-react";
+import { CheckCircle2, Calendar, ArrowRight, MessageSquare } from "lucide-react";
 import { useMarketplaceStore } from "@/stores/canonicalMarketplaceProviderStore";
 import { useHydration } from "@/hooks/use-hydration";
 import { Skeleton, EmptyState } from "@/components/ui";
@@ -10,9 +10,9 @@ import { Skeleton, EmptyState } from "@/components/ui";
 export default function CheckoutSuccessPage() {
   const { id } = useParams<{ id: string }>();
   const searchParams = useSearchParams();
-  const sessionId = searchParams.get("session_id");
+  const bookingId = searchParams.get("booking_id");
   const router = useRouter();
-  
+
   const hydrated = useHydration();
   const { getProviderById, loadProviderDetail, ensureConversation } = useMarketplaceStore();
 
@@ -26,25 +26,25 @@ export default function CheckoutSuccessPage() {
   if (!hydrated || !provider) {
     return (
       <div className="max-w-2xl mx-auto space-y-6 pt-10">
-        <Skeleton className="h-64 rounded-3xl" />
+        <Skeleton className="h-64 rounded-2xl" />
       </div>
     );
   }
 
-  if (!sessionId) {
+  if (!bookingId) {
     return (
       <div className="max-w-2xl mx-auto pt-10">
-        <EmptyState 
-          icon={CheckCircle2} 
-          title="Sessão Inválida" 
-          description="A sessão de pagamento não foi encontrada." 
+        <EmptyState
+          icon={CheckCircle2}
+          title="Sessão inválida"
+          description="Esta página precisa de um código de reserva válido."
           action={
             <button
               type="button"
               onClick={() => router.push(`/marketplace/provider/${id}`)}
-              className="rounded-xl border border-white/10 bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
+              className="rounded-xl border border-cream-500 bg-white px-4 py-2 text-sm font-semibold text-text-primary transition-colors hover:bg-cream-100"
             >
-              Voltar
+              Voltar ao perfil
             </button>
           }
         />
@@ -53,49 +53,45 @@ export default function CheckoutSuccessPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto pt-8 pb-16">
-      <div className="bg-slate-900 border border-white/5 rounded-3xl overflow-hidden shadow-2xl relative text-center">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-nanobanana-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+    <div className="max-w-2xl mx-auto pt-8 pb-16 space-y-6">
+      <div className="card-surface p-10 text-center space-y-6">
+        <div className="w-20 h-20 rounded-full bg-brand-50 text-brand-500 flex items-center justify-center mx-auto ring-4 ring-brand-100">
+          <CheckCircle2 className="w-10 h-10" />
+        </div>
 
-        <div className="p-10 relative z-10 flex flex-col items-center">
-          <div className="w-20 h-20 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-6 ring-4 ring-emerald-500/30">
-            <CheckCircle2 className="w-10 h-10" />
-          </div>
-
-          <h1 className="font-heading text-h2 text-white mb-4">Pagamento Confirmado!</h1>
-          <p className="text-body text-slate-400 mb-8 max-w-sm">
-            Seu pagamento foi confirmado. A sessão com <strong>{provider.name}</strong> está desbloqueada.
+        <div>
+          <h1 className="font-heading text-h2 text-text-primary">Solicitação Registrada!</h1>
+          <p className="text-body text-text-secondary mt-2 max-w-sm mx-auto">
+            Sua solicitação foi enviada para{" "}
+            <strong className="text-text-primary">{provider.name}</strong>. Você receberá a confirmação do horário em breve.
           </p>
+        </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 w-full">
-            <button 
-              onClick={() => router.push(`/marketplace/bookings`)}
-              className="flex-1 py-3 px-6 rounded-xl bg-white/5 border border-white/10 text-white font-heading font-medium hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
-            >
-              <Calendar className="w-4 h-4" /> Minha Agenda
-            </button>
-            <button 
-              onClick={() => {
-                const conv = ensureConversation(provider.id);
-                if (conv) router.push(`/marketplace/messages/${conv.id}`);
-              }}
-              className="flex-1 py-3 px-6 rounded-xl bg-nanobanana-500 text-slate-900 font-heading font-bold hover:bg-nanobanana-400 transition-all shadow-[0_0_20px_rgba(255,235,59,0.2)] flex items-center justify-center gap-2"
-            >
-              Mensagem <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
+        <div className="rounded-xl bg-cream-50 border border-cream-300 p-4 text-left space-y-2">
+          <p className="text-body-sm font-semibold text-text-primary">Próximos passos</p>
+          <ol className="space-y-1.5 text-body-sm text-text-secondary list-decimal list-inside">
+            <li>O especialista confirmará a data e horário.</li>
+            <li>Você receberá o link da sessão por mensagem.</li>
+            <li>O pagamento será processado após a confirmação.</li>
+          </ol>
+        </div>
 
-          <div className="mt-6">
-            <button
-              type="button"
-              onClick={() => router.push(`/interviews`)}
-              className="w-full py-3 px-6 rounded-xl bg-white/5 border border-white/10 text-white font-heading font-medium hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
-            >
-              Voltar para o simulador de entrevistas
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          <button
+            onClick={() => router.push("/marketplace/bookings")}
+            className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl border border-cream-500 bg-white text-text-primary font-heading font-medium hover:bg-cream-100 transition-colors"
+          >
+            <Calendar className="w-4 h-4" /> Minhas Reservas
+          </button>
+          <button
+            onClick={() => {
+              const conv = ensureConversation(provider.id);
+              if (conv) router.push(`/marketplace/messages/${conv.id}`);
+            }}
+            className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 transition-colors"
+          >
+            <MessageSquare className="w-4 h-4" /> Enviar Mensagem <ArrowRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </div>

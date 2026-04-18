@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react';
 // Simplified hook for Economic Credentials
 export function useCredentials() {
   const [isLoading, setIsLoading] = useState(false);
-  const [credentials, setCredentials] = useState<any[]>([]);
+  const [credentials, setCredentials] = useState<unknown[]>([]);
 
   const fetchCredentials = useCallback(async () => {
     setIsLoading(true);

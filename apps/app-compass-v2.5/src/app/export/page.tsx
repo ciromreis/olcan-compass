@@ -2,15 +2,14 @@
 
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  Download, 
-  Share2, 
-  FileText, 
-  Image, 
-  Video, 
-  Code, 
-  Database, 
-  Calendar,
+import {
+  Download,
+  Share2,
+  FileText,
+  Image as ImageIcon,
+  Video,
+  Code,
+  Database,
   Mail,
   Link,
   QrCode,
@@ -18,11 +17,7 @@ import {
   Smartphone,
   Monitor,
   Tablet,
-  Copy,
   CheckCircle,
-  Upload,
-  Settings,
-  Filter,
   Search
 } from 'lucide-react'
 import { GlassCard, GlassButton, ProgressBar, GlassModal } from '@/components/ui'
@@ -61,7 +56,6 @@ const ExportPage = () => {
   const [selectedItems, setSelectedItems] = useState<string[]>([])
   const [exportProgress, setExportProgress] = useState(0)
   const [isExporting, setIsExporting] = useState(false)
-  const [showShareModal, setShowShareModal] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [copiedLink, setCopiedLink] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -90,7 +84,7 @@ const ExportPage = () => {
       id: 'png',
       name: 'PNG Image',
       description: 'High-quality image for social media',
-      icon: <Image className="w-6 h-6" />,
+      icon: <ImageIcon className="w-6 h-6" />,
       extensions: ['.png'],
       maxSize: '25MB',
       features: ['Transparent background', 'High resolution', 'Web optimized']
@@ -297,6 +291,7 @@ const ExportPage = () => {
                     <input
                       type="text"
                       placeholder="Search items..."
+                      aria-label="Search export items"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="w-full pl-10 pr-4 py-2 liquid-glass rounded-xl border border-white/20 focus:border-companion-primary/50 focus:outline-none"
@@ -565,7 +560,7 @@ const ExportPage = () => {
           </p>
           <div className="flex gap-3">
             <GlassButton
-              onClick={() => setShowShareModal(true)}
+              onClick={() => { /* share modal — wired in next iteration */ }}
               className="flex-1"
               variant="primary"
             >

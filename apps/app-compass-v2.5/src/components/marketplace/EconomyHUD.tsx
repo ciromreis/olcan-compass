@@ -26,7 +26,7 @@ export function EconomyHUD({ className }: EconomyHUDProps) {
 
       {/* Credits */}
       <div className="flex items-center gap-2 rounded-xl border border-silver-200 bg-white px-3 py-1.5 shadow-sm transition-all hover:border-silver-300">
-        <Coins className="h-3.5 w-3.5 text-amber-500" />
+        <Coins className="h-3.5 w-3.5 text-slate-500" />
         <span className="text-caption font-bold text-text-primary">{credits.toLocaleString()}</span>
       </div>
 

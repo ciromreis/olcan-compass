@@ -72,7 +72,7 @@ class Activity(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # Relationships
-    user = relationship("User", back_populates="activities")
+    user = relationship("User", foreign_keys=[user_id], lazy="noload")
     likes = relationship("ActivityLike", back_populates="activity", cascade="all, delete-orphan")
     comments = relationship("ActivityComment", back_populates="activity", cascade="all, delete-orphan")
 
@@ -169,7 +169,7 @@ class Notification(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # Relationships
-    user = relationship("User", back_populates="notifications")
+    user = relationship("User", foreign_keys=[user_id], lazy="noload")
 
 
 class UserProfile(Base):
@@ -212,7 +212,7 @@ class UserProfile(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
-    user = relationship("User", back_populates="profile")
+    user = relationship("User", foreign_keys=[user_id], lazy="noload")
 
 
 class Badge(Base):

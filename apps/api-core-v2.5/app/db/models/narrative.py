@@ -65,6 +65,7 @@ class Narrative(Base):
     last_analyzed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     
     # Relationships
+    user = relationship("User", back_populates="narratives")
     versions: Mapped[list["NarrativeVersion"]] = relationship("NarrativeVersion", back_populates="narrative", cascade="all, delete-orphan", foreign_keys="NarrativeVersion.narrative_id")
     analyses: Mapped[list["NarrativeAnalysis"]] = relationship("NarrativeAnalysis", back_populates="narrative", cascade="all, delete-orphan", foreign_keys="NarrativeAnalysis.narrative_id")
     interview_loop_insights: Mapped[list["NarrativeInterviewLoopInsight"]] = relationship(

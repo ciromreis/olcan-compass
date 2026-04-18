@@ -26,15 +26,13 @@ export function GamificationIntegration() {
     const unsubscribeAura = useAuraStore
       .getState()
       .onAuraEvent((event: AuraEvent) => {
-        // Map AuraEvent to whatever handleCompanionEvent expects if needed
-        // For now, assuming compatibility as they share the same base structure
-        useGamificationStore.getState().handleCompanionEvent(event as any)
+        useGamificationStore.getState().handleAuraEvent(event)
       })
 
     // 3. Subscribe to gamification events → UI celebrations
     const unsubscribeGamification = useGamificationStore
       .getState()
-      .onGamificationEvent((event: GamificationEvent) => {
+      .onGamificationEvent((_event: GamificationEvent) => {
         // Gamification events are handled by the celebration system
         // No logging needed in production
       })
@@ -105,7 +103,7 @@ export function GamificationDebugger() {
   
   return (
     <div className="fixed bottom-4 right-4 z-[9999] p-4 rounded-2xl bg-ink-950/90 text-white backdrop-blur-xl border border-white/10 shadow-2xl font-display text-caption uppercase tracking-widest">
-      <div className="flex items-center gap-2 mb-2 text-gold-500">
+      <div className="flex items-center gap-2 mb-2 text-steel-500">
         <Zap className="w-4 h-4" />
         DEBUG AURA
       </div>

@@ -15,44 +15,64 @@ import {
   Sparkles
 } from "lucide-react";
 import { analyzeATSCompatibility, type ATSAnalysisResult, type ATSSuggestion } from "@/lib/ats-analyzer";
+import { forgeApi } from "@/lib/api";
 import { Button, Progress } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
 interface ATSAnalyzerProps {
   resumeContent: string;
+  /** When provided, ATS result is persisted to backend and score synced to document record. */
+  documentId?: string;
   onAnalysisComplete?: (result: ATSAnalysisResult) => void;
   className?: string;
 }
 
-export function ATSAnalyzer({ resumeContent, onAnalysisComplete, className = "" }: ATSAnalyzerProps) {
+export function ATSAnalyzer({ resumeContent, documentId, onAnalysisComplete, className = "" }: ATSAnalyzerProps) {
   const [jobDescription, setJobDescription] = useState("");
   const [analysis, setAnalysis] = useState<ATSAnalysisResult | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     if (!jobDescription.trim() || !resumeContent.trim()) return;
 
     setIsAnalyzing(true);
-    
-    // Simulate processing delay for better UX
-    setTimeout(() => {
-      const result = analyzeATSCompatibility({
-        resumeText: resumeContent,
-        jobDescription: jobDescription,
-      });
-      
-      setAnalysis(result);
-      setIsAnalyzing(false);
-      
-      if (onAnalysisComplete) {
-        onAnalysisComplete(result);
+
+    // Local heuristic analysis for immediate feedback
+    const localResult = analyzeATSCompatibility({
+      resumeText: resumeContent,
+      jobDescription: jobDescription,
+    });
+
+    // If document ID is available, sync to backend to persist the ATS score
+    if (documentId) {
+      try {
+        const { data } = await forgeApi.atsAnalyzeDocument(documentId, {
+          job_description: jobDescription,
+          target_keywords: [],
+        }) as { data: { score: number; keywords_found: string[]; keywords_missing: string[] } };
+
+        // Blend backend score (authoritative, persisted) with local result
+        if (typeof data?.score === "number") {
+          localResult.overallScore = Math.round((localResult.overallScore + data.score) / 2);
+        }
+        if (data?.keywords_missing?.length) {
+          // Augment local missing keywords with backend findings
+          const combined = new Set([...localResult.keywordMatch.missing, ...data.keywords_missing]);
+          localResult.keywordMatch.missing = Array.from(combined).slice(0, 20);
+        }
+      } catch {
+        // Backend unavailable — local analysis already done, continue gracefully
       }
-    }, 800);
+    }
+
+    setAnalysis(localResult);
+    setIsAnalyzing(false);
+    onAnalysisComplete?.(localResult);
   };
 
   const getScoreColor = (score: number): string => {
     if (score >= 80) return "text-emerald-600";
-    if (score >= 60) return "text-amber-600";
+    if (score >= 60) return "text-slate-600";
     return "text-clay-600";
   };
 
@@ -67,7 +87,7 @@ export function ATSAnalyzer({ resumeContent, onAnalysisComplete, className = "" 
       case "critical":
         return <AlertTriangle className="w-4 h-4 text-clay-500" />;
       case "important":
-        return <Lightbulb className="w-4 h-4 text-amber-500" />;
+        return <Lightbulb className="w-4 h-4 text-slate-500" />;
       case "optional":
         return <Sparkles className="w-4 h-4 text-brand-500" />;
     }
@@ -181,8 +201,8 @@ export function ATSAnalyzer({ resumeContent, onAnalysisComplete, className = "" 
             {/* Skills */}
             <div className="card-surface p-5">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                  <Award className="w-5 h-5 text-amber-600" />
+                <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
+                  <Award className="w-5 h-5 text-slate-600" />
                 </div>
                 <div className="flex-1">
                   <h4 className="font-heading text-body font-semibold text-text-primary">
@@ -301,7 +321,7 @@ export function ATSAnalyzer({ resumeContent, onAnalysisComplete, className = "" 
                   className={cn(
                     "p-4 rounded-lg border",
                     suggestion.type === "critical" && "border-clay-200 bg-clay-50/30",
-                    suggestion.type === "important" && "border-amber-200 bg-amber-50/30",
+                    suggestion.type === "important" && "border-slate-200 bg-slate-50/30",
                     suggestion.type === "optional" && "border-brand-200 bg-brand-50/30"
                   )}
                 >
@@ -315,7 +335,7 @@ export function ATSAnalyzer({ resumeContent, onAnalysisComplete, className = "" 
                         <span className={cn(
                           "px-2 py-0.5 rounded-full text-caption font-bold uppercase",
                           suggestion.impact === "high" && "bg-clay-100 text-clay-700",
-                          suggestion.impact === "medium" && "bg-amber-100 text-amber-700",
+                          suggestion.impact === "medium" && "bg-slate-100 text-slate-700",
                           suggestion.impact === "low" && "bg-brand-100 text-brand-700"
                         )}>
                           {suggestion.impact === "high" ? "Alto impacto" : suggestion.impact === "medium" ? "Médio impacto" : "Baixo impacto"}
@@ -366,7 +386,7 @@ export function ATSAnalyzer({ resumeContent, onAnalysisComplete, className = "" 
                     {analysis.skillsMatch.missing.map((skill, idx) => (
                       <span
                         key={idx}
-                        className="px-2 py-1 rounded-full bg-amber-100 text-amber-700 text-caption font-medium"
+                        className="px-2 py-1 rounded-full bg-slate-100 text-slate-700 text-caption font-medium"
                       >
                         {skill}
                       </span>

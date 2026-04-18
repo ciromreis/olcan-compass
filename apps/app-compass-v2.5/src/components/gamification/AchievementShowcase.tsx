@@ -22,7 +22,7 @@ const RARITY_CONFIG: Record<AchievementRarity, { color: string; icon: typeof Sta
   common: { color: 'text-slate-400', icon: Star },
   rare: { color: 'text-blue-400', icon: Award },
   epic: { color: 'text-purple-400', icon: Sparkles },
-  legendary: { color: 'text-amber-400', icon: Trophy },
+  legendary: { color: 'text-slate-400', icon: Trophy },
 }
 
 const CATEGORY_ICONS: Record<string, typeof Trophy> = {
@@ -74,8 +74,8 @@ export function AchievementShowcase() {
       <GlassCard className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-amber-500/20 to-yellow-500/20">
-              <Trophy className="w-6 h-6 text-amber-400" />
+            <div className="p-2 rounded-lg bg-gradient-to-br from-slate-500/20 to-slate-500/20">
+              <Trophy className="w-6 h-6 text-slate-400" />
             </div>
             <div>
               <h2 className="text-xl font-bold">Achievements</h2>
@@ -100,7 +100,7 @@ export function AchievementShowcase() {
               <span>{stats.byRarity.epic}</span>
             </div>
             <div className="flex items-center gap-1">
-              <Trophy className="w-4 h-4 text-amber-400" />
+              <Trophy className="w-4 h-4 text-slate-400" />
               <span>{stats.byRarity.legendary}</span>
             </div>
           </div>
@@ -111,7 +111,7 @@ export function AchievementShowcase() {
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${stats.percentage}%` }}
-            className="h-full bg-gradient-to-r from-amber-400 via-purple-400 to-blue-400"
+            className="h-full bg-gradient-to-r from-slate-400 via-purple-400 to-blue-400"
           />
         </div>
       </GlassCard>
@@ -229,7 +229,7 @@ function AchievementCard({
               </span>
               
               {isUnlocked ? (
-                <span className="text-amber-400">
+                <span className="text-slate-400">
                   +{achievement.xpReward} XP
                 </span>
               ) : (

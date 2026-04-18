@@ -43,7 +43,7 @@ export default function SprintsPage() {
           <div className="flex items-center gap-2">
             <button 
               onClick={() => setOrchestratorOpen(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-nanobanana-500 text-slate-900 font-heading font-semibold text-body-sm hover:bg-nanobanana-400 transition-colors shadow-[0_0_15px_rgba(255,235,59,0.2)]"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white text-slate-900 font-heading font-semibold text-body-sm hover:bg-slate-200 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.1)]"
             >
               <GitMerge className="w-4 h-4" /> Orchestrate Path
             </button>
@@ -94,10 +94,10 @@ export default function SprintsPage() {
             <Link key={sprint.id} href={`/sprints/${sprint.id}`} className="card-surface p-6 group hover:-translate-y-0.5 transition-transform block">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                  sprint.status === "completed" ? "bg-sage-50" : sprint.status === "paused" ? "bg-amber-50" : "bg-brand-50"
+                  sprint.status === "completed" ? "bg-sage-50" : sprint.status === "paused" ? "bg-slate-50" : "bg-brand-50"
                 }`}>
                   {sprint.status === "paused" ? (
-                    <Pause className="w-6 h-6 text-amber-500" />
+                    <Pause className="w-6 h-6 text-slate-500" />
                   ) : (
                     <Zap className={`w-6 h-6 ${sprint.status === "completed" ? "text-sage-500" : "text-brand-500"}`} />
                   )}
@@ -111,7 +111,7 @@ export default function SprintsPage() {
                         <Clock className="w-3.5 h-3.5" />{dl} dias restantes
                       </span>
                     ) : sprint.status === "paused" ? (
-                      <span className="flex items-center gap-1 text-amber-500"><Pause className="w-3.5 h-3.5" />Pausado</span>
+                      <span className="flex items-center gap-1 text-slate-500"><Pause className="w-3.5 h-3.5" />Pausado</span>
                     ) : (
                       <span className="flex items-center gap-1 text-sage-500"><CheckCircle className="w-3.5 h-3.5" />Concluído</span>
                     )}

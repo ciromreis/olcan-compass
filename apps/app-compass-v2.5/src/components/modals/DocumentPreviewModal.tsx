@@ -13,9 +13,15 @@ export default function DocumentPreviewModal({
   open,
   onClose,
   title = "Carta de Motivação — v3",
-  content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\nSed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.",
+  content,
 }: DocumentPreviewModalProps) {
   if (!open) return null;
+
+  const paragraphs = (content ?? "")
+    .split("\n\n")
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+  const hasContent = paragraphs.length > 0;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
@@ -27,17 +33,40 @@ export default function DocumentPreviewModal({
             <h2 className="font-heading text-h4 text-text-primary">{title}</h2>
           </div>
           <div className="flex items-center gap-2">
-            <button className="p-2 rounded-lg hover:bg-cream-200 transition-colors"><Download className="w-4 h-4 text-text-muted" /></button>
-            <button className="p-2 rounded-lg hover:bg-cream-200 transition-colors"><ExternalLink className="w-4 h-4 text-text-muted" /></button>
+            <button
+              className="p-2 rounded-lg hover:bg-cream-200 transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+              disabled={!hasContent}
+              aria-label="Baixar documento"
+            >
+              <Download className="w-4 h-4 text-text-muted" />
+            </button>
+            <button
+              className="p-2 rounded-lg hover:bg-cream-200 transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+              disabled={!hasContent}
+              aria-label="Abrir documento em nova visualização"
+            >
+              <ExternalLink className="w-4 h-4 text-text-muted" />
+            </button>
             <button onClick={onClose} className="p-2 rounded-lg hover:bg-cream-200 transition-colors"><X className="w-5 h-5 text-text-muted" /></button>
           </div>
         </div>
         <div className="flex-1 overflow-y-auto p-6">
-          <div className="prose prose-sm max-w-none">
-            {content.split("\n\n").map((para, i) => (
-              <p key={i} className="text-body text-text-primary mb-4 leading-relaxed">{para}</p>
-            ))}
-          </div>
+          {hasContent ? (
+            <div className="prose prose-sm max-w-none">
+              {paragraphs.map((para, i) => (
+                <p key={i} className="text-body text-text-primary mb-4 leading-relaxed">{para}</p>
+              ))}
+            </div>
+          ) : (
+            <div className="flex h-full min-h-48 items-center justify-center rounded-2xl border border-dashed border-cream-300 bg-cream-50 px-6 text-center">
+              <div>
+                <p className="font-heading text-h5 text-text-primary">Prévia indisponível</p>
+                <p className="mt-2 text-body-sm text-text-secondary">
+                  Este documento ainda não possui conteúdo renderizável para pré-visualização.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

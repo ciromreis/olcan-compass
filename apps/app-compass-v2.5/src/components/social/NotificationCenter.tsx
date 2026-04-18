@@ -6,7 +6,8 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { apiClient } from '@/lib/api-client'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Bell,
@@ -42,7 +43,7 @@ interface Notification {
   action_url?: string
   is_read: boolean
   created_at: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 const NOTIFICATION_ICONS: Record<NotificationType, typeof Bell> = {
@@ -58,7 +59,7 @@ const NOTIFICATION_ICONS: Record<NotificationType, typeof Bell> = {
 }
 
 const NOTIFICATION_COLORS: Record<NotificationType, string> = {
-  achievement: 'text-amber-500',
+  achievement: 'text-slate-500',
   level_up: 'text-green-500',
   quest: 'text-blue-500',
   guild_invite: 'text-purple-500',
@@ -66,7 +67,7 @@ const NOTIFICATION_COLORS: Record<NotificationType, string> = {
   follower: 'text-pink-500',
   comment: 'text-cyan-500',
   like: 'text-red-500',
-  system: 'text-orange-500'
+  system: 'text-slate-500'
 }
 
 interface NotificationCenterProps {
@@ -79,54 +80,13 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
   const [isLoading, setIsLoading] = useState(true)
   const [unreadCount, setUnreadCount] = useState(0)
 
-  useEffect(() => {
-    if (isOpen) {
-      loadNotifications()
-    }
-  }, [isOpen])
-
-  const loadNotifications = async () => {
+  const loadNotifications = useCallback(async () => {
     setIsLoading(true)
     try {
-      // TODO: Fetch from API
-      // Placeholder data
-      const mockNotifications: Notification[] = [
-        {
-          id: '1',
-          notification_type: 'achievement',
-          title: 'Achievement Unlocked!',
-          message: 'You earned "Document Master" badge',
-          is_read: false,
-          created_at: new Date(Date.now() - 1800000).toISOString()
-        },
-        {
-          id: '2',
-          notification_type: 'follower',
-          title: 'New Follower',
-          message: 'Sarah Chen started following you',
-          is_read: false,
-          created_at: new Date(Date.now() - 3600000).toISOString()
-        },
-        {
-          id: '3',
-          notification_type: 'guild_invite',
-          title: 'Guild Invitation',
-          message: 'You were invited to join "Tech Career Accelerators"',
-          is_read: false,
-          created_at: new Date(Date.now() - 7200000).toISOString()
-        },
-        {
-          id: '4',
-          notification_type: 'level_up',
-          title: 'Level Up!',
-          message: 'You reached Level 15',
-          is_read: true,
-          created_at: new Date(Date.now() - 86400000).toISOString()
-        }
-      ]
-      
-      setNotifications(mockNotifications)
-      setUnreadCount(mockNotifications.filter(n => !n.is_read).length)
+      const data = await apiClient.getNotifications()
+      const remoteNotifications = (data as Notification[]) || []
+      setNotifications(remoteNotifications)
+      setUnreadCount(remoteNotifications.filter((n) => !n.is_read).length)
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Failed to load notifications:', error)
@@ -134,12 +94,18 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    if (isOpen) {
+      void loadNotifications()
+    }
+  }, [isOpen, loadNotifications])
 
   const markAsRead = async (notificationId: string) => {
     try {
-      // TODO: Call API to mark as read
-      setNotifications(notifications.map(n => 
+      await apiClient.markNotificationRead(notificationId)
+      setNotifications(notifications.map(n =>
         n.id === notificationId ? { ...n, is_read: true } : n
       ))
       setUnreadCount(prev => Math.max(0, prev - 1))
@@ -152,7 +118,7 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
 
   const markAllAsRead = async () => {
     try {
-      // TODO: Call API to mark all as read
+      await apiClient.markAllNotificationsRead()
       setNotifications(notifications.map(n => ({ ...n, is_read: true })))
       setUnreadCount(0)
     } catch (error) {
@@ -162,18 +128,11 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
     }
   }
 
-  const deleteNotification = async (notificationId: string) => {
-    try {
-      // TODO: Call API to delete notification
-      const notification = notifications.find(n => n.id === notificationId)
-      setNotifications(notifications.filter(n => n.id !== notificationId))
-      if (notification && !notification.is_read) {
-        setUnreadCount(prev => Math.max(0, prev - 1))
-      }
-    } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Failed to delete notification:', error)
-      }
+  const deleteNotification = (notificationId: string) => {
+    const notification = notifications.find(n => n.id === notificationId)
+    setNotifications(notifications.filter(n => n.id !== notificationId))
+    if (notification && !notification.is_read) {
+      setUnreadCount(prev => Math.max(0, prev - 1))
     }
   }
 
@@ -237,7 +196,7 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
                   <Bell className="w-12 h-12 mx-auto text-foreground/20 mb-3" />
                   <p className="text-foreground/60 font-medium">No notifications</p>
                   <p className="text-foreground/40 text-sm mt-1">
-                    You're all caught up!
+                    You&apos;re all caught up!
                   </p>
                 </div>
               ) : (

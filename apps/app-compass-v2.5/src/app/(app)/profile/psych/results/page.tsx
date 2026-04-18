@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Target, TrendingUp, Shield, Lightbulb, DollarSign, Clock, Heart, Route as RouteIcon, Share2, Check } from "lucide-react";
 import { usePsychStore, type Dimension } from "@/stores/psych";
+import { OiosSnapshotCard } from "@/components/psych/OiosSnapshotCard";
 import { Progress, RadarChart, ProgressRing, type RadarDataPoint } from "@/components/ui";
 
 // ─── Share Button ─────────────────────────────────────────────────────────────
@@ -178,6 +179,7 @@ export default function ResultsPage() {
 
   return (
     <div className="space-y-6">
+      <OiosSnapshotCard variant="results" />
       <div className="card-surface p-8 text-center noise-overlay relative overflow-hidden">
         <div className="relative z-10">
           <p className="text-caption font-heading font-semibold tracking-widest uppercase text-brand-400 mb-4">Seu Score de Certeza</p>
@@ -188,7 +190,7 @@ export default function ResultsPage() {
             variant="auto"
             className="mx-auto mb-5"
           >
-            <span className={`font-heading text-display ${overallScore >= 65 ? "text-brand-500" : overallScore >= 40 ? "text-amber-500" : "text-clay-500"}`}>
+            <span className={`font-heading text-display ${overallScore >= 65 ? "text-brand-500" : overallScore >= 40 ? "text-slate-500" : "text-clay-500"}`}>
               <AnimatedScore target={overallScore || 63} />
             </span>
           </ProgressRing>
@@ -213,7 +215,7 @@ export default function ResultsPage() {
                   <span className="text-body-sm text-text-primary flex items-center gap-2">
                     <d.icon className="w-4 h-4 text-text-muted" /> {d.label}
                   </span>
-                  <span className={`text-body-sm font-bold ${d.score >= 65 ? "text-brand-500" : d.score >= 40 ? "text-amber-500" : "text-clay-500"}`}>
+                  <span className={`text-body-sm font-bold ${d.score >= 65 ? "text-brand-500" : d.score >= 40 ? "text-slate-500" : "text-clay-500"}`}>
                     {d.score || "—"}
                   </span>
                 </div>

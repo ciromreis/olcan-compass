@@ -4,14 +4,24 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
-  MapPin, Clock, DollarSign, Target, TrendingUp, GitBranch,
-  Calendar, AlertTriangle, Settings, CheckCircle, Circle, Route as RouteIcon, ArrowRight, Sparkles, Zap,
+  MapPin,
+  Clock,
+  DollarSign,
+  Settings,
+  CheckCircle,
+  Circle,
+  Route as RouteIcon,
+  AlertTriangle,
+  GitBranch,
+  Calendar,
 } from "lucide-react";
 import { useRouteStore, type MilestoneStatus } from "@/stores/routes";
 import { useCommunityStore } from "@/stores/community";
 import { buildRouteArtifactDraft } from "@/lib/community-artifacts";
 import { useCommunityArtifactSave, useHydration } from "@/hooks";
-import { CommunityContextSection, Progress, SaveToCommunityButton, Skeleton } from "@/components/ui";
+import { CommunityContextSection, SaveToCommunityButton, Skeleton } from "@/components/ui";
+import { DetailPageShell, routeDetailTabs } from "@/components/layout/DetailPageShell";
+import { RouteMetadataSidebar } from "@/components/routes/RouteMetadataSidebar";
 
 function MilestoneIcon({ status }: { status: MilestoneStatus }) {
   if (status === "completed") return <CheckCircle className="w-5 h-5 text-brand-500" />;
@@ -104,105 +114,93 @@ export default function RouteOverviewPage() {
     saveCommunityArtifact(draft);
   };
 
+  // Subtitle with route metadata
+  const subtitle = (
+    <div className="flex flex-wrap gap-4 text-sm text-text-secondary">
+      <span className="flex items-center gap-1">
+        <MapPin className="h-3.5 w-3.5" />
+        {route.country}
+      </span>
+      <span className="flex items-center gap-1">
+        <Clock className="h-3.5 w-3.5" />
+        {route.timeline}
+      </span>
+      <span className="flex items-center gap-1">
+        <DollarSign className="h-3.5 w-3.5" />
+        {route.budget}
+      </span>
+    </div>
+  );
+
+  // Action buttons
+  const actions = (
+    <>
+      <SaveToCommunityButton onClick={handleSaveToCommunity} />
+      <Link
+        href={`/routes/${routeId}/settings`}
+        className="inline-flex items-center gap-2 rounded-lg border border-cream-500 px-3 py-2 text-sm text-text-secondary transition-colors hover:bg-cream-200"
+      >
+        <Settings className="h-4 w-4" />
+      </Link>
+    </>
+  );
+
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-caption font-heading font-semibold tracking-widest uppercase text-brand-400 mb-1">Rota Ativa</p>
-          <h1 className="font-heading text-h2 text-text-primary">{route.name}</h1>
-          <div className="flex flex-wrap gap-4 mt-2 text-body-sm text-text-secondary">
-            <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{route.country}</span>
-            <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{route.timeline}</span>
-            <span className="flex items-center gap-1"><DollarSign className="w-3.5 h-3.5" />{route.budget}</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <SaveToCommunityButton onClick={handleSaveToCommunity} />
-          <Link href={`/routes/${routeId}/settings`} className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-cream-500 text-text-secondary text-body-sm hover:bg-cream-200 transition-colors">
-            <Settings className="w-4 h-4" />
-          </Link>
-        </div>
+    <DetailPageShell
+      backHref="/routes"
+      backLabel="Rotas"
+      title={route.name}
+      subtitle={subtitle}
+      tabs={routeDetailTabs(routeId)}
+      sidebar={
+        <RouteMetadataSidebar
+          route={route}
+          progress={progress}
+          completedMilestones={completedMilestones}
+          inProgressCount={inProgressCount}
+          pendingCount={pendingCount}
+          probabilityScore={probabilityScore}
+          riskCount={riskCount}
+          blockedCount={blockedCount}
+          nextMilestone={nextMilestone}
+          onToggleMilestone={handleToggle}
+        />
+      }
+      actions={actions}
+    >
+      {/* Quick nav cards */}
+      <div className="grid gap-3 md:grid-cols-4">
+        <Link
+          href={`/routes/${routeId}/milestones`}
+          className="card-surface p-4 text-center transition-colors hover:bg-cream-100"
+        >
+          <GitBranch className="mx-auto mb-1 h-5 w-5 text-brand-500" />
+          <span className="text-sm font-medium text-text-primary">Milestones</span>
+        </Link>
+        <Link
+          href={`/routes/${routeId}/graph`}
+          className="card-surface p-4 text-center transition-colors hover:bg-cream-100"
+        >
+          <GitBranch className="mx-auto mb-1 h-5 w-5 text-sage-500" />
+          <span className="text-sm font-medium text-text-primary">Grafo DAG</span>
+        </Link>
+        <Link
+          href={`/routes/${routeId}/timeline`}
+          className="card-surface p-4 text-center transition-colors hover:bg-cream-100"
+        >
+          <Calendar className="mx-auto mb-1 h-5 w-5 text-clay-500" />
+          <span className="text-sm font-medium text-text-primary">Timeline</span>
+        </Link>
+        <Link
+          href={`/routes/${routeId}/risk`}
+          className="card-surface p-4 text-center transition-colors hover:bg-cream-100"
+        >
+          <AlertTriangle className="mx-auto mb-1 h-5 w-5 text-clay-400" />
+          <span className="text-sm font-medium text-text-primary">Riscos</span>
+        </Link>
       </div>
 
-      {/* Stats */}
-      <div className="grid md:grid-cols-3 gap-4">
-        <div className="card-surface p-5">
-          <div className="flex items-center gap-2 mb-2"><Target className="w-4 h-4 text-brand-500" /><span className="text-body-sm font-medium text-text-secondary">Progresso</span></div>
-          <p className="font-heading text-h2 text-text-primary">{progress}%</p>
-          <Progress value={progress} variant="moss" size="sm" className="mt-2" />
-          <p className="text-caption text-text-muted mt-1">{completedMilestones}/{route.milestones.length} milestones</p>
-        </div>
-        <div className="card-surface p-5">
-          <div className="flex items-center gap-2 mb-2"><TrendingUp className="w-4 h-4 text-brand-500" /><span className="text-body-sm font-medium text-text-secondary">Probabilidade</span></div>
-          <p className={`font-heading text-h2 ${probabilityScore >= 60 ? "text-brand-500" : "text-amber-500"}`}>{probabilityScore}%</p>
-          <p className="text-caption text-text-muted mt-1">Baseada no seu perfil e progresso</p>
-        </div>
-        <div className="card-surface p-5">
-          <div className="flex items-center gap-2 mb-2"><AlertTriangle className={`w-4 h-4 ${riskCount > 0 ? "text-clay-500" : "text-sage-500"}`} /><span className="text-body-sm font-medium text-text-secondary">Riscos</span></div>
-          <p className={`font-heading text-h2 ${riskCount > 0 ? "text-clay-500" : "text-sage-500"}`}>{riskCount}</p>
-          <p className="text-caption text-text-muted mt-1">{riskCount > 0 ? "Deadlines próximos" : "Sem riscos imediatos"}</p>
-        </div>
-      </div>
-
-      {nextMilestone && (
-        <div className="card-surface p-6 border-l-4 border-brand-500">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <div className="flex items-center gap-2 mb-2 text-brand-500">
-                <Sparkles className="w-4 h-4" />
-                <p className="text-caption font-heading font-semibold uppercase tracking-wider">Foco atual da rota</p>
-              </div>
-              <h2 className="font-heading text-h3 text-text-primary">{nextMilestone.name}</h2>
-              <p className="mt-2 text-body text-text-secondary">
-                Esta é a próxima alavanca da sua rota em <strong>{route.country}</strong>. Ao concluir este item, você destrava a sequência operacional seguinte.
-              </p>
-              <div className="mt-3 flex flex-wrap gap-3 text-body-sm text-text-muted">
-                <span className="inline-flex items-center gap-1 rounded-full bg-cream-100 px-3 py-1">Etapa: {nextMilestone.group}</span>
-                {nextMilestone.dueDate && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-cream-100 px-3 py-1">
-                    Prazo: {new Date(nextMilestone.dueDate).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" })}
-                  </span>
-                )}
-                <span className="inline-flex items-center gap-1 rounded-full bg-cream-100 px-3 py-1">
-                  Dependências mapeadas: {blockedCount}
-                </span>
-              </div>
-            </div>
-            <button onClick={() => void handleToggle(nextMilestone.id)} className="inline-flex items-center gap-2 self-start rounded-xl bg-brand-500 px-5 py-3 text-body-sm font-semibold text-white transition-colors hover:bg-brand-600">
-              Avançar milestone
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Quick nav */}
-      <div className="grid md:grid-cols-4 gap-3">
-        <Link href={`/routes/${routeId}/milestones`} className="card-surface p-4 text-center hover:bg-cream-100 transition-colors"><GitBranch className="w-5 h-5 text-brand-500 mx-auto mb-1" /><span className="text-body-sm font-medium text-text-primary">Milestones</span></Link>
-        <Link href={`/routes/${routeId}/graph`} className="card-surface p-4 text-center hover:bg-cream-100 transition-colors"><GitBranch className="w-5 h-5 text-sage-500 mx-auto mb-1" /><span className="text-body-sm font-medium text-text-primary">Grafo DAG</span></Link>
-        <Link href={`/routes/${routeId}/timeline`} className="card-surface p-4 text-center hover:bg-cream-100 transition-colors"><Calendar className="w-5 h-5 text-clay-500 mx-auto mb-1" /><span className="text-body-sm font-medium text-text-primary">Timeline</span></Link>
-        <Link href={`/routes/${routeId}/risk`} className="card-surface p-4 text-center hover:bg-cream-100 transition-colors"><AlertTriangle className="w-5 h-5 text-clay-400 mx-auto mb-1" /><span className="text-body-sm font-medium text-text-primary">Riscos</span></Link>
-      </div>
-
-      {progress < 60 && (
-        <div className="card-surface p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 border border-brand-200">
-          <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
-            <Zap className="w-5 h-5 text-brand-500" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-heading font-semibold text-text-primary text-body-sm">Reforce a execução logística</p>
-            <p className="text-caption text-text-muted mt-0.5">Crie um sprint de relocation para converter milestones pendentes em tarefas acionáveis.</p>
-          </div>
-          <Link
-            href="/sprints/new?template=relocation"
-            className="flex-shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors"
-          >
-            <Zap className="w-4 h-4" /> Criar Sprint <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-      )}
-
+      {/* Community Context */}
       {contextualItems.length > 0 && (
         <CommunityContextSection
           title="Referências úteis para esta rota"
@@ -215,9 +213,11 @@ export default function RouteOverviewPage() {
 
       {/* Milestones by group */}
       <div className="card-surface p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-heading text-h4 text-text-primary">Milestones</h3>
-          <span className="text-caption text-text-muted">{inProgressCount} em andamento · {pendingCount} pendentes</span>
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="font-heading text-lg font-semibold text-text-primary">Milestones</h3>
+          <span className="text-xs text-text-muted">
+            {inProgressCount} em andamento · {pendingCount} pendentes
+          </span>
         </div>
         <div className="space-y-6">
           {groups.map((group) => {
@@ -225,11 +225,18 @@ export default function RouteOverviewPage() {
             const groupDone = groupMilestones.every((m) => m.status === "completed");
             return (
               <div key={group}>
-                <div className="flex items-center gap-2 mb-3">
-                  <h4 className={`text-body-sm font-semibold ${groupDone ? "text-sage-500" : "text-text-secondary"}`}>{group}</h4>
-                  {groupDone && <CheckCircle className="w-3.5 h-3.5 text-sage-500" />}
-                  <span className="text-caption text-text-muted">
-                    {groupMilestones.filter((m) => m.status === "completed").length}/{groupMilestones.length}
+                <div className="mb-3 flex items-center gap-2">
+                  <h4
+                    className={`text-sm font-semibold ${
+                      groupDone ? "text-sage-500" : "text-text-secondary"
+                    }`}
+                  >
+                    {group}
+                  </h4>
+                  {groupDone && <CheckCircle className="h-3.5 w-3.5 text-sage-500" />}
+                  <span className="text-xs text-text-muted">
+                    {groupMilestones.filter((m) => m.status === "completed").length}/
+                    {groupMilestones.length}
                   </span>
                 </div>
                 <div className="space-y-2">
@@ -237,30 +244,45 @@ export default function RouteOverviewPage() {
                     <button
                       key={m.id}
                       onClick={() => void handleToggle(m.id)}
-                      className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all duration-200 ${
+                      className={`flex w-full items-center gap-3 rounded-lg p-3 text-left transition-all duration-200 ${
                         m.status === "completed"
                           ? "bg-brand-50/50"
                           : m.status === "in_progress"
-                          ? "bg-cream-100 border border-brand-200"
+                          ? "border border-brand-200 bg-cream-100"
                           : "bg-cream-50 hover:bg-cream-100"
                       } ${justToggled === m.id ? "scale-[1.01] shadow-sm" : ""}`}
                     >
                       <MilestoneIcon status={m.status} />
-                      <div className="flex-1 min-w-0">
-                        <p className={`text-body-sm font-medium ${m.status === "completed" ? "text-text-muted line-through" : "text-text-primary"}`}>
+                      <div className="min-w-0 flex-1">
+                        <p
+                          className={`text-sm font-medium ${
+                            m.status === "completed"
+                              ? "text-text-muted line-through"
+                              : "text-text-primary"
+                          }`}
+                        >
                           {m.name}
                         </p>
                         {m.dependsOn?.length ? (
-                          <p className="text-caption text-text-muted">Depende de {m.dependsOn.length} etapa{m.dependsOn.length !== 1 ? "s" : ""} anterior{m.dependsOn.length !== 1 ? "es" : ""}</p>
+                          <p className="text-xs text-text-muted">
+                            Depende de {m.dependsOn.length} etapa{m.dependsOn.length !== 1 ? "s" : ""}{" "}
+                            anterior{m.dependsOn.length !== 1 ? "es" : ""}
+                          </p>
                         ) : null}
                         {m.dueDate && (
-                          <p className="text-caption text-text-muted">
-                            {new Date(m.dueDate).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" })}
+                          <p className="text-xs text-text-muted">
+                            {new Date(m.dueDate).toLocaleDateString("pt-BR", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })}
                           </p>
                         )}
                       </div>
                       {m.status === "in_progress" && (
-                        <span className="text-caption font-medium text-brand-500 px-2 py-0.5 rounded-full bg-brand-50">Em andamento</span>
+                        <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-500">
+                          Em andamento
+                        </span>
                       )}
                     </button>
                   ))}
@@ -270,6 +292,6 @@ export default function RouteOverviewPage() {
           })}
         </div>
       </div>
-    </div>
+    </DetailPageShell>
   );
 }

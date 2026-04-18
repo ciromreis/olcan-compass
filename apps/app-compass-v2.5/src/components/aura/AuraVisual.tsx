@@ -1,87 +1,52 @@
 /**
- * Aura Visual Display - v2.5 Metamodern
+ * Aura Visual Display - v2.5
  *
- * Renders the user's Aura using Liquid-Glass aesthetics.
- * Replaces legacy emojis with abstract, animated geometric orbs.
+ * Uses a deterministic procedural figure instead of fixed mascot art.
+ * This keeps the visual system adaptable across routes and readiness states.
  */
 
-'use client'
+"use client";
 
-import { useState, useEffect, useMemo } from 'react'
-import Image from 'next/image'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Heart, Zap, Sparkles, Shield, Activity, Star, Info } from 'lucide-react'
-import type { EvolutionStage, ArchetypeType, AuraStats } from '@/stores/auraStore'
+import { type ReactNode, useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Activity, Heart, Sparkles, Star, Zap } from "lucide-react";
+import type { PresencePhenotype } from "@/lib/presence-phenotype";
+import {
+  derivePresenceProfile,
+  getPresenceReaction,
+  resolvePresenceEvent,
+} from "@/lib/aura-presence";
+import type { CareActivityType, EvolutionStage, ArchetypeType, AuraStats, Aura } from "@/stores/auraStore";
+import { ProceduralAuraFigure } from "@/components/aura/ProceduralAuraFigure";
 
 interface AuraVisualProps {
-  evolutionStage: EvolutionStage
-  archetype: ArchetypeType
-  name: string
-  level: number
-  stats: AuraStats
-  happiness: number
-  energy: number
-  isPerformingActivity?: boolean
-  activityType?: 'feed' | 'train' | 'play' | 'rest'
+  evolutionStage: EvolutionStage;
+  archetype: ArchetypeType;
+  name: string;
+  level: number;
+  stats: AuraStats;
+  happiness: number;
+  energy: number;
+  isPerformingActivity?: boolean;
+  activityType?: CareActivityType;
+  phenotype?: PresencePhenotype;
+  pathnameHint?: string;
+  ritualAffinity?: Record<string, number>;
 }
 
-// Visual configurations for each evolution stage - Metamodern Liquid Glass
-const STAGE_VISUALS: Record<EvolutionStage, {
-  label: string
-  size: number
-  layers: number
-  blur: string
-  color: string
-  animation: string
-}> = {
-  egg: {
-    label: 'Núcleo Primário',
-    size: 100,
-    layers: 2,
-    blur: 'blur-md',
-    color: 'bg-bone-500/20',
-    animation: 'pulse'
-  },
-  sprout: {
-    label: 'Despertar',
-    size: 130,
-    layers: 3,
-    blur: 'blur-lg',
-    color: 'bg-emerald-500/30',
-    animation: 'breathe'
-  },
-  young: {
-    label: 'Expansão',
-    size: 160,
-    layers: 4,
-    blur: 'blur-xl',
-    color: 'bg-blue-500/40',
-    animation: 'float'
-  },
-  mature: {
-    label: 'Transcendente',
-    size: 200,
-    layers: 5,
-    blur: 'blur-2xl',
-    color: 'bg-gold-500/50',
-    animation: 'radiate'
-  },
-  master: {
-    label: 'Arquetípico',
-    size: 240,
-    layers: 6,
-    blur: 'blur-3xl',
-    color: 'bg-purple-500/60',
-    animation: 'vortex'
-  },
-  legendary: {
-    label: 'Soberano',
-    size: 300,
-    layers: 8,
-    blur: 'blur-[64px]',
-    color: 'bg-gold-400/70',
-    animation: 'divine'
-  }
+const STAGE_LABELS: Record<EvolutionStage, string> = {
+  egg: "Núcleo inicial",
+  sprout: "Despertar operacional",
+  young: "Expansão em curso",
+  mature: "Consistência alta",
+  master: "Domínio articulado",
+  legendary: "Forma soberana",
+};
+
+function toneClass(value: number): string {
+  if (value >= 75) return "text-slate-800";
+  if (value >= 50) return "text-slate-600";
+  return "text-slate-400";
 }
 
 export function AuraVisual({
@@ -94,262 +59,267 @@ export function AuraVisual({
   energy,
   isPerformingActivity,
   activityType,
+  phenotype,
+  pathnameHint,
+  ritualAffinity,
 }: AuraVisualProps) {
-  const [isHovered, setIsHovered] = useState(false)
-  const visual = STAGE_VISUALS[evolutionStage] || STAGE_VISUALS.egg
+  const [isHovered, setIsHovered] = useState(false);
 
-  // Emotion determination in PT-BR
-  const emotion = useMemo(() => {
-    if (happiness > 80 && energy > 50) return { label: 'Elevado', color: 'text-gold-500' }
-    if (happiness < 30) return { label: 'Dissonante', color: 'text-ink-300' }
-    if (energy < 20) return { label: 'Latente', color: 'text-blue-300' }
-    return { label: 'Em Estágio', color: 'text-bone-400' }
-  }, [happiness, energy])
+  const auraSnapshot = useMemo<Aura>(
+    () => ({
+      id: `visual-${name}-${archetype}`,
+      userId: "visual",
+      name,
+      archetype,
+      evolutionStage,
+      level,
+      experiencePoints: level * 100,
+      xpToNextLevel: (level + 1) * 100,
+      health: 100,
+      maxHealth: 100,
+      happiness,
+      energy,
+      maxEnergy: 100,
+      stats,
+      abilities: [],
+      createdAt: "",
+      updatedAt: "",
+      lastCaredAt: null,
+      ritualAffinity,
+    }),
+    [name, archetype, evolutionStage, level, happiness, energy, stats, ritualAffinity]
+  );
+
+  const profile = useMemo(
+    () => derivePresenceProfile(auraSnapshot, phenotype),
+    [auraSnapshot, phenotype]
+  );
+
+  const reaction = useMemo(
+    () =>
+      getPresenceReaction({
+        aura: auraSnapshot,
+        phenotype,
+        event: resolvePresenceEvent({
+          aura: auraSnapshot,
+          phenotype,
+          pathname: pathnameHint,
+          activityType,
+        }),
+        activityType,
+      }),
+    [activityType, auraSnapshot, pathnameHint, phenotype]
+  );
+
+  const activityLabel = activityType
+    ? {
+        feed: "calibração biológica",
+        train: "potencialização",
+        play: "interação ativa",
+        rest: "recomposição",
+        groom: "refino",
+        socialize: "expansão relacional",
+      }[activityType]
+    : null;
+
+  const adaptationScore = Math.round((phenotype?.adaptationLevel ?? 0.18) * 100);
+  const documentScore = Math.round((phenotype?.documentReadiness ?? 0.22) * 100);
+  const interviewScore = Math.round((phenotype?.interviewReadiness ?? 0.18) * 100);
 
   return (
-    <div 
-      className="relative flex items-center justify-center p-12"
+    <div
+      className="relative flex items-center justify-center p-10"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Background Ambient Glow */}
+      {/* Phantom Ring Background (Crisp, High-End) */}
       <motion.div
-        className={`absolute rounded-full pointer-events-none ${visual.blur} opacity-20`}
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: isHovered ? [0.2, 0.4, 0.2] : 0.2
-        }}
-        transition={{ duration: 4, repeat: Infinity }}
-        style={{
-          width: visual.size * 2,
-          height: visual.size * 2,
-          backgroundColor: visual.color.match(/bg-(\w+-\d+)/)?.[1] || 'gold-500'
-        }}
+        className="absolute inset-10 rounded-full border border-slate-300/20 bg-transparent shadow-[0_0_80px_rgba(148,163,184,0.12)]"
+        animate={{ scale: [1, 1.04, 1], opacity: [0.3, 0.45, 0.3] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* Main Liquid Glass Orb */}
-      <div className="relative z-10">
-        <AnimatePresence mode="wait">
+      <div className="relative z-10 flex flex-col items-center gap-4">
+        <AnimatePresence>
           <motion.div
-            key={evolutionStage}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 1.2, opacity: 0 }}
+            key={profile.figure.seed}
+            initial={{ opacity: 0, scale: 0.96, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 1.04 }}
+            transition={{ duration: 0.45, ease: "easeOut" }}
             className="relative"
           >
-            {/* Multiple nested layers for Liquid-Glass depth */}
-            {[...Array(visual.layers)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute inset-0 rounded-full border border-white/10 backdrop-blur-3xl"
-                initial={false}
-                animate={{
-                  rotate: [0, 360],
-                  scale: [1, 1.05, 0.95, 1],
-                  borderRadius: [
-                    '50% 50% 50% 50%',
-                    '60% 40% 70% 30%',
-                    '40% 60% 30% 70%',
-                    '50% 50% 50% 50%'
-                  ]
-                }}
-                transition={{
-                  duration: 10 + i * 2,
-                  repeat: Infinity,
-                  ease: "linear"
-                }}
-                style={{
-                  width: visual.size,
-                  height: visual.size,
-                  backgroundColor: `rgba(255, 255, 255, ${0.05 / (i + 1)})`,
-                  left: -visual.size / 2,
-                  top: -visual.size / 2,
-                  zIndex: visual.layers - i
-                }}
-              />
-            ))}
+            <ProceduralAuraFigure
+              spec={profile.figure}
+              size={260}
+              active={!isPerformingActivity}
+            />
 
-            {/* Core Essence Creature */}
             <motion.div
-              className="absolute flex items-center justify-center pointer-events-none"
-              animate={isPerformingActivity ? {
-                scale: [1, 1.1, 1],
-                filter: ['brightness(1)', 'brightness(1.2)', 'brightness(1)'],
-              } : {
-                scale: [1, 1.05, 1],
-              }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              style={{
-                width: visual.size * 0.8,
-                height: visual.size * 0.8,
-                left: -visual.size * 0.4,
-                top: -visual.size * 0.4,
-                zIndex: visual.layers + 1
-              }}
-            >
-              <Image 
-                src={archetype.toLowerCase().includes('scholar') || archetype.toLowerCase().includes('sage') ? "/images/creature-scholar.png" : "/images/creature-compass.png"}
-                alt={`${name} Creature`}
-                width={visual.size * 0.8}
-                height={visual.size * 0.8}
-                className="object-contain drop-shadow-2xl"
-                priority
-              />
-            </motion.div>
+              className="absolute -bottom-3 left-1/2 h-5 w-40 -translate-x-1/2 rounded-full bg-navy-900/10 blur-2xl"
+              animate={{ opacity: [0.28, 0.44, 0.28], scaleX: [0.95, 1.02, 0.95] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            />
           </motion.div>
         </AnimatePresence>
+
+        <div className="max-w-md rounded-[28px] border border-white/60 bg-white/70 px-5 py-4 text-center shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur-2xl">
+          <div className="flex items-center justify-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-700">
+            <Sparkles className="h-3.5 w-3.5" />
+            {profile.title}
+          </div>
+          <p className="mt-2 text-sm font-medium leading-relaxed text-slate-700">{reaction}</p>
+          <p className="mt-2 text-xs leading-relaxed text-slate-500">{profile.descriptor}</p>
+          {activityLabel ? (
+            <div className="mt-3 inline-flex rounded-full bg-brand-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-brand-700">
+              {activityLabel}
+            </div>
+          ) : null}
+        </div>
       </div>
 
-      {/* Stats UI Overlay */}
       <AnimatePresence>
         {isHovered && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="absolute bottom-[-20%] z-50 w-full max-w-xs"
+            exit={{ opacity: 0, y: 14 }}
+            className="absolute bottom-[-18%] z-40 w-full max-w-xl"
           >
-            <div className="bg-ink-950/80 backdrop-blur-2xl border border-bone-500/10 rounded-2xl p-6 shadow-2xl">
-              <div className="flex items-center justify-between mb-4">
+            <div className="rounded-[28px] border border-white/60 bg-white/78 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur-2xl">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <h3 className="text-bone-50 font-bold text-lg">{name}</h3>
-                  <p className="text-caption uppercase font-bold tracking-widest text-gold-500">
-                    {visual.label} • {archetype.replace('_', ' ')}
+                  <h3 className="text-xl font-semibold text-slate-900">{name}</h3>
+                  <p className="mt-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                    {STAGE_LABELS[evolutionStage]} • {String(archetype).replaceAll("_", " ")}
                   </p>
                 </div>
-                <div className="bg-gold-500/20 px-3 py-1 rounded-full border border-gold-500/30">
-                  <span className="text-gold-500 text-xs font-bold">Lvl {level}</span>
+                <div className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-white">
+                  Nível {level}
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <StatItem label="Poder" value={stats.power} icon={<Zap className="w-3 h-3" />} color="text-amber-500" />
-                <StatItem label="Sabedoria" value={stats.wisdom} icon={<Star className="w-3 h-3" />} color="text-blue-500" />
-                <StatItem label="Carisma" value={stats.charisma} icon={<Heart className="w-3 h-3" />} color="text-pink-500" />
-                <StatItem label="Agilidade" value={stats.agility} icon={<Activity className="w-3 h-3" />} color="text-emerald-500" />
+              <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
+                <StatItem label="Impulso" value={stats.power} icon={<Zap className="h-3.5 w-3.5" />} color="text-slate-600" />
+                <StatItem label="Conexão" value={stats.wisdom} icon={<Star className="h-3.5 w-3.5" />} color="text-slate-400" />
+                <StatItem label="Foco" value={stats.charisma} icon={<Heart className="h-3.5 w-3.5" />} color="text-slate-500" />
+                <StatItem label="Fluxo" value={stats.agility} icon={<Activity className="h-3.5 w-3.5" />} color="text-slate-300" />
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-bone-500/10">
-                <div className="flex items-center space-x-2">
-                  <span className={`text-xs font-bold ${emotion.color}`}>{emotion.label}</span>
+              <div className="mt-5 grid grid-cols-3 gap-3 border-t border-slate-200 pt-4">
+                <div>
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Adaptação</div>
+                  <div className={`mt-1 text-sm font-semibold ${toneClass(adaptationScore)}`}>{adaptationScore}%</div>
                 </div>
-                <div className="text-xs text-bone-500">
-                  Felicidade: <span className="text-bone-200 font-bold">{Math.round(happiness)}%</span>
+                <div>
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Documento</div>
+                  <div className={`mt-1 text-sm font-semibold ${toneClass(documentScore)}`}>{documentScore}%</div>
+                </div>
+                <div>
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Entrevista</div>
+                  <div className={`mt-1 text-sm font-semibold ${toneClass(interviewScore)}`}>{interviewScore}%</div>
                 </div>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Activity Icons */}
-      <AnimatePresence>
-        {isPerformingActivity && activityType && (
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1.5, opacity: 0 }}
-            transition={{ duration: 1, repeat: Infinity }}
-            className="absolute z-40 pointer-events-none"
-          >
-            <div className="w-20 h-20 rounded-full bg-gold-500/20 blur-xl" />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
-  )
+  );
 }
 
-function StatItem({ label, value, icon, color }: { label: string, value: number, icon: React.ReactNode, color: string }) {
+function StatItem({
+  label,
+  value,
+  icon,
+  color,
+}: {
+  label: string;
+  value: number;
+  icon: ReactNode;
+  color: string;
+}) {
   return (
-    <div className="flex flex-col">
-      <div className="flex items-center space-x-1 mb-1">
+    <div className="rounded-2xl border border-slate-200 bg-white/70 p-3">
+      <div className="flex items-center gap-1.5">
         <span className={color}>{icon}</span>
-        <span className="text-caption uppercase font-semibold text-bone-500 tracking-wider font-mono">{label}</span>
+        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</span>
       </div>
-      <div className="text-sm font-bold text-bone-100">{value}</div>
+      <div className="mt-2 text-lg font-semibold text-slate-900">{value}</div>
     </div>
-  )
+  );
 }
 
-/**
- * Compact Aura Avatar
- */
 export function AuraAvatar({
   evolutionStage,
-  size = 'md',
+  archetype = "strategist" as ArchetypeType,
+  size = "md",
   showLevel = false,
   level,
 }: {
-  evolutionStage: EvolutionStage
-  size?: 'sm' | 'md' | 'lg'
-  showLevel?: boolean
-  level?: number
+  evolutionStage: EvolutionStage;
+  archetype?: ArchetypeType;
+  size?: "sm" | "md" | "lg";
+  showLevel?: boolean;
+  level?: number;
 }) {
-  const visual = STAGE_VISUALS[evolutionStage] || STAGE_VISUALS.egg
-  
-  const sizeMap = {
-    sm: 32,
-    md: 48,
-    lg: 64
-  }
+  const visualSize = {
+    sm: 48,
+    md: 68,
+    lg: 84,
+  }[size];
 
-  const currentSize = sizeMap[size]
+  const auraSnapshot = {
+    id: `avatar-${evolutionStage}-${archetype}`,
+    userId: "avatar",
+    name: "Aura",
+    archetype,
+    evolutionStage,
+    level: level || 1,
+    experiencePoints: 0,
+    xpToNextLevel: 100,
+    health: 100,
+    maxHealth: 100,
+    happiness: 72,
+    energy: 68,
+    maxEnergy: 100,
+    stats: { power: 50, wisdom: 50, charisma: 50, agility: 50, battlesWon: 0, battlesLost: 0 },
+    abilities: [],
+    createdAt: "",
+    updatedAt: "",
+    lastCaredAt: null,
+  } as Aura;
+
+  const profile = derivePresenceProfile(auraSnapshot);
 
   return (
     <div className="relative inline-flex items-center justify-center">
-      <motion.div
-        animate={{ 
-          scale: [1, 1.05, 1],
-        }}
-        transition={{ 
-          duration: 3,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-        className={`rounded-full ${visual.color} border border-white/20 backdrop-blur-md shadow-lg overflow-hidden flex items-center justify-center`}
-        style={{
-          width: currentSize,
-          height: currentSize,
-          boxShadow: `0 0 15px ${visual.color.replace('bg-', '')}`
-        }}
-      >
-        <Image 
-          src="/images/creature-compass.png"
-          alt="Aura Avatar"
-          width={currentSize * 0.8}
-          height={currentSize * 0.8}
-          className="object-contain"
-        />
-      </motion.div>
-      
-      {showLevel && level && (
-        <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-gold-500 flex items-center justify-center text-caption font-semibold text-ink-950 border border-ink-950">
+      <div className="rounded-full border border-white/60 bg-white/70 p-1 shadow-[0_12px_32px_rgba(15,23,42,0.08)] backdrop-blur-xl">
+        <ProceduralAuraFigure spec={profile.figure} size={visualSize} active />
+      </div>
+      {showLevel && level ? (
+        <div className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-brand-600 text-[11px] font-semibold text-white shadow-lg">
           {level}
         </div>
-      )}
+      ) : null}
     </div>
-  )
+  );
 }
 
-/**
- * Evolution Stage Badge in PT-BR
- */
-export function EvolutionBadge({ 
+export function EvolutionBadge({
   stage,
   showGlow = false,
-}: { 
-  stage: EvolutionStage
-  showGlow?: boolean
+}: {
+  stage: EvolutionStage;
+  showGlow?: boolean;
 }) {
-  const visual = STAGE_VISUALS[stage] || STAGE_VISUALS.egg
-  
   return (
-    <div 
-      className="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-ink-900/50 backdrop-blur-md border border-bone-500/10"
-      style={showGlow ? { boxShadow: `0 0 30px ${visual.color.replace('bg-', '')}20` } : {}}
+    <div
+      className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white/75 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-700 backdrop-blur-xl"
+      style={showGlow ? { boxShadow: "0 0 32px rgba(37, 99, 235, 0.14)" } : undefined}
     >
-      <div className={`w-3 h-3 rounded-full ${visual.color}`} />
-      <span className="text-xs font-semibold uppercase tracking-widest text-bone-300">{visual.label}</span>
+      <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-br from-brand-400 to-navy-700" />
+      {STAGE_LABELS[stage]}
     </div>
-  )
+  );
 }

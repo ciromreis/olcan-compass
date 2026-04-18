@@ -17,7 +17,7 @@ export default function MarketplacePreviewPage() {
       <div className="text-center mb-16">
         <p className="text-caption font-heading font-semibold tracking-widest uppercase text-clay-400 mb-3">Marketplace Verificado</p>
         <h1 className="font-heading text-display text-text-primary mb-4">Profissionais que você pode confiar</h1>
-        <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">Todos os profissionais são vetados, avaliados por outros usuários, e pagamentos são protegidos por escrow.</p>
+        <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">Todos os profissionais são vetados, avaliados por outros usuários, e pagamentos são protegidos por garantia.</p>
       </div>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         {CATEGORIES.map((cat) => (
@@ -35,7 +35,7 @@ export default function MarketplacePreviewPage() {
         <div className="flex items-center gap-3">
           <Shield className="w-6 h-6 text-brand-500" />
           <div>
-            <p className="font-heading font-semibold text-text-primary">Pagamento com Escrow</p>
+            <p className="font-heading font-semibold text-text-primary">Pagamento Protegido</p>
             <p className="text-body-sm text-text-secondary">Dinheiro só é liberado quando o serviço é entregue</p>
           </div>
         </div>

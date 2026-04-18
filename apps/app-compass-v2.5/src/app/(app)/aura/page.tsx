@@ -5,10 +5,10 @@
 
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Zap, Sparkles, Shield, Trophy, Target, Orbit, Fingerprint, Activity } from 'lucide-react'
+import { Zap, Sparkles, Shield, Trophy, Target, Orbit, Fingerprint, Activity, Book, Download, Lock, Dna } from 'lucide-react'
 import { GlassCard, GlassButton } from '@/components/ui'
 import { 
   useAuraStore, 
@@ -24,6 +24,11 @@ import {
   CelebrationToastContainer
 } from '@/components/gamification'
 import Link from 'next/link'
+import { productSurface } from '@/lib/product-flags'
+import { useRouteStore } from '@/stores/routes'
+import { useForgeStore } from '@/stores/forge'
+import { useInterviewStore } from '@/stores/interviews'
+import { derivePresencePhenotype, deriveRoutePresenceSignals } from '@/lib/presence-phenotype'
 
 const AURA_ACTIVITIES: { type: CareActivityType; icon: React.ComponentType; label: string; xpReward: number; energyCost: number; description: string }[] = [
   { type: 'feed', icon: Fingerprint, label: 'Calibrar', xpReward: 10, energyCost: 5, description: 'Sincronia biomecânica' },
@@ -36,6 +41,9 @@ export default function AuraPage() {
   const router = useRouter()
   const aura = useAura()
   const careStreak = useCareStreak()
+  const { routes, getRouteProgress } = useRouteStore()
+  const { documents } = useForgeStore()
+  const { sessions } = useInterviewStore()
 
   const {
     fetchAura,
@@ -49,15 +57,21 @@ export default function AuraPage() {
 
   useEffect(() => {
     if (!isLoading && !aura) {
-      router.push('/companion/discover')
+      router.push('/aura/discover')
     }
   }, [isLoading, aura, router])
+
+  const routeSignals = useMemo(
+    () => deriveRoutePresenceSignals(routes, documents, sessions, getRouteProgress),
+    [routes, documents, sessions, getRouteProgress]
+  )
+  const phenotype = useMemo(() => derivePresencePhenotype(routeSignals), [routeSignals])
 
   if (!aura) {
     return (
       <div className="min-h-screen bg-surface-bg flex items-center justify-center p-8">
         <div className="flex flex-col items-center gap-4">
-          <Orbit className="w-8 h-8 text-gold-500 animate-spin-slow" />
+          <Orbit className="w-8 h-8 text-steel-500 animate-spin-slow" />
           <div className="text-[10px] uppercase tracking-wide text-ink-300 font-bold animate-pulse">Sincronizando Aura...</div>
         </div>
       </div>
@@ -85,26 +99,35 @@ export default function AuraPage() {
           className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6"
         >
           <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-[10px] font-semibold uppercase tracking-[0.25em] text-gold-600">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-steel-500/10 border border-steel-500/20 text-[10px] font-semibold uppercase tracking-[0.25em] text-steel-600">
               <Orbit className="w-4 h-4" />
-              Manifesto de Identidade Metamoderna
+              Sua Presença
             </div>
             <h1 className="text-6xl md:text-8xl font-display text-ink-950 tracking-tighter leading-tight">{aura.name}</h1>
             <p className="text-xl text-ink-400 font-medium max-w-2xl">
-              Arquétipo: <span className="text-ink-950 font-semibold capitalize tracking-tight bg-gold-500/10 px-2 rounded-md">{aura.archetype.replace('_', ' ')}</span> • Estágio: <span className="text-ink-950 font-semibold capitalize tracking-tight">{aura.evolutionStage}</span>
+              Estágio: <span className="text-ink-950 font-semibold capitalize tracking-tight bg-steel-500/10 px-2 rounded-md">{aura.evolutionStage}</span> • Nível <span className="text-ink-950 font-semibold">{aura.level}</span>
             </p>
+            <p className="text-sm text-ink-400 font-medium max-w-2xl">
+              {phenotype.routeLabel ? `Rota dominante: ${phenotype.routeLabel}.` : 'Sem rota dominante no momento.'} Adaptação atual em {Math.round((phenotype.adaptationLevel ?? 0.18) * 100)}% com urgência de {Math.round((phenotype.urgencyLevel ?? 0.22) * 100)}%.
+            </p>
+            {!productSurface.gamificationHub ? (
+              <p className="max-w-2xl border-l-2 border-steel-500/35 pl-3 text-xs font-medium leading-relaxed text-ink-400">
+                As telas completas de Missões e Conquistas ainda estão em construção; você pode abrir os atalhos ao lado para ver o estado
+                atual. XP, nível e atividades de cuidado da Aura permanecem ativos nesta página.
+              </p>
+            ) : null}
           </div>
           
           <div className="flex gap-4">
             <Link href="/aura/achievements">
-              <GlassButton className="min-w-[180px] h-16 rounded-[2rem] border border-bone-500/20 bg-bone-50/40 backdrop-blur-xl shadow-glass-sm font-semibold text-ink-900 hover:bg-gold-500 hover:text-ink-950 hover:border-gold-500 transition-all duration-500 group">
-                <Trophy className="w-6 h-6 mr-3 text-gold-500 group-hover:text-ink-950 transition-colors" />
+              <GlassButton className="min-w-[180px] h-16 rounded-[2rem] border border-bone-500/20 bg-bone-50/40 backdrop-blur-xl shadow-glass-sm font-semibold text-ink-900 hover:bg-steel-500 hover:text-ink-950 hover:border-steel-500 transition-all duration-500 group">
+                <Trophy className="w-6 h-6 mr-3 text-steel-500 group-hover:text-ink-950 transition-colors" />
                 Conquistas
               </GlassButton>
             </Link>
             <Link href="/aura/quests">
-              <GlassButton className="min-w-[180px] h-16 rounded-[2rem] border border-bone-500/20 bg-bone-50/40 backdrop-blur-xl shadow-glass-sm font-semibold text-ink-900 hover:bg-gold-500 hover:text-ink-950 hover:border-gold-500 transition-all duration-500 group">
-                <Target className="w-6 h-6 mr-3 text-gold-500 group-hover:text-ink-950 transition-colors" />
+              <GlassButton className="min-w-[180px] h-16 rounded-[2rem] border border-bone-500/20 bg-bone-50/40 backdrop-blur-xl shadow-glass-sm font-semibold text-ink-900 hover:bg-steel-500 hover:text-ink-950 hover:border-steel-500 transition-all duration-500 group">
+                <Target className="w-6 h-6 mr-3 text-steel-500 group-hover:text-ink-950 transition-colors" />
                 Missões
               </GlassButton>
             </Link>
@@ -122,7 +145,7 @@ export default function AuraPage() {
               className="relative overflow-hidden rounded-[4rem] bg-bone-50/30 backdrop-blur-[64px] border border-bone-500/20 shadow-glass p-16 flex flex-col items-center"
             >
               {/* Decorative dynamic lights */}
-              <div className="absolute -top-32 -left-32 w-64 h-64 bg-gold-500/10 rounded-full blur-[120px]" />
+              <div className="absolute -top-32 -left-32 w-64 h-64 bg-steel-500/10 rounded-full blur-[120px]" />
               <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-blue-500/10 rounded-full blur-[120px]" />
               
               <div className="mb-12 w-full flex justify-center">
@@ -134,6 +157,8 @@ export default function AuraPage() {
                   stats={aura.stats}
                   happiness={aura.happiness}
                   energy={aura.energy}
+                  phenotype={phenotype}
+                  pathnameHint="/aura"
                 />
               </div>
 
@@ -146,14 +171,14 @@ export default function AuraPage() {
                   </div>
                   <div className="text-right flex flex-col">
                     <span className="text-body-sm font-semibold uppercase tracking-wide text-ink-300">Sincronia XP</span>
-                    <span className="text-base font-semibold text-gold-600 mt-1">{aura.experiencePoints} / {aura.xpToNextLevel}</span>
+                    <span className="text-base font-semibold text-steel-600 mt-1">{aura.experiencePoints} / {aura.xpToNextLevel}</span>
                   </div>
                 </div>
                 <div className="h-2.5 bg-ink-950/5 rounded-full overflow-hidden p-0.5 border border-bone-500/10">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${(aura.experiencePoints / aura.xpToNextLevel) * 100}%` }}
-                    className="h-full bg-gradient-to-r from-gold-400 to-gold-600 rounded-full shadow-[0_0_20px_rgba(212,175,55,0.4)]"
+                    className="h-full bg-gradient-to-r from-steel-400 to-steel-600 rounded-full shadow-[0_0_20px_rgba(148,163,184,0.4)]"
                     transition={{ duration: 2.5, ease: [0.23, 1, 0.32, 1] }}
                   />
                 </div>
@@ -191,27 +216,27 @@ export default function AuraPage() {
           <div className="lg:col-span-4 space-y-10">
             {/* Energy Reserve Card - Ultra Dark Liquid Glass */}
             <GlassCard className="p-10 rounded-[3rem] bg-ink-950 border-ink-900 border-2 text-white overflow-hidden relative shadow-2xl">
-              <div className="absolute -right-12 -bottom-12 w-48 h-48 bg-gold-400/15 rounded-full blur-[80px]" />
+              <div className="absolute -right-12 -bottom-12 w-48 h-48 bg-steel-400/15 rounded-full blur-[80px]" />
               <div className="relative z-10 space-y-8">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-body-sm font-semibold uppercase tracking-wider text-gold-500/70">Potencial de Ação</h3>
-                  <div className="p-2 rounded-xl bg-gold-500/10 border border-gold-500/20">
-                    <Zap className="w-5 h-5 text-gold-500 fill-gold-500/30" />
+                  <h3 className="text-body-sm font-semibold uppercase tracking-wider text-steel-400">Potencial de Ação</h3>
+                  <div className="p-2 rounded-xl bg-steel-500/10 border border-steel-500/20">
+                    <Zap className="w-5 h-5 text-steel-500 fill-steel-500/30" />
                   </div>
                 </div>
                 <div className="flex items-baseline gap-3">
-                  <span className="text-8xl font-display leading-none tracking-tighter text-gold-500">{Math.round(aura.energy)}</span>
-                  <span className="text-lg font-semibold opacity-30 uppercase tracking-widest">/ {aura.maxEnergy} EP</span>
+                  <span className="text-8xl font-display leading-none tracking-tighter text-steel-500">{Math.round(aura.energy)}</span>
+                  <span className="text-lg font-semibold text-white/50 uppercase tracking-widest">/ {aura.maxEnergy} EP</span>
                 </div>
                 <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
                   <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${(aura.energy / aura.maxEnergy) * 100}%` }}
-                    className="h-full bg-gold-500 shadow-[0_0_15px_rgba(212,175,55,0.5)]"
+                    className="h-full bg-steel-500 shadow-[0_0_15px_rgba(148,163,184,0.5)]"
                     transition={{ duration: 1.5 }}
                   />
                 </div>
-                <div className="flex items-center gap-2 text-body-sm text-white/40 font-semibold uppercase tracking-widest">
+                <div className="flex items-center gap-2 text-body-sm text-white/60 font-semibold uppercase tracking-widest">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   Recuperação ativa: 1.5 por hora
                 </div>
@@ -232,6 +257,59 @@ export default function AuraPage() {
               <EvolutionCheck />
             </div>
 
+            {/* Digital Dossier Card - High Fidelity Output */}
+            <GlassCard className="p-10 rounded-[3rem] bg-gradient-to-br from-steel-50 to-bone-50 border border-steel-200/40 shadow-xl relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Book className="w-24 h-24 text-steel-900" />
+              </div>
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-2 h-2 rounded-full bg-steel-500 animate-pulse" />
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-steel-500">Output Profissional</span>
+                </div>
+                <h3 className="text-2xl font-display text-ink-950 mb-3">Dossier Digital v2.5</h3>
+                <p className="text-sm text-ink-400 mb-8 leading-relaxed">
+                  Consolidação do seu perfil de mobilidade, progresso no Forge e prontidão para o mercado global em um artefato soberano.
+                </p>
+
+                {aura.level >= 10 ? (
+                  <GlassButton 
+                    onClick={async () => {
+                      const res = await fetch('/api/dossier/export', {
+                        method: 'POST',
+                        body: JSON.stringify({ userId: aura.userId, level: aura.level })
+                      });
+                      if (res.ok) {
+                        const blob = await res.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `Dossier-Digital-${aura.name}.docx`;
+                        a.click();
+                      }
+                    }}
+                    className="w-full h-16 rounded-2xl bg-ink-950 text-white font-semibold flex items-center justify-center gap-3 hover:bg-steel-600 transition-all duration-500 shadow-2xl"
+                  >
+                    <Download className="w-5 h-5" />
+                    Exportar Dossier (.docx)
+                  </GlassButton>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="p-4 rounded-2xl bg-steel-100/50 border border-steel-200/20 text-[11px] font-medium text-steel-500 flex items-center gap-3">
+                      <Lock className="w-4 h-4" />
+                      Manifestação em nível {aura.level}/10 para desbloqueio
+                    </div>
+                    <div className="w-full h-1.5 bg-steel-200/30 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-steel-400 transition-all duration-1000" 
+                        style={{ width: `${Math.min(100, (aura.level / 10) * 100)}%` }} 
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </GlassCard>
+
             {/* Quick Access Card */}
             <GlassCard className="p-10 rounded-[3rem] bg-bone-50/20 border border-bone-500/10 backdrop-blur-xl">
               <h3 className="text-body-sm font-semibold uppercase tracking-wide text-ink-300 mb-8">Navegação Auxiliar</h3>
@@ -239,13 +317,19 @@ export default function AuraPage() {
                 <Link href="/aura/achievements" className="block">
                   <GlassButton className="w-full justify-between h-16 px-6 rounded-2xl bg-white border border-bone-400/10 hover:bg-ink-950 hover:text-white group transition-all duration-300">
                     <span className="font-semibold text-sm uppercase tracking-tight">Registro de Evolução</span>
-                    <Trophy className="w-5 h-5 text-gold-500 group-hover:rotate-12 transition-transform" />
+                    <Trophy className="w-5 h-5 text-steel-500 group-hover:rotate-12 transition-transform" />
                   </GlassButton>
                 </Link>
                 <Link href="/aura/quests" className="block">
                   <GlassButton className="w-full justify-between h-16 px-6 rounded-2xl bg-white border border-bone-400/10 hover:bg-ink-950 hover:text-white group transition-all duration-300">
                     <span className="font-semibold text-sm uppercase tracking-tight">Missões Ativas</span>
-                    <Target className="w-5 h-5 text-gold-500 group-hover:scale-125 transition-transform" />
+                    <Target className="w-5 h-5 text-steel-500 group-hover:scale-125 transition-transform" />
+                  </GlassButton>
+                </Link>
+                <Link href="/atlas" className="block">
+                  <GlassButton className="w-full justify-between h-16 px-6 rounded-2xl bg-slate-100 border border-slate-200 hover:bg-slate-950 hover:text-white group transition-all duration-300">
+                    <span className="font-semibold text-sm uppercase tracking-tight text-slate-900 group-hover:text-white">Perfil de Mobilidade (Atlas)</span>
+                    <Dna className="w-5 h-5 text-slate-400 group-hover:text-white transition-transform" />
                   </GlassButton>
                 </Link>
               </div>
@@ -257,10 +341,10 @@ export default function AuraPage() {
   )
 }
 
-function StatItem({ icon, label, value }: { icon: any; label: string; value: number }) {
+function StatItem({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
   return (
     <div className="bg-white/50 border border-bone-500/10 p-6 rounded-3xl flex flex-col items-start gap-4 hover:shadow-lg hover:bg-white transition-all duration-500 group">
-      <div className="w-12 h-12 rounded-2xl bg-ink-950/5 flex items-center justify-center text-gold-600 group-hover:bg-gold-500 group-hover:text-white transition-all">
+      <div className="w-12 h-12 rounded-2xl bg-ink-950/5 flex items-center justify-center text-steel-600 group-hover:bg-steel-500 group-hover:text-white transition-all">
         {icon}
       </div>
       <div>
@@ -271,7 +355,7 @@ function StatItem({ icon, label, value }: { icon: any; label: string; value: num
   )
 }
 
-function ActivityButton({ activity, currentEnergy, onClick }: { activity: any; currentEnergy: number; onClick: () => void }) {
+function ActivityButton({ activity, currentEnergy, onClick }: { activity: { icon: React.ComponentType<{ className?: string }>; label: string; description: string; energyCost: number }; currentEnergy: number; onClick: () => void }) {
   const canAfford = currentEnergy >= activity.energyCost
   
   return (
@@ -286,15 +370,15 @@ function ActivityButton({ activity, currentEnergy, onClick }: { activity: any; c
       `}
     >
       <div className={`w-16 h-16 rounded-[1.25rem] flex items-center justify-center transition-all duration-500 shadow-glass-sm
-        ${canAfford ? 'bg-gold-500 text-ink-950 group-hover:bg-white group-hover:scale-110' : 'bg-ink-100 text-ink-300'}
+        ${canAfford ? 'bg-steel-500 text-ink-950 group-hover:bg-white group-hover:scale-110' : 'bg-ink-100 text-ink-300'}
       `}>
         <activity.icon className="w-8 h-8" />
       </div>
       <div className="text-left flex-1">
-        <div className={`font-display text-2xl leading-none mb-2 ${canAfford ? 'text-ink-950 group-hover:text-gold-400' : 'text-ink-400'}`}>
+        <div className={`font-display text-2xl leading-none mb-2 ${canAfford ? 'text-ink-950 group-hover:text-steel-400' : 'text-ink-400'}`}>
           {activity.label}
         </div>
-        <p className={`text-xs font-bold uppercase tracking-wider ${canAfford ? 'text-ink-400 group-hover:text-white/50' : 'text-ink-300'}`}>
+        <p className={`text-xs font-bold uppercase tracking-wider ${canAfford ? 'text-ink-400 group-hover:text-white/70' : 'text-ink-300'}`}>
           {activity.description}
         </p>
       </div>
@@ -302,8 +386,8 @@ function ActivityButton({ activity, currentEnergy, onClick }: { activity: any; c
         <div className={`text-sm font-semibold tracking-tighter ${canAfford ? 'text-ink-950 group-hover:text-white' : 'text-ink-400'}`}>
           -{activity.energyCost} EP
         </div>
-        <div className={`text-[10px] font-semibold uppercase tracking-wide mt-1 ${canAfford ? 'text-ink-300 group-hover:text-gold-500/50' : 'text-ink-200'}`}>
-          Cost
+        <div className={`text-[10px] font-semibold uppercase tracking-wide mt-1 ${canAfford ? 'text-ink-300 group-hover:text-steel-400/70' : 'text-ink-200'}`}>
+          Custo
         </div>
       </div>
     </button>

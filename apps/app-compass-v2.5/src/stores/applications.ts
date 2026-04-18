@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { applicationsApi } from "@/lib/api";
+import { eventBus } from "@/lib/event-bus";
 
 export type AppStatus = "draft" | "in_progress" | "submitted" | "accepted" | "rejected" | "waitlisted";
 
@@ -328,6 +329,13 @@ export const useApplicationStore = create<ApplicationState>()(
       },
 
       addApplication: async (app) => {
+        // Build a local application up-front so we can fall back if the API is unavailable.
+        const localApp: UserApplication = {
+          ...app,
+          id: app.id || `local_a_${Date.now()}`,
+          createdAt: app.createdAt || new Date().toISOString().slice(0, 10),
+        };
+
         try {
           const parsed = parseProgram(app.program);
           const opportunityPayload = {
@@ -378,8 +386,13 @@ export const useApplicationStore = create<ApplicationState>()(
           }));
           return mapped;
         } catch {
-          set({ syncError: "Não foi possível criar a candidatura na API." });
-          return null;
+          // API unavailable — persist locally so the user can still track their application.
+          set((state) => ({
+            applications: [localApp, ...state.applications.filter((item) => item.id !== localApp.id)],
+            syncError: null,
+          }));
+          eventBus.emit("application.created", { appId: localApp.id });
+          return localApp;
         }
       },
 
@@ -409,6 +422,8 @@ export const useApplicationStore = create<ApplicationState>()(
               applications: state.applications.map((app) => (app.id === id ? mapped : app)),
               syncError: null,
             }));
+            // Emit application submitted event for gamification
+            eventBus.emit("application.submitted", { applicationId: id });
             return;
           }
 

@@ -92,7 +92,7 @@ export default function QuestionBankPage() {
       <div className="flex flex-col gap-3 md:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-          <input value={search} onChange={(event) => setSearch(event.target.value)} type="text" placeholder="Buscar perguntas..." className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent" />
+          <input value={search} onChange={(event) => setSearch(event.target.value)} type="text" placeholder="Buscar perguntas..." aria-label="Buscar perguntas" className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent" />
         </div>
         <div className="flex flex-wrap gap-2">
           <button onClick={() => setSelectedType("all")} className={`rounded-lg px-4 py-2.5 text-body-sm font-medium transition-colors ${selectedType === "all" ? "bg-brand-500 text-white" : "border border-cream-500 text-text-secondary hover:bg-cream-200"}`}>

@@ -11,7 +11,7 @@ from sqlalchemy import select, func
 from app.core.config import get_settings
 from app.core.security import verify_password
 from app.db.session import get_db
-from app.db.models.user import User
+from app.db.models.user import User, UserRole
 
 settings = get_settings()
 security = HTTPBearer()
@@ -67,6 +67,13 @@ async def get_current_user(
     return user
 
 
+async def get_current_user_id(
+    current_user: User = Depends(get_current_user)
+) -> str:
+    """Extract user ID as string from authenticated user."""
+    return str(current_user.id)
+
+
 async def get_current_verified_user(
     current_user: User = Depends(get_current_user)
 ) -> User:
@@ -75,6 +82,26 @@ async def get_current_verified_user(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Email não verificado"
+        )
+    return current_user
+
+
+def require_admin(current_user: User = Depends(get_current_user)) -> User:
+    """Requer que o usuário seja SUPER_ADMIN"""
+    if current_user.role != UserRole.SUPER_ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Acesso restrito a administradores"
+        )
+    return current_user
+
+
+def require_admin_or_provider(current_user: User = Depends(get_current_user)) -> User:
+    """Requer que o usuário seja SUPER_ADMIN ou PROVIDER"""
+    if current_user.role not in (UserRole.SUPER_ADMIN, UserRole.PROVIDER):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Acesso restrito a administradores ou provedores"
         )
     return current_user
 

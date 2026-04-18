@@ -8,11 +8,8 @@ import { PageHeader, Skeleton, EmptyState } from "@/components/ui";
 export default function OrgCohortsPage() {
   const hydrated = useHydration();
 
-  const [cohorts] = useState([
-    { id: "c1", name: "Engenharia 2024.1", members: 45, routes: 12, avgScore: 78, status: "active" },
-    { id: "c2", name: "Business School 2024.1", members: 60, routes: 15, avgScore: 82, status: "active" },
-    { id: "c3", name: "Medicina USP - Exchange", members: 15, routes: 5, avgScore: 91, status: "planning" },
-  ]);
+  // Cohorts will be loaded from the org API when the feature is connected.
+  const [cohorts] = useState<Array<{ id: string; name: string; members: number; routes: number; avgScore: number; status: string }>>([]);
 
   const [search, setSearch] = useState("");
 
@@ -32,7 +29,7 @@ export default function OrgCohortsPage() {
       <div className="flex gap-3">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar cohort por nome..." className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent" />
+          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar cohort por nome..." aria-label="Buscar cohorts" className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent" />
         </div>
       </div>
 

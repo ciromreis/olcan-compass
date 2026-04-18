@@ -8,10 +8,11 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, desc, or_
 
-from app.core.auth import get_current_user
+from app.core.auth import get_current_user, require_admin_or_provider
 from app.db.session import get_db
 from app.db.models import (
     User,
+    UserRole,
     Opportunity,
     UserApplication,
     ApplicationDocument,
@@ -171,11 +172,10 @@ async def get_opportunity(
 @router.post("/opportunities", response_model=OpportunityDetailResponse, status_code=status.HTTP_201_CREATED)
 async def create_opportunity(
     request: OpportunityCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_admin_or_provider),
     db: AsyncSession = Depends(get_db)
 ):
-    """Create a new opportunity (admin/providers only in production)"""
-    # TODO: Add role check
+    """Create a new opportunity (admin/providers only)"""
     
     opportunity = Opportunity(
         **request.model_dump(),
@@ -205,9 +205,13 @@ async def update_opportunity(
     
     if not opportunity:
         raise HTTPException(status_code=404, detail="Opportunity not found")
-    
-    # TODO: Check ownership/permissions
-    
+
+    if opportunity.created_by_id != current_user.id and current_user.role != UserRole.SUPER_ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Sem permissão para editar esta oportunidade"
+        )
+
     update_data = request.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(opportunity, field, value)

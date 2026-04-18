@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Plus, Mic, Clock, Star, Search, Filter, ArrowRight, BarChart3, TrendingUp } from "lucide-react";
 import { useInterviewStore } from "@/stores/interviews";
+import { useAuthStore } from "@/stores/auth";
 import { useHydration } from "@/hooks/use-hydration";
 import { Skeleton } from "@/components/ui";
 
@@ -24,8 +25,13 @@ const STATUS_OPTIONS = [
 
 export default function InterviewsListPage() {
   const ready = useHydration();
-  const { sessions, getStats } = useInterviewStore();
+  const { sessions, getStats, syncFromApi } = useInterviewStore();
+  const { user } = useAuthStore();
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    if (user?.id) syncFromApi();
+  }, [user?.id, syncFromApi]);
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const stats = getStats();
@@ -65,7 +71,9 @@ export default function InterviewsListPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading text-h2 text-text-primary">Simulador de Entrevistas</h1>
-          <p className="text-body text-text-secondary mt-1">Pratique e receba feedback em tempo real</p>
+          <p className="text-body text-text-secondary mt-1">
+            Prepare entrevistas, networking e eventos de avaliacao ligados ao seu alvo; feedback por texto nesta versao.
+          </p>
         </div>
         <Link href="/interviews/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-500 text-white font-heading font-semibold text-body-sm hover:bg-brand-600 transition-colors">
           <Plus className="w-4 h-4" /> Nova Sessão
@@ -80,7 +88,7 @@ export default function InterviewsListPage() {
         </div>
         <div className="card-surface p-5 text-center">
           <Star className="w-5 h-5 text-brand-500 mx-auto mb-1" />
-          <p className={`font-heading text-h2 ${stats.avgScore >= 70 ? "text-brand-500" : "text-amber-500"}`}>{stats.avgScore || "—"}</p>
+          <p className={`font-heading text-h2 ${stats.avgScore >= 70 ? "text-brand-500" : "text-slate-500"}`}>{stats.avgScore || "—"}</p>
           <p className="text-caption text-text-muted">Score médio</p>
         </div>
         <div className="card-surface p-5 text-center">
@@ -103,6 +111,7 @@ export default function InterviewsListPage() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Buscar sessões..."
+            aria-label="Buscar sessões de entrevista"
             className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-cream-500 bg-white text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent"
           />
         </div>
@@ -129,15 +138,15 @@ export default function InterviewsListPage() {
           </div>
           <div className="grid gap-4">
             {inProgressSessions.map((session) => (
-              <Link key={session.id} href={`/interviews/${session.id}/session`} className="card-surface p-6 group hover:-translate-y-0.5 transition-transform border border-amber-200 bg-amber-50/40">
+              <Link key={session.id} href={`/interviews/${session.id}/session`} className="card-surface p-6 group hover:-translate-y-0.5 transition-transform border border-slate-200 bg-slate-50/40">
                 <div className="flex flex-col md:flex-row md:items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
-                    <Mic className="w-6 h-6 text-amber-600" />
+                  <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0">
+                    <Mic className="w-6 h-6 text-slate-600" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <h3 className="font-heading text-h4 text-text-primary truncate">{session.typeLabel}</h3>
-                      <span className="text-caption px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium">Em andamento</span>
+                      <span className="text-caption px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-medium">Em andamento</span>
                     </div>
                     <p className="text-body-sm text-text-secondary">{session.target}</p>
                   <div className="flex gap-3 mt-1 text-caption text-text-muted">

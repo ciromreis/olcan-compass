@@ -71,9 +71,9 @@ export const useProfileStore = create<ProfilePrefsState>()(
     (set) => ({
       origin: "",
       destination: "",
-      plan: "pro",
-      subscriptionStatus: "active",
-      renewalDate: addDays(30),
+      plan: "free",
+      subscriptionStatus: "inactive",
+      renewalDate: null,
       cancellationEffectiveDate: null,
       paymentMethod: {
         brand: "Visa",
@@ -82,11 +82,7 @@ export const useProfileStore = create<ProfilePrefsState>()(
         expYear: 2027,
         holderName: "Usuário do Compass",
       },
-      invoices: [
-        createInvoice("pro", new Date("2026-03-10T09:00:00.000Z").toISOString()),
-        createInvoice("pro", new Date("2026-02-10T09:00:00.000Z").toISOString()),
-        createInvoice("pro", new Date("2026-01-10T09:00:00.000Z").toISOString()),
-      ],
+      invoices: [],
       updatePrefs: (prefs) => set((state) => ({ ...state, ...prefs })),
       changePlan: ({ plan, paymentMethod }) =>
         set((state) => {

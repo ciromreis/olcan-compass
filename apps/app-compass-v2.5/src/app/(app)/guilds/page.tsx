@@ -6,15 +6,16 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { ComingSoonPanel } from '@/components/product/ComingSoonPanel'
+import { productSurface } from '@/lib/product-flags'
+import { apiClient } from '@/lib/api-client'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Users, 
-  Plus, 
-  Search, 
-  Filter,
+import {
+  Users,
+  Plus,
+  Search,
   TrendingUp,
-  Star,
   Lock,
   Globe,
   ChevronRight,
@@ -41,48 +42,29 @@ interface Guild {
   created_at: string
 }
 
-export default function GuildsPage() {
+function GuildsBrowsePage() {
   const [guilds, setGuilds] = useState<Guild[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'members' | 'level' | 'created_at'>('members')
   const [showPublicOnly, setShowPublicOnly] = useState(true)
 
+  const fetchGuilds = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      const data = await apiClient.getGuilds({ is_public: showPublicOnly, limit: 50 })
+      const items = (data as Guild[]) || []
+      setGuilds(items)
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') console.error('Failed to fetch guilds:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [showPublicOnly])
+
   useEffect(() => {
-    // TODO: Fetch guilds from API
-    // Placeholder data
-    setGuilds([
-      {
-        id: '1',
-        name: 'Tech Career Accelerators',
-        description: 'Supporting tech professionals in their career journey',
-        is_public: true,
-        level: 15,
-        xp: 12500,
-        total_members: 45,
-        max_members: 50,
-        total_battles_won: 23,
-        total_quests_completed: 156,
-        tags: ['tech', 'career', 'networking'],
-        created_at: new Date().toISOString()
-      },
-      {
-        id: '2',
-        name: 'Product Managers United',
-        description: 'Community for product managers to share insights and grow',
-        is_public: true,
-        level: 12,
-        xp: 9800,
-        total_members: 38,
-        max_members: 50,
-        total_battles_won: 18,
-        total_quests_completed: 124,
-        tags: ['product', 'management', 'strategy'],
-        created_at: new Date().toISOString()
-      }
-    ])
-    setIsLoading(false)
-  }, [])
+    void fetchGuilds()
+  }, [fetchGuilds])
 
   const filteredGuilds = guilds.filter(guild => {
     const matchesSearch = guild.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -148,7 +130,7 @@ export default function GuildsPage() {
               <div className="text-sm text-foreground/60">Total Members</div>
             </GlassCard>
             <GlassCard className="p-4 text-center">
-              <Trophy className="w-6 h-6 mx-auto mb-2 text-amber-500" />
+              <Trophy className="w-6 h-6 mx-auto mb-2 text-slate-500" />
               <div className="text-2xl font-bold">
                 {guilds.reduce((sum, g) => sum + g.total_battles_won, 0)}
               </div>
@@ -172,6 +154,7 @@ export default function GuildsPage() {
                 <input
                   type="text"
                   placeholder="Search guilds..."
+                  aria-label="Search guilds"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 bg-foreground/5 border border-foreground/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50"
@@ -181,7 +164,7 @@ export default function GuildsPage() {
               {/* Sort */}
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
                 className="px-4 py-2 bg-foreground/5 border border-foreground/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50"
               >
                 <option value="members">Mais Membros</option>
@@ -290,7 +273,7 @@ function GuildCard({ guild }: { guild: Guild }) {
             <div className="text-xs text-foreground/60">Members</div>
           </div>
           <div>
-            <div className="text-lg font-bold text-amber-400">{guild.total_battles_won}</div>
+            <div className="text-lg font-bold text-slate-400">{guild.total_battles_won}</div>
             <div className="text-xs text-foreground/60">Battles</div>
           </div>
           <div>
@@ -334,4 +317,20 @@ function GuildCard({ guild }: { guild: Guild }) {
       </GlassCard>
     </Link>
   )
+}
+
+export default function GuildsPage() {
+  if (!productSurface.guilds) {
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center p-6">
+        <ComingSoonPanel
+          title="Guildas em breve"
+          description="A camada social cooperativa (missões em grupo, rankings) ainda está em integração com o backend. Enquanto isso, use Sprints e o painel para executar sua jornada."
+          backHref="/dashboard"
+        />
+      </div>
+    );
+  }
+
+  return <GuildsBrowsePage />;
 }

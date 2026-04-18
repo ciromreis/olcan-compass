@@ -88,7 +88,7 @@ const PROMPT_SCENARIOS = [
   }
 ];
 
-export default function MockPitchLabPage() {
+export default function PitchLabPage() {
   const { toast } = useToast();
   const [selectedScenario, setSelectedScenario] = useState(PROMPT_SCENARIOS[0]);
   const [session, setSession] = useState<PitchSession>({
@@ -159,7 +159,7 @@ export default function MockPitchLabPage() {
     // Simulate AI processing
     await new Promise(resolve => setTimeout(resolve, 3000));
 
-    // Mock metrics calculation
+    // Calculate metrics from transcript
     const duration = session.endTime! - session.startTime!;
     const words = transcript.split(/\s+/).length;
     const hesitationCount = (transcript.match(/\b(um|é|tipo|assim|né)\b/gi) || []).length;
@@ -279,6 +279,7 @@ export default function MockPitchLabPage() {
       
       toast({ title: "Acesso negado", description: "Não foi possível acessar sua câmera/microfone. Verifique as permissões.", variant: "error" });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [processRecording, session.type]);
 
   const stopRecording = useCallback(() => {
@@ -314,7 +315,7 @@ export default function MockPitchLabPage() {
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-green-600";
-    if (score >= 60) return "text-yellow-600";
+    if (score >= 60) return "text-slate-600";
     return "text-red-600";
   };
 
@@ -347,7 +348,7 @@ export default function MockPitchLabPage() {
       <div className="space-y-4">
         <h1 className="font-heading text-h1 text-text-primary flex items-center gap-3">
           <MessageCircle className="w-8 h-8 text-brand-500" />
-          Mock Pitch Lab
+          Pitch Lab
         </h1>
         <p className="text-body text-text-secondary">
           Pratique e aperfeiçoe seu pitch com feedback em tempo real e análise de performance.
@@ -588,12 +589,12 @@ export default function MockPitchLabPage() {
                     className={`p-3 rounded-lg border ${
                       feedback.type === "strength" 
                         ? "border-green-200 bg-green-50" 
-                        : "border-yellow-200 bg-yellow-50"
+                        : "border-slate-200 bg-slate-50"
                     }`}
                   >
                     <div className="flex items-start gap-2">
                       <Target className={`w-4 h-4 mt-0.5 ${
-                        feedback.type === "strength" ? "text-green-600" : "text-yellow-600"
+                        feedback.type === "strength" ? "text-green-600" : "text-slate-600"
                       }`} />
                       <p className="text-body-sm text-text-secondary">{feedback.message}</p>
                     </div>

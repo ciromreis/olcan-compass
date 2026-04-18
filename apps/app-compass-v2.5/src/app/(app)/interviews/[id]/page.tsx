@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowLeft, Clock, Star, BarChart3, MessageSquare, ArrowRight, TrendingUp, AlertTriangle } from "lucide-react";
+import { Star, BarChart3, MessageSquare, ArrowRight, AlertTriangle } from "lucide-react";
 import { useInterviewStore } from "@/stores/interviews";
-import { Progress } from "@/components/ui";
+import { DetailPageShell, interviewDetailTabs } from "@/components/layout/DetailPageShell";
+import { InterviewMetadataSidebar } from "@/components/interviews/InterviewMetadataSidebar";
 
 export default function InterviewResultPage() {
   const params = useParams();
@@ -36,114 +37,116 @@ export default function InterviewResultPage() {
   const strongAnswers = session.answers.filter((a) => a.score >= 75).length;
   const weakAnswers = session.answers.filter((a) => a.score < 60).length;
 
+  // Subtitle with session metadata
+  const subtitle = (
+    <div className="flex flex-col gap-1">
+      <p className="text-sm text-text-secondary">
+        {session.target} · {new Date(session.startedAt).toLocaleDateString("pt-BR")}
+      </p>
+      {session.sourceDocumentTitle && (
+        <p className="text-xs text-text-muted">
+          Contextualizada a partir de {session.sourceDocumentTitle}
+        </p>
+      )}
+    </div>
+  );
+
+  // Action buttons
+  const actions = (
+    <>
+      <Link
+        href="/interviews/new"
+        className="inline-flex items-center gap-2 rounded-lg border border-cream-500 px-3 py-2 text-sm text-text-secondary transition-colors hover:bg-cream-200"
+      >
+        Nova Sessão
+      </Link>
+      <Link
+        href={`/interviews/${sessionId}/session`}
+        className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-600"
+      >
+        Repetir Sessão <ArrowRight className="h-4 w-4" />
+      </Link>
+    </>
+  );
+
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div className="flex items-center gap-3">
-        <Link href="/interviews" className="p-2 rounded-lg hover:bg-cream-200 transition-colors"><ArrowLeft className="w-5 h-5 text-text-muted" /></Link>
-        <div>
-          <h1 className="font-heading text-h2 text-text-primary">{session.typeLabel}</h1>
-          <p className="text-body-sm text-text-secondary">
-            {session.target} · {new Date(session.startedAt).toLocaleDateString("pt-BR")}
-          </p>
-          {session.sourceDocumentTitle && (
-            <p className="mt-1 text-caption text-text-muted">
-              Sessão contextualizada a partir de {session.sourceDocumentTitle}
-            </p>
-          )}
-        </div>
-      </div>
-
-      <div className="grid md:grid-cols-4 gap-4">
-        <div className="card-surface p-5 text-center">
-          <Star className="w-5 h-5 text-brand-500 mx-auto mb-1" />
-          <p className={`font-heading text-h2 ${(session.overallScore || 0) >= 70 ? "text-brand-500" : "text-clay-500"}`}>
-            {session.overallScore ?? "—"}
-          </p>
-          <p className="text-caption text-text-muted">Score Geral</p>
-        </div>
-        <div className="card-surface p-5 text-center">
-          <Clock className="w-5 h-5 text-text-muted mx-auto mb-1" />
-          <p className="font-heading text-h2 text-text-primary">{duration} min</p>
-          <p className="text-caption text-text-muted">Duração</p>
-        </div>
-        <div className="card-surface p-5 text-center">
-          <MessageSquare className="w-5 h-5 text-text-muted mx-auto mb-1" />
-          <p className="font-heading text-h2 text-text-primary">{session.answers.length}</p>
-          <p className="text-caption text-text-muted">Perguntas</p>
-        </div>
-        <div className="card-surface p-5 text-center">
-          <TrendingUp className={`w-5 h-5 mx-auto mb-1 ${scoreDelta && scoreDelta > 0 ? "text-brand-500" : "text-text-muted"}`} />
-          <p className={`font-heading text-h2 ${scoreDelta && scoreDelta > 0 ? "text-brand-500" : scoreDelta && scoreDelta < 0 ? "text-clay-500" : "text-text-muted"}`}>
-            {scoreDelta !== null ? `${scoreDelta > 0 ? "+" : ""}${scoreDelta}` : "—"}
-          </p>
-          <p className="text-caption text-text-muted">vs. sessão anterior</p>
-        </div>
-      </div>
-
-      {/* Performance summary bar */}
-      <div className="card-surface p-5 flex items-center gap-6">
-        <div className="flex-1">
-          <p className="text-body-sm font-medium text-text-primary mb-2">Distribuição de Performance</p>
-          <Progress value={session.overallScore || 0} variant={(session.overallScore || 0) >= 70 ? "moss" : "clay"} size="md" />
-        </div>
-        <div className="flex gap-6 text-center flex-shrink-0">
-          <div>
-            <p className="font-heading text-h3 text-brand-500">{strongAnswers}</p>
-            <p className="text-caption text-text-muted">Fortes</p>
-          </div>
-          <div>
-            <p className="font-heading text-h3 text-clay-500">{weakAnswers}</p>
-            <p className="text-caption text-text-muted">A melhorar</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-4">
-        <Link href={`/interviews/${sessionId}/feedback`} className="card-surface p-4 flex items-center gap-3 hover:bg-cream-100 transition-colors">
-          <BarChart3 className="w-5 h-5 text-brand-500" /><span className="text-body-sm font-medium text-text-primary">Feedback Detalhado</span><ArrowRight className="w-4 h-4 text-text-muted ml-auto" />
+    <DetailPageShell
+      backHref="/interviews"
+      backLabel="Entrevistas"
+      title={session.typeLabel}
+      subtitle={subtitle}
+      tabs={interviewDetailTabs(sessionId)}
+      sidebar={
+        <InterviewMetadataSidebar
+          session={session}
+          duration={duration}
+          scoreDelta={scoreDelta}
+          strongAnswers={strongAnswers}
+          weakAnswers={weakAnswers}
+        />
+      }
+      actions={actions}
+    >
+      {/* Quick navigation cards */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <Link
+          href={`/interviews/${sessionId}/feedback`}
+          className="card-surface flex items-center gap-3 p-4 transition-colors hover:bg-cream-100"
+        >
+          <BarChart3 className="h-5 w-5 text-brand-500" />
+          <span className="text-sm font-medium text-text-primary">Feedback Detalhado</span>
+          <ArrowRight className="ml-auto h-4 w-4 text-text-muted" />
         </Link>
-        <Link href={`/interviews/${sessionId}/session`} className="card-surface p-4 flex items-center gap-3 hover:bg-cream-100 transition-colors">
-          <MessageSquare className="w-5 h-5 text-clay-500" /><span className="text-body-sm font-medium text-text-primary">Repetir Simulação</span><ArrowRight className="w-4 h-4 text-text-muted ml-auto" />
+        <Link
+          href={`/interviews/${sessionId}/session`}
+          className="card-surface flex items-center gap-3 p-4 transition-colors hover:bg-cream-100"
+        >
+          <MessageSquare className="h-5 w-5 text-clay-500" />
+          <span className="text-sm font-medium text-text-primary">Repetir Simulação</span>
+          <ArrowRight className="ml-auto h-4 w-4 text-text-muted" />
         </Link>
-        {session.sourceDocumentId && (
-          <Link href={`/forge/${session.sourceDocumentId}`} className="card-surface p-4 flex items-center gap-3 hover:bg-cream-100 transition-colors md:col-span-2">
-            <MessageSquare className="w-5 h-5 text-sage-500" /><span className="text-body-sm font-medium text-text-primary">Voltar ao documento que originou este treino</span><ArrowRight className="w-4 h-4 text-text-muted ml-auto" />
-          </Link>
-        )}
       </div>
 
+      {/* Answers by question */}
       <div className="card-surface p-6">
-        <h3 className="font-heading text-h4 text-text-primary mb-4">Respostas por Pergunta</h3>
+        <h3 className="mb-4 font-heading text-lg font-semibold text-text-primary">
+          Respostas por Pergunta
+        </h3>
         <div className="space-y-4">
           {session.answers.map((a, i) => (
-            <div key={i} className="p-4 rounded-lg bg-cream-50">
-              <div className="flex items-start justify-between mb-2">
-                <p className="text-body-sm font-medium text-text-primary flex-1 pr-4">Q{i + 1}: {a.question}</p>
-                <span className={`font-heading font-bold ${a.score >= 70 ? "text-brand-500" : "text-clay-500"}`}>{a.score}</span>
+            <div key={i} className="rounded-lg bg-cream-50 p-4">
+              <div className="mb-2 flex items-start justify-between">
+                <p className="flex-1 pr-4 text-sm font-medium text-text-primary">
+                  Q{i + 1}: {a.question}
+                </p>
+                <span
+                  className={`font-heading font-bold ${
+                    a.score >= 70 ? "text-brand-500" : "text-clay-500"
+                  }`}
+                >
+                  {a.score}
+                </span>
               </div>
-              <p className="text-body-sm text-text-secondary flex items-start gap-2">
-                {a.score >= 70 ? <Star className="w-4 h-4 text-brand-500 mt-0.5 flex-shrink-0" /> : <AlertTriangle className="w-4 h-4 text-clay-400 mt-0.5 flex-shrink-0" />}
+              <p className="flex items-start gap-2 text-sm text-text-secondary">
+                {a.score >= 70 ? (
+                  <Star className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-500" />
+                ) : (
+                  <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-clay-400" />
+                )}
                 {a.feedback}
               </p>
               {a.answer && (
                 <details className="mt-2">
-                  <summary className="text-caption text-brand-500 cursor-pointer hover:underline">Ver sua resposta ({a.timeSpent}s)</summary>
-                  <p className="text-body-sm text-text-muted mt-1 p-2 bg-cream-100 rounded">{a.answer}</p>
+                  <summary className="cursor-pointer text-xs text-brand-500 hover:underline">
+                    Ver sua resposta ({a.timeSpent}s)
+                  </summary>
+                  <p className="mt-1 rounded bg-cream-100 p-2 text-sm text-text-muted">{a.answer}</p>
                 </details>
               )}
             </div>
           ))}
         </div>
       </div>
-
-      <div className="flex gap-3">
-        <Link href="/interviews/new" className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-cream-500 text-text-secondary font-medium hover:bg-cream-200 transition-colors">
-          Nova Sessão
-        </Link>
-        <Link href={`/interviews/${sessionId}/session`} className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-brand-500 text-white font-heading font-semibold hover:bg-brand-600 transition-colors">
-          Repetir Sessão <ArrowRight className="w-4 h-4" />
-        </Link>
-      </div>
-    </div>
+    </DetailPageShell>
   );
 }

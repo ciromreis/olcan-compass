@@ -26,95 +26,30 @@ interface CohortMetrics {
   }>;
 }
 
-const MOCK_COHORTS: CohortMetrics[] = [
-  {
-    id: "cohort_1",
-    name: "Engenharia 2024",
-    institution: "Universidade de São Paulo",
-    totalUsers: 156,
-    activeUsers: 134,
-    avgReadiness: 72,
-    avgProgress: 68,
-    dropoffRate: 14,
-    topCountries: ["Canadá", "Alemanha", "Estados Unidos"],
-    riskFactors: [
-      {
-        dimension: "Financeiro",
-        riskLevel: 35,
-        priority: "high",
-        recommendation: "Sessões individuais de coaching e planejamento financeiro"
-      },
-      {
-        dimension: "Linguagem",
-        riskLevel: 25,
-        priority: "medium",
-        recommendation: "Grupos de estudo e prática conversacional"
-      }
-    ]
-  },
-  {
-    id: "cohort_2",
-    name: "Medicina 2024",
-    institution: "Universidade Federal do Rio de Janeiro",
-    totalUsers: 89,
-    activeUsers: 76,
-    avgReadiness: 81,
-    avgProgress: 74,
-    dropoffRate: 15,
-    topCountries: ["Reino Unido", "Austrália", "Canadá"],
-    riskFactors: [
-      {
-        dimension: "Tempo",
-        riskLevel: 28,
-        priority: "medium",
-        recommendation: "Workshops de gestão de tempo e priorização"
-      }
-    ]
-  },
-  {
-    id: "cohort_3",
-    name: "Ciência da Computação 2024",
-    institution: "Universidade Estadual de Campinas",
-    totalUsers: 203,
-    activeUsers: 178,
-    avgReadiness: 78,
-    avgProgress: 82,
-    dropoffRate: 12,
-    topCountries: ["Estados Unidos", "Canadá", "Irlanda"],
-    riskFactors: [
-      {
-        dimension: "Competitividade",
-        riskLevel: 42,
-        priority: "high",
-        recommendation: "Programa de diferenciação e desenvolvimento de habilidades únicas"
-      },
-      {
-        dimension: "Networking",
-        riskLevel: 18,
-        priority: "low",
-        recommendation: "Eventos de networking e mentorship"
-      }
-    ]
-  }
-];
+// Cohort data will be loaded from the org API when the institutional backend is connected.
+// Until then, the page renders an empty state prompting configuration.
 
 export default function InstitutionalDashboardPage() {
+  const [cohorts] = useState<CohortMetrics[]>([]);
   const [selectedCohort, setSelectedCohort] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState("6months");
   const [showRiskDetails, setShowRiskDetails] = useState(false);
 
   const selectedCohortData = useMemo(() => {
-    return selectedCohort 
-      ? MOCK_COHORTS.find(c => c.id === selectedCohort)
+    return selectedCohort
+      ? cohorts.find(c => c.id === selectedCohort)
       : null;
-  }, [selectedCohort]);
+  }, [selectedCohort, cohorts]);
 
   const aggregatedMetrics = useMemo(() => {
-    const totalUsers = MOCK_COHORTS.reduce((sum, c) => sum + c.totalUsers, 0);
-    const activeUsers = MOCK_COHORTS.reduce((sum, c) => sum + c.activeUsers, 0);
-    const avgReadiness = MOCK_COHORTS.reduce((sum, c) => sum + c.avgReadiness, 0) / MOCK_COHORTS.length;
-    const avgProgress = MOCK_COHORTS.reduce((sum, c) => sum + c.avgProgress, 0) / MOCK_COHORTS.length;
-    const avgDropoff = MOCK_COHORTS.reduce((sum, c) => sum + c.dropoffRate, 0) / MOCK_COHORTS.length;
+    if (cohorts.length === 0) {
+      return { totalUsers: 0, activeUsers: 0, avgReadiness: 0, avgProgress: 0, avgDropoff: 0, activationRate: 0 };
+    }
+    const totalUsers = cohorts.reduce((sum, c) => sum + c.totalUsers, 0);
+    const activeUsers = cohorts.reduce((sum, c) => sum + c.activeUsers, 0);
+    const avgReadiness = cohorts.reduce((sum, c) => sum + c.avgReadiness, 0) / cohorts.length;
+    const avgProgress = cohorts.reduce((sum, c) => sum + c.avgProgress, 0) / cohorts.length;
+    const avgDropoff = cohorts.reduce((sum, c) => sum + c.dropoffRate, 0) / cohorts.length;
 
     return {
       totalUsers,
@@ -122,13 +57,13 @@ export default function InstitutionalDashboardPage() {
       avgReadiness,
       avgProgress,
       avgDropoff,
-      activationRate: (activeUsers / totalUsers) * 100
+      activationRate: totalUsers > 0 ? (activeUsers / totalUsers) * 100 : 0
     };
-  }, []);
+  }, [cohorts]);
 
   const getRiskColor = (riskLevel: number) => {
     if (riskLevel >= 35) return "text-red-600";
-    if (riskLevel >= 25) return "text-yellow-600";
+    if (riskLevel >= 25) return "text-slate-600";
     return "text-green-600";
   };
 
@@ -141,7 +76,7 @@ export default function InstitutionalDashboardPage() {
   const getPriorityColor = (priority: "high" | "medium" | "low" | string) => {
     switch (priority) {
       case "high": return "text-red-600 bg-red-50 border-red-200";
-      case "medium": return "text-yellow-600 bg-yellow-50 border-yellow-200";
+      case "medium": return "text-slate-600 bg-slate-50 border-slate-200";
       case "low": return "text-green-600 bg-green-50 border-green-200";
       default: return "text-blue-600 bg-blue-50 border-blue-200";
     }
@@ -234,7 +169,7 @@ export default function InstitutionalDashboardPage() {
             <h2 className="font-heading text-h4 text-text-primary mb-4">Cohorts</h2>
             
             <div className="space-y-3">
-              {MOCK_COHORTS.map(cohort => (
+              {cohorts.map(cohort => (
                 <div
                   key={cohort.id}
                   onClick={() => setSelectedCohort(cohort.id)}
@@ -301,7 +236,7 @@ export default function InstitutionalDashboardPage() {
                           {country}
                         </span>
                         <span className="text-caption text-text-muted">
-                          {Math.floor(Math.random() * 30 + 10)}% interessados
+                          Top {index + 1}
                         </span>
                       </div>
                     ))}
@@ -354,19 +289,22 @@ export default function InstitutionalDashboardPage() {
                 <h3 className="font-heading text-h4 text-text-primary mb-4">Mapa de Calor de Riscos</h3>
                 
                 <div className="grid grid-cols-4 gap-2">
-                  {["Financeiro", "Linguagem", "Tempo", "Competitividade", "Networking", "Documentação", "Saúde Mental", "Visa"].map((dimension, index) => {
-                    const riskLevel = Math.floor(Math.random() * 50);
-                    // const variant = riskLevel >= 35 ? "clay" : riskLevel >= 25 ? "amber" : "moss";
-                    const color = riskLevel >= 35 ? "bg-red-500" : riskLevel >= 25 ? "bg-yellow-500" : "bg-green-500";
-                    
-                    return (
-                      <div key={index} className="text-center">
-                        <div className={`h-16 rounded ${color} opacity-${Math.floor(riskLevel / 10) * 10}`} />
-                        <div className="text-xs text-text-secondary mt-1">{dimension}</div>
-                        <div className="text-caption text-text-muted">{riskLevel}%</div>
-                      </div>
-                    );
-                  })}
+                  {selectedCohortData.riskFactors.length > 0 ? (
+                    selectedCohortData.riskFactors.map((risk, index) => {
+                      const color = risk.riskLevel >= 35 ? "bg-red-500" : risk.riskLevel >= 25 ? "bg-slate-500" : "bg-green-500";
+                      return (
+                        <div key={index} className="text-center">
+                          <div className={`h-16 rounded ${color}`} style={{ opacity: Math.min(risk.riskLevel / 50, 1) }} />
+                          <div className="text-xs text-text-secondary mt-1">{risk.dimension}</div>
+                          <div className="text-caption text-text-muted">{risk.riskLevel}%</div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="col-span-4 text-center text-text-muted text-body-sm py-4">
+                      Nenhum fator de risco registrado.
+                    </div>
+                  )}
                 </div>
               </Card>
             </>

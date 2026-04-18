@@ -5,13 +5,15 @@ import Link from "next/link";
 import { ArrowLeft, Target, Info } from "lucide-react";
 import { useForgeStore } from "@/stores/forge";
 import { ATSAnalyzer } from "@/components/forge/ATSAnalyzer";
-import { useToast } from "@/components/ui";
+import { useToast, PlanGate } from "@/components/ui";
+import { useEntitlement } from "@/hooks";
 import type { ATSAnalysisResult } from "@/lib/ats-analyzer";
 
 export default function ATSOptimizerPage() {
   const params = useParams();
   const docId = params.id as string;
   const { toast } = useToast();
+  const { allowed } = useEntitlement("forge_ats_optimizer");
   
   const { getDocById } = useForgeStore();
   const doc = getDocById(docId);
@@ -23,6 +25,14 @@ export default function ATSOptimizerPage() {
       variant: result.overallScore >= 70 ? "success" : "warning",
     });
   };
+
+  if (!allowed) {
+    return (
+      <div className="max-w-2xl mx-auto py-8">
+        <PlanGate feature="forge_ats_optimizer" />
+      </div>
+    );
+  }
 
   if (!doc) {
     return (
@@ -47,7 +57,7 @@ export default function ATSOptimizerPage() {
         </Link>
         <div>
           <h1 className="font-heading text-h2 text-text-primary">
-            Otimizador ATS
+            Otimizador de Compatibilidade
           </h1>
           <p className="text-body-sm text-text-secondary mt-1">
             {doc.title}
@@ -61,12 +71,12 @@ export default function ATSOptimizerPage() {
           <Info className="w-5 h-5 text-brand-500 flex-shrink-0 mt-0.5" />
           <div>
             <h3 className="font-heading text-body-sm font-semibold text-text-primary mb-1">
-              O que é ATS?
+              Como usar esta lente de compatibilidade
             </h3>
             <p className="text-caption text-text-secondary">
-              <strong>ATS (Applicant Tracking System)</strong> são sistemas que empresas usam para filtrar currículos automaticamente. 
-              Esta ferramenta analisa a compatibilidade do seu currículo com a vaga e sugere otimizações para passar pelos filtros ATS 
-              e aumentar suas chances de ser chamado para entrevista.
+              <strong>ATS (Applicant Tracking System)</strong> e outros filtros de triagem automatica sao apenas uma parte do processo.
+              Para curriculos, esta analise ajuda a passar por filtros ATS. Para outros documentos, use o score como proxy de aderencia
+              ao alvo, palavras-chave, sinais de clareza e cobertura dos criterios da oportunidade.
             </p>
           </div>
         </div>
@@ -75,6 +85,7 @@ export default function ATSOptimizerPage() {
       {/* ATS Analyzer */}
       <ATSAnalyzer
         resumeContent={doc.content}
+        documentId={docId}
         onAnalysisComplete={handleAnalysisComplete}
       />
 
@@ -92,6 +103,7 @@ export default function ATSOptimizerPage() {
             </h4>
             <ul className="space-y-1.5 text-caption text-text-secondary">
               <li>• Use palavras-chave exatas da descrição da vaga</li>
+              <li>• Reflita criterios explicitos do edital ou job description</li>
               <li>• Mantenha formatação simples (sem tabelas ou gráficos)</li>
               <li>• Liste competências técnicas em seção dedicada</li>
               <li>• Quantifique resultados com números e percentuais</li>
@@ -109,6 +121,7 @@ export default function ATSOptimizerPage() {
               <li>• Colunas múltiplas ou caixas de texto</li>
               <li>• Fontes decorativas ou muito pequenas</li>
               <li>• Abreviações não explicadas</li>
+              <li>• Repetir texto genérico sem vincular ao alvo concreto</li>
             </ul>
           </div>
         </div>

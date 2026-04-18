@@ -9,7 +9,7 @@ from typing import Optional
 
 from app.core.database import get_db
 from app.core.security.jwt import decode_token
-from app.models.user import User
+from app.db.models.user import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 

@@ -1,7 +1,9 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
+from app.schemas.economics import OpportunityCostResponse, MomentumResponse
+from app.schemas.psychology import PsychProfileResponse
 
 
 class Token(BaseModel):
@@ -32,11 +34,14 @@ class AuthLoginRequest(BaseModel):
 
 
 class AuthResponse(BaseModel):
-    """Response body after successful auth"""
+    """Response after successful auth — OAuth2-style top-level tokens (web + mobile clients)."""
+
     user_id: str
     email: EmailStr
     role: str
-    token: Token
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
 
 
 class UserProfileResponse(BaseModel):
@@ -49,7 +54,13 @@ class UserProfileResponse(BaseModel):
     timezone: str
     role: str
     is_verified: bool
+    is_premium: bool
     created_at: datetime
+    
+    # Omega Telemetry Snapshots
+    economics: Optional[OpportunityCostResponse] = None
+    momentum: Optional[MomentumResponse] = None
+    psychology: Optional[PsychProfileResponse] = None
     
     model_config = {"from_attributes": True}
 
@@ -59,7 +70,25 @@ class UpdateProfileRequest(BaseModel):
     full_name: Optional[str] = None
     avatar_url: Optional[str] = None
     language: Optional[str] = Field(None, min_length=2, max_length=10)
-    timezone: Optional[str] = None
+    timezone: Optional[str] = Field(None, min_length=1, max_length=50)
+
+    @field_validator("full_name", "avatar_url", mode="before")
+    @classmethod
+    def empty_as_none(cls, v):
+        if v is None:
+            return None
+        if isinstance(v, str) and not v.strip():
+            return None
+        return v.strip() if isinstance(v, str) else v
+
+    @field_validator("language", "timezone", mode="before")
+    @classmethod
+    def strip_locale(cls, v):
+        if v is None:
+            return None
+        if isinstance(v, str):
+            return v.strip()
+        return v
 
 
 class ChangePasswordRequest(BaseModel):

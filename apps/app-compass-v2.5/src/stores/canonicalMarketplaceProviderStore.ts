@@ -10,4 +10,4 @@
  */
 
 export * from "./marketplace";
-
+export { useMarketplaceStore, CATEGORY_LABELS } from "./marketplace";

@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   SkipForward, StopCircle, Clock, MessageSquare, Send, CheckCircle,
-  Star, AlertTriangle, ArrowRight, Sparkles, Mic, Square, Volume2
+  Star, AlertTriangle, ArrowRight, Sparkles, Mic, Square
 } from "lucide-react";
 import {
   useInterviewStore,
@@ -15,6 +15,8 @@ import {
 } from "@/stores/interviews";
 import { useAuthStore } from "@/stores/auth";
 import { useForgeStore } from "@/stores/forge";
+import { usePsychStore } from "@/stores/psych";
+import { formatOiosArchetypeLabel } from "@/lib/oios-archetype-display";
 import { useToast } from "@/components/ui";
 
 function formatTime(seconds: number): string {
@@ -31,11 +33,19 @@ export default function InterviewSessionPage() {
   const { getSessionById, submitAnswer, completeSession } = useInterviewStore();
   const { user } = useAuthStore();
   const { getDocById } = useForgeStore();
+  const oiosArchetypeKey = usePsychStore((s) => s.oiosSnapshot?.dominant_archetype);
   const session = getSessionById(sessionId);
   const sourceDoc = session?.sourceDocumentId ? getDocById(session.sourceDocumentId) : undefined;
 
-  // @ts-ignore - The user model typing varies between contexts, defensive check:
-  const archetype = user?.dominant_archetype || user?.psychProfile?.dominant_archetype || "The Pioneer";
+  const profile = user as
+    | { dominant_archetype?: string; psychProfile?: { dominant_archetype?: string } }
+    | null
+    | undefined;
+  const archetype =
+    profile?.dominant_archetype ||
+    profile?.psychProfile?.dominant_archetype ||
+    (oiosArchetypeKey ? formatOiosArchetypeLabel(oiosArchetypeKey) : null) ||
+    "The Pioneer";
 
   const questions = useMemo(() => {
     const baseQuestions = session?.questions?.length
@@ -73,7 +83,8 @@ export default function InterviewSessionPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<BlobPart[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const recognitionRef = useRef<any | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recognitionRef = useRef<any>(null);
 
   const startRecording = async () => {
     try {
@@ -97,8 +108,8 @@ export default function InterviewSessionPage() {
 
       // Start browser speech recognition when available
       if (typeof window !== "undefined") {
-        const SpeechRecognitionImpl =
-          (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const SpeechRecognitionImpl = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
         if (SpeechRecognitionImpl) {
           const recognition = new SpeechRecognitionImpl();
@@ -120,6 +131,7 @@ export default function InterviewSessionPage() {
             setIsTranscribing(true);
           };
 
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           recognition.onresult = (event: any) => {
             const transcriptParts: string[] = [];
             for (let i = 0; i < event.results.length; i++) {
@@ -181,6 +193,7 @@ export default function InterviewSessionPage() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
     const analyser = audioCtx.createAnalyser();
     const source = audioCtx.createMediaStreamSource(stream);
@@ -204,9 +217,9 @@ export default function InterviewSessionPage() {
 
       for (let i = 0; i < bufferLength; i++) {
         barHeight = dataArray[i] / 2;
-        // Nano Banana gradient
+        // Monochromatic White
         /* eslint-disable no-mixed-operators */
-        ctx.fillStyle = `rgb(255, ${235 - (barHeight / 2)}, 59)`;
+        ctx.fillStyle = `rgba(255, 255, 255, ${barHeight / 128})`;
         ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
         x += barWidth + 1;
       }
@@ -353,7 +366,7 @@ export default function InterviewSessionPage() {
               <div key={i} className="p-4 rounded-lg bg-cream-50">
                 <div className="flex items-start justify-between mb-2">
                   <p className="text-body-sm font-medium text-text-primary flex-1 pr-4">Q{i + 1}: {a.question}</p>
-                  <span className={`font-heading font-bold text-h4 ${a.score >= 70 ? "text-brand-500" : a.score >= 50 ? "text-amber-500" : "text-clay-500"}`}>{a.score}</span>
+                  <span className={`font-heading font-bold text-h4 ${a.score >= 70 ? "text-brand-500" : a.score >= 50 ? "text-slate-500" : "text-clay-500"}`}>{a.score}</span>
                 </div>
                 <p className="text-body-sm text-text-secondary mb-2 line-clamp-2">&ldquo;{a.answer}&rdquo;</p>
                 <p className="text-body-sm text-text-secondary flex items-start gap-2">
@@ -438,8 +451,8 @@ export default function InterviewSessionPage() {
       {/* Answer area */}
       {!submitted ? (
         <div className="flex-1 flex flex-col gap-4">
-          <div className="relative flex-1 card-surface p-1 border-nanobanana-500/30 overflow-hidden group">
-            <div className={`absolute inset-0 bg-nanobanana-500/5 transition-opacity duration-500 ${isRecording ? "opacity-100" : "opacity-0"}`} />
+          <div className="relative flex-1 card-surface p-1 border-white/20 overflow-hidden group">
+            <div className={`absolute inset-0 bg-white/5 transition-opacity duration-500 ${isRecording ? "opacity-100" : "opacity-0"}`} />
             
             {/* Audio Visualizer Canvas */}
             <canvas 
@@ -462,7 +475,7 @@ export default function InterviewSessionPage() {
                   : "Comece a falar usando o microfone ou digite sua resposta... (⌘+Enter para enviar)"
               }
               disabled={isRecording}
-              className={`w-full h-full min-h-[160px] p-4 rounded-xl border border-cream-500/20 bg-transparent text-white placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-nanobanana-400 focus:border-transparent text-body resize-none relative z-10 ${isRecording ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`w-full h-full min-h-[160px] p-4 rounded-xl border border-cream-500/20 bg-transparent text-white placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent text-body resize-none relative z-10 ${isRecording ? 'opacity-50 cursor-not-allowed' : ''}`}
             />
             <div className="absolute bottom-4 right-4 flex items-center gap-4 z-20">
               <span className="text-caption text-text-muted font-mono">{answer.length} caracteres</span>
@@ -470,10 +483,10 @@ export default function InterviewSessionPage() {
               {!isRecording ? (
                 <button 
                   onClick={startRecording}
-                  className="w-12 h-12 rounded-full bg-slate-800 hover:bg-nanobanana-500/20 border border-white/10 hover:border-nanobanana-500 flex items-center justify-center transition-all group-hover:shadow-[0_0_20px_rgba(255,235,59,0.3)]"
+                  className="w-12 h-12 rounded-full bg-slate-800 hover:bg-white/10 border border-white/10 hover:border-white flex items-center justify-center transition-all group-hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]"
                   title="Record audio via Web Audio API"
                 >
-                  <Mic className="w-5 h-5 text-nanobanana-400" />
+                  <Mic className="w-5 h-5 text-white" />
                 </button>
               ) : (
                 <button 
@@ -517,7 +530,7 @@ export default function InterviewSessionPage() {
                   <span className="font-heading font-semibold text-text-primary">Feedback</span>
                 </div>
                 <div className={`flex items-center gap-1 px-3 py-1 rounded-full ${
-                  lastFeedback.score >= 70 ? "bg-brand-50 text-brand-600" : lastFeedback.score >= 50 ? "bg-amber-50 text-amber-600" : "bg-clay-50 text-clay-600"
+                  lastFeedback.score >= 70 ? "bg-brand-50 text-brand-600" : lastFeedback.score >= 50 ? "bg-slate-50 text-slate-600" : "bg-clay-50 text-clay-600"
                 }`}>
                   <Star className="w-3.5 h-3.5" />
                   <span className="font-heading font-bold">{lastFeedback.score}</span>

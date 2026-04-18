@@ -34,3 +34,10 @@ structlog==24.1.0
 
 # Sentry for Error Tracking
 sentry-sdk[fastapi]==2.8.0
+
+# HTTP client (CRM integrations: Twenty, Mautic, etc.)
+httpx==0.28.1
+
+# Test tooling
+pytest==8.3.5
+pytest-asyncio==0.25.3

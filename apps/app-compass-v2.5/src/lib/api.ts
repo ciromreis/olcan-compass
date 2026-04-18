@@ -1,20 +1,106 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://olcan-compass-api.onrender.com";
+export const AUTH_ACCESS_TOKEN_KEY = "olcan_access_token";
+export const AUTH_REFRESH_TOKEN_KEY = "olcan_refresh_token";
+export const LEGACY_ACCESS_TOKEN_KEYS = [AUTH_ACCESS_TOKEN_KEY, "access_token"] as const;
+export const LEGACY_REFRESH_TOKEN_KEYS = [AUTH_REFRESH_TOKEN_KEY, "refresh_token"] as const;
+
+function stripTrailingSlash(value: string) {
+  return value.endsWith("/") ? value.slice(0, -1) : value;
+}
+
+function stripApiSuffix(value: string) {
+  return value.endsWith("/api") ? value.slice(0, -4) : value;
+}
+
+export function resolveApiOrigin() {
+  const configured = process.env.NEXT_PUBLIC_API_URL || "https://olcan-compass-api.onrender.com";
+  return stripApiSuffix(stripTrailingSlash(configured));
+}
+
+export function resolveApiBaseUrl() {
+  return `${resolveApiOrigin()}/api`;
+}
+
+/**
+ * Base URL for legacy fetch() callers that expect `/api/v1/...` paths.
+ * Handles both `NEXT_PUBLIC_API_URL=https://host` and `https://host/api/v1`.
+ */
+export function resolveApiV1BaseUrl(): string {
+  const raw = stripTrailingSlash(
+    process.env.NEXT_PUBLIC_API_URL || "https://olcan-compass-api.onrender.com"
+  );
+  if (/\/api\/v1(\/|$)/.test(raw)) {
+    return raw;
+  }
+  const origin = stripApiSuffix(raw);
+  return `${stripTrailingSlash(origin)}/api/v1`;
+}
+
+/** WebSocket base (no trailing slash); connect appends `/${userId}` etc. */
+export function resolveWebSocketBaseUrl(): string {
+  const explicit = process.env.NEXT_PUBLIC_WS_URL?.replace(/\/$/, "");
+  if (explicit) return explicit;
+  const v1 = resolveApiV1BaseUrl();
+  try {
+    const u = new URL(v1);
+    u.protocol = u.protocol === "https:" ? "wss:" : "ws:";
+    u.pathname = `${u.pathname.replace(/\/$/, "")}/ws`;
+    u.search = "";
+    u.hash = "";
+    return u.toString().replace(/\/$/, "");
+  } catch {
+    return "ws://127.0.0.1:8001/api/v1/ws";
+  }
+}
+
+export function readStoredToken(keys: readonly string[]) {
+  if (typeof window === "undefined") return null;
+  for (const key of keys) {
+    const value = window.localStorage.getItem(key);
+    if (value) return value;
+  }
+  return null;
+}
+
+export function readAccessToken() {
+  return readStoredToken(LEGACY_ACCESS_TOKEN_KEYS);
+}
+
+export function readRefreshToken() {
+  return readStoredToken(LEGACY_REFRESH_TOKEN_KEYS);
+}
+
+export function persistAuthTokens(accessToken: string, refreshToken?: string | null) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(AUTH_ACCESS_TOKEN_KEY, accessToken);
+  window.localStorage.setItem("access_token", accessToken);
+  if (refreshToken) {
+    window.localStorage.setItem(AUTH_REFRESH_TOKEN_KEY, refreshToken);
+    window.localStorage.setItem("refresh_token", refreshToken);
+  }
+}
+
+export function clearPersistedAuthTokens() {
+  if (typeof window === "undefined") return;
+  for (const key of [...LEGACY_ACCESS_TOKEN_KEYS, ...LEGACY_REFRESH_TOKEN_KEYS]) {
+    window.localStorage.removeItem(key);
+  }
+}
+
+export const API_BASE_URL = resolveApiOrigin();
 
 export const api = axios.create({
-  baseURL: `${API_BASE_URL}/api`,
+  baseURL: resolveApiBaseUrl(),
   headers: { "Content-Type": "application/json" },
   timeout: 30000,
 });
 
 // Request interceptor — attach JWT if present
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("access_token");
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+  const token = readAccessToken();
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
@@ -29,10 +115,10 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const refreshToken = localStorage.getItem("refresh_token");
+        const refreshToken = readRefreshToken();
         if (refreshToken) {
           const { data } = await axios.post(
-            `${API_BASE_URL}/api/auth/refresh`,
+            `${resolveApiBaseUrl()}/auth/refresh`,
             {},
             {
               headers: {
@@ -42,17 +128,13 @@ api.interceptors.response.use(
           );
           const newToken = data.token?.access_token || data.access_token;
           if (newToken) {
-            localStorage.setItem("access_token", newToken);
-            if (data.token?.refresh_token) {
-              localStorage.setItem("refresh_token", data.token.refresh_token);
-            }
+            persistAuthTokens(newToken, data.token?.refresh_token || data.refresh_token);
             originalRequest.headers.Authorization = `Bearer ${newToken}`;
             return api(originalRequest);
           }
         }
       } catch {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
+        clearPersistedAuthTokens();
         if (typeof window !== "undefined") {
           window.location.href = "/login";
         }
@@ -79,10 +161,9 @@ export interface AuthResponse {
   user_id: string;
   email: string;
   role: string;
-  token: {
-    access_token: string;
-    refresh_token: string;
-  };
+  access_token: string;
+  refresh_token: string;
+  token_type?: string;
 }
 
 export interface UserProfile {
@@ -92,6 +173,38 @@ export interface UserProfile {
   role: string;
   avatar_url?: string;
   created_at: string;
+  /** When true, API grants at least Pro-level entitlements (see `effectiveUserPlan`). */
+  is_premium?: boolean;
+  is_verified?: boolean;
+  language?: string;
+  timezone?: string;
+  economics?: {
+    daily_cost: number;
+    monthly_cost: number;
+    yearly_cost: number;
+    cumulative_cost: number;
+    days_since_start: number;
+    currency: string;
+  };
+  momentum?: {
+    momentum_score: number;
+    last_activity_days: number;
+  };
+  psychology?: {
+    dominant_archetype: string;
+    evolution_stage: number;
+    kinetic_energy_level: number;
+    risk_profile: string;
+    psychological_state: string;
+  };
+}
+
+/** Body for `PUT /auth/me` (matches backend `UpdateProfileRequest`). */
+export interface UpdateProfilePayload {
+  full_name?: string;
+  avatar_url?: string;
+  language?: string;
+  timezone?: string;
 }
 
 export const authApi = {
@@ -102,6 +215,9 @@ export const authApi = {
     api.post<AuthResponse>("/auth/register", payload),
 
   me: () => api.get<UserProfile>("/auth/me"),
+
+  updateMe: (payload: UpdateProfilePayload) =>
+    api.put<UserProfile>("/auth/me", payload),
 
   forgotPassword: (email: string) =>
     api.post("/auth/forgot-password", { email }),
@@ -126,14 +242,61 @@ export const authApi = {
     }),
 };
 
+/** Product analytics events (`POST /analytics/events`). */
+export interface AnalyticsEventInput {
+  event_name: string;
+  properties?: Record<string, unknown>;
+  occurred_at?: string;
+  session_id?: string;
+  client_source?: string;
+  app_release?: string;
+}
+
+export interface AnalyticsEventBatchResponse {
+  inserted: number;
+}
+
+export interface ExperimentVariantApiResponse {
+  experiment_slug: string;
+  variant: string;
+  experiment_id: string;
+}
+
+export const analyticsApi = {
+  ingestEvents: (events: AnalyticsEventInput[]) =>
+    api.post<AnalyticsEventBatchResponse>("/analytics/events", { events }),
+
+  listAttributes: (namespace?: string) =>
+    api.get<{ items: { namespace: string; key: string; value: string; updated_at: string }[] }>(
+      "/analytics/me/attributes",
+      { params: namespace ? { namespace } : {} },
+    ),
+
+  upsertAttribute: (payload: { namespace?: string; key: string; value: string }) =>
+    api.put<{ namespace: string; key: string; value: string; updated_at: string }>(
+      "/analytics/me/attributes",
+      {
+        namespace: payload.namespace ?? "analytics",
+        key: payload.key,
+        value: payload.value,
+      },
+    ),
+
+  getExperimentVariant: (slug: string) =>
+    api.get<ExperimentVariantApiResponse>(`/analytics/experiments/${encodeURIComponent(slug)}/variant`),
+};
+
 // ── Psychology API ─────────────────────────────────────────
 export const psychApi = {
   getProfile: () => api.get("/psych/profile"),
-  getQuestions: () => api.get("/psych/questions"),
-  submitAnswers: (sessionId: string, answers: Record<string, number>) =>
-    api.post(`/psych/sessions/${sessionId}/answers`, { answers }),
-  createSession: () => api.post("/psych/sessions"),
-  getScoreHistory: () => api.get("/psych/score-history"),
+  startAssessment: () => api.post("/psych/assessment/start"),
+  submitAnswer: (sessionId: string, answer: Record<string, unknown>) =>
+    api.post("/psych/assessment/answer", { session_id: sessionId, ...answer }),
+  getQuestion: (sessionId: string) =>
+    api.get(`/psych/assessment/${sessionId}/question`),
+  getResult: (sessionId: string) =>
+    api.get(`/psych/assessment/${sessionId}/result`),
+  getScoreHistory: () => api.get("/psych/history"),
 };
 
 // ── Routes API ─────────────────────────────────────────────
@@ -164,10 +327,16 @@ export const forgeApi = {
   deleteDocument: (id: string) =>
     api.delete(`/v1/documents/${id}`),
   analyzeDocument: (id: string) =>
+    api.post(`/v1/documents/${id}/analyze`),
+  polishDocument: (id: string) =>
     api.post(`/v1/documents/${id}/polish`),
   getVersions: (id: string) => api.get(`/v1/documents/${id}/versions`),
   createVersion: (id: string, data: Record<string, unknown>) =>
     api.post(`/v1/documents/${id}/versions`, data),
+  atsAnalyzeDocument: (id: string, data: { job_description?: string; target_keywords?: string[] }) =>
+    api.post(`/v1/documents/${id}/ats-analyze`, data),
+  getDossierData: () =>
+    api.get("/v1/documents/dossier"),
 };
 
 // ── Interviews API ─────────────────────────────────────────
@@ -191,6 +360,22 @@ export const interviewsApi = {
   getSessions: () => api.get("/interviews/sessions"),
   getSession: (id: string) => api.get(`/interviews/sessions/${id}`),
   getStats: () => api.get("/interviews/stats"),
+};
+
+// ── Aura / Presence API ───────────────────────────────────
+export const auraApi = {
+  getAll: () => api.get("/v1/companions"),
+  getById: (id: string) => api.get(`/v1/companions/${id}`),
+  create: (data: { name: string; archetype: string }) =>
+    api.post("/v1/companions", data),
+  care: (id: string, activityType: string) =>
+    api.post(`/v1/companions/${id}/care`, { activity_type: activityType }),
+  getActivities: (id: string, limit = 50) =>
+    api.get(`/v1/companions/${id}/activities`, { params: { limit } }),
+  checkEvolution: (id: string) =>
+    api.get(`/v1/companions/${id}/evolution/check`),
+  evolve: (id: string, payload?: Record<string, unknown>) =>
+    api.post(`/v1/companions/${id}/evolution`, payload),
 };
 
 // ── Applications API ───────────────────────────────────────
@@ -292,6 +477,12 @@ export const marketplaceApi = {
     api.delete(`/marketplace/services/${id}`),
   updateBooking: (id: string, data: { status: string; reason?: string; summary?: string }) =>
     api.patch(`/marketplace/bookings/${id}`, data),
+
+  // Stripe Connect Onboarding
+  startConnectOnboarding: () =>
+    api.post("/marketplace/providers/onboard"),
+  getConnectOnboardingStatus: () =>
+    api.get("/marketplace/providers/onboard/status"),
 };
 
 export default api;

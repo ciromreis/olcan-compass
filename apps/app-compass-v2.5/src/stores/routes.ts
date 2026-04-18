@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { routesApi } from "@/lib/api";
+import { eventBus } from "@/lib/event-bus";
 
 export type MilestoneStatus = "completed" | "in_progress" | "pending" | "blocked";
 
@@ -77,13 +78,28 @@ interface RouteState {
 }
 
 const ROUTE_TYPE_LABELS: Record<string, string> = {
+  // Imigração & relocação
   scholarship: "Bolsa de Estudos",
   job_relocation: "Relocação por Emprego",
   research: "Pesquisa / PhD",
   startup_visa: "Startup Visa",
   exchange: "Intercâmbio",
   digital_nomad: "Nômade Digital",
-  investor_visa: "Investor Visa",
+  investor_visa: "Visto para Investidor",
+  // Acadêmico & desenvolvimento profissional
+  postdoc: "Pós-Doutorado",
+  academic_visiting: "Professor / Pesquisador Visitante",
+  professional_certification: "Certificação Profissional",
+  // Corporativo & organizacional
+  intracompany_transfer: "Transferência Interna (ICT)",
+  conference_representation: "Representação em Congresso",
+  corporate_secondment: "Designação Temporária no Exterior",
+  // Social & cívico
+  volunteer_abroad: "Voluntariado Internacional",
+  ngo_mission: "Missão em ONG / INGO",
+  // Lifestyle & independente
+  retirement_abroad: "Aposentadoria no Exterior",
+  remote_work: "Trabalho Remoto Internacional",
 };
 
 const LOCAL_TYPE_TO_REMOTE: Record<string, string> = {
@@ -246,6 +262,8 @@ export const useRouteStore = create<RouteState>()(
             routes: [mapped, ...state.routes.filter((item) => item.id !== mapped.id)],
             syncError: null,
           }));
+          // Emit route selected event for gamification
+          eventBus.emit("route.selected", { routeId: mapped.id, routeType: route.type });
           return mapped;
         } catch {
           // Last resort: install locally even if all API calls fail
@@ -310,6 +328,10 @@ export const useRouteStore = create<RouteState>()(
             routes: state.routes.map((route) => (route.id === routeId ? mapped : route)),
             syncError: null,
           }));
+          // Emit milestone completed event for gamification
+          if (status === "completed") {
+            eventBus.emit("route.milestone_completed", { routeId, milestoneId });
+          }
         } catch {
           set({ routes: previous, syncError: "Não foi possível atualizar a milestone da rota." });
         }

@@ -31,28 +31,27 @@ export function InterviewFeedbackPanel({ documentId, className = "" }: Interview
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const fetchFeedback = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/forge-interview/document/${documentId}/feedback`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setFeedback(data);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar feedback:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     fetchFeedback();
   }, [documentId]);
-
-  const fetchFeedback = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(`/api/forge-interview/document/${documentId}/feedback`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setFeedback(data);
-      }
-    } catch (error) {
-      console.error("Erro ao buscar feedback:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   if (isLoading) {
     return (
@@ -111,7 +110,7 @@ export function InterviewFeedbackPanel({ documentId, className = "" }: Interview
             <div className="text-center">
               <div className={cn(
                 "text-h3 font-heading font-bold mb-1",
-                average_scores.overall >= 70 ? "text-emerald-600" : "text-amber-600"
+                average_scores.overall >= 70 ? "text-emerald-600" : "text-slate-600"
               )}>
                 {average_scores.overall}
               </div>
@@ -126,7 +125,7 @@ export function InterviewFeedbackPanel({ documentId, className = "" }: Interview
             <div className="text-center">
               <div className={cn(
                 "text-h3 font-heading font-bold mb-1",
-                average_scores.clarity >= 70 ? "text-emerald-600" : "text-amber-600"
+                average_scores.clarity >= 70 ? "text-emerald-600" : "text-slate-600"
               )}>
                 {average_scores.clarity}
               </div>
@@ -141,7 +140,7 @@ export function InterviewFeedbackPanel({ documentId, className = "" }: Interview
             <div className="text-center">
               <div className={cn(
                 "text-h3 font-heading font-bold mb-1",
-                average_scores.confidence >= 70 ? "text-emerald-600" : "text-amber-600"
+                average_scores.confidence >= 70 ? "text-emerald-600" : "text-slate-600"
               )}>
                 {average_scores.confidence}
               </div>

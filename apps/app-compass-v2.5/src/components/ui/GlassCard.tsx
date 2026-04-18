@@ -34,10 +34,10 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   onClick
 }) => {
   const variantClasses = {
-    default: 'bg-white/60 backdrop-blur-2xl',
-    dark: 'bg-navy-900/80 backdrop-blur-2xl',
-    light: 'bg-white/40 backdrop-blur-xl',
-    olcan: 'bg-gradient-to-br from-cream-50/90 to-white/80 backdrop-blur-2xl'
+    default: 'bg-neutral-500/10 backdrop-blur-2xl',
+    dark: 'bg-neutral-900/10 backdrop-blur-2xl',
+    light: 'bg-neutral-100/40 backdrop-blur-xl',
+    olcan: 'bg-gradient-to-br from-neutral-50/90 to-neutral-100/80 backdrop-blur-2xl'
   }
 
   const roundedClasses = {
@@ -86,7 +86,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent pointer-events-none" />
       
       {/* Glass Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-navy-900/5 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-slate-900/5 pointer-events-none" />
       
       {/* Subtle Inner Shadow */}
       <div className="absolute inset-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(10,13,26,0.05)] pointer-events-none rounded-[inherit]" />

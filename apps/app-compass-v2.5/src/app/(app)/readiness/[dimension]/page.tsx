@@ -6,7 +6,11 @@ import Link from "next/link";
 import { CheckCircle, Circle, ArrowRight, DollarSign, FileText, Languages, Brain, Truck, Zap } from "lucide-react";
 import { useSprintStore } from "@/stores/sprints";
 import { useRouteStore } from "@/stores/routes";
-import { usePsychStore } from "@/stores/psych";
+import {
+  hasOiosArchetypeEstablished,
+  psychologicalReadinessScore,
+  usePsychStore,
+} from "@/stores/psych";
 import { useHydration } from "@/hooks";
 import { EmptyState, PageHeader, Progress, ProgressRing, Skeleton } from "@/components/ui";
 import { normalizeForComparison } from "@/lib/text-normalize";
@@ -36,7 +40,7 @@ const RECOMMENDATIONS: Record<string, string[]> = {
     "Buscar um coach de idiomas no Marketplace para preparação intensiva.",
   ],
   psychological: [
-    "Completar o diagnóstico psicológico para identificar pontos de atenção.",
+    "Fazer o diagnóstico de mobilidade e o mapeamento Likert de 8 blocos para calibrar prontidão e recomendações.",
     "Praticar entrevistas no simulador para reduzir ansiedade.",
     "Considerar apoio profissional de um psicólogo especializado em expatriação.",
   ],
@@ -52,7 +56,16 @@ export default function DimensionDetailPage() {
   const hydrated = useHydration();
   const { sprints } = useSprintStore();
   const { routes, getRouteProgress } = useRouteStore();
-  const { getOverallScore, isComplete } = usePsychStore();
+  const {
+    getOverallScore,
+    isComplete,
+    oiosAssessmentComplete,
+    oiosSnapshot,
+  } = usePsychStore();
+  const hasOiosArchetype = hasOiosArchetypeEstablished({
+    oiosAssessmentComplete,
+    oiosSnapshot,
+  });
 
   const meta = dimension ? DIMENSION_META[dimension] : null;
 
@@ -60,7 +73,10 @@ export default function DimensionDetailPage() {
     if (!hydrated || !meta) return { score: 0, tasks: [] as Array<{ name: string; done: boolean; sprint: string }> };
 
     if (dimension === "psychological") {
-      const s = isComplete() ? getOverallScore() : 0;
+      const s = psychologicalReadinessScore(isComplete(), getOverallScore(), {
+        oiosAssessmentComplete,
+        oiosSnapshot,
+      });
       return { score: s, tasks: [] };
     }
     if (dimension === "logistical") {
@@ -78,7 +94,18 @@ export default function DimensionDetailPage() {
     const total = allTasks.length;
     const done = allTasks.filter((t) => t.done).length;
     return { score: total > 0 ? Math.round((done / total) * 100) : 0, tasks: allTasks };
-  }, [hydrated, meta, dimension, sprints, routes, getRouteProgress, getOverallScore, isComplete]);
+  }, [
+    hydrated,
+    meta,
+    dimension,
+    sprints,
+    routes,
+    getRouteProgress,
+    getOverallScore,
+    isComplete,
+    oiosAssessmentComplete,
+    oiosSnapshot,
+  ]);
 
   if (!hydrated) {
     return <div className="max-w-4xl mx-auto space-y-6"><Skeleton className="h-10 w-64" /><div className="grid md:grid-cols-3 gap-4">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-28" />)}</div></div>;
@@ -153,14 +180,50 @@ export default function DimensionDetailPage() {
       )}
 
       {tasks.length === 0 && dimension === "psychological" && (
-        <div className="card-surface p-6 text-center">
-          <Brain className="w-8 h-8 text-brand-500 mx-auto mb-3" />
-          <p className="text-body text-text-secondary mb-3">
-            {isComplete() ? `Seu score psicológico é ${score}. Refaça o diagnóstico para atualizar.` : "Complete o diagnóstico psicológico para calcular este score."}
-          </p>
-          <Link href="/profile/psych" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-500 text-white text-body-sm font-semibold hover:bg-brand-600 transition-colors">
-            {isComplete() ? "Refazer Diagnóstico" : "Iniciar Diagnóstico"} <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+        <div className="space-y-4">
+          {!hasOiosArchetype && (
+            <div className="card-surface border border-brand-200 bg-brand-50/50 p-6">
+              <p className="font-heading text-body-sm font-semibold text-text-primary">
+                Diagnóstico de mobilidade pendente
+              </p>
+              <p className="mt-2 text-body-sm text-text-secondary">
+                O diagnóstico alinha presença, simulador de entrevistas e mensagens ao seu perfil. Leva poucos minutos.
+              </p>
+              <Link
+                href="/onboarding/quiz"
+                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-body-sm font-semibold text-white transition-colors hover:bg-brand-600"
+              >
+                Fazer diagnóstico <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          )}
+          <div className="card-surface p-6 text-center">
+            <Brain className="w-8 h-8 text-brand-500 mx-auto mb-3" />
+            <p className="text-body text-text-secondary mb-3">
+              {isComplete()
+                ? `Seu score psicológico é ${score}. Refaça o diagnóstico para atualizar.`
+                : hasOiosArchetype
+                  ? "Diagnóstico inicial concluído. Complete o mapeamento Likert (8 blocos) em /profile/psych para o Score de Certeza completo."
+                  : "Faça o diagnóstico de mobilidade e o mapeamento Likert para preencher esta dimensão."}
+            </p>
+            <div className="flex flex-col items-center justify-center gap-2 sm:flex-row">
+              {!hasOiosArchetype ? (
+                <Link
+                  href="/onboarding/quiz"
+                  className="inline-flex items-center gap-2 rounded-lg border border-brand-300 bg-white px-4 py-2 text-body-sm font-semibold text-brand-700 transition-colors hover:bg-brand-50"
+                >
+                  Diagnóstico <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              ) : null}
+              <Link
+                href="/profile/psych"
+                className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-body-sm font-semibold text-white transition-colors hover:bg-brand-600"
+              >
+                {isComplete() ? "Refazer diagnóstico Likert" : "Diagnóstico Likert (8 blocos)"}{" "}
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
         </div>
       )}
 

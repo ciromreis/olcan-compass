@@ -7,12 +7,16 @@ from typing import Optional, List, Dict, Any
 from uuid import UUID
 from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
+import logging
+import os
 
+import stripe
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, desc
 
 from app.core.auth import get_current_user
+from app.core.config import settings
 from app.db.session import get_db
 from app.db.models import (
     User,
@@ -37,6 +41,10 @@ from app.schemas.marketplace import (
     ServiceListingCreate,
     ServiceListingUpdate,
 )
+
+logger = logging.getLogger(__name__)
+
+PLATFORM_FEE_PERCENT = Decimal("0.15")  # 15% platform fee
 
 router = APIRouter(prefix="/marketplace", tags=["Marketplace"])
 
@@ -527,9 +535,9 @@ async def create_booking(
     
     # Calculate pricing
     price_agreed = service.price_amount
-    platform_fee = price_agreed * Decimal("0.15")  # 15% platform fee
+    platform_fee = price_agreed * PLATFORM_FEE_PERCENT
     provider_earnings = price_agreed - platform_fee
-    
+
     # Create booking
     booking = Booking(
         client_id=current_user.id,
@@ -546,46 +554,74 @@ async def create_booking(
         status=BookingStatus.PENDING,
         payment_status=PaymentStatus.PENDING.value,
     )
-    
+
     db.add(booking)
     await db.flush()  # Get booking ID
-    
+
     # Link availability to booking if applicable
     if availability_id:
         availability.booking_id = booking.id
-    
+
     await db.commit()
     await db.refresh(booking)
-    
+
+    # --- Stripe Connect: create PaymentIntent with transfer if provider has Connect ---
+    payment_intent_client_secret = None
+    if provider.stripe_connect_account_id and provider.stripe_connect_onboarding_complete:
+        try:
+            amount_cents = int(price_agreed * 100)
+            fee_cents = int(platform_fee * 100)
+            pi = stripe.PaymentIntent.create(
+                amount=amount_cents,
+                currency="brl",
+                payment_method_types=["card"],
+                transfer_data={
+                    "destination": provider.stripe_connect_account_id,
+                },
+                application_fee_amount=fee_cents,
+                metadata={
+                    "booking_id": str(booking.id),
+                    "provider_id": str(provider.id),
+                    "service_id": str(service.id),
+                },
+            )
+            payment_intent_client_secret = pi.client_secret
+            booking.payment_method = pi.id  # store PI id for later reference
+            await db.commit()
+        except Exception as exc:
+            logger.error("Stripe PaymentIntent creation failed: %s", exc)
+
     # === ECONOMICS INTEGRATION: Escrow Creation ===
-    # Trigger escrow creation for performance-bound services
     is_performance_bound = (
         hasattr(service, 'performance_bound') and service.performance_bound
     )
-    
+
     if is_performance_bound:
         try:
             from app.tasks.escrow import create_escrow_task
             create_escrow_task.delay(
                 str(booking.id),
-                float(price_agreed * Decimal("0.30")),  # 30% held in escrow
+                float(price_agreed * Decimal("0.30")),
                 {
                     "type": "readiness_improvement",
                     "min_improvement": 10
                 }
             )
         except Exception:
-            pass  # Celery/Redis not available in free-tier deploy
-    
-    return {
+            pass
+
+    result = {
         "booking_id": str(booking.id),
         "status": booking.status.value,
         "scheduled_date": booking.scheduled_date.isoformat(),
         "price_agreed": float(booking.price_agreed),
         "platform_fee": float(booking.platform_fee),
         "has_performance_guarantee": is_performance_bound,
-        "message": "Booking request sent to provider"
+        "message": "Booking request sent to provider",
     }
+    if payment_intent_client_secret:
+        result["payment_intent_client_secret"] = payment_intent_client_secret
+    return result
 
 
 @router.get("/bookings", response_model=Dict[str, Any])
@@ -1187,6 +1223,7 @@ async def provider_dashboard(
     return {
         "provider_id": str(provider.id),
         "status": provider.status.value,
+        "stripe_connect_complete": provider.stripe_connect_onboarding_complete,
         "stats": {
             "total_bookings": provider.total_bookings,
             "completed_bookings": provider.completed_bookings,
@@ -1206,6 +1243,109 @@ async def provider_dashboard(
             for b in recent
         ]
     }
+
+
+# === STRIPE CONNECT ONBOARDING ===
+
+@router.post("/providers/onboard", response_model=Dict[str, Any])
+async def start_connect_onboarding(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Create a Stripe Connect Express account and return the onboarding link."""
+    result = await db.execute(
+        select(ProviderProfile).where(ProviderProfile.user_id == current_user.id)
+    )
+    provider = result.scalar_one_or_none()
+
+    if not provider:
+        raise HTTPException(status_code=403, detail="You are not a provider")
+
+    if provider.stripe_connect_onboarding_complete:
+        raise HTTPException(status_code=400, detail="Stripe Connect onboarding already complete")
+
+    try:
+        # Re-use existing account or create new one
+        if provider.stripe_connect_account_id:
+            account_id = provider.stripe_connect_account_id
+        else:
+            account = stripe.Account.create(
+                type="express",
+                country="BR",
+                email=current_user.email,
+                capabilities={
+                    "card_payments": {"requested": True},
+                    "transfers": {"requested": True},
+                },
+                metadata={
+                    "provider_id": str(provider.id),
+                    "user_id": str(current_user.id),
+                },
+            )
+            account_id = account.id
+            provider.stripe_connect_account_id = account_id
+            await db.commit()
+
+        # Create an Account Link for onboarding
+        account_link = stripe.AccountLink.create(
+            account=account_id,
+            refresh_url=f"{settings.frontend_url}/marketplace/onboard?refresh=true",
+            return_url=f"{settings.frontend_url}/marketplace/onboard?success=true",
+            type="account_onboarding",
+        )
+
+        return {
+            "account_id": account_id,
+            "onboarding_url": account_link.url,
+        }
+
+    except stripe.error.StripeError as exc:
+        logger.error("Stripe Connect onboarding error: %s", exc)
+        raise HTTPException(status_code=502, detail="Failed to create Stripe Connect account")
+
+
+@router.get("/providers/onboard/status", response_model=Dict[str, Any])
+async def get_connect_onboarding_status(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Check the current Stripe Connect onboarding status for the provider."""
+    result = await db.execute(
+        select(ProviderProfile).where(ProviderProfile.user_id == current_user.id)
+    )
+    provider = result.scalar_one_or_none()
+
+    if not provider:
+        raise HTTPException(status_code=403, detail="You are not a provider")
+
+    if not provider.stripe_connect_account_id:
+        return {
+            "has_account": False,
+            "onboarding_complete": False,
+            "charges_enabled": False,
+            "payouts_enabled": False,
+        }
+
+    try:
+        account = stripe.Account.retrieve(provider.stripe_connect_account_id)
+
+        # Update local flag if onboarding just completed
+        if account.charges_enabled and account.payouts_enabled and not provider.stripe_connect_onboarding_complete:
+            provider.stripe_connect_onboarding_complete = True
+            await db.commit()
+
+        return {
+            "has_account": True,
+            "account_id": account.id,
+            "onboarding_complete": provider.stripe_connect_onboarding_complete,
+            "charges_enabled": account.charges_enabled,
+            "payouts_enabled": account.payouts_enabled,
+            "details_submitted": account.details_submitted,
+        }
+
+    except stripe.error.StripeError as exc:
+        logger.error("Stripe account retrieve error: %s", exc)
+        raise HTTPException(status_code=502, detail="Failed to check Stripe Connect status")
 
 
 @router.post("/provider/apply", response_model=Dict[str, Any], status_code=status.HTTP_201_CREATED)

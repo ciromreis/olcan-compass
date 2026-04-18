@@ -5,7 +5,7 @@ import enum
 from datetime import datetime, timezone, date
 
 from sqlalchemy import DateTime, String, Text, ForeignKey, JSON, Enum, Float, Integer, Boolean, Date
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
@@ -143,6 +143,10 @@ class UserApplication(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
+    # Relationships
+    user = relationship("User", back_populates="applications")
+    documents = relationship("ApplicationDocument", back_populates="application", lazy="noload")
+
 
 class ApplicationDocument(Base):
     """Documents attached to a specific application"""
@@ -169,6 +173,9 @@ class ApplicationDocument(Base):
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    
+    # Relationships
+    application = relationship("UserApplication", back_populates="documents")
 
 
 class OpportunityWatchlist(Base):
@@ -188,6 +195,9 @@ class OpportunityWatchlist(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     
     # Unique constraint handled via indexes
+    
+    # Relationships
+    user = relationship("User", back_populates="opportunity_watchlists")
 
 
 class ApplicationDeadlineReminder(Base):
@@ -208,6 +218,9 @@ class ApplicationDeadlineReminder(Base):
     is_sent: Mapped[bool] = mapped_column(Boolean, default=False)
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    
+    # Relationships
+    user = relationship("User", back_populates="application_deadline_reminders")
 
 
 class OpportunityMatch(Base):

@@ -76,7 +76,16 @@ export default function ProviderServicesPage() {
           </div>
         )) : (
           <div className="col-span-full">
-            <EmptyState icon={FileText} title="Nenhum serviço ofertado." description="Seu catálogo ainda não possui serviços publicados. O cadastro direto pelo portal do profissional ainda está em implantação." />
+            <EmptyState 
+              icon={FileText} 
+              title="Nenhum serviço cadastrado" 
+              description="Comece criando seu primeiro serviço para aparecer no marketplace e receber contratações."
+              action={
+                <Button onClick={handleCreate} className="flex items-center gap-2 bg-brand-500 text-white mt-4">
+                  <Plus className="w-4 h-4" /> Criar Primeiro Serviço
+                </Button>
+              }
+            />
           </div>
         )}
       </div>

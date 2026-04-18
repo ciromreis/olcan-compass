@@ -28,7 +28,7 @@ const iconMap: Record<ConfirmationVariant, typeof Info> = {
 const iconColorMap: Record<ConfirmationVariant, string> = {
   info: "text-sage-500 bg-sage-50",
   success: "text-brand-500 bg-brand-50",
-  warning: "text-amber-500 bg-amber-50",
+  warning: "text-slate-500 bg-slate-50",
   destructive: "text-clay-500 bg-clay-50",
 };
 

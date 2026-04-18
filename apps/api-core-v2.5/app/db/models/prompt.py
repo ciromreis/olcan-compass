@@ -8,7 +8,7 @@ import enum
 from datetime import datetime, timezone
 
 from sqlalchemy import DateTime, String, Text, ForeignKey, JSON, Enum, Boolean, Integer
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
@@ -120,6 +120,9 @@ class PromptExecutionLog(Base):
     user_feedback: Mapped[str | None] = mapped_column(Text, nullable=True)
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    
+    # Relationships
+    user = relationship("User", back_populates="prompt_execution_logs")
 
 
 class AIJobQueue(Base):
@@ -160,3 +163,6 @@ class AIJobQueue(Base):
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    
+    # Relationships
+    user = relationship("User", back_populates="ai_job_queue")

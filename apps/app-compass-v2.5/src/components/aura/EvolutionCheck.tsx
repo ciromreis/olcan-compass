@@ -9,9 +9,10 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Sparkles, ChevronRight, Lock, Loader2, Zap } from 'lucide-react'
+import { Sparkles, ChevronRight, Lock, Loader2 } from 'lucide-react'
 import { GlassCard, GlassButton } from '@/components/ui'
 import { useAuraStore } from '@/stores/auraStore'
+import { useRouter } from 'next/navigation'
 
 interface EvolutionRequirement {
   label: string
@@ -23,15 +24,18 @@ interface EvolutionRequirement {
 
 export function EvolutionCheck() {
   const [isChecking, setIsChecking] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [eligibility, setEligibility] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   
   const { 
     aura, 
     checkEvolutionEligibility, 
-    triggerEvolution,
+    prepareRitual,
     isLoading 
   } = useAuraStore()
+  
+  const router = useRouter()
 
   if (!aura) return null
 
@@ -49,13 +53,9 @@ export function EvolutionCheck() {
     }
   }
 
-  const handleEvolve = async () => {
-    try {
-      await triggerEvolution()
-      setEligibility(null) // Reset after evolution
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Falha ao evoluir Aura')
-    }
+  const handleEvolve = () => {
+    prepareRitual()
+    router.push('/aura/discover?mode=evolution')
   }
 
   const getRequirements = (): EvolutionRequirement[] => {
@@ -96,16 +96,16 @@ export function EvolutionCheck() {
   return (
     <GlassCard className="p-8 rounded-[2.5rem] bg-white border border-bone-500/10 shadow-glass-sm overflow-hidden relative">
       {/* Decorative Glow */}
-      <div className="absolute -top-12 -right-12 w-32 h-32 bg-gold-400/10 rounded-full blur-3xl p-0" />
+      <div className="absolute -top-12 -right-12 w-32 h-32 bg-steel-400/10 rounded-full blur-3xl p-0" />
       
       <div className="relative z-10 flex items-center gap-4 mb-8">
-        <div className="p-3 rounded-2xl bg-gold-500/10 border border-gold-500/20">
-          <Sparkles className="w-6 h-6 text-gold-500" />
+        <div className="p-3 rounded-2xl bg-steel-500/10 border border-steel-500/20">
+          <Sparkles className="w-6 h-6 text-steel-500" />
         </div>
         <div>
           <h3 className="text-xl font-semibold text-ink-950 uppercase tracking-tight leading-none">Evolução de Aura</h3>
           <p className="text-caption font-semibold text-ink-300 uppercase tracking-widest mt-1.5 leading-none">
-            Manifestação Atual: <span className="text-gold-500">{aura.evolutionStage}</span>
+            Manifestação Atual: <span className="text-steel-500">{aura.evolutionStage}</span>
           </p>
         </div>
       </div>
@@ -115,7 +115,7 @@ export function EvolutionCheck() {
         <GlassButton
           onClick={handleCheckEligibility}
           disabled={isLoading}
-          className="w-full h-14 rounded-2xl bg-ink-950 text-white font-semibold text-xs uppercase tracking-widest hover:bg-gold-500 hover:text-ink-950 transition-all shadow-lg"
+          className="w-full h-14 rounded-2xl bg-ink-950 text-white font-semibold text-xs uppercase tracking-widest hover:bg-steel-500 hover:text-ink-950 transition-all shadow-lg"
         >
           Verificar Elegibilidade
           <ChevronRight className="w-4 h-4 ml-2" />
@@ -125,7 +125,7 @@ export function EvolutionCheck() {
       {/* Loading State */}
       {isChecking && (
         <div className="flex flex-col items-center justify-center py-10 gap-4">
-          <Loader2 className="w-10 h-10 animate-spin text-gold-500" />
+          <Loader2 className="w-10 h-10 animate-spin text-steel-500" />
           <p className="text-caption font-semibold text-ink-300 uppercase tracking-widest animate-pulse">Sincronizando Requisitos...</p>
         </div>
       )}
@@ -154,7 +154,7 @@ export function EvolutionCheck() {
             <div className={`p-6 rounded-3xl border ${
               eligibility.eligible 
                 ? 'bg-emerald-500/5 border-emerald-500/20' 
-                : 'bg-amber-500/5 border-amber-500/20'
+                : 'bg-slate-500/5 border-slate-500/20'
             }`}>
               <div className="flex items-center gap-3">
                 {eligibility.eligible ? (
@@ -171,12 +171,12 @@ export function EvolutionCheck() {
                   </>
                 ) : (
                   <>
-                    <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
-                      <Lock className="w-5 h-5 text-amber-500" />
+                    <div className="w-10 h-10 rounded-xl bg-slate-500/20 border border-slate-500/30 flex items-center justify-center">
+                      <Lock className="w-5 h-5 text-slate-500" />
                     </div>
                     <div className="flex-1">
-                      <span className="block text-caption font-semibold text-amber-600/70 uppercase tracking-widest">Acesso Restrito</span>
-                      <span className="text-sm font-semibold text-amber-700 leading-tight">
+                      <span className="block text-caption font-semibold text-slate-600/70 uppercase tracking-widest">Acesso Restrito</span>
+                      <span className="text-sm font-semibold text-slate-700 leading-tight">
                         Ainda faltam marcos de manifestação.
                       </span>
                     </div>
@@ -185,11 +185,11 @@ export function EvolutionCheck() {
               </div>
               
               {!eligibility.eligible && eligibility.reasons?.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-amber-500/10">
+                <div className="mt-4 pt-4 border-t border-slate-500/10">
                   <ul className="space-y-2">
                     {eligibility.reasons.map((reason: string, i: number) => (
-                      <li key={i} className="flex items-start gap-2 text-body-sm text-amber-600/80 font-medium">
-                        <div className="w-1 h-1 rounded-full bg-amber-400 mt-1.5 shrink-0" />
+                      <li key={i} className="flex items-start gap-2 text-body-sm text-slate-600/80 font-medium">
+                        <div className="w-1 h-1 rounded-full bg-slate-400 mt-1.5 shrink-0" />
                         {reason}
                       </li>
                     ))}
@@ -221,7 +221,7 @@ export function EvolutionCheck() {
                         className={`h-full rounded-full ${
                           req.percentage >= 100 
                             ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]' 
-                            : 'bg-gold-500'
+                            : 'bg-steel-500'
                         }`}
                       />
                     </div>
@@ -240,7 +240,7 @@ export function EvolutionCheck() {
                 <GlassButton
                   onClick={handleEvolve}
                   disabled={isLoading}
-                  className="w-full h-16 rounded-2xl bg-gold-500 text-ink-950 font-semibold text-sm uppercase tracking-widest hover:bg-ink-950 hover:text-white transition-all shadow-xl active:scale-95 group"
+                  className="w-full h-16 rounded-2xl bg-steel-500 text-ink-950 font-semibold text-sm uppercase tracking-widest hover:bg-ink-950 hover:text-white transition-all shadow-xl active:scale-95 group"
                 >
                   <Sparkles className="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform" />
                   Manifestar {eligibility.next_stage}

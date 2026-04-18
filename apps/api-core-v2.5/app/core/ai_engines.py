@@ -523,3 +523,89 @@ class ReadinessAnalysisEngine(AIAnalysisEngine):
             })
         
         return recommendations
+
+
+@dataclass
+class ForgePolishResult:
+    polished_content: str
+    changes_summary: str
+    word_count_before: int
+    word_count_after: int
+    methodology_applied: str
+    confidence: float
+
+
+class ForgePolishEngine(AIAnalysisEngine):
+    """AI polishing engine for Narrative Forge.
+
+    Takes a narrative text, applies the requested methodology (STAR, CAR, or free-form),
+    and returns an improved version along with a summary of changes made.
+    Uses SIMULATION mode in development so no live AI key is required.
+    """
+
+    async def polish(
+        self,
+        content: str,
+        methodology: str,
+        target_word_count: int,
+        user: "User",
+        narrative_id: Optional[UUID] = None,
+    ) -> ForgePolishResult:
+        template = await self._get_prompt_template(
+            PromptCategory.NARRATIVE_ANALYSIS,
+            slug="forge_polish"
+        )
+
+        if not template:
+            return self._simulate_polish(content, methodology, target_word_count)
+
+        variables = {
+            "narrative_text": content,
+            "methodology": methodology,
+            "target_word_count": target_word_count,
+            "current_word_count": len(content.split()),
+        }
+
+        result_data = await self._execute_prompt(
+            template=template,
+            variables=variables,
+            user_id=user.id,
+            entity_type="narrative",
+            entity_id=narrative_id,
+        )
+
+        return ForgePolishResult(
+            polished_content=result_data.get("polished_content", content),
+            changes_summary=result_data.get("changes_summary", "Document polished."),
+            word_count_before=len(content.split()),
+            word_count_after=len(result_data.get("polished_content", content).split()),
+            methodology_applied=methodology,
+            confidence=result_data.get("confidence", 0.85),
+        )
+
+    def _simulate_polish(
+        self, content: str, methodology: str, target_word_count: int
+    ) -> ForgePolishResult:
+        """Dev-mode polish: adds structure markers and preamble without an API key."""
+        word_count_before = len(content.split())
+        polished = (
+            f"[Polished — {methodology.upper()} methodology]\n\n"
+            "My journey began with a transformative realization: the gap between where I stood "
+            "and where I aspired to be was not defined by circumstance, but by deliberate action. "
+            "Through systematic preparation and focused effort, I developed the resilience and "
+            "clarity necessary to pursue this opportunity with conviction.\n\n"
+            f"{content}\n\n"
+            "This experience crystallized my commitment to excellence and reinforced my belief "
+            "that meaningful impact emerges from the intersection of preparation, purpose, and persistence."
+        )
+        return ForgePolishResult(
+            polished_content=polished,
+            changes_summary=(
+                "Enhanced opening impact, strengthened narrative arc, "
+                "clarified motivation, improved conclusion coherence."
+            ),
+            word_count_before=word_count_before,
+            word_count_after=len(polished.split()),
+            methodology_applied=methodology,
+            confidence=0.88,
+        )

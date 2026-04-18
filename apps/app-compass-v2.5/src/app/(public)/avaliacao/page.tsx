@@ -10,7 +10,7 @@ export default function AssessmentTeaserPage() {
           <Brain className="w-8 h-8 text-brand-500" />
         </div>
         <h1 className="font-heading text-display text-text-primary mb-4">Descubra seu Score de Certeza</h1>
-        <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">Em menos de 10 minutos, o diagnóstico psicológico e financeiro revela onde você está, o que está impedindo você, e qual é o próximo passo ideal.</p>
+        <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">Em menos de 10 minutos, a avaliação de perfil e financeira revela onde você está, o que está impedindo você, e qual é o próximo passo ideal.</p>
       </div>
       <div className="grid md:grid-cols-3 gap-6 mb-12">
         <div className="card-surface p-6 text-center">

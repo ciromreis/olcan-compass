@@ -10,11 +10,13 @@ import { EmptyState, PageHeader } from "@/components/ui";
 import { useHydration } from "@/hooks/use-hydration";
 import { useAuthStore } from "@/stores/auth";
 import { useCommunityStore, type CommunityItemTopic, type CommunityItemType, type CommunitySourceRef } from "@/stores/community";
+import { useCanonicalContentStore } from "@/stores/canonicalContentStore";
 import { CommunityCollectionsPanel } from "./CommunityCollectionsPanel";
 import { CommunityFeedFilters } from "./CommunityFeedFilters";
 import { CommunityFeedItem } from "./CommunityFeedItem";
 import { CommunityQuestionForm } from "./CommunityQuestionForm";
 import { CommunityReferenceForm } from "./CommunityReferenceForm";
+import { ActivityFeed } from "@/components/social/ActivityFeed";
 
 type FeedFilter = "all" | CommunityItemType;
 type EngineFilter = "all" | CommunitySourceRef["engine"];
@@ -48,8 +50,6 @@ export default function CommunityPage() {
   const {
     items,
     collections,
-    createQuestion,
-    saveReference,
     toggleLike,
     toggleSave,
     addReply,
@@ -57,12 +57,15 @@ export default function CommunityPage() {
     fetchPosts,
     getStats,
   } = useCommunityStore();
+  const { chronicles, communityItems, fetchFeedChronicles, fetchCommunityFeed, postToNexus } = useCanonicalContentStore();
 
   useEffect(() => {
     if (ready) {
       fetchPosts();
+      fetchFeedChronicles();
+      fetchCommunityFeed();
     }
-  }, [ready, fetchPosts]);
+  }, [ready, fetchPosts, fetchFeedChronicles, fetchCommunityFeed]);
 
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<FeedFilter>("all");
@@ -88,52 +91,109 @@ export default function CommunityPage() {
 
   const feed = useMemo(() => {
     const term = search.trim().toLowerCase();
-    return [...items]
+    
+    // Map Editorial Chronicles
+    const chronicleItems = chronicles.map((c) => ({
+      id: String(c.id || c.slug),
+      type: "olcan_post" as CommunityItemType,
+      author: c.author || "Equipe Olcan",
+      title: c.title,
+      description: c.excerpt || "",
+      topic: (c.category?.toLowerCase() || "community") as CommunityItemTopic,
+      tags: c.tags?.map((t) => t.label) || ["oficial", "nexus"],
+      savedCount: 5,
+      likeCount: 12,
+      replyCount: 0,
+      replies: [],
+      createdAt: c.published_at || c.createdAt,
+    }));
+
+    // Map Nexus User Community Items
+    const nexusItems = communityItems.map((item) => ({
+      id: String(item.id),
+      type: item.type as CommunityItemType,
+      author: item.author_name || "",
+      title: item.title,
+      description: item.description || "",
+      topic: item.topic as CommunityItemTopic,
+      tags: item.tags?.map((t) => t.label) || [],
+      savedCount: 0,
+      likeCount: 0,
+      replyCount: 0,
+      replies: [],
+      createdAt: item.createdAt,
+      source: item.source,
+      href: item.url,
+      isOfficial: item.is_official,
+    }));
+
+    // Combine with local items (Legacy support for un-synced items)
+    return [...items, ...chronicleItems, ...nexusItems]
       .filter((item) => {
         const matchesType = typeFilter === "all" || item.type === typeFilter;
         const matchesTopic = topicFilter === "all" || item.topic === topicFilter;
-        const matchesEngine = engineFilter === "all" || item.sourceRef?.engine === engineFilter;
-        const matchesCollection = !selectedCollectionId || item.collectionIds?.includes(selectedCollectionId);
+        const matchesEngine =
+          engineFilter === "all" ||
+          ("sourceRef" in item && item.sourceRef?.engine === engineFilter);
+        const matchesCollection =
+          !selectedCollectionId ||
+          ("collectionIds" in item && item.collectionIds?.includes(selectedCollectionId));
         const matchesSearch = !term
-          || item.title.toLowerCase().includes(term)
-          || item.description.toLowerCase().includes(term)
-          || item.tags.some((tag) => tag.toLowerCase().includes(term))
-          || item.author.toLowerCase().includes(term);
+          || item.title?.toLowerCase().includes(term)
+          || item.description?.toLowerCase().includes(term)
+          || item.tags?.some((tag: string) => tag.toLowerCase().includes(term))
+          || item.author?.toLowerCase().includes(term);
         return matchesType && matchesTopic && matchesEngine && matchesCollection && matchesSearch;
       })
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }, [engineFilter, items, search, selectedCollectionId, topicFilter, typeFilter]);
+  }, [search, chronicles, communityItems, items, typeFilter, topicFilter, engineFilter, selectedCollectionId]);
 
-  const handleCreateQuestion = () => {
+  const handleCreateQuestion = async () => {
     if (!questionTitle.trim() || !questionBody.trim()) return;
-    createQuestion({
-      title: questionTitle.trim(),
-      description: questionBody.trim(),
-      topic: questionTopic,
-      author: user?.full_name || "Você",
-    });
-    setQuestionTitle("");
-    setQuestionBody("");
-    setQuestionTopic("community");
+    
+    const author = user?.full_name || "Membro Olcan";
+    
+    try {
+      await postToNexus({
+        title: questionTitle.trim(),
+        description: questionBody.trim(),
+        type: "question",
+        topic: questionTopic,
+        author_name: author,
+      });
+      
+      setQuestionTitle("");
+      setQuestionBody("");
+      setQuestionTopic("community");
+    } catch (err) {
+      console.error("Error posting question:", err);
+    }
   };
 
-  const handleSaveReference = () => {
+  const handleSaveReference = async () => {
     if (!referenceTitle.trim() || !referenceBody.trim() || !referenceSource.trim()) return;
-    saveReference({
-      title: referenceTitle.trim(),
-      description: referenceBody.trim(),
-      topic: referenceTopic,
-      author: user?.full_name || "Você",
-      source: referenceSource.trim(),
-      href: referenceUrl.trim() || undefined,
-      tags: [referenceTopic, referenceSource.trim()],
-      collectionId: activeCollectionId,
-    });
-    setReferenceTitle("");
-    setReferenceBody("");
-    setReferenceSource("");
-    setReferenceUrl("");
-    setReferenceTopic("narrative");
+    
+    const author = user?.full_name || "Membro Olcan";
+
+    try {
+      await postToNexus({
+        title: referenceTitle.trim(),
+        description: referenceBody.trim(),
+        type: "reference",
+        topic: referenceTopic,
+        author_name: author,
+        source: referenceSource.trim(),
+        url: referenceUrl.trim() || undefined,
+      });
+
+      setReferenceTitle("");
+      setReferenceBody("");
+      setReferenceSource("");
+      setReferenceUrl("");
+      setReferenceTopic("narrative");
+    } catch (err) {
+      console.error("Error saving reference:", err);
+    }
   };
 
   const handleCreateCollection = () => {
@@ -230,7 +290,7 @@ export default function CommunityPage() {
                   key={item.id}
                   item={item}
                   collectionId={activeCollectionId}
-                  collectionNames={(item.collectionIds || [])
+                  collectionNames={("collectionIds" in item ? item.collectionIds || [] : [])
                     .map((collectionId) => collections.find((collection) => collection.id === collectionId)?.name)
                     .filter((collectionName): collectionName is string => Boolean(collectionName))}
                   activeCollectionName={selectedCollectionName}
@@ -288,6 +348,15 @@ export default function CommunityPage() {
             onCreateCollection={handleCreateCollection}
           />
         </div>
+      </div>
+
+      {/* Social Activity Feed — live events from the community */}
+      <div>
+        <h2 className="font-heading text-h3 text-text-primary mb-4 flex items-center gap-2">
+          <BookOpen className="w-5 h-5 text-brand-500" />
+          Atividade Recente da Comunidade
+        </h2>
+        <ActivityFeed includeFollowing={true} limit={10} />
       </div>
     </div>
   );

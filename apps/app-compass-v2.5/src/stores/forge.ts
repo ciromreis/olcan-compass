@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { forgeApi } from "@/lib/api";
+import { eventBus } from "@/lib/event-bus";
 
 const IS_DEMO = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
@@ -24,6 +25,15 @@ export interface DocVersion {
   label?: string;
 }
 
+/** Local writing-coach analysis (forge-lab); optional until user runs analyze. */
+export interface ForgeDocAnalysisMetrics {
+  score: number;
+  issues: Array<{ type: string; severity: string; message: string }>;
+  suggestions: string[];
+  wordCount: number;
+  readabilityScore: number;
+}
+
 export interface ForgeDocument {
   id: string;
   title: string;
@@ -33,8 +43,20 @@ export interface ForgeDocument {
   createdAt: string;
   updatedAt: string;
   competitivenessScore: number | null;
+  /** Writing-lab coach panel (mock analysis until backend polish is wired). */
+  metrics?: ForgeDocAnalysisMetrics | null;
   targetProgram?: string;
   language: string;
+  /** Route this document is bound to (null = universal). */
+  routeId?: string | null;
+  /** 'universal' docs appear in all dossiers; 'route' docs are contextual. */
+  scope?: "universal" | "route";
+  /** Opportunity binding - primary opportunity this asset was created for */
+  primaryOpportunityId?: string | null;
+  /** Opportunity binding - all opportunities this asset serves */
+  opportunityIds?: string[];
+  /** Readiness level for submission */
+  readinessLevel?: "draft" | "review" | "export_ready" | "submitted";
   constraints?: {
     minWords?: number;
     maxWords?: number;
@@ -72,6 +94,8 @@ interface RemoteDocument {
   target_word_count?: number | null;
   current_word_count?: number;
   current_character_count?: number;
+  route_id?: string | null;
+  scope?: string;
   created_at: string;
   updated_at: string;
 }
@@ -92,10 +116,17 @@ interface ForgeState {
     type: DocType;
     targetProgram?: string;
     language?: string;
+    routeId?: string;
+    scope?: "universal" | "route";
+    primaryOpportunityId?: string;
+    opportunityIds?: string[];
   }) => Promise<string | null>;
   updateContent: (docId: string, content: string) => Promise<void>;
   updateTitle: (docId: string, title: string) => Promise<void>;
   updateType: (docId: string, type: DocType) => Promise<void>;
+  updateReadinessLevel: (docId: string, level: "draft" | "review" | "export_ready" | "submitted") => Promise<void>;
+  bindToOpportunity: (docId: string, opportunityId: string, isPrimary?: boolean) => Promise<void>;
+  unbindFromOpportunity: (docId: string, opportunityId: string) => Promise<void>;
   deleteDocument: (docId: string) => Promise<void>;
   saveVersion: (docId: string, label?: string) => Promise<void>;
   setCoachThread: (docId: string, messages: CoachMessage[]) => void;
@@ -103,12 +134,65 @@ interface ForgeState {
   clearCoachThread: (docId: string) => void;
   getDocById: (id: string) => ForgeDocument | undefined;
   getDocsByType: (type: DocType) => ForgeDocument[];
+  getDocsByOpportunity: (opportunityId: string) => ForgeDocument[];
   getStats: () => { total: number; avgScore: number; totalWords: number; recentlyEdited: number };
+  analyzeDocument: (docId: string) => Promise<void>;
   reset: () => void;
 }
 
 function wordCount(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+function generateForgeAnalysisMetrics(content: string): ForgeDocAnalysisMetrics {
+  const wc = wordCount(content);
+  const sentences = Math.max(1, content.split(/[.!?]+/).filter(Boolean).length);
+  const avgWordsPerSentence = wc / sentences;
+
+  const issues: ForgeDocAnalysisMetrics["issues"] = [];
+  const suggestions: string[] = [];
+
+  if (avgWordsPerSentence > 20) {
+    issues.push({
+      type: "sentence_length",
+      severity: "medium",
+      message: "Sentenças muito longas. Considere dividir para melhor legibilidade.",
+    });
+  }
+
+  if (wc < 200) {
+    issues.push({
+      type: "length",
+      severity: "high",
+      message: "Texto muito curto. Adicione mais detalhes e desenvolvimento.",
+    });
+  }
+
+  if (content.toLowerCase().split(/\s+/).filter((w) => w.length > 12).length > 5) {
+    issues.push({
+      type: "word_complexity",
+      severity: "low",
+      message: "Considere substituir palavras complexas por alternativas mais simples.",
+    });
+  }
+
+  suggestions.push("Adicione exemplos concretos para fortalecer seus argumentos.");
+  suggestions.push("Revise a estrutura para garantir fluxo lógico.");
+  suggestions.push("Verifique a consistência do tom ao longo do texto.");
+
+  const readabilityScore = Math.max(
+    0,
+    Math.min(100, 100 - (avgWordsPerSentence - 15) * 2 - (wc < 200 ? 20 : 0))
+  );
+  const score = Math.max(0, Math.min(100, readabilityScore - issues.length * 5));
+
+  return {
+    score,
+    issues,
+    suggestions,
+    wordCount: wc,
+    readabilityScore,
+  };
 }
 
 function fallbackScore(content: string): number | null {
@@ -176,6 +260,8 @@ function mapDocument(remote: RemoteDocument): ForgeDocument {
     competitivenessScore:
       remote.ats_score != null ? Math.round(remote.ats_score) : fallbackScore(content),
     language: "pt",
+    routeId: remote.route_id ?? null,
+    scope: (remote.scope === "route" ? "route" : "universal") as "universal" | "route",
     constraints:
       remote.min_character_count || remote.max_character_count || remote.target_word_count
         ? {
@@ -224,7 +310,7 @@ export const useForgeStore = create<ForgeState>()(
         }
       },
 
-      createDocument: async ({ title, type, targetProgram, language }) => {
+      createDocument: async ({ title, type, targetProgram, language, routeId, scope, primaryOpportunityId, opportunityIds }) => {
         // Demo mode: create locally without API
         if (IS_DEMO) {
           const localDoc: ForgeDocument = {
@@ -238,6 +324,11 @@ export const useForgeStore = create<ForgeState>()(
             competitivenessScore: null,
             targetProgram: targetProgram || undefined,
             language: language || "pt",
+            routeId: routeId ?? null,
+            scope: scope ?? "universal",
+            primaryOpportunityId: primaryOpportunityId ?? null,
+            opportunityIds: opportunityIds || [],
+            readinessLevel: "draft",
           };
           set((state) => ({ documents: [localDoc, ...state.documents] }));
           return localDoc.id;
@@ -248,16 +339,24 @@ export const useForgeStore = create<ForgeState>()(
             title,
             document_type: LOCAL_TO_REMOTE_TYPE[type] || "other",
             content: "",
+            ...(routeId ? { route_id: routeId } : {}),
+            scope: scope ?? "universal",
           });
           const remote = response.data as RemoteDocument;
           const mapped = mapDocument(remote);
           mapped.language = language || "pt";
           if (targetProgram) mapped.targetProgram = targetProgram;
+          // Add opportunity binding (local-only until backend supports it)
+          mapped.primaryOpportunityId = primaryOpportunityId ?? null;
+          mapped.opportunityIds = opportunityIds || [];
+          mapped.readinessLevel = "draft";
 
           set((state) => ({
             documents: [mapped, ...state.documents.filter((doc) => doc.id !== mapped.id)],
             syncError: null,
           }));
+          // Emit product event for gamification
+          eventBus.emit("document.created", { docId: mapped.id, docType: type });
           return mapped.id;
         } catch {
           set({ syncError: "Não foi possível criar o documento no Forge." });
@@ -369,6 +468,9 @@ export const useForgeStore = create<ForgeState>()(
           ),
         }));
 
+        // Emit version saved event
+        eventBus.emit("document.version_saved", { docId, label: label || "manual" });
+
         if (IS_DEMO) return;
 
         try {
@@ -415,6 +517,63 @@ export const useForgeStore = create<ForgeState>()(
 
       getDocsByType: (type) => get().documents.filter((doc) => doc.type === type),
 
+      getDocsByOpportunity: (opportunityId) =>
+        get().documents.filter(
+          (doc) =>
+            doc.primaryOpportunityId === opportunityId ||
+            doc.opportunityIds?.includes(opportunityId)
+        ),
+
+      updateReadinessLevel: async (docId, level) => {
+        set((state) => ({
+          documents: state.documents.map((doc) =>
+            doc.id === docId ? { ...doc, readinessLevel: level, updatedAt: new Date().toISOString() } : doc
+          ),
+        }));
+        // TODO: Sync to backend when API supports readiness_level field
+      },
+
+      bindToOpportunity: async (docId, opportunityId, isPrimary = false) => {
+        set((state) => ({
+          documents: state.documents.map((doc) => {
+            if (doc.id !== docId) return doc;
+            
+            const opportunityIds = doc.opportunityIds || [];
+            if (!opportunityIds.includes(opportunityId)) {
+              opportunityIds.push(opportunityId);
+            }
+            
+            return {
+              ...doc,
+              opportunityIds,
+              primaryOpportunityId: isPrimary ? opportunityId : doc.primaryOpportunityId,
+              updatedAt: new Date().toISOString(),
+            };
+          }),
+        }));
+        // TODO: Sync to backend when API supports opportunity binding
+      },
+
+      unbindFromOpportunity: async (docId, opportunityId) => {
+        set((state) => ({
+          documents: state.documents.map((doc) => {
+            if (doc.id !== docId) return doc;
+            
+            const opportunityIds = (doc.opportunityIds || []).filter((id) => id !== opportunityId);
+            const primaryOpportunityId =
+              doc.primaryOpportunityId === opportunityId ? null : doc.primaryOpportunityId;
+            
+            return {
+              ...doc,
+              opportunityIds,
+              primaryOpportunityId,
+              updatedAt: new Date().toISOString(),
+            };
+          }),
+        }));
+        // TODO: Sync to backend when API supports opportunity binding
+      },
+
       getStats: () => {
         const docs = get().documents;
         const scored = docs.filter((doc) => doc.competitivenessScore !== null);
@@ -431,6 +590,28 @@ export const useForgeStore = create<ForgeState>()(
           totalWords: docs.reduce((sum, doc) => sum + wordCount(doc.content), 0),
           recentlyEdited: docs.filter((doc) => new Date(doc.updatedAt).getTime() > oneWeekAgo).length,
         };
+      },
+
+      analyzeDocument: async (docId) => {
+        const doc = get().documents.find((d) => d.id === docId);
+        if (!doc) return;
+
+        if (!IS_DEMO) {
+          try {
+            await forgeApi.analyzeDocument(docId);
+          } catch {
+            // fall through to local heuristic so the lab stays usable
+          }
+        }
+
+        await new Promise((r) => setTimeout(r, IS_DEMO ? 0 : 800));
+        const metrics = generateForgeAnalysisMetrics(doc.content);
+
+        set((state) => ({
+          documents: state.documents.map((d) =>
+            d.id === docId ? { ...d, metrics, competitivenessScore: metrics.score } : d
+          ),
+        }));
       },
 
       reset: () =>
