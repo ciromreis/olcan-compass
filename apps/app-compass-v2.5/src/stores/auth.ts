@@ -107,14 +107,13 @@ export const useAuthStore = create<AuthState>()(
             return;
           }
 
-          const username = email.split('@')[0];
           await apiClient.register({
             email,
-            username,
+            username: email.split('@')[0],
             password,
             full_name: fullName,
           });
-          await apiClient.login({ username, password });
+          await apiClient.login({ username: email, password });
           const userData = await apiClient.getCurrentUser();
           set({
             user: profileFromAuthMe(userData),

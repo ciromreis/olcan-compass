@@ -177,11 +177,9 @@ async def register(
             verification_url=build_verification_url(verification_token),
         )
     except EmailDeliveryError as exc:
-        if settings.env == "production":
-            raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail=str(exc),
-            )
+        # Log the failure but don't block registration — user can resend verification later
+        import logging
+        logging.getLogger(__name__).warning("Verification email failed for %s: %s", new_user.email, exc)
     
     # Create tokens
     access_token, refresh_token = create_token_pair(
