@@ -83,6 +83,29 @@ This file provides quick reference for development commands and project structur
 - Standards: [[wiki/00_Onboarding_Inicio/Padroes_de_Codigo.md]]
 - Roadmap: [[wiki/01_Visao_Estrategica/Roadmap_Implementacao_v2_5.md]]
 
+## Deployment State (atualizado 2026-04-19)
+
+> **API em produção no Render.** Leia [[wiki/05_Infraestrutura/INFRAESTRUTURA_OVERVIEW.md]] para o mapa completo.
+
+| Componente | Plataforma | URL / ID |
+|------------|-----------|---------|
+| API Core v2.5 | Render (Docker, Free) | `https://olcan-compass-api.onrender.com` |
+| Render Service ID | — | `srv-d6jjhuea2pns73f73e5g` |
+| PostgreSQL | Render | `dpg-d7i2qnkvikkc73aj0gm0-a` |
+| App Compass | Vercel | `compass.olcan.com.br` |
+| DNS | Cloudflare | Zone `aa51bdbdc0a503f3121f810e46c16c0e` |
+| Email | Resend | `smtp.resend.com:465` |
+| Domínio | GoDaddy | `olcan.com.br` |
+| DB migration | Alembic | head = `0025_enhanced_forge` |
+
+**Gotchas críticos:**
+- `DATABASE_URL` deve ter `postgresql+asyncpg://` (não `postgresql://`)
+- `ENV PYTHONPATH=/app` é obrigatório no Dockerfile (alembic exige)
+- Render API PUT `/envVars` substitui TODAS as vars — sempre fetch antes de update
+- Cloudflare não importa todos os subdomínios automaticamente na migração — verificar manualmente
+
+**Infra runbooks:** `wiki/05_Infraestrutura/`
+
 ## Development Commands
 
 ### Full Environment
