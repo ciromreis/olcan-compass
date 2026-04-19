@@ -5,6 +5,7 @@ import { useTaskStore } from '@/stores/taskStore'
 import type { TaskCreateRequest, TaskCategory, TaskPriority } from '@/lib/taskTypes'
 import { TASK_CATEGORY_LABELS, TASK_PRIORITY_LABELS } from '@/lib/taskTypes'
 import { X, Plus, Calendar, Clock } from 'lucide-react'
+import { TaskDocumentLinker } from './TaskDocumentLinker'
 
 interface TaskCreateFormProps {
   onSuccess?: () => void
@@ -26,6 +27,7 @@ export function TaskCreateForm({ onSuccess, onCancel }: TaskCreateFormProps) {
   })
   const [subtaskInputs, setSubtaskInputs] = useState<string[]>([])
   const [newSubtask, setNewSubtask] = useState('')
+  const [linkedDocId, setLinkedDocId] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -104,6 +106,12 @@ export function TaskCreateForm({ onSuccess, onCancel }: TaskCreateFormProps) {
         <textarea value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value || undefined })}
           placeholder="Anotacoes, dicas ou lembretes..." rows={2} className={`${fieldClass} resize-none`} />
       </div>
+
+      <TaskDocumentLinker
+        selectedDocId={linkedDocId}
+        onSelect={(docId) => setLinkedDocId(docId)}
+        onClear={() => setLinkedDocId(null)}
+      />
 
       <div>
         <label className="block text-sm font-semibold text-slate-700 mb-1.5">Subtarefas</label>

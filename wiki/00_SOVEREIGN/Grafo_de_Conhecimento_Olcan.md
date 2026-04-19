@@ -3,10 +3,11 @@ title: Grafo de Conhecimento Olcan
 type: drawer
 layer: 0
 status: active
-last_seen: 2026-04-17
+last_seen: 2026-04-18
 backlinks:
   - Olcan_Master_PRD_v2_5
   - Verdade_do_Produto
+  - Spec_Dossier_System_v2_5
   - MemPalace_Migration_Spec
 ---
 
@@ -18,6 +19,7 @@ backlinks:
 **Camada (Layer)**: Planejamento / Wiki
 **Tags**: #grafo #wiki #obsidian #mermaid #masterview #highfidelity #segurança #economia #ia #archivo
 **Criado**: 15/04/2026
+**Atualizado**: 18/04/2026
 **Atualizado**: 17/04/2026
 
 ---
@@ -36,6 +38,12 @@ graph TD
         User --> Diagnostic[Diagnóstico Mirror]
         Diagnostic --> Archetypes[Arquétipos & Recombinação]
         User --> Forge[Narrative Forge]
+        Forge --> Dossier[Dossier System]
+        Dossier --> Hub[DossierHub]
+        Dossier --> Export[Export Control]
+        Dossier --> Timeline[Timeline View]
+        Forge --> Guidance[Document Guidance]
+        Forge --> Profile[Profile Integrator]
         Forge --> AIScoring[IA: Pillar 06]
         User --> TaskEngine[Motor de Tarefas / XP]
     end
@@ -127,6 +135,7 @@ Este ecossistema de Wiki agora cobre:
 - [[03_Produto_Forge/PRD_Master_Ethereal_Glass]] — design system e UI blueprint
 - [[03_Produto_Forge/Spec_Narrative_Forge]] — spec da feature Forge
 - [[03_Produto_Forge/Spec_Simulador_de_Entrevista]] — spec do simulador
+- [[03_Produto_Forge/Spec_Dossier_System_v2_5]] — sistema de dossier completo (18/04/2026)
 - [[03_Produto_Forge/Jornadas_do_Usuario]] — fluxos do usuário
 
 ### 🎮 04_Ecossistema_Aura — Gamificação

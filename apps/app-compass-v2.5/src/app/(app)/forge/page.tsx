@@ -13,11 +13,11 @@ import {
   Search,
   Star,
   Download,
-  Eye,
 } from "lucide-react";
 import { DOC_TYPE_LABELS, type DocType, useForgeStore } from "@/stores/forge";
 import { useCommunityStore } from "@/stores/community";
 import { useAuthStore } from "@/stores/auth";
+import { useDossierStore } from "@/stores/dossier";
 import { useEffectivePlan } from "@/hooks/use-effective-plan";
 import { canCreateForgeDocument, maxForgeDocuments } from "@/lib/entitlements";
 import { useHydration } from "@/hooks/use-hydration";
@@ -26,8 +26,10 @@ import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { GlassCard } from "@/components/ui";
 import { OpportunityDossierView } from "@/components/forge/OpportunityDossierView";
-import { DossierExportPreview } from "@/components/forge/DossierExportPreview";
-import { useApplicationStore } from "@/stores/applications";
+import { DossierHub } from "@/components/forge/DossierHub";
+import { VariationsManager } from "@/components/forge/VariationsManager";
+import { EnhancedDocumentPanel } from "@/components/forge/EnhancedDocumentPanel";
+import { DossierTimeline } from "@/components/forge/DossierTimeline";
 
 const TYPE_OPTIONS = [
   { value: "all", label: "Todos os tipos" },
@@ -54,10 +56,12 @@ export default function ForgeListPage() {
   const forgeCap = maxForgeDocuments(plan);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | DocType>("all");
-  const [viewMode, setViewMode] = useState<"list" | "opportunity">("opportunity");
-  const [showExportPreview, setShowExportPreview] = useState(false);
-  const [selectedOpportunityId, setSelectedOpportunityId] = useState<string | null>(null);
-  const { applications } = useApplicationStore();
+  const [viewMode, setViewMode] = useState<"list" | "opportunity" | "timeline" | "hub">("opportunity");
+  const { getActiveDossiers } = useDossierStore();
+  const activeDossiers = getActiveDossiers();
+  const exportHref = activeDossiers.length > 0
+    ? `/dossiers/${activeDossiers[0].id}/export`
+    : '/dossiers';
   const stats = getStats();
 
   const statCards = [
@@ -124,13 +128,13 @@ export default function ForgeListPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => setShowExportPreview(true)}
+          <Link
+            href={exportHref}
             className="inline-flex items-center gap-2 rounded-xl border-2 border-brand-500 bg-white px-4 py-2.5 text-body-sm font-heading font-semibold text-brand-600 transition-all hover:bg-brand-50"
           >
             <Download className="h-4 w-4" />
             Exportar Dossier
-          </button>
+          </Link>
           {forgeAllowed ? (
             <Link
               href="/forge/new"
@@ -152,29 +156,26 @@ export default function ForgeListPage() {
       </header>
 
       <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => setViewMode("opportunity")}
-            className={cn(
-              "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-              viewMode === "opportunity"
-                ? "bg-[#001338] text-white"
-                : "bg-white/40 text-[#001338]/60 hover:bg-white/60"
-            )}
-          >
-            Por Oportunidade
-          </button>
-          <button
-            onClick={() => setViewMode("list")}
-            className={cn(
-              "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-              viewMode === "list"
-                ? "bg-[#001338] text-white"
-                : "bg-white/40 text-[#001338]/60 hover:bg-white/60"
-            )}
-          >
-            Lista Completa
-          </button>
+        <div className="flex flex-wrap items-center gap-1 rounded-xl border border-[#001338]/10 bg-white/40 p-1">
+          {([
+            { id: "hub", label: "Processos" },
+            { id: "opportunity", label: "Por Oportunidade" },
+            { id: "list", label: "Lista Completa" },
+            { id: "timeline", label: "Timeline" },
+          ] as const).map((v) => (
+            <button
+              key={v.id}
+              onClick={() => setViewMode(v.id)}
+              className={cn(
+                "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+                viewMode === v.id
+                  ? "bg-[#001338] text-white shadow-sm"
+                  : "text-[#001338]/60 hover:bg-white/60 hover:text-[#001338]"
+              )}
+            >
+              {v.label}
+            </button>
+          ))}
         </div>
         <p className="text-sm text-[#001338]/60">
           {documents.length} documento{documents.length !== 1 ? 's' : ''} • {stats.totalWords.toLocaleString('pt-BR')} palavras
@@ -250,8 +251,12 @@ export default function ForgeListPage() {
         </GlassCard>
       </section>
 
-      {viewMode === "opportunity" ? (
+      {viewMode === "hub" ? (
+        <DossierHub />
+      ) : viewMode === "opportunity" ? (
         <OpportunityDossierView />
+      ) : viewMode === "timeline" ? (
+        <DossierTimeline />
       ) : (
         <section className="grid gap-4">
           {filteredDocuments.map((doc) => (
@@ -343,14 +348,6 @@ export default function ForgeListPage() {
         </section>
       )}
 
-      {/* Export Preview Modal */}
-      {showExportPreview && (
-        <DossierExportPreview
-          documents={filteredDocuments}
-          application={selectedOpportunityId ? applications.find(app => app.opportunityId === selectedOpportunityId) : undefined}
-          onClose={() => setShowExportPreview(false)}
-        />
-      )}
     </div>
   );
 }

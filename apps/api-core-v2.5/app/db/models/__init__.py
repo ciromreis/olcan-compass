@@ -141,6 +141,15 @@ from app.db.models.document import (
     PolishStatus,
 )
 
+from app.db.models.dossier import (
+    Dossier,
+    DossierDocument,
+    DossierTask,
+    DossierStatus,
+    DossierDocumentStatus,
+    DossierTaskStatus,
+)
+
 from app.db.models.billing import (
     ForgeUsageLog,
     CreditPurchase,
@@ -300,6 +309,12 @@ __all__ = [
     "DocumentType",
     "DocumentStatus",
     "PolishStatus",
+    "Dossier",
+    "DossierDocument",
+    "DossierTask",
+    "DossierStatus",
+    "DossierDocumentStatus",
+    "DossierTaskStatus",
     "ForgeUsageLog",
     "CreditPurchase",
     "UserPost",

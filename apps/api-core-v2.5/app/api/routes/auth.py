@@ -44,6 +44,7 @@ from app.services.opportunity_cost import (
 )
 from app.db.models.psychology import PsychProfile
 from sqlalchemy import select
+from app.services.crm_sync_orchestrator import on_user_registered, on_email_verified
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 settings = get_settings()
@@ -165,6 +166,9 @@ async def register(
     db.add(new_user)
     await db.commit()
     await db.refresh(new_user)
+
+    # CRM sync — fire-and-forget style (orchestrator catches all exceptions)
+    await on_user_registered(db, new_user, source="web_registration")
 
     try:
         await send_verification_email(
@@ -418,9 +422,12 @@ async def verify_email(
     user.verified_at = datetime.now(timezone.utc)
     user.verification_token = None
     user.verification_token_expires = None
-    
+
     await db.commit()
-    
+
+    # CRM sync — tag user as verified
+    await on_email_verified(db, user)
+
     return VerificationResponse(
         message="Email verificado com sucesso",
         is_verified=True

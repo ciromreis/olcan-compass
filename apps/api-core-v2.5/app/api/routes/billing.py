@@ -22,6 +22,7 @@ from app.core.config import settings
 from app.db.session import get_db
 from app.db.models import User
 from app.db.models.billing import CreditPurchase
+from app.services.crm_sync_orchestrator import on_subscription_changed
 
 logger = logging.getLogger(__name__)
 
@@ -304,7 +305,12 @@ async def stripe_webhook(
                 user.subscription_status = "active"
                 logger.info("Activated %s subscription for user %s", plan, user_id)
 
+        _subscription_plan_activated = metadata.get("plan") if (mode == "subscription" and user) else None
+
         await db.commit()
+
+        if _subscription_plan_activated and user:
+            await on_subscription_changed(db, user, _subscription_plan_activated, action="upgraded")
 
     elif event["type"] in ("customer.subscription.deleted", "customer.subscription.updated"):
         sub = event["data"]["object"]
@@ -334,6 +340,10 @@ async def stripe_webhook(
 
             logger.info("Subscription %s for customer %s → status=%s", sub["id"], customer_id, sub_status)
             await db.commit()
+
+        if user:
+            action = "cancelled" if not is_active else "updated"
+            await on_subscription_changed(db, user, user.subscription_plan, action=action)
 
     elif event["type"] == "invoice.payment_failed":
         invoice = event["data"]["object"]

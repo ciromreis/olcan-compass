@@ -131,25 +131,26 @@ backlinks:
 
 ---
 
-## 🗝️ Navegação após Migração
+## 🗝️ Navegação after Migração
 
-Para um agente IA (ex: próximo sessão):
+Para um agente IA executar (próxima sessão):
 
-1. **Começar sempre aqui**:
-   - `wiki/00_SOVEREIGN/Olcan_Master_PRD_v2_5.md` (PRD Master)
-   - `wiki/00_SOVEREIGN/Verdade_do_Produto.md` (Realidade atual)
+| Step | Context | Docs |
+|------|---------|------|
+| 1 | **VERDADE** | `00_SOVEREIGN/Olcan_Master_PRD_v2_5.md` + `Verdade_do_Produto.md` |
+| 2 | **CONTEXTO** | `00_SOVEREIGN/Grafo_de_Conhecimento_Olcan.md` (Mapa visual) |
+| 3 | **TÉCNICO** | `02_Arquitetura_Compass/Arquitetura_v2_5_Compass.md` |
+| 4 | **PRODUTO** | `03_Produto_Forge/PRD_Master_Ethereal_Glass.md` + `Spec_Dossier_System_v2_5.md` |
+| 5 | **CÓDIGO** | `00_Onboarding_Inicio/Padroes_de_Codigo.md` |
+| 6 | **ARQUIVO** | `10_Arquivo_Permanente/00_MASTER_INDEX.md` |
 
-2. **Se precisa de contexto**:
-   - `wiki/00_SOVEREIGN/Grafo_de_Conhecimento_Olcan.md` (Mapa visual)
-
-3. **Se precisa de técnica**:
-   - `wiki/02_Arquitetura_Compass/Arquitetura_v2_5_Compass.md`
-
-4. **Se precisa de operação**:
-   - `wiki/00_Onboarding_Inicio/Padroes_de_Codigo.md`
-
-5. **Se precisa de arquivo**:
-   - `wiki/10_Arquivo_Permanente/00_MASTER_INDEX.md`
+### Quick Links (Central Hubs)
+```
+START_HERE → wiki/START_HERE.md
+VERDADE → wiki/00_SOVEREIGN/Verdade_do_Produto.md
+DOSSIER → wiki/03_Produto_Forge/Spec_Dossier_System_v2_5.md
+ARQUITETURA → wiki/02_Arquitetura_Compass/Arquitetura_v2_5_Compass.md
+```
 
 ---
 

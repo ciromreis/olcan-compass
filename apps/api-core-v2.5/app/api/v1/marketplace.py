@@ -9,7 +9,7 @@ from typing import List, Optional
 
 from app.core.database import get_db
 from app.api.v1.auth import get_current_user
-from app.models.user import User
+from app.models import User
 from app.models.marketplace import Provider, Service, Review, Conversation, Message
 
 router = APIRouter(prefix="/marketplace", tags=["marketplace"])

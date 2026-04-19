@@ -1,0 +1,61 @@
+# ────────────────────────────────────────────────────────────
+# Olcan Compass v2.5 — Production Dockerfile (pnpm monorepo)
+# Build context: repo root (docker-compose uses context: .)
+# ────────────────────────────────────────────────────────────
+FROM node:20-alpine AS base
+RUN corepack enable && corepack prepare pnpm@10.15.1 --activate
+
+# ── 1. Install dependencies ──────────────────────────────────
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Copy workspace manifests first (layer-cache friendly)
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/app-compass-v2.5/package.json ./apps/app-compass-v2.5/
+# Copy any local packages that app-compass-v2.5 depends on
+COPY packages/ ./packages/
+
+RUN pnpm install --frozen-lockfile
+
+# ── 2. Build ─────────────────────────────────────────────────
+FROM base AS builder
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/apps/app-compass-v2.5/node_modules ./apps/app-compass-v2.5/node_modules
+
+# Copy full source
+COPY . .
+
+# Build only the v2.5 app
+RUN pnpm --filter @olcan/web-v2.5 build
+
+# ── 3. Production runner ──────────────────────────────────────
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser  --system --uid 1001 nextjs
+
+# Standalone output (next.config.mjs output: "standalone")
+COPY --from=builder --chown=nextjs:nodejs /app/apps/app-compass-v2.5/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/apps/app-compass-v2.5/.next/static      ./apps/app-compass-v2.5/.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/app-compass-v2.5/public            ./apps/app-compass-v2.5/public
+
+# Writable dirs
+RUN mkdir -p /app/uploads /app/logs && chown nextjs:nodejs /app/uploads /app/logs
+
+USER nextjs
+
+EXPOSE 3000
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:3000/api/health || exit 1
+
+CMD ["node", "apps/app-compass-v2.5/server.js"]

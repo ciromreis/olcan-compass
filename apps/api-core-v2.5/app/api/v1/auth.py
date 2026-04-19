@@ -19,7 +19,7 @@ from app.services.auth_service import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
 )
 from app.schemas.user import UserCreate, UserResponse, Token, LoginRequest
-from app.models.user import User
+from app.models import User
 
 router = APIRouter(tags=["authentication"])
 

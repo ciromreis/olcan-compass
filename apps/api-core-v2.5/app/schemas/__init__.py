@@ -43,6 +43,64 @@ from .route import (
     AvailableTemplatesResponse,
 )
 
+from .document import (
+    DocumentCreate,
+    DocumentUpdate,
+    DocumentResponse,
+    DocumentListResponse,
+    DocumentSummary,
+    PolishRequest,
+    PolishResponse,
+    PolishFeedback,
+    DocumentTemplateResponse,
+    TemplateListResponse,
+)
+
+from .dossier import (
+    DossierCreate,
+    DossierUpdate,
+    DossierResponse,
+    DossierSimpleResponse,
+    DossierDocumentCreate,
+    DossierDocumentUpdate,
+    DossierDocumentInDossier,
+    DossierTaskCreate,
+    DossierTaskUpdate,
+    DossierTaskInDossier,
+)
+
+from .application import (
+    OpportunityBase,
+    OpportunityCreate,
+    OpportunityUpdate,
+    OpportunityListItem,
+    OpportunityDetailResponse,
+    OpportunityListResponse,
+    UserApplicationCreate,
+    UserApplicationUpdate,
+    UserApplicationListItem,
+    UserApplicationDetailResponse,
+    UserApplicationListResponse,
+)
+
+from .task import (
+    TaskBase,
+    TaskCreate,
+    TaskUpdate,
+    TaskResponse,
+    TaskListResponse,
+    SubTaskCreate,
+    SubTaskUpdate,
+    SubTaskResponse,
+    UserProgressResponse,
+    UserProgressUpdate,
+    AchievementBase,
+    AchievementResponse,
+    UserAchievementResponse,
+    AchievementListResponse,
+    UserAchievementListResponse,
+)
+
 __all__ = [
     # Auth schemas
     "Token",
@@ -54,6 +112,7 @@ __all__ = [
     "UpdateProfileRequest",
     "ChangePasswordRequest",
     "ErrorResponse",
+    
     # Psychology schemas
     "PsychProfileBase",
     "PsychProfileResponse",
@@ -70,6 +129,7 @@ __all__ = [
     "StartAssessmentRequest",
     "SubmitAnswerRequest",
     "AssessmentSummaryResponse",
+    
     # Route schemas
     "RouteTemplateResponse",
     "RouteTemplateListResponse",
@@ -82,4 +142,58 @@ __all__ = [
     "RouteMilestoneUpdateRequest",
     "RouteMilestoneResponse",
     "AvailableTemplatesResponse",
+    
+    # Document schemas
+    "DocumentCreate",
+    "DocumentUpdate",
+    "DocumentResponse",
+    "DocumentListResponse",
+    "DocumentSummary",
+    "PolishRequest",
+    "PolishResponse",
+    "PolishFeedback",
+    "DocumentTemplateResponse",
+    "TemplateListResponse",
+    
+    # Dossier schemas
+    "DossierCreate",
+    "DossierUpdate",
+    "DossierResponse",
+    "DossierSimpleResponse",
+    "DossierDocumentCreate",
+    "DossierDocumentUpdate",
+    "DossierDocumentInDossier",
+    "DossierTaskCreate",
+    "DossierTaskUpdate",
+    "DossierTaskInDossier",
+    
+    # Application schemas
+    "OpportunityBase",
+    "OpportunityCreate",
+    "OpportunityUpdate",
+    "OpportunityListItem",
+    "OpportunityDetailResponse",
+    "OpportunityListResponse",
+    "UserApplicationCreate",
+    "UserApplicationUpdate",
+    "UserApplicationListItem",
+    "UserApplicationDetailResponse",
+    "UserApplicationListResponse",
+    
+    # Task schemas
+    "TaskBase",
+    "TaskCreate",
+    "TaskUpdate",
+    "TaskResponse",
+    "TaskListResponse",
+    "SubTaskCreate",
+    "SubTaskUpdate",
+    "SubTaskResponse",
+    "UserProgressResponse",
+    "UserProgressUpdate",
+    "AchievementBase",
+    "AchievementResponse",
+    "UserAchievementResponse",
+    "AchievementListResponse",
+    "UserAchievementListResponse",
 ]

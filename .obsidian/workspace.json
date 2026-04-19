@@ -11,10 +11,14 @@
             "id": "f69c93e32d4fcc05",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Visualização em gráfico"
+              "type": "markdown",
+              "state": {
+                "file": "wiki/00_SOVEREIGN/Grafo_de_Conhecimento_Olcan.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Grafo_de_Conhecimento_Olcan"
             }
           }
         ]
@@ -181,10 +185,13 @@
   },
   "active": "f69c93e32d4fcc05",
   "lastOpenFiles": [
+    "wiki/00_SOVEREIGN/Agent_Knowledge_Handbook.md",
+    "apps/site-marketing-v2.5/node_modules/ts-essentials/README.md",
+    "apps/app-compass-v2.5/src/app/(app)/dossiers/[id]/export/page.tsx",
+    "apps/app-compass-v2.5/src/app/(app)/dossiers/[id]/export",
     "apps/site-marketing-v2.5/node_modules/eslint-plugin-react/README.md",
     "wiki/10_Arquivo_Permanente/PAGE-STRUCTURE.md",
     "Prototype.md",
-    "wiki/00_SOVEREIGN/Agent_Knowledge_Handbook.md",
     "wiki/00_Onboarding_Inicio/Guia_de_Testes_Geral.md",
     "wiki/00_Onboarding_Inicio/Guia_de_Testes_de_Integracao.md",
     "wiki/00_Onboarding_Inicio/Guia_de_Desenvolvimento.md",
@@ -209,7 +216,6 @@
     "wiki/01_Visao_Estrategica/Verdade_Final_v2_5.md",
     "wiki/00_Onboarding_Inicio/Visao_Mestra_CEO.md",
     "REPO_CLEANUP_COMPLETE.md",
-    "wiki/03_Produto_Forge/Blueprint_Sistema_de_Tarefas.md",
     "apps/app-compass-v2.5/src/app/api/dossier/export/route.ts",
     "apps/app-compass-v2.5/src/app/api/dossier/export",
     "apps/app-compass-v2.5/src/app/api/dossier",

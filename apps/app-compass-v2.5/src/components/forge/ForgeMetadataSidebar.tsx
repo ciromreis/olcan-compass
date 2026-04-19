@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { FileText, AlignLeft, FileType, Clock, BookmarkCheck, Target, Mic, Sparkles, AlertCircle, Zap, Briefcase, Plus, X } from "lucide-react";
+import { FileText, AlignLeft, FileType, Clock, BookmarkCheck, Target, Mic, Sparkles, AlertCircle, Zap, Briefcase, Plus, X, CheckCircle, AlertTriangle, Lightbulb, BookOpen } from "lucide-react";
+import { getTemplateForType, DOCUMENT_TEMPLATES } from "@/lib/document-templates";
 import { MetadataSidebar, type MetadataSection } from "@/components/layout/MetadataSidebar";
 import { Progress } from "@/components/ui";
 import { type ForgeDocument } from "@/stores/forge";
@@ -280,6 +281,33 @@ export function ForgeMetadataSidebar({
               </div>
             </div>
           )}
+
+          {/* Document Template Guidance */}
+          {(() => {
+            const template = getTemplateForType(doc.type);
+            if (!template) return null;
+            return (
+              <div className="rounded-2xl border border-brand-200 bg-brand-50/50 p-4">
+                <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-muted">
+                  <BookOpen className="mr-1 inline h-3.5 w-3.5 text-brand-500" />
+                  Estrutura Sugerida
+                </h4>
+                <div className="space-y-2">
+                  {template.sections.slice(0, 4).map((section) => (
+                    <div key={section.id} className="rounded-lg border border-brand-100 bg-white/70 p-2.5">
+                      <p className="text-xs font-medium text-text-primary">{section.title}</p>
+                      <p className="text-xs text-text-muted mt-1">{section.guidance}</p>
+                    </div>
+                  ))}
+                  {template.sections.length > 4 && (
+                    <p className="text-xs text-text-muted text-center">
+                      +{template.sections.length - 4} mais сеções
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Suggestions - Compact */}
           {suggestionCards.length > 0 && (

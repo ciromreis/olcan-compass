@@ -51,31 +51,59 @@ async def sync_user_registration(
     # Sync to Twenty
     if twenty.is_configured():
         try:
-            person_payload = {"email": user.email}
+            # Check for existing identity link first (idempotent)
+            existing_link_res = await db.execute(
+                select(CrmIdentityLink).where(
+                    CrmIdentityLink.user_id == user.id,
+                    CrmIdentityLink.system == "twenty",
+                )
+            )
+            existing_link = existing_link_res.scalar_one_or_none()
+
+            person_payload: dict[str, Any] = {"email": user.email}
             if first_name:
                 person_payload["firstName"] = first_name
             if last_name:
                 person_payload["lastName"] = last_name
 
-            twenty_res = await twenty.create_person(person_payload)
-            record = twenty_res.get("data") if isinstance(twenty_res, dict) else None
-            person_id = (record or twenty_res).get("id") if isinstance(twenty_res, dict) else None
-
-            if person_id:
-                # Create identity link
-                base_url = settings.twenty_base_url or ""
-                external_url = f"{base_url}/object/person/{person_id}" if base_url else None
-
-                link = CrmIdentityLink(
-                    user_id=user.id,
-                    system="twenty",
-                    external_id=str(person_id),
-                    external_url=external_url,
-                )
-                db.add(link)
-
-                results["twenty"] = {"status": "created", "person_id": str(person_id)}
-                logger.info(f"Created Twenty person for user {user.id}: {person_id}")
+            if existing_link:
+                # Update existing record
+                await twenty.update_person(existing_link.external_id, person_payload)
+                results["twenty"] = {"status": "updated", "person_id": existing_link.external_id}
+            else:
+                # Search by email to avoid duplicates (e.g. historical backfill)
+                existing_person = await twenty.search_person_by_email(user.email)
+                if existing_person:
+                    person_id = str(existing_person.get("id", ""))
+                    if person_id:
+                        await twenty.update_person(person_id, person_payload)
+                        base_url = settings.twenty_base_url or ""
+                        external_url = f"{base_url}/object/person/{person_id}" if base_url else None
+                        link = CrmIdentityLink(
+                            user_id=user.id,
+                            system="twenty",
+                            external_id=person_id,
+                            external_url=external_url,
+                        )
+                        db.add(link)
+                        results["twenty"] = {"status": "linked_existing", "person_id": person_id}
+                else:
+                    twenty_res = await twenty.create_person(person_payload)
+                    record = twenty_res.get("data") if isinstance(twenty_res, dict) else None
+                    person_id_raw = (record or twenty_res).get("id") if isinstance(twenty_res, dict) else None
+                    person_id = str(person_id_raw) if person_id_raw else None
+                    if person_id:
+                        base_url = settings.twenty_base_url or ""
+                        external_url = f"{base_url}/object/person/{person_id}" if base_url else None
+                        link = CrmIdentityLink(
+                            user_id=user.id,
+                            system="twenty",
+                            external_id=person_id,
+                            external_url=external_url,
+                        )
+                        db.add(link)
+                        results["twenty"] = {"status": "created", "person_id": person_id}
+                        logger.info(f"Created Twenty person for user {user.id}: {person_id}")
         except Exception as e:
             results["twenty"] = {"status": "error", "error": str(e)}
             logger.error(f"Failed to sync user {user.id} to Twenty: {e}")
@@ -83,6 +111,15 @@ async def sync_user_registration(
     # Sync to Mautic
     if mautic.is_configured():
         try:
+            # Check for existing identity link (idempotent)
+            existing_link_res = await db.execute(
+                select(CrmIdentityLink).where(
+                    CrmIdentityLink.user_id == user.id,
+                    CrmIdentityLink.system == "mautic",
+                )
+            )
+            existing_link = existing_link_res.scalar_one_or_none()
+
             mautic_payload = {
                 "email": user.email,
                 "firstname": first_name,
@@ -90,20 +127,36 @@ async def sync_user_registration(
                 "tags": ["compass_user", "registered"],
             }
 
-            mautic_res = await mautic.create_contact(mautic_payload)
-            contact_id = mautic_res.get("contact", {}).get("id")
-
-            if contact_id:
-                # Create identity link
-                link = CrmIdentityLink(
-                    user_id=user.id,
-                    system="mautic",
-                    external_id=str(contact_id),
-                )
-                db.add(link)
-
-                results["mautic"] = {"status": "created", "contact_id": str(contact_id)}
-                logger.info(f"Created Mautic contact for user {user.id}: {contact_id}")
+            if existing_link:
+                await mautic.update_contact(int(existing_link.external_id), mautic_payload)
+                results["mautic"] = {"status": "updated", "contact_id": existing_link.external_id}
+            else:
+                # Search by email before creating
+                existing_contact = await mautic.get_contact_by_email(user.email)
+                if existing_contact:
+                    contact_id = str(existing_contact.get("id", ""))
+                    if contact_id:
+                        await mautic.update_contact(int(contact_id), mautic_payload)
+                        link = CrmIdentityLink(
+                            user_id=user.id,
+                            system="mautic",
+                            external_id=contact_id,
+                        )
+                        db.add(link)
+                        results["mautic"] = {"status": "linked_existing", "contact_id": contact_id}
+                else:
+                    mautic_res = await mautic.create_contact(mautic_payload)
+                    contact_id_raw = mautic_res.get("contact", {}).get("id")
+                    contact_id = str(contact_id_raw) if contact_id_raw else None
+                    if contact_id:
+                        link = CrmIdentityLink(
+                            user_id=user.id,
+                            system="mautic",
+                            external_id=contact_id,
+                        )
+                        db.add(link)
+                        results["mautic"] = {"status": "created", "contact_id": contact_id}
+                        logger.info(f"Created Mautic contact for user {user.id}: {contact_id}")
         except Exception as e:
             results["mautic"] = {"status": "error", "error": str(e)}
             logger.error(f"Failed to sync user {user.id} to Mautic: {e}")

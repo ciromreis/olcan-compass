@@ -5,7 +5,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: apps/app-compass-v2/Dockerfile.prod
+      dockerfile: apps/app-compass-v2.5/Dockerfile.prod
       target: production
     image: olcan-compass/frontend:latest
     container_name: olcan-compass-frontend
@@ -38,7 +38,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: apps/api-core-v2/Dockerfile.prod
+      dockerfile: apps/api-core-v2.5/Dockerfile.prod
       target: production
     image: olcan-compass/backend:latest
     container_name: olcan-compass-backend

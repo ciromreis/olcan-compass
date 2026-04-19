@@ -32,6 +32,7 @@ export default function DossiersPage() {
     getDossiersByStatus,
     createDossier,
     setCurrentDossier,
+    syncFromApi,
     loading,
   } = useDossierStore();
 
@@ -39,9 +40,8 @@ export default function DossiersPage() {
   const [statusFilter, setStatusFilter] = useState<DossierStatus | "all">("all");
 
   useEffect(() => {
-    // Sync from API when component mounts
-    // syncFromApi();
-  }, []);
+    syncFromApi();
+  }, [syncFromApi]);
 
   if (!hydrated) {
     return (

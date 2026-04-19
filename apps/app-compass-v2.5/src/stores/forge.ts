@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { forgeApi } from "@/lib/api";
 import { eventBus } from "@/lib/event-bus";
+import { getTemplateForType } from "@/lib/document-templates";
 
 const IS_DEMO = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
@@ -10,11 +11,19 @@ function genLocalId(): string {
 }
 
 export type DocType =
-  | "motivation_letter"
   | "cv"
-  | "research_proposal"
+  | "resume"
+  | "motivation_letter"
+  | "cover_letter"
+  | "statement_of_purpose"
   | "personal_statement"
+  | "research_proposal"
+  | "scholarship_essay"
   | "recommendation"
+  | "transcript"
+  | "language_cert"
+  | "portfolio"
+  | "writing_sample"
   | "other";
 
 export interface DocVersion {
@@ -34,11 +43,34 @@ export interface ForgeDocAnalysisMetrics {
   readabilityScore: number;
 }
 
+/** A named section within a structured document. */
+export interface ForgeSection {
+  id: string;
+  title: string;
+  content: string;
+  /** Placeholder shown when empty. */
+  placeholder?: string;
+  /** Target word-count range for this section. */
+  wordCountTarget?: { min: number; max: number };
+  /** Contextual tips shown in the section editor. */
+  tips?: string[];
+  /** Whether this section is collapsed in the UI. */
+  collapsed?: boolean;
+  /** Profile intake field key that can prefill this section. */
+  profileKey?: string;
+  /** Whether this section is required for the document. */
+  required?: boolean;
+}
+
 export interface ForgeDocument {
   id: string;
   title: string;
   type: DocType;
   content: string;
+  /** Structured sections. When present the editor renders per-section panels. */
+  sections?: ForgeSection[];
+  /** Whether the document is in section-editing mode. */
+  sectionMode?: boolean;
   versions: DocVersion[];
   createdAt: string;
   updatedAt: string;
@@ -137,6 +169,20 @@ interface ForgeState {
   getDocsByOpportunity: (opportunityId: string) => ForgeDocument[];
   getStats: () => { total: number; avgScore: number; totalWords: number; recentlyEdited: number };
   analyzeDocument: (docId: string) => Promise<void>;
+  /** Initialise structured sections from the document-type template. */
+  initializeSections: (docId: string) => void;
+  /** Update a single section's content. Also assembles full `content`. */
+  updateSection: (docId: string, sectionId: string, content: string) => void;
+  /** Toggle collapsed state of a section. */
+  toggleSectionCollapsed: (docId: string, sectionId: string) => void;
+  /** Switch between section-editing and plain textarea mode. */
+  toggleSectionMode: (docId: string) => void;
+  /** Add a custom section at the end. */
+  addCustomSection: (docId: string, title: string) => void;
+  /** Remove a section (only non-required custom ones). */
+  removeSection: (docId: string, sectionId: string) => void;
+  /** Reorder sections. */
+  reorderSections: (docId: string, from: number, to: number) => void;
   reset: () => void;
 }
 
@@ -209,32 +255,54 @@ function fallbackScore(content: string): number | null {
 }
 
 const DOC_TYPE_LABELS: Record<DocType, string> = {
+  cv: "Currículo (CV)",
+  resume: "Resume",
   motivation_letter: "Carta de Motivação",
-  cv: "Currículo",
+  cover_letter: "Carta de Apresentação",
+  statement_of_purpose: "Statement of Purpose",
+  personal_statement: "Personal Statement",
   research_proposal: "Proposta de Pesquisa",
-  personal_statement: "Apresentação Pessoal",
+  scholarship_essay: "Essay de Bolsa",
   recommendation: "Carta de Recomendação",
+  transcript: "Transcrição Escolar",
+  language_cert: "Certificação de Idiomas",
+  portfolio: "Portfólio",
+  writing_sample: "Amostra de Escrita",
   other: "Outro",
 };
 
 const LOCAL_TO_REMOTE_TYPE: Record<DocType, string> = {
-  motivation_letter: "motivation_letter",
   cv: "cv",
-  research_proposal: "research_proposal",
+  resume: "resume",
+  motivation_letter: "motivation_letter",
+  cover_letter: "cover_letter",
+  statement_of_purpose: "statement_of_purpose",
   personal_statement: "personal_statement",
+  research_proposal: "research_proposal",
+  scholarship_essay: "scholarship_essay",
   recommendation: "recommendation",
+  transcript: "transcript",
+  language_cert: "language_cert",
+  portfolio: "portfolio",
+  writing_sample: "writing_sample",
   other: "other",
 };
 
 const REMOTE_TO_LOCAL_TYPE: Record<string, DocType> = {
-  motivation_letter: "motivation_letter",
   cv: "cv",
+  resume: "resume",
   cv_summary: "cv",
-  research_proposal: "research_proposal",
+  motivation_letter: "motivation_letter",
+  cover_letter: "cover_letter",
+  statement_of_purpose: "statement_of_purpose",
   personal_statement: "personal_statement",
+  research_proposal: "research_proposal",
+  scholarship_essay: "scholarship_essay",
   recommendation: "recommendation",
-  cover_letter: "recommendation",
-  scholarship_essay: "other",
+  transcript: "transcript",
+  language_cert: "language_cert",
+  portfolio: "portfolio",
+  writing_sample: "writing_sample",
   other: "other",
 };
 
@@ -611,6 +679,121 @@ export const useForgeStore = create<ForgeState>()(
           documents: state.documents.map((d) =>
             d.id === docId ? { ...d, metrics, competitivenessScore: metrics.score } : d
           ),
+        }));
+      },
+
+      // ─── Section-based editing ──────────────────────────────────────────────
+
+      initializeSections: (docId) => {
+        const doc = get().documents.find((d) => d.id === docId);
+        if (!doc) return;
+        const template = getTemplateForType(doc.type);
+        if (!template) return;
+        const sections: ForgeSection[] = template.sections.map((s) => ({
+          id: s.id,
+          title: s.title,
+          content: "",
+          placeholder: s.example || `Escreva aqui sobre: ${s.description}`,
+          wordCountTarget: s.wordCount
+            ? { min: s.wordCount.min, max: s.wordCount.max }
+            : undefined,
+          tips: template.tips.slice(0, 3),
+          collapsed: false,
+          required: s.required,
+          profileKey: s.id,
+        }));
+        set((s) => ({
+          documents: s.documents.map((d) =>
+            d.id === docId
+              ? { ...d, sections, sectionMode: true, updatedAt: new Date().toISOString() }
+              : d
+          ),
+        }));
+      },
+
+      updateSection: (docId, sectionId, content) => {
+        set((s) => ({
+          documents: s.documents.map((d) => {
+            if (d.id !== docId || !d.sections) return d;
+            const sections = d.sections.map((sec) =>
+              sec.id === sectionId ? { ...sec, content } : sec
+            );
+            // Reassemble full content from sections for backward compat
+            const assembled = sections
+              .filter((sec) => sec.content.trim())
+              .map((sec) => `## ${sec.title}\n\n${sec.content}`)
+              .join("\n\n");
+            return { ...d, sections, content: assembled, updatedAt: new Date().toISOString() };
+          }),
+        }));
+      },
+
+      toggleSectionCollapsed: (docId, sectionId) => {
+        set((s) => ({
+          documents: s.documents.map((d) => {
+            if (d.id !== docId || !d.sections) return d;
+            return {
+              ...d,
+              sections: d.sections.map((sec) =>
+                sec.id === sectionId ? { ...sec, collapsed: !sec.collapsed } : sec
+              ),
+            };
+          }),
+        }));
+      },
+
+      toggleSectionMode: (docId) => {
+        set((s) => ({
+          documents: s.documents.map((d) => {
+            if (d.id !== docId) return d;
+            return { ...d, sectionMode: !d.sectionMode };
+          }),
+        }));
+      },
+
+      addCustomSection: (docId, title) => {
+        set((s) => ({
+          documents: s.documents.map((d) => {
+            if (d.id !== docId) return d;
+            const newSection: ForgeSection = {
+              id: `custom-${Date.now()}`,
+              title,
+              content: "",
+              placeholder: `Escreva o conteúdo de "${title}"...`,
+              collapsed: false,
+              required: false,
+            };
+            return {
+              ...d,
+              sections: [...(d.sections || []), newSection],
+              sectionMode: true,
+              updatedAt: new Date().toISOString(),
+            };
+          }),
+        }));
+      },
+
+      removeSection: (docId, sectionId) => {
+        set((s) => ({
+          documents: s.documents.map((d) => {
+            if (d.id !== docId || !d.sections) return d;
+            const sections = d.sections.filter(
+              (sec) => sec.id !== sectionId || sec.required
+            );
+            return { ...d, sections, updatedAt: new Date().toISOString() };
+          }),
+        }));
+      },
+
+      reorderSections: (docId, from, to) => {
+        set((s) => ({
+          documents: s.documents.map((d) => {
+            if (d.id !== docId || !d.sections) return d;
+            const sections = [...d.sections];
+            const [moved] = sections.splice(from, 1);
+            sections.splice(to, 0, moved);
+            return { ...d, sections, updatedAt: new Date().toISOString() };
+          }),
         }));
       },
 

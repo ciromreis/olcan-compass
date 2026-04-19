@@ -9,7 +9,8 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { useAuraStore } from '@/stores/auraStore'
-import { Heart, Zap, Star, ChevronRight, Sparkles } from 'lucide-react'
+import { useDossierStore } from '@/stores/dossier'
+import { Heart, Zap, Star, ChevronRight, Sparkles, Download } from 'lucide-react'
 
 const STAGE_EMOJI: Record<string, string> = {
   egg: '🥚',
@@ -49,7 +50,13 @@ function StatBar({ value, max, color }: { value: number; max: number; color: str
 
 export function CompanionSidebar() {
   const { aura } = useAuraStore()
+  const { getActiveDossiers } = useDossierStore()
   const [isExpanded, setIsExpanded] = useState(false)
+
+  const activeDossiers = getActiveDossiers()
+  const exportHref = activeDossiers.length > 0
+    ? `/dossiers/${activeDossiers[0].id}/export`
+    : '/dossiers'
 
   // Don't render if no companion yet
   if (!aura) return null
@@ -121,15 +128,24 @@ export function CompanionSidebar() {
               </div>
             </div>
 
-            {/* CTA */}
-            <Link
-              href="/companion"
-              className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-colors"
-            >
-              <Sparkles className="w-3 h-3" />
-              Cuidar da presença
-              <ChevronRight className="w-3 h-3" />
-            </Link>
+            {/* CTAs */}
+            <div className="space-y-2">
+              <Link
+                href="/companion"
+                className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-colors"
+              >
+                <Sparkles className="w-3 h-3" />
+                Cuidar da presença
+                <ChevronRight className="w-3 h-3" />
+              </Link>
+              <Link
+                href={exportHref}
+                className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-brand-500/80 hover:bg-brand-500 text-white text-xs font-medium transition-colors"
+              >
+                <Download className="w-3 h-3" />
+                Exportar Dossier
+              </Link>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

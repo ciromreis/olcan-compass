@@ -8,8 +8,6 @@ from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
 from datetime import datetime
 import uuid
-import random
-
 from ..models.interview import (
     Interview,
     InterviewQuestion,
@@ -312,33 +310,68 @@ class InterviewService:
         questions = default_questions.get(interview_type, [])
         return questions[:count]
     
-    def _generate_ai_feedback(self, interview: Interview) -> Dict[str, Any]:
-        """Generate AI-powered feedback (placeholder)"""
-        
-        # This would integrate with actual AI service
-        # For now, return structured placeholder data
-        
-        responses_count = len(interview.responses or [])
-        questions_count = len(interview.questions or [])
-        completion_rate = (responses_count / questions_count * 100) if questions_count > 0 else 0
-        
-        # Base score on completion and mock analysis
-        base_score = int(completion_rate * 0.7)
-        
+    def _generate_structural_feedback(self, interview: Interview) -> Dict[str, Any]:
+        """
+        Generate structural feedback based on session completion metrics.
+
+        NOTE: This is NOT AI analysis. It computes deterministic scores from
+        objective completion data. Real AI feedback requires an active AI provider
+        configured via the AI_PROVIDER env var and a connected ai_service call.
+        This method is the honest fallback when AI is unavailable or not configured.
+        """
+        responses = interview.responses or []
+        questions = interview.questions or []
+        responses_count = len(responses)
+        questions_count = len(questions)
+        completion_rate = (responses_count / questions_count) if questions_count > 0 else 0.0
+
+        # Structural score: completion drives the score, no simulated variance
+        structural_score = int(completion_rate * 85)  # max 85 for full completion (AI can push to 100)
+
+        # Assess response depth: avg word count as a proxy for effort
+        total_words = sum(
+            len(r.get("response_text", "").split())
+            for r in responses
+            if isinstance(r, dict)
+        )
+        avg_words = total_words / responses_count if responses_count > 0 else 0
+        depth_bonus = min(10, int(avg_words / 20))  # up to 10 pts for avg 200+ words
+        final_score = min(structural_score + depth_bonus, 95)
+
+        completion_label = (
+            "Sessão completa" if completion_rate >= 1.0
+            else f"{responses_count} de {questions_count} perguntas respondidas"
+        )
+
         return {
-            "overall_score": min(base_score + random.randint(10, 20), 100),
-            "summary": f"You completed {responses_count} out of {questions_count} questions. Your responses showed good understanding of the concepts.",
-            "strengths": [
-                "Clear and structured responses",
-                "Good use of specific examples",
-                "Strong communication skills"
-            ],
-            "improvements": [
-                "Provide more quantifiable results",
-                "Expand on technical details",
-                "Practice conciseness in longer answers"
-            ],
-            "confidence_score": 0.75,
-            "communication_score": 0.80,
-            "technical_accuracy_score": 0.70 if interview.interview_type in [InterviewType.TECHNICAL, InterviewType.CODING] else None
+            "overall_score": final_score,
+            "summary": (
+                f"{completion_label}. "
+                "Esta avaliação é estrutural — baseada em completude e volume de resposta. "
+                "Análise semântica completa requer conexão com o provedor de IA."
+            ),
+            "strengths": (
+                ["Sessão respondida integralmente"] if completion_rate >= 1.0
+                else []
+            ),
+            "improvements": (
+                ["Complete todas as perguntas para maximizar o score de preparação"]
+                if completion_rate < 1.0 else
+                ["Revise suas respostas para adicionar exemplos quantificáveis"]
+            ),
+            "confidence_score": round(completion_rate * 0.8, 2),
+            "communication_score": round(min(avg_words / 150, 1.0) * 0.85, 2),
+            "technical_accuracy_score": (
+                round(completion_rate * 0.75, 2)
+                if interview.interview_type in [InterviewType.TECHNICAL, InterviewType.CODING]
+                else None
+            ),
+            "_feedback_mode": "structural",  # signals to UI that this is not AI analysis
         }
+
+    def _generate_ai_feedback(self, interview: Interview) -> Dict[str, Any]:
+        """
+        Entry point for feedback generation. Delegates to structural feedback.
+        When AI provider is active, this should call ai_service.analyze_interview().
+        """
+        return self._generate_structural_feedback(interview)

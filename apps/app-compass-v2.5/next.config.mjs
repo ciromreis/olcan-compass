@@ -6,6 +6,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   distDir: ".next",
+  // Standalone output for Docker production builds (ignored by Vercel)
+  output: "standalone",
   transpilePackages: ["styled-jsx"],
   allowedDevOrigins: ["127.0.0.1", "localhost"],
   experimental: {

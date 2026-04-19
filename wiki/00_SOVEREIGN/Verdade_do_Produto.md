@@ -3,12 +3,15 @@ title: Verdade do Produto (Estado Real)
 type: drawer
 layer: 0
 status: active
-last_seen: 2026-04-17
+last_seen: 2026-04-18
 backlinks:
   - Olcan_Master_PRD_v2_5
   - Grafo_de_Conhecimento_Olcan
-  - MemPalace_Migration_Spec
+  - Spec_Dossier_System_v2_5
+  - MemPalace_Migration_spec
 ---
+
+<!-- Naviado por: MemPalace — Navegabilidade sistêmica -->
 
 # O Que o Olcan Compass É — Estado Real (Verdade do Produto)
 
@@ -18,7 +21,8 @@ backlinks:
 **Camada (Layer)**: Identidade
 **Tags**: #audit #status #honestidade #verdade #estratégia
 **Criado**: 12/04/2026
-**Atualizado**: 17/04/2026
+**Atualizado**: 18/04/2026
+**Versão**: 2.5
 
 ## 📊 snapshotCode: 2026-04-17
 
@@ -40,20 +44,128 @@ O Olcan Compass é uma plataforma de suporte de carreira para imigrantes e profi
 
 ---
 
-### O Que Realmente Existe (Abril 17, 2026 — atualizado por sessão de auditoria profunda, passível de auditoria e mudança)
+### O Que Realmente Existe (Abril 18, 2026 — atualizado por implementação)
 
-#### ⚡ NOVEMBRO: Dossier System (PRIORIDADE MÁXIMA)
-**Implementado nesta sessão:**
+#### ⚡ MAIO: Document Forge v2.5 (IMPLEMENTADO COMPLETO)
+**Features implementadas nesta sessão:**
+
+1. **14 Document Types**: cv, resume, motivation_letter, cover_letter, statement_of_purpose, personal_statement, research_proposal, scholarship_essay, recommendation, transcript, language_cert, portfolio, writing_sample, other
+
+2. **Document Templates** (`document-templates.ts`):
+   - 7 templates com estrutura completa
+   - Section guidance com word counts
+   - Tips e common mistakes por tipo
+
+3. **Enhanced Export** (`enhanced-export.ts`):
+   - PDF com branding Olcan
+   - DOCX editável
+   - Bundle export
+
+4. **Task Dashboard** (`TaskDashboard.tsx`):
+   - Status/priority distribution
+   - Completion metrics
+   - Tab "Painel" na página /tasks
+
+5. **Bulk Document Creator** (`BulkDocumentCreator.tsx`):
+   - Create múltiplos docs para aplicações paralelas
+   - Templates por tipo de oportunidade
+   - Scholarship, Master, PhD, Job
+
+6. **Task-Document Linking** (`TaskDocumentLinker.tsx`):
+   - Vincular tarefas a documentos específicos
+   - Readiness indicators
+
+7. **Quick Polish Actions** (`QuickPolishActions.tsx`):
+   - Fix passive voice
+   - Strengthen verbs
+   - Fix common typos
+   - Add transitions
+
+8. **Document Transformer** (`DocumentTransformer.tsx`):
+   - Tone: formal, casual, persuasive, academic
+   - Length: expand, condense
+   - Style: clear, impactful, storytelling
+
+9. **Writing Tips Panel** (`WritingTipsPanel.tsx`):
+   - Tips contextuais por tipo de documento
+
+10. **Application Document Actions** (`ApplicationDocumentActions.tsx`):
+    - Quick create/view docs na lista de aplicações
+
+---
+
+**Status**: Build Passando ✅
+**Backend sync**: ⚠️ Pendente
+
+#### ABRIL 18: Novas Implementações Document Forge
+
+**Features implementadas HOJE:**
+
+1. **DossierHub** (`DossierHub.tsx`):
+   - Hub central de candidaturas paralelas
+   - Agrupamento por oportunidade
+   - Indicadores de urgência (≤14 dias)
+   - Stats: total, ativos, concluídos, docs pendentes
+   - Expandable timeline por processo
+
+2. **ExportControlPanel** (`ExportControlPanel.tsx`):
+   - Botão flutuante próximo ao companion bar
+   - Seleção por processo ou global
+   - Formatos: DOCX, PDF, ZIP (implementado)
+   - Badge com contagem docs prontos
+
+3. **VariationsManager** (`VariationsManager.tsx`):
+   - Gestão de variações de documentos
+   - Criar variação para nova oportunidade
+   - Clonar para todos os processos
+   - Tracking por variante
+
+4. **DossierTimeline** (`DossierTimeline.tsx`):
+   - Visualização cronológica
+   - Prazos, documentos, tarefas
+   - Agrupamento por mês
+   - Indicadores de urgência
+
+5. **DocumentGuidancePanel** (`DocumentGuidancePanel.tsx`):
+   - Guias contextuais por tipo
+   - Estrutura, dicas, erros comuns
+   - Suporte a CMS (`document-guidance`)
+   - Fallback com templates built-in
+
+6. **ProfileDocumentIntegrator** (`ProfileDocumentIntegrator.tsx`):
+   - Inserção de dados do perfil via click
+   - Campos: header, summary, experience, education, skills, languages, achievements
+   - Conditional fields por tipo de documento
+
+7. **EnhancedDocumentPanel** (`EnhancedDocumentPanel.tsx`):
+   - Painel de gestão avançado
+   - Readyness granular: draft → review → export_ready → submitted
+   - Quick actions: editar, exportar, coach IA, versões
+
+8. **CMS Enhancement** (`cms.ts`):
+   - `fetchDocumentGuidance(docType)`
+   - `fetchAllDocumentGuidance()`
+   - Interface `CMSDocumentGuidance`
+
+9. **Integração Layout**:
+   - ExportControlPanel no app layout (floating)
+   - Timeline view tab na página /forge
+   - DocumentGuidancePanel no editor sidebar
+   - ProfileDocumentIntegrator no editor sidebar
+
+**Status**: Build Passando ✅ | Typecheck ✅ | Lint ✅
+
+---
+
+#### NOVEMBRO: Dossier System
+**Implementado anteriormente:**
 - ✅ Dossier Store com full CRUD (600+ linhas)
 - ✅ Type system completo (`dossier-system.ts` - 640+ linhas)
 - ✅ List page `/dossiers` com stats dashboard
 - ✅ Detail page `/dossiers/[id]` com 4 tabs
 - ✅ Document Wizard multi-step (CV, Motivation Letter, Research Proposal)
 - ✅ Document Type Selector (9 tipos)
-- ✅ Tabs UI component criado
-- ✅ Button "outline" variant adicionado
 - ⚠️ Backend sync ainda não implementado
-- ⚠️ AI content generation não implementado
 
 #### Funcionando Totalmente
 - ✅ Autenticação de usuário (registro, login, JWT)

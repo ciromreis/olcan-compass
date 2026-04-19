@@ -485,4 +485,35 @@ export const marketplaceApi = {
     api.get("/marketplace/providers/onboard/status"),
 };
 
+// ── Dossiers API ───────────────────────────────────────────
+export const dossiersApi = {
+  // Dossier CRUD
+  list: (params?: { status?: string; skip?: number; limit?: number }) =>
+    api.get("/v1/dossiers", { params }),
+  get: (id: string) => api.get(`/v1/dossiers/${id}`),
+  create: (data: Record<string, unknown>) => api.post("/v1/dossiers", data),
+  update: (id: string, data: Record<string, unknown>) =>
+    api.put(`/v1/dossiers/${id}`, data),
+  delete: (id: string) => api.delete(`/v1/dossiers/${id}`),
+  evaluate: (id: string) => api.post(`/v1/dossiers/${id}/evaluate`),
+
+  // Documents within a dossier
+  addDocument: (dossierId: string, data: Record<string, unknown>) =>
+    api.post(`/v1/dossiers/${dossierId}/documents`, data),
+  updateDocument: (
+    dossierId: string,
+    documentId: string,
+    data: Record<string, unknown>
+  ) => api.put(`/v1/dossiers/${dossierId}/documents/${documentId}`, data),
+
+  // Tasks within a dossier
+  addTask: (dossierId: string, data: Record<string, unknown>) =>
+    api.post(`/v1/dossiers/${dossierId}/tasks`, data),
+  updateTask: (
+    dossierId: string,
+    taskId: string,
+    data: Record<string, unknown>
+  ) => api.put(`/v1/dossiers/${dossierId}/tasks/${taskId}`, data),
+};
+
 export default api;

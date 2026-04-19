@@ -65,6 +65,21 @@ class TwentyClient:
             res.raise_for_status()
             return res.json()
 
+    async def search_person_by_email(self, email: str) -> dict[str, Any] | None:
+        """Search for an existing person by email. Returns the first match or None."""
+        async with self._client() as client:
+            res = await client.get(
+                "/rest/people",
+                params={"filter": f"email[eq]:{email}", "limit": "1"},
+            )
+            res.raise_for_status()
+            data = res.json()
+            records = data.get("data", {}).get("people", [])
+            if not records:
+                # Try top-level list format
+                records = data.get("data", []) if isinstance(data.get("data"), list) else []
+            return records[0] if records else None
+
     async def add_note_to_person(self, person_id: str, note: str) -> dict[str, Any]:
         """Add a note/activity to a person in Twenty."""
         async with self._client() as client:
@@ -186,14 +201,24 @@ def verify_twenty_webhook(signature_hex: str | None, timestamp: str | None, raw_
 
 
 def verify_mautic_webhook(raw_body: bytes, headers: dict[str, str]) -> bool:
-    """Validate Mautic webhook if signature validation is configured.
-    
-    Mautic webhooks may include signature headers depending on configuration.
-    This is a placeholder - adjust based on your Mautic webhook setup.
+    """Validate Mautic webhook signature using HMAC-SHA256 when a secret is configured.
+
+    Mautic can POST a X-Mautic-Signature header (SHA256 hex-digest of the body).
+    If no secret is configured we accept the request (you should restrict by IP on nginx).
     """
-    # Mautic doesn't always sign webhooks by default
-    # Return True for now, but implement validation if you configure it
-    return True
+    from app.core.config import get_settings
+    settings = get_settings()
+    secret = settings.mautic_webhook_secret
+    if not secret:
+        return True  # No secret configured — accept (restrict by IP at infra level)
+    sig_header = headers.get("x-mautic-signature") or headers.get("X-Mautic-Signature")
+    if not sig_header:
+        return False
+    try:
+        expected = hmac.new(secret.encode(), raw_body, hashlib.sha256).hexdigest()
+        return hmac.compare_digest(expected, sig_header)
+    except Exception:
+        return False
 
 
 twenty = TwentyClient()

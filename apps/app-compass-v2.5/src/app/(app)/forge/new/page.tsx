@@ -9,12 +9,21 @@ import { useEffectivePlan } from "@/hooks/use-effective-plan";
 import { canCreateForgeDocument, maxForgeDocuments } from "@/lib/entitlements";
 import { FileUpload } from "@/components/forge/FileUpload";
 
-const DOC_TYPES: { id: DocType; icon: typeof FileText; label: string; description: string }[] = [
-  { id: "motivation_letter", icon: FileEdit, label: "Carta de Motivação", description: "Statement of Purpose / Motivation Letter para programas acadêmicos" },
-  { id: "cv", icon: Briefcase, label: "Currículo / CV", description: "CV acadêmico ou profissional formatado para padrões internacionais" },
-  { id: "research_proposal", icon: BookOpen, label: "Proposta de Pesquisa", description: "Research proposal para PhD ou programas de pesquisa" },
-  { id: "personal_statement", icon: GraduationCap, label: "Personal Statement", description: "Personal statement para universidades anglo-saxônicas" },
-  { id: "recommendation", icon: FileText, label: "Carta de Recomendação", description: "Draft de carta de recomendação para orientadores assinarem" },
+const DOC_TYPES: { id: DocType; icon: typeof FileText; label: string; description: string; category: string }[] = [
+  { id: "cv", icon: Briefcase, label: "Currículo / CV", description: "CV formatado para padrões internacionais", category: "employment" },
+  { id: "resume", icon: Briefcase, label: "Resume", description: "Resume estilo americano para aplicações corporativas", category: "employment" },
+  { id: "motivation_letter", icon: FileEdit, label: "Carta de Motivação", description: "Carta de motivação para programas acadêmicos", category: "education" },
+  { id: "cover_letter", icon: FileEdit, label: "Carta de Apresentação", description: "Cover letter para vagas corporativas", category: "employment" },
+  { id: "statement_of_purpose", icon: GraduationCap, label: "Statement of Purpose", description: "Essay formal para universidades US/UK", category: "education" },
+  { id: "personal_statement", icon: GraduationCap, label: "Personal Statement", description: "Essay pessoal para bolsas UK", category: "education" },
+  { id: "research_proposal", icon: BookOpen, label: "Proposta de Pesquisa", description: "Research proposal para PhD", category: "education" },
+  { id: "scholarship_essay", icon: GraduationCap, label: "Essay de Bolsa", description: "Essay para competições de bolsas", category: "education" },
+  { id: "recommendation", icon: FileText, label: "Carta de Recomendação", description: "Draft para orientadores assinarem", category: "support" },
+  { id: "transcript", icon: FileText, label: "Transcrição Escolar", description: "Transcrição acadêmica", category: "support" },
+  { id: "language_cert", icon: FileText, label: "Certificação de Idiomas", description: "Certificados de proficiência linguística", category: "support" },
+  { id: "portfolio", icon: Briefcase, label: "Portfólio", description: "Portfólio de trabalhos", category: "employment" },
+  { id: "writing_sample", icon: FileEdit, label: "Amostra de Escrita", description: "Amostra de texto acadêmico", category: "education" },
+  { id: "other", icon: FileText, label: "Outro", description: "Documento genérico", category: "other" },
 ];
 
 const LANG_MAP: Record<string, string> = { "Inglês": "en", "Alemão": "de", "Francês": "fr", "Espanhol": "es", "Português": "pt" };
@@ -36,6 +45,7 @@ export default function NewDocumentPage() {
   const [importedFilename, setImportedFilename] = useState<string>("");
   const [opportunityId, setOpportunityId] = useState<string | null>(null);
   const [opportunityTitle, setOpportunityTitle] = useState<string | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -156,8 +166,53 @@ export default function NewDocumentPage() {
             Importar de Arquivo
           </button>
         </div>
+        
+        {/* Category Filter */}
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setCategoryFilter(null)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              categoryFilter === null
+                ? "bg-brand-500 text-white"
+                : "bg-cream-100 text-text-secondary hover:bg-cream-200"
+            }`}
+          >
+            Todos
+          </button>
+          <button
+            onClick={() => setCategoryFilter("employment")}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              categoryFilter === "employment"
+                ? "bg-brand-500 text-white"
+                : "bg-cream-100 text-text-secondary hover:bg-cream-200"
+            }`}
+          >
+            Emprego
+          </button>
+          <button
+            onClick={() => setCategoryFilter("education")}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              categoryFilter === "education"
+                ? "bg-brand-500 text-white"
+                : "bg-cream-100 text-text-secondary hover:bg-cream-200"
+            }`}
+          >
+            Acadêmico
+          </button>
+          <button
+            onClick={() => setCategoryFilter("support")}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              categoryFilter === "support"
+                ? "bg-brand-500 text-white"
+                : "bg-cream-100 text-text-secondary hover:bg-cream-200"
+            }`}
+          >
+            Suporte
+          </button>
+        </div>
+        
         <div className="grid sm:grid-cols-2 gap-3">
-          {DOC_TYPES.map((type) => (
+          {DOC_TYPES.filter(t => !categoryFilter || t.category === categoryFilter).map((type) => (
             <button key={type.id} onClick={() => setSelected(type.id)} className={`card-surface p-5 flex items-start gap-3 text-left transition-all ${selected === type.id ? "ring-2 ring-brand-500 bg-brand-50/50" : "hover:-translate-y-0.5"}`}>
               <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${selected === type.id ? "bg-brand-100" : "bg-cream-200"}`}>
                 <type.icon className={`w-5 h-5 ${selected === type.id ? "text-brand-500" : "text-text-muted"}`} />

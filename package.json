@@ -14,9 +14,9 @@
     "lint:v2": "pnpm --filter @olcan/web-v2 lint",
     "lint:v2.5": "pnpm --filter @olcan/web-v2.5 lint",
     "type-check:v2.5": "pnpm --filter @olcan/web-v2.5 type-check",
-    "dev": "pnpm dev:v2",
-    "build": "pnpm build:v2",
-    "lint": "pnpm lint:v2",
+    "dev": "pnpm dev:v2.5",
+    "build": "pnpm build:v2.5",
+    "lint": "pnpm lint:v2.5",
     "health:api": "curl -sS http://localhost:8000/api/health",
     "smoke:auth": "node ./scripts/smoke/auth.js",
     "seed:user": "node ./scripts/seed/user.js"

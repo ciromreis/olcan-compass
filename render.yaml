@@ -2,7 +2,7 @@ services:
   - type: web
     name: olcan-compass-api
     env: docker
-    rootDir: apps/api-core-v2
+    rootDir: apps/api-core-v2.5
     plan: free
     autoDeploy: true
     envVars:
@@ -10,9 +10,50 @@ services:
         value: production
       - key: API_PREFIX
         value: /api
+      # ── Database ──────────────────────────────────────────────
       - key: DATABASE_URL
-        sync: false
+        sync: false  # postgresql+asyncpg://user:pass@host:5432/dbname
+      # ── Auth ─────────────────────────────────────────────────
       - key: JWT_SECRET_KEY
-        sync: false
+        sync: false  # generate: openssl rand -hex 32
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: ENCRYPTION_KEY
+        sync: false  # generate: openssl rand -hex 32
+      # ── CORS ──────────────────────────────────────────────────
       - key: CORS_ALLOW_ORIGINS
-        value: https://olcan-compass-web.netlify.app,https://compass.olcan.com.br
+        value: https://compass.olcan.com.br,https://olcan-compass-web.vercel.app,https://app.olcan.com.br
+      - key: FRONTEND_URL
+        value: https://compass.olcan.com.br
+      # ── Stripe ───────────────────────────────────────────────
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PRICE_PRO
+        sync: false
+      - key: STRIPE_PRICE_PREMIUM
+        sync: false
+      # ── Observability ─────────────────────────────────────────
+      - key: SENTRY_DSN
+        sync: false
+      # ── CRM (disabled until infrastructure is ready) ──────────
+      - key: FEATURE_CRM_SYNC_REGISTRATION_ENABLED
+        value: false
+      - key: FEATURE_CRM_SYNC_EMAIL_VERIFICATION_ENABLED
+        value: false
+      - key: FEATURE_CRM_SYNC_SUBSCRIPTION_ENABLED
+        value: false
+      - key: FEATURE_CRM_SYNC_BOOKING_ENABLED
+        value: false
+      - key: FEATURE_CRM_SYNC_QUEUE_ENABLED
+        value: false
+      # ── AI Provider ───────────────────────────────────────────
+      - key: AI_PROVIDER
+        value: simulation  # change to "openai" or "anthropic" when ready
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false

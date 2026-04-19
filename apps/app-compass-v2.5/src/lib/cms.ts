@@ -5,6 +5,7 @@ import {
   type ArchetypeDefinition,
   type ArchetypeId,
 } from "@/lib/archetypes";
+import type { DocType } from "@/stores/forge";
 
 const CMS_BASE_URL =
   process.env.NEXT_PUBLIC_CMS_URL || "http://localhost:3001";
@@ -31,6 +32,20 @@ interface CMSArchetypeDoc {
     gradient?: string;
   } | null;
   status?: string;
+}
+
+export interface CMSDocumentGuidance {
+  id: string;
+  document_type: DocType;
+  title: string;
+  description?: string;
+  structure?: string[];
+  tips?: string[];
+  examples?: string[];
+  word_count_range?: { min: number; max: number };
+  tone_suggestions?: string[];
+  common_mistakes?: string[];
+  keywords?: string[];
 }
 
 async function fetchCMS<T>(path: string): Promise<T | null> {
@@ -89,4 +104,80 @@ export async function fetchCMSArchetypeDefinitions(): Promise<ArchetypeDefinitio
     }));
 
   return mergeArchetypeOverrides(overrides);
+}
+
+interface CMSDocumentTemplateDoc {
+  id?: string;
+  document_type?: string;
+  title?: string;
+  description?: string;
+  structure?: string | null;
+  tips?: string | null;
+  examples?: string | null;
+  min_word_count?: number;
+  max_word_count?: number;
+  tone_suggestions?: string | null;
+  common_mistakes?: string | null;
+  keywords?: string | null;
+  status?: string;
+}
+
+export async function fetchDocumentGuidance(documentType: DocType): Promise<CMSDocumentGuidance | null> {
+  const query = new URLSearchParams({
+    "where[document_type][equals]": documentType,
+    "where[status][equals]": "published",
+    limit: "1",
+  });
+
+  const data = await fetchCMS<{ docs?: CMSDocumentTemplateDoc[] }>(
+    `/api/document-guidance?${query.toString()}`
+  );
+
+  const doc = data?.docs?.[0];
+  if (!doc) return null;
+
+  return {
+    id: doc.id || "",
+    document_type: doc.document_type as DocType || documentType,
+    title: doc.title || "",
+    description: doc.description || undefined,
+    structure: doc.structure?.split("\n").filter(Boolean) || undefined,
+    tips: doc.tips?.split("\n").filter(Boolean) || undefined,
+    examples: doc.examples?.split("\n---\n").filter(Boolean) || undefined,
+    word_count_range: doc.min_word_count || doc.max_word_count
+      ? { min: doc.min_word_count || 0, max: doc.max_word_count || 1000 }
+      : undefined,
+    tone_suggestions: doc.tone_suggestions?.split(",").map(s => s.trim()).filter(Boolean) || undefined,
+    common_mistakes: doc.common_mistakes?.split("\n").filter(Boolean) || undefined,
+    keywords: doc.keywords?.split(",").map(s => s.trim()).filter(Boolean) || undefined,
+  };
+}
+
+export async function fetchAllDocumentGuidance(): Promise<CMSDocumentGuidance[]> {
+  const query = new URLSearchParams({
+    "where[status][equals]": "published",
+    limit: "50",
+  });
+
+  const data = await fetchCMS<{ docs?: CMSDocumentTemplateDoc[] }>(
+    `/api/document-guidance?${query.toString()}`
+  );
+
+  if (!data?.docs) return [];
+
+  return data.docs.map((doc) => ({
+    id: doc.id || "",
+    document_type: (doc.document_type as DocType) || "other",
+    title: doc.title || "",
+    description: doc.description || undefined,
+    structure: doc.structure?.split("\n").filter(Boolean) || undefined,
+    tips: doc.tips?.split("\n").filter(Boolean) || undefined,
+    examples: doc.examples?.split("\n---\n").filter(Boolean) || undefined,
+    word_count_range: doc.min_word_count || doc.max_word_count
+      ? { min: doc.min_word_count || 0, max: doc.max_word_count || 1000 }
+      : undefined,
+    tone_suggestions: doc.tone_suggestions?.split(",").map(s => s.trim()).filter(Boolean) || undefined,
+    common_mistakes: doc.common_mistakes?.split("\n").filter(Boolean) || undefined,
+    keywords: doc.keywords?.split(",").map(s => s.trim()).filter(Boolean) || undefined,
+  }));
 }

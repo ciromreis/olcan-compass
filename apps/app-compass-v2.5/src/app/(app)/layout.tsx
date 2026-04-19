@@ -15,6 +15,7 @@ import { MarketplaceXPListener } from "@/components/aura/MarketplaceXPListener";
 import { AuraNotificationSystem } from "@/components/aura/AuraNotificationSystem";
 import { GamificationIntegration, CelebrationToastContainer } from "@/components/gamification";
 import { CompanionSidebar } from "@/components/companion/CompanionSidebar";
+import { ExportControlPanel } from "@/components/forge/ExportControlPanel";
 import { ErrorBoundary } from "@/components/enterprise/ErrorBoundary";
 import { AppCommandPalette } from "@/components/layout/AppCommandPalette";
 import { useHydration } from "@/hooks";
@@ -570,6 +571,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <MarketplaceXPListener />
       <AuraNotificationSystem />
       <AppCommandPalette open={commandPaletteOpen} onClose={() => setCommandPaletteOpen(false)} />
+      <ExportControlPanel />
     </div>
   );
 }

@@ -183,10 +183,13 @@ export default function DossierDetailPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <Download className="mr-2 h-4 w-4" />
+          <Link
+            href={`/dossiers/${dossierId}/export`}
+            className="inline-flex items-center gap-2 rounded-lg border border-cream-300 bg-white px-3 py-1.5 text-sm font-medium text-text-secondary hover:bg-cream-50 transition-colors"
+          >
+            <Download className="h-4 w-4" />
             Exportar
-          </Button>
+          </Link>
           <Button variant="outline" size="sm">
             <Settings className="h-4 w-4" />
           </Button>

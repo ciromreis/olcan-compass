@@ -5,20 +5,21 @@ import { useTaskStore } from '@/stores/taskStore'
 import { TaskList } from '@/components/tasks/TaskList'
 import { TaskDetail } from '@/components/tasks/TaskDetail'
 import { TaskToastContainer } from '@/components/tasks/TaskToast'
-import { Plus, ListTodo, Calendar, X } from 'lucide-react'
+import { TaskDashboard } from '@/components/tasks/TaskDashboard'
+import { Plus, ListTodo, Calendar, X, LayoutDashboard } from 'lucide-react'
 import { TaskCreateForm } from '@/components/tasks/TaskCreateForm'
 import { TaskCalendar } from '@/components/tasks/TaskCalendar'
 import { TaskExportButton } from '@/components/tasks/TaskExport'
 import { PageHeader, Skeleton } from '@/components/ui'
 import { useHydration } from '@/hooks/use-hydration'
 
-type TabView = 'tarefas' | 'calendario'
+type TabView = 'painel' | 'tarefas' | 'calendario'
 
 export default function TasksPage() {
   const ready = useHydration()
   const { fetchAll, isLoading, statistics } = useTaskStore()
   const [showCreateForm, setShowCreateForm] = useState(false)
-  const [activeTab, setActiveTab] = useState<TabView>('tarefas')
+  const [activeTab, setActiveTab] = useState<TabView>('painel')
 
   useEffect(() => {
     if (ready) fetchAll()
@@ -66,12 +67,15 @@ export default function TasksPage() {
 
       {/* Tab bar */}
       <div className="flex gap-1 rounded-[1.2rem] border border-slate-200 bg-white/80 p-1 shadow-sm">
+        <TabButton active={activeTab === 'painel'} onClick={() => setActiveTab('painel')} icon={LayoutDashboard} label="Painel" />
         <TabButton active={activeTab === 'tarefas'} onClick={() => setActiveTab('tarefas')} icon={ListTodo} label="Tarefas" />
         <TabButton active={activeTab === 'calendario'} onClick={() => setActiveTab('calendario')} icon={Calendar} label="Calendario" />
       </div>
 
       {/* Content */}
-      {activeTab === 'tarefas' ? <TaskList /> : <TaskCalendar />}
+      {activeTab === 'painel' && <TaskDashboard />}
+      {activeTab === 'tarefas' && <TaskList />}
+      {activeTab === 'calendario' && <TaskCalendar />}
 
       {/* Detail modal */}
       <TaskDetail />

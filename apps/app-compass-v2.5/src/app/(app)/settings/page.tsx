@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { User, Globe, Lock, Bell, CreditCard, Save } from "lucide-react";
+import { User, Globe, Lock, Bell, CreditCard, Save, Briefcase, Database } from "lucide-react";
 import { useHydration } from "@/hooks";
 import { PageHeader, Skeleton, useToast, Button, Input } from "@/components/ui";
 import { useAuthStore } from "@/stores/auth";
@@ -74,8 +74,14 @@ export default function SettingsPage() {
           <Link href="/settings" className="flex items-center gap-3 px-4 py-3 rounded-lg bg-cream-100 text-brand-600 font-medium transition-colors">
             <User className="w-5 h-5" /> Perfil Geral
           </Link>
+          <Link href="/settings/profile" className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-cream-50 text-text-secondary transition-colors">
+            <Briefcase className="w-5 h-5 text-text-muted" /> Perfil de Carreira
+          </Link>
           <Link href="/settings/billing" className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-cream-50 text-text-secondary transition-colors">
             <CreditCard className="w-5 h-5 text-text-muted" /> Assinaturas
+          </Link>
+          <Link href="/admin/crm" className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-cream-50 text-text-secondary transition-colors">
+            <Database className="w-5 h-5 text-text-muted" /> CRM & Integrações
           </Link>
           <div
             className="flex items-center gap-3 rounded-lg px-4 py-3 text-text-muted"

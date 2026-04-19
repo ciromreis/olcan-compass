@@ -81,6 +81,7 @@ class Settings(BaseSettings):
 
     mautic_base_url: str | None = None  # e.g. https://mautic.olcan.com.br
     mautic_api_key: str | None = None   # Mautic API key (Basic Auth token or OAuth, depending on setup)
+    mautic_webhook_secret: str | None = None
 
     # ============================================================
     # AI Provider Configuration
