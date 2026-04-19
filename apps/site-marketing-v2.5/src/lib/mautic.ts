@@ -29,18 +29,12 @@ export class MauticClient {
   }
 
   /**
-   * Track page view in Mautic
+   * Track page view using Mautic JS API (mtc.js)
+   * This preserves tracking cookies across the SPA.
    */
   async trackPageView(url: string, title: string): Promise<void> {
-    if (!this.baseUrl) return;
-
-    try {
-      await fetch(`${this.baseUrl}/mtracking.gif?page_url=${encodeURIComponent(url)}&page_title=${encodeURIComponent(title)}`, {
-        method: 'GET',
-        mode: 'no-cors',
-      });
-    } catch (error) {
-      console.error('[Mautic] Page view tracking failed:', error);
+    if (typeof window !== 'undefined' && typeof (window as any).mt === 'function') {
+      (window as any).mt('send', 'pageview', { page_title: title, page_url: url });
     }
   }
 
