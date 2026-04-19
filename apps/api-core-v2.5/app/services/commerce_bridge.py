@@ -14,7 +14,7 @@ from app.core.config import get_settings
 
 
 CATALOG_PATH = (
-    Path(__file__).resolve().parents[4] / "data" / "commerce" / "olcan-products.json"
+    Path(__file__).resolve().parents[2] / "data" / "commerce" / "olcan-products.json"
 )
 
 
