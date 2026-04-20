@@ -258,8 +258,27 @@ export class ApiClient {
 
   private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ detail: 'An error occurred' }));
-      throw new Error(error.detail || `HTTP ${response.status}: ${response.statusText}`);
+      const bodyText = await response.text();
+      let detail: string | undefined;
+
+      try {
+        const parsed = bodyText ? JSON.parse(bodyText) : null;
+        if (typeof parsed?.detail === "string") {
+          detail = parsed.detail;
+        } else if (Array.isArray(parsed?.detail)) {
+          detail = parsed.detail
+            .map((item: Record<string, unknown>) => String(item?.msg || item?.type || "Erro de validação"))
+            .join("; ");
+        }
+      } catch {
+        // Non-JSON response (e.g. HTML gateway errors)
+      }
+
+      if (!detail) {
+        detail = bodyText?.trim().slice(0, 240) || `HTTP ${response.status}: ${response.statusText}`;
+      }
+
+      throw new Error(detail);
     }
     return response.json();
   }

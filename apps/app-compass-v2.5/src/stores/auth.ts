@@ -4,6 +4,7 @@ import { type UpdateProfilePayload, type UserProfile } from "@/lib/api";
 import { normalizeUserRole } from "@/lib/roles";
 import { apiClient, type AuthMeResponse } from "@/lib/api-client";
 import { eventBus } from "@/lib/event-bus";
+import { clearUserStores } from "@/lib/clear-user-stores";
 
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
@@ -46,6 +47,22 @@ function profileFromAuthMe(data: AuthMeResponse, previous?: UserProfile | null):
   });
 }
 
+function getErrorMessage(err: unknown, fallback: string): string {
+  if (err instanceof Error && err.message?.trim()) {
+    return err.message.trim();
+  }
+  if (typeof err === "string" && err.trim()) {
+    return err.trim();
+  }
+  if (err && typeof err === "object" && "message" in err) {
+    const maybeMessage = (err as { message?: unknown }).message;
+    if (typeof maybeMessage === "string" && maybeMessage.trim()) {
+      return maybeMessage.trim();
+    }
+  }
+  return fallback;
+}
+
 interface AuthState {
   user: UserProfile | null;
   isAuthenticated: boolean;
@@ -82,6 +99,7 @@ export const useAuthStore = create<AuthState>()(
 
           await apiClient.login({ username: email, password });
           const userData = await apiClient.getCurrentUser();
+          clearUserStores();
           set({
             user: profileFromAuthMe(userData),
             isAuthenticated: true,
@@ -90,9 +108,10 @@ export const useAuthStore = create<AuthState>()(
           // Emit daily active event for gamification/streaks
           eventBus.emit("user.daily_active", { userId: userData.id });
         } catch (err: unknown) {
-          const message =
-            (err as Error)?.message ||
-            "Erro ao fazer login. Verifique suas credenciais.";
+          const message = getErrorMessage(
+            err,
+            "Erro ao fazer login. Verifique suas credenciais.",
+          );
           set({ error: message, isLoading: false });
           throw err;
         }
@@ -115,15 +134,17 @@ export const useAuthStore = create<AuthState>()(
           });
           await apiClient.login({ username: email, password });
           const userData = await apiClient.getCurrentUser();
+          clearUserStores();
           set({
             user: profileFromAuthMe(userData),
             isAuthenticated: true,
             isLoading: false,
           });
         } catch (err: unknown) {
-          const message =
-            (err as Error)?.message ||
-            "Erro ao criar conta. Tente novamente.";
+          const message = getErrorMessage(
+            err,
+            "Erro ao criar conta. Tente novamente.",
+          );
           set({ error: message, isLoading: false });
           throw err;
         }
@@ -131,6 +152,7 @@ export const useAuthStore = create<AuthState>()(
 
       logout: () => {
         apiClient.clearToken();
+        clearUserStores();
         set({ user: null, isAuthenticated: false, error: null });
       },
 
