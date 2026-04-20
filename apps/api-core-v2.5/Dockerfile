@@ -11,6 +11,7 @@ COPY app ./app
 COPY alembic.ini ./alembic.ini
 COPY alembic ./alembic
 COPY data ./data
+COPY scripts ./scripts
 COPY seed_data.py ./seed_data.py
 
 EXPOSE 8000

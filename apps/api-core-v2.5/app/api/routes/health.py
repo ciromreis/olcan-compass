@@ -56,9 +56,14 @@ async def trigger_seed_render(secret_key: str = ""):
     from subprocess import Popen, PIPE
     
     # scripts/seed_all.py is located at apps/api-core-v2.5/scripts/seed_all.py
-    # This health.py is at apps/api-core-v2.5/app/api/routes/health.py (3 levels deep inside apps/api-core-v2.5)
+    # Under Docker, apps/api-core-v2.5/ is the root (/app)
+    # health.py is at /app/app/api/routes/health.py
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
     script_path = os.path.join(base_dir, "scripts", "seed_all.py")
+    
+    # Let's ensure we are targeting the actual script
+    if not os.path.exists(script_path):
+        return {"error": f"Path not found: {script_path}", "cwd": os.getcwd()}
     
     try:
         process = Popen([sys.executable, script_path], stdout=PIPE, stderr=PIPE)
