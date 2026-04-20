@@ -29,6 +29,34 @@ const nextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: '/login',
+        has: [{ type: 'host', value: 'app.olcan.com.br' }],
+        destination: 'https://compass.olcan.com.br/login',
+        permanent: false,
+      },
+      {
+        source: '/register',
+        has: [{ type: 'host', value: 'app.olcan.com.br' }],
+        destination: 'https://compass.olcan.com.br/register',
+        permanent: false,
+      },
+      {
+        source: '/dashboard/:path*',
+        has: [{ type: 'host', value: 'app.olcan.com.br' }],
+        destination: 'https://compass.olcan.com.br/dashboard/:path*',
+        permanent: false,
+      },
+      {
+        source: '/onboarding/:path*',
+        has: [{ type: 'host', value: 'app.olcan.com.br' }],
+        destination: 'https://compass.olcan.com.br/onboarding/:path*',
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default withPayload(nextConfig);
