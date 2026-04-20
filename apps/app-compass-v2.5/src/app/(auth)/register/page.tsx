@@ -32,8 +32,12 @@ export default function RegisterPage() {
     try {
       await register(form.email, form.password, form.name);
       router.push(DEMO_MODE ? "/aura/discover" : "/dashboard?welcome=1");
-    } catch {
-      // error is set in the store
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error && err.message?.trim()
+          ? err.message.trim()
+          : "Erro ao criar conta. Tente novamente.";
+      setLocalError(message);
     }
   };
 
