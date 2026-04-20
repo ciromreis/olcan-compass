@@ -89,7 +89,8 @@ export default function MarketplacePage() {
     void fetchAssets();
     void fetchEconomy();
     void fetchInventory();
-  }, [syncFromApi, fetchProducts, fetchFeaturedProducts, fetchAssets, fetchEconomy, fetchInventory]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Identification of Flagship Products
   const flagshipProducts = useMemo(() => {
@@ -141,7 +142,8 @@ export default function MarketplacePage() {
     });
   }, [allServices, searchQuery, activeCategory]);
 
-  if (!ready || (isSyncing && providers.length === 0)) {
+  // Fallback to loading only if not ready. If syncing, rely on individual loaders or assume done if taking too long to prevent stuck UI
+  if (!ready) {
     return (
       <div className="mx-auto max-w-5xl space-y-6 px-4">
         <Skeleton className="h-20 w-full rounded-2xl" />

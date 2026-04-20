@@ -74,9 +74,12 @@ interface ArchetypeState {
   
   // Recommendation
   getRecommendation: () => Promise<void>;
-  
+
   // Language
   setLanguage: (language: 'en' | 'pt' | 'es') => void;
+
+  // Session reset
+  reset: () => void;
 }
 
 export const useArchetypeStore = create<ArchetypeState>()(
@@ -182,6 +185,10 @@ export const useArchetypeStore = create<ArchetypeState>()(
         // Set language
         setLanguage: (language: 'en' | 'pt' | 'es') => {
           set({ currentLanguage: language });
+        },
+
+        reset: () => {
+          set({ selectedArchetype: null, recommendation: null, currentLanguage: 'en' });
         },
       }),
       {

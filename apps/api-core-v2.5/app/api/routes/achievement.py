@@ -252,6 +252,68 @@ async def unlock_achievement(
     return user_achievement
 
 
+@router.post("/my/{achievement_id}/claim", response_model=UserAchievementResponse)
+async def claim_achievement_reward(
+    achievement_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Claim xp/aura points from an unlocked achievement"""
+    # Check if unlocked
+    result = await db.execute(
+        select(UserAchievement).where(
+            and_(
+                UserAchievement.user_id == current_user.id,
+                UserAchievement.achievement_id == achievement_id
+            )
+        )
+    )
+    user_achievement = result.scalar_one_or_none()
+    
+    if not user_achievement:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Achievement not unlocked yet"
+        )
+        
+    if user_achievement.claimed:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Reward already claimed"
+        )
+
+    # Note: user_achievement.achievement won't be loaded natively unless eagerly loaded, so let's load it manually
+    ach_result = await db.execute(
+        select(Achievement).where(Achievement.id == achievement_id)
+    )
+    achievement = ach_result.scalar_one()
+
+    # Mark as claimed
+    user_achievement.claimed = True
+    
+    # We add XP to User / Companion. For v2.5 Gamification is moving towards the Companion XP.
+    # In V2.5 usually companion has XP, but we can do user.total_xp as rollback if needed.
+    # Let's import Companion to add XP to companion as well.
+    try:
+        from app.db.models.companion import Companion
+        comp_result = await db.execute(select(Companion).where(Companion.user_id == current_user.id))
+        companion = comp_result.scalar_one_or_none()
+        if companion:
+            companion.xp += achievement.xp_reward
+            # Check level up
+            if companion.xp >= companion.xp_to_next_level:
+                companion.level += 1
+                companion.xp_to_next_level = companion.level * 500
+    except Exception as e:
+        pass
+
+    await db.commit()
+    await db.refresh(user_achievement)
+    user_achievement.achievement = achievement
+    
+    return user_achievement
+
+
 @router.get("/categories", response_model=List[str])
 async def get_achievement_categories():
     """Get available achievement categories"""

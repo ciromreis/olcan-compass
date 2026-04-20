@@ -27,7 +27,10 @@ export default buildConfig({
   cors: [
     'http://localhost:3000',
     'http://localhost:3001',
+    'https://olcan.com.br',
+    'https://www.olcan.com.br',
     'https://app.olcan.com.br',
+    'https://compass.olcan.com.br',
     'https://site.olcan.com.br',
     'https://nexus.olcan.com.br',
     'https://zenith.olcan.com.br'
@@ -35,7 +38,10 @@ export default buildConfig({
   csrf: [
     'http://localhost:3000',
     'http://localhost:3001',
+    'https://olcan.com.br',
+    'https://www.olcan.com.br',
     'https://app.olcan.com.br',
+    'https://compass.olcan.com.br',
     'https://site.olcan.com.br',
     'https://nexus.olcan.com.br',
     'https://zenith.olcan.com.br'

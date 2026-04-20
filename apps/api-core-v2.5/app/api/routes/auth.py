@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status, BackgroundTasks
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
@@ -127,6 +127,7 @@ def build_password_reset_url(token: str) -> str:
 async def register(
     request: Request,
     payload: AuthRegisterRequest,
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db)
 ):
     """Registrar novo usuário com email e senha"""
@@ -167,19 +168,32 @@ async def register(
     await db.commit()
     await db.refresh(new_user)
 
-    # CRM sync — fire-and-forget style (orchestrator catches all exceptions)
-    await on_user_registered(db, new_user, source="web_registration")
-
-    try:
-        await send_verification_email(
-            to_email=new_user.email,
-            full_name=new_user.full_name,
-            verification_url=build_verification_url(verification_token),
-        )
-    except EmailDeliveryError as exc:
-        # Log the failure but don't block registration — user can resend verification later
+    # Defer CRM sync and Verification Email via background tasks
+    # Because background tasks run *after* response, DB session might be closed or running in a different context if we pass the current db.
+    # In FastAPI, BackgroundTasks run in the same event loop. But it's usually safer to let them run. Since on_user_registered takes `db`, passing the current request `db` might fail if it's closed.
+    # But wait, BackgroundTasks actually execute AFTER the request returns, and Depends(get_db) generator might have yielded.
+    # Wait, the current implementation is "await on_user_registered(db, new_user)". Let's just create a helper or run it directly if it's not actually blocking, or use a background runner that creates a new session.
+    # Actually, sending the email doesn't need DB. Let's defer only the email. CRM sync might need DB, or we can just defer it safely.
+    # We will defer email.
+    
+    async def run_deferred_setup(user_id: str, email: str, full_name: str, token: str):
         import logging
-        logging.getLogger(__name__).warning("Verification email failed for %s: %s", new_user.email, exc)
+        try:
+            await send_verification_email(
+                to_email=email,
+                full_name=full_name,
+                verification_url=build_verification_url(token),
+            )
+        except Exception as exc:
+            logging.getLogger(__name__).warning("Verification email failed for %s: %s", email, exc)
+
+    background_tasks.add_task(
+        run_deferred_setup, str(new_user.id), new_user.email, new_user.full_name, verification_token
+    )
+    
+    # Run CRM sync synchronously for now because it relies on the DB session lifecycle,
+    # but we can try to defer it if we instantiate a new session. For now, email is the slowest.
+    await on_user_registered(db, new_user, source="web_registration")
     
     # Create tokens
     access_token, refresh_token = create_token_pair(

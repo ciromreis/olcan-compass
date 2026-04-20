@@ -16,6 +16,7 @@ import {
   getPresenceReaction,
   resolvePresenceEvent,
 } from "@/lib/aura-presence";
+import { getArchetype } from "@/lib/archetypes";
 import type { CareActivityType, EvolutionStage, ArchetypeType, AuraStats, Aura } from "@/stores/auraStore";
 import { ProceduralAuraFigure } from "@/components/aura/ProceduralAuraFigure";
 
@@ -191,7 +192,7 @@ export function AuraVisual({
                 <div>
                   <h3 className="text-xl font-semibold text-slate-900">{name}</h3>
                   <p className="mt-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-                    {STAGE_LABELS[evolutionStage]} • {String(archetype).replaceAll("_", " ")}
+                    {STAGE_LABELS[evolutionStage]} • {getArchetype(archetype as any)?.name || String(archetype).replaceAll("_", " ")}
                   </p>
                 </div>
                 <div className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-white">

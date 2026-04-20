@@ -12,7 +12,7 @@ import os
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-from app.models.user import User
+from app.models import User
 from app.schemas.user import UserCreate, TokenData
 
 # Password hashing

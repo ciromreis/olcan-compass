@@ -207,6 +207,7 @@ interface CMSDocumentGuidance {
 
 **Arquitetura/Produtomaindocs:**
 - [[Arquitetura_v2_5_Compass]] - Arquitetura geral
+- [[SPEC_IO_System_v2_5]] - Sistema I/O completo
 - [[PRD_Master_Ethereal_Glass]] - Design system
 
 **Produto/Forge:**

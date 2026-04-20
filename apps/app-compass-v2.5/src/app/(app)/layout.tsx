@@ -76,7 +76,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const syncInterview = useInterviewStore((state) => state.syncFromApi);
   const syncForge = useForgeStore((state) => state.syncFromApi);
   const syncPsych = usePsychStore((state) => state.syncFromApi);
-  const syncStarted = useRef(false);
+  const lastSyncedUserId = useRef<string | null>(null);
   const productPageViewSentForPath = useRef<string | null>(null);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -154,9 +154,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     void bootstrap();
   }, [hydrated, user, fetchProfile, logout]);
 
+  // Reset sync tracker when user logs out so the next login triggers a fresh sync
   useEffect(() => {
-    if (!hydrated || !authBootstrapDone || syncStarted.current) return;
-    syncStarted.current = true;
+    if (!user) {
+      lastSyncedUserId.current = null;
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!hydrated || !authBootstrapDone) return;
+    if (!user?.id) return;
+    if (lastSyncedUserId.current === user.id) return;
+    lastSyncedUserId.current = user.id;
     void Promise.allSettled([
       syncApplications(),
       syncMarketplace(),
@@ -169,6 +178,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }, [
     authBootstrapDone,
     hydrated,
+    user,
     syncApplications,
     syncMarketplace,
     syncRoutes,

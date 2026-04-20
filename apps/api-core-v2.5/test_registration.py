@@ -6,7 +6,7 @@ Quick test script to verify registration endpoint works
 import asyncio
 from sqlalchemy import select
 from app.core.database import AsyncSessionLocal, engine, Base
-from app.models.user import User
+from app.models import User
 from app.services.auth_service import get_password_hash
 
 async def test_registration():

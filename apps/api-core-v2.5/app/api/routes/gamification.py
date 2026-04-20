@@ -37,7 +37,7 @@ async def get_leaderboard(
     user_ids = [user.id for _, user in rows]
     achievement_counts: Dict[UUID, int] = {}
     try:
-        from app.db.models.quest import UserAchievement
+        from app.db.models.task import UserAchievement
         ach_result = await db.execute(
             select(UserAchievement.user_id, func.count(UserAchievement.id).label("cnt"))
             .where(UserAchievement.user_id.in_(user_ids))

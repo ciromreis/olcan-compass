@@ -12,7 +12,8 @@ import { Heart, ArrowRight, ArrowLeft, Loader2, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuraStore, type Aura } from '@/stores/auraStore'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { type ArchetypeId } from '@/lib/archetypes'
+import { type ArchetypeId, getArchetype } from '@/lib/archetypes'
+import { useToast } from '@/components/ui/Toast'
 import { ProceduralAuraFigure } from '@/components/aura/ProceduralAuraFigure'
 import { generatePresenceFigure } from '@/lib/aura-presence'
 import { EvolutionRitualOverlay } from '@/components/aura/EvolutionRitualOverlay'
@@ -150,6 +151,7 @@ const ARCHETYPE_FRIENDLY_NAMES: Record<ArchetypeId, { name: string; creature: st
 export default function AuraDiscoverPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { toast } = useToast()
   const mode = searchParams.get('mode') || 'onboarding'
   const isEvolution = mode === 'evolution'
 
@@ -191,14 +193,17 @@ export default function AuraDiscoverPage() {
         setShowEvolutionOverlay(true)
       } catch (error) {
         console.error('Erro no ritual de manifestação:', error)
+        toast({ title: 'Erro de Ritual', description: 'Não foi possível concluir o ritual. Tente novamente.', variant: 'error' })
       }
     } else {
       if (!name || !resultArchetype) return
       try {
         await createAura(name, resultArchetype)
         router.push('/aura')
+        toast({ title: 'Presença Criada', description: 'Seu companion foi criado com sucesso.', variant: 'success' })
       } catch (error) {
         console.error('Erro ao criar a presença:', error)
+        toast({ title: 'Erro de Criação', description: 'Houve um erro ao tentar salvar a sua Presença Digital.', variant: 'error' })
       }
     }
   }

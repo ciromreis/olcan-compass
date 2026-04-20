@@ -2,7 +2,7 @@ import uuid
 import enum
 from datetime import datetime
 
-from sqlalchemy import DateTime, String, Boolean, Enum, text, cast
+from sqlalchemy import DateTime, String, Boolean, Enum, text, cast, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -27,6 +27,7 @@ class User(Base):
         """Alias for subscription_plan — used by entitlements.py dependency functions."""
         return self.subscription_plan
     email: Mapped[str] = mapped_column(String(320), unique=True, index=True, nullable=False)
+    username: Mapped[str] = mapped_column(String(100), unique=True, index=True, nullable=False)
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     
     # Auth & Roles
@@ -36,9 +37,11 @@ class User(Base):
     
     # Profile fields
     full_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    bio: Mapped[str | None] = mapped_column(String(1000), nullable=True)
     avatar_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     language: Mapped[str] = mapped_column(String(10), default="en", nullable=False)
     timezone: Mapped[str] = mapped_column(String(50), default="UTC", nullable=False)
+    preferences: Mapped[dict | None] = mapped_column(JSON, default={}, nullable=True)
     
     # Security
     failed_login_attempts: Mapped[int] = mapped_column(default=0, nullable=False)

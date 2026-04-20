@@ -25,6 +25,7 @@ from app.schemas.enhanced_forge import (
     TechnicalReportCreate, TechnicalReportResponse,
     ExportJobCreate, ExportJobResponse,
     CMSFormDataCreate, CMSFormDataUpdate, CMSFormDataResponse,
+    ProcessTemplateResponse, ProcessTemplateListResponse,
     EnhancedDashboardResponse, MessageResponse, ErrorResponse
 )
 from app.services.enhanced_forge_service import EnhancedForgeService

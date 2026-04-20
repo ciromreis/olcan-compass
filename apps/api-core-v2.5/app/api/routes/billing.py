@@ -107,6 +107,73 @@ async def billing_status(
     )
 
 
+@router.post("/cancel-subscription", response_model=dict)
+async def cancel_subscription(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Cancel the current user's active Stripe subscription at period end."""
+    if not current_user.stripe_subscription_id:
+        raise HTTPException(status_code=400, detail="No active subscription found.")
+
+    stripe.api_key = settings.stripe_secret_key
+
+    try:
+        subscription = stripe.Subscription.modify(
+            current_user.stripe_subscription_id,
+            cancel_at_period_end=True,
+        )
+        
+        current_user.subscription_status = subscription.status
+        if subscription.cancel_at:
+            current_user.subscription_cancel_at = datetime.fromtimestamp(
+                subscription.cancel_at, tz=timezone.utc
+            )
+            
+        await db.commit()
+        
+        return {
+            "message": "Subscription set to cancel at the end of the current period.",
+            "cancel_at": current_user.subscription_cancel_at.isoformat() if current_user.subscription_cancel_at else None
+        }
+    except stripe.error.StripeError as e:
+        logger.error("Stripe subscription cancellation failed: %s", e)
+        raise HTTPException(status_code=502, detail="Payment provider error.")
+
+
+@router.get("/invoices", response_model=list)
+async def list_invoices(
+    current_user: User = Depends(get_current_user),
+):
+    """List the current user's recent Stripe invoices."""
+    if not current_user.stripe_customer_id:
+        return []
+
+    stripe.api_key = settings.stripe_secret_key
+
+    try:
+        invoices = stripe.Invoice.list(
+            customer=current_user.stripe_customer_id,
+            limit=12
+        )
+        
+        return [
+            {
+                "id": inv.id,
+                "amount_paid": inv.amount_paid / 100,
+                "currency": inv.currency,
+                "status": inv.status,
+                "date": datetime.fromtimestamp(inv.created, tz=timezone.utc).isoformat(),
+                "pdf_url": inv.invoice_pdf,
+                "number": inv.number
+            }
+            for inv in invoices.data
+        ]
+    except stripe.error.StripeError as e:
+        logger.error("Stripe invoice listing failed: %s", e)
+        return []
+
+
 @router.post("/subscription-checkout", response_model=SubscriptionCheckoutResponse)
 async def create_subscription_checkout(
     request: SubscriptionCheckoutRequest,

@@ -40,6 +40,7 @@ interface ProfilePrefsState {
   scheduleCancellation: () => void;
   reactivateSubscription: () => void;
   updatePaymentMethod: (paymentMethod: Partial<PaymentMethod>) => void;
+  reset: () => void;
 }
 
 const PLAN_PRICE: Record<UserPlan, number> = {
@@ -120,6 +121,17 @@ export const useProfileStore = create<ProfilePrefsState>()(
           ...state,
           paymentMethod: { ...state.paymentMethod, ...paymentMethod },
         })),
+      reset: () =>
+        set({
+          origin: "",
+          destination: "",
+          plan: "free",
+          subscriptionStatus: "inactive",
+          renewalDate: null,
+          cancellationEffectiveDate: null,
+          paymentMethod: { brand: "Visa", last4: "4242", expMonth: 12, expYear: 2027, holderName: "Usuário do Compass" },
+          invoices: [],
+        }),
     }),
     { name: "olcan-profile-prefs" }
   )

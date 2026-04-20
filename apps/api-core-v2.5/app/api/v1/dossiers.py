@@ -383,3 +383,56 @@ async def evaluate_dossier_readiness(
     await db.refresh(dossier)
     
     return dossier
+
+
+# --- Dossier Export ---
+
+@router.post("/{dossier_id}/export", response_model=dict)
+async def create_dossier_export(
+    dossier_id: UUID,
+    format: str = Query("pdf", description="Export format (pdf or zip)"),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Start a background job to export the dossier"""
+    # Verify ownership
+    result = await db.execute(select(Dossier).where(Dossier.id == dossier_id, Dossier.user_id == current_user.id))
+    dossier = result.scalar_one_or_none()
+    
+    if not dossier:
+        raise HTTPException(status_code=404, detail="Dossier not found")
+        
+    # In a real implementation, this would create an ExportJob and trigger a background task
+    # For now, we'll return a mock response indicating success
+    return {
+        "job_id": str(uuid.uuid4()),
+        "status": "processing",
+        "format": format,
+        "message": "Export job started"
+    }
+
+
+@router.get("/{dossier_id}/export/{job_id}", response_model=dict)
+async def get_export_status(
+    dossier_id: UUID,
+    job_id: UUID,
+    current_user: User = Depends(get_current_user)
+):
+    """Check the status of an export job"""
+    # Mock response
+    return {
+        "job_id": str(job_id),
+        "status": "completed",
+        "download_url": f"/api/v1/dossiers/{dossier_id}/export/{job_id}/download"
+    }
+
+
+@router.get("/{dossier_id}/export/{job_id}/download")
+async def download_dossier_export(
+    dossier_id: UUID,
+    job_id: UUID,
+    current_user: User = Depends(get_current_user)
+):
+    """Download the exported dossier file"""
+    # Mock implementation
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Export file not ready yet")

@@ -1,7 +1,7 @@
 {
   "buildCommand": "npm run build",
   "installCommand": "npm install --legacy-peer-deps",
-  "framework": "nextjs",
+  "framework": null,
   "env": {
     "NEXT_PUBLIC_DEMO_MODE": "false",
     "DEMO_MODE": "false",

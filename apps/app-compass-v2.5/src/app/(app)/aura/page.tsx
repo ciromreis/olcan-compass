@@ -277,7 +277,20 @@ export default function AuraPage() {
                     onClick={async () => {
                       const res = await fetch('/api/dossier/export', {
                         method: 'POST',
-                        body: JSON.stringify({ userId: aura.userId, level: aura.level })
+                        body: JSON.stringify({ 
+                          userId: aura.userId, 
+                          level: aura.level,
+                          data: {
+                            userName: aura.name,
+                            archetype: { name: aura.archetype as string, description: "Manifestação Pessoal", motivator: "freedom", fearCluster: "loss", abilities: ["Autonomia"], creature: "fox" },
+                            aura: { ...aura },
+                            origin: "Brasil",
+                            destination: phenotype?.routeLabel || "Global",
+                            readinessScore: phenotype?.documentReadiness ? Math.round(phenotype.documentReadiness * 100) : 0,
+                            featuredDocuments: [],
+                            routesCount: 1
+                          }
+                        })
                       });
                       if (res.ok) {
                         const blob = await res.blob();

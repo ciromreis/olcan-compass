@@ -118,6 +118,27 @@ class XPCalculator:
         return min(level, 10)  # Cap at level 10
     
     @staticmethod
+    def get_level_from_xp(total_xp: int) -> int:
+        """Alias for calculate_level_from_xp."""
+        return XPCalculator.calculate_level_from_xp(total_xp)
+    
+    @staticmethod
+    def get_level_title(level: int) -> str:
+        """Get the title for a specific level."""
+        return LEVEL_TITLES.get(level, "Explorador")
+    
+    @staticmethod
+    def get_xp_to_next_level(total_xp: int) -> int:
+        """Get XP needed for the next level."""
+        xp_needed, _ = XPCalculator.get_xp_for_next_level(total_xp)
+        return xp_needed
+    
+    @staticmethod
+    def get_progress_to_next_level(total_xp: int) -> float:
+        """Get progress percentage to the next level."""
+        return XPCalculator.get_level_progress(total_xp)
+    
+    @staticmethod
     def get_xp_for_next_level(total_xp: int) -> tuple[int, int]:
         """Get XP needed to reach next level.
         

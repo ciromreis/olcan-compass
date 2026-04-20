@@ -2,12 +2,21 @@
 title: Runbook de Deployment
 type: drawer
 layer: 8
-status: active
-last_seen: 2026-04-17
+status: superseded
+last_seen: 2026-04-20
 backlinks:
   - Padroes_de_Codigo
   - Guia_de_Desenvolvimento
 ---
+
+> **⚠️ ATENÇÃO — DOCUMENTO DESATUALIZADO**
+> Este runbook tem informações parcialmente incorretas (referências ao Railway, endpoint de health errado).
+> A fonte de verdade operacional está em **`wiki/05_Infraestrutura/`**:
+> - Deploy da API → [[../05_Infraestrutura/DEPLOYMENT_RENDER.md]]
+> - Estado do CI/CD → [[../05_Infraestrutura/CI_CD_Estado_Atual.md]]
+> - Mapa geral → [[../05_Infraestrutura/INFRAESTRUTURA_OVERVIEW.md]]
+>
+> Este arquivo é mantido apenas para referência de scripts locais e checklist geral de processo.
 
 # Operações: Runbook de Deployment e Staging
 
@@ -73,7 +82,7 @@ cd apps/api-core-v2.5 && npm run type-check
 
 ## 🚀 Fluxo de Deploy: Backend (API)
 
-A API reside no Render/Railway e utiliza deploy contínuo via branch `main`.
+A API reside no **Render** (Docker Web Service) e utiliza deploy contínuo via branch `main`. Railway não está em uso.
 
 1.  **Push para Main**:
     ```bash
@@ -84,8 +93,9 @@ A API reside no Render/Railway e utiliza deploy contínuo via branch `main`.
 2.  **Monitoramento**: Acompanhe os logs no painel do Render (olcan-compass-api).
 3.  **Verificação de Saúde**:
     ```bash
-    curl https://api.olcan.com.br/health
-    # Esperado: {"status": "healthy", "version": "2.5.0"}
+    curl https://olcan-compass-api.onrender.com/api/health
+    # Esperado: {"status": "ok"}
+    # ATENÇÃO: O endpoint é /api/health, não /health
     ```
 
 ---

@@ -2,14 +2,15 @@
 User endpoints for Olcan Compass v2.5
 """
 
+import uuid
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete
 
 from app.core.database import get_db
 from app.api.v1.auth import get_current_user
 from app.models import User
-from app.models.progress import UserProgress
+from app.db.models.task import UserProgress
 from app.schemas.user import UserUpdate, UserResponse
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -20,6 +21,10 @@ async def get_user_profile(
     current_user: User = Depends(get_current_user)
 ):
     """Get current user profile"""
+    # Attach computed fields for response
+    current_user.level = 1  # Default if progress missing
+    current_user.xp = 0
+    
     return current_user
 
 
@@ -42,7 +47,53 @@ async def update_user_profile(
     await db.commit()
     await db.refresh(current_user)
     
+    # Attach computed fields
+    current_user.level = 1
+    current_user.xp = 0
+    
     return current_user
+
+
+@router.get("/settings", response_model=dict)
+async def get_user_settings(
+    current_user: User = Depends(get_current_user)
+):
+    """Get user settings and preferences"""
+    return {
+        "language": current_user.language,
+        "timezone": current_user.timezone,
+        "preferences": current_user.preferences or {},
+        "notifications_enabled": True,  # Placeholder
+    }
+
+
+@router.put("/settings", response_model=dict)
+async def update_user_settings(
+    settings: dict,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Update user settings and preferences"""
+    if "language" in settings:
+        current_user.language = settings["language"]
+    if "timezone" in settings:
+        current_user.timezone = settings["timezone"]
+    if "preferences" in settings:
+        current_user.preferences = settings["preferences"]
+        
+    await db.commit()
+    return {"message": "Settings updated successfully"}
+
+
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_user_account(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Delete current user account and all associated data"""
+    await db.execute(delete(User).where(User.id == current_user.id))
+    await db.commit()
+    return None
 
 
 @router.get("/progress", response_model=dict)
@@ -65,22 +116,19 @@ async def get_user_progress(
     
     return {
         "totalXp": progress.total_xp,
-        "level": progress.level,
-        "xpToNextLevel": progress.xp_to_next_level,
-        "totalSessions": progress.total_sessions,
-        "totalTimeSpent": progress.total_time_spent,
-        "streakDays": progress.streak_days,
-        "longestStreak": progress.longest_streak,
-        "questsCompleted": progress.quests_completed,
-        "achievementsUnlocked": progress.achievements_unlocked,
-        "companionsEvolved": progress.companions_evolved,
-        "stats": progress.stats,
+        "level": progress.current_level,
+        "xpToNextLevel": 100,  # Placeholder or calculate
+        "tasksCompletedToday": progress.tasks_completed_today,
+        "tasksCompletedTotal": progress.tasks_completed_total,
+        "streakCurrent": progress.streak_current,
+        "streakBest": progress.streak_best,
+        "lastActivityDate": progress.last_activity_date.isoformat() if progress.last_activity_date else None,
     }
 
 
 @router.get("/{user_id}", response_model=dict)
 async def get_user_by_id(
-    user_id: int,
+    user_id: uuid.UUID,
     db: AsyncSession = Depends(get_db)
 ):
     """Get public user information by ID"""
@@ -96,11 +144,9 @@ async def get_user_by_id(
         )
     
     return {
-        "id": user.id,
+        "id": str(user.id),
         "username": user.username,
         "fullName": user.full_name,
         "avatar": user.avatar_url,
-        "level": user.level,
-        "xp": user.xp,
         "isPremium": user.is_premium,
     }

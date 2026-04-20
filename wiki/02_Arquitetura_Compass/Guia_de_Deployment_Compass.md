@@ -2,12 +2,23 @@
 title: Guia de Deployment Compass
 type: drawer
 layer: 2
-status: active
-last_seen: 2026-04-17
+status: superseded
+last_seen: 2026-04-20
 backlinks:
   - Arquitetura_v2_5_Compass
   - Verdade_do_Produto
 ---
+
+> **⚠️ ATENÇÃO — DOCUMENTO SUPERSEDIDO (desatualizado desde 2026-04-19)**
+> Este documento descreve uma infraestrutura que não existe mais:
+> - O DNS migrou de **GoDaddy A records** para **Cloudflare** (migração em 2026-04-19)
+> - A API não está na Vercel — está no **Render** (Docker, Free plan)
+> - O A record `76.76.21.21` não é mais o ponto de entrada
+>
+> **Use a documentação atual em `wiki/05_Infraestrutura/`:**
+> - [[../05_Infraestrutura/INFRAESTRUTURA_OVERVIEW.md]] — mapa completo e atual
+> - [[../05_Infraestrutura/DEPLOYMENT_RENDER.md]] — deploy da API
+> - [[../05_Infraestrutura/DNS_CLOUDFLARE.md]] — DNS e subdomínios
 
 # Guia de Deployment e Infraestrutura
 

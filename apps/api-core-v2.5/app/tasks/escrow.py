@@ -16,6 +16,7 @@ from app.core.celery_app import celery_app
 from app.db.session import get_sessionmaker
 from app.db.models.economics import EscrowTransaction, EscrowStatus
 from app.services.escrow import (
+    create_escrow,
     resolve_escrow,
     check_escrow_timeout
 )
@@ -24,9 +25,62 @@ logger = logging.getLogger(__name__)
 
 
 @celery_app.task(bind=True, max_retries=3, queue='economics')
+def create_escrow_task(
+    self: Task,
+    booking_id: str,
+    amount: float,
+    release_condition: Dict[str, Any]
+) -> Dict[str, Any]:
+    """
+    Cria uma transação de escrow para reserva performance-bound.
+    
+    Args:
+        booking_id: UUID da reserva (como string)
+        amount: Valor a ser retido
+        release_condition: Condições de liberação
+    
+    Returns:
+        Dict com resultado da criação
+    """
+    try:
+        logger.info(f"Criando escrow para reserva {booking_id}")
+        
+        sessionmaker = get_sessionmaker()
+        
+        import asyncio
+        from decimal import Decimal
+        
+        async def _create():
+            async with sessionmaker() as db:
+                try:
+                    escrow = await create_escrow(
+                        booking_id=uuid.UUID(booking_id),
+                        amount=Decimal(str(amount)),
+                        currency="USD",  # Default
+                        release_condition=release_condition,
+                        db=db
+                    )
+                    await db.commit()
+                    
+                    return {
+                        "escrow_id": str(escrow.id),
+                        "status": "success"
+                    }
+                except Exception as e:
+                    await db.rollback()
+                    raise e
+        
+        result = asyncio.run(_create())
+        return result
+        
+    except Exception as exc:
+        logger.error(f"Erro ao criar escrow (tentativa {self.request.retries + 1}/3): {exc}")
+        raise self.retry(exc=exc, countdown=60 * (2 ** self.request.retries))
+
+
+@celery_app.task(bind=True, max_retries=3, queue='economics')
 def resolve_escrow_task(
     self: Task,
-    escrow_id: str,
     booking_id: str
 ) -> Dict[str, Any]:
     """
@@ -36,15 +90,7 @@ def resolve_escrow_task(
     - Reserva performance-bound é marcada como completa
     - Cliente completa avaliação de prontidão pós-serviço
     
-    Processo:
-    1. Busca escrow e reserva
-    2. Calcula melhoria de prontidão (readiness_after - readiness_before)
-    3. Compara com release_condition.min_improvement
-    4. Se atendida: libera pagamento ao provider
-    5. Se não atendida: reembolsa cliente
-    
     Args:
-        escrow_id: UUID da transação de escrow (como string)
         booking_id: UUID da reserva (como string)
     
     Returns:
@@ -55,7 +101,7 @@ def resolve_escrow_task(
     """
     try:
         logger.info(
-            f"Resolvendo escrow {escrow_id} para reserva {booking_id}"
+            f"Resolvendo escrow para reserva {booking_id}"
         )
         
         sessionmaker = get_sessionmaker()
@@ -65,9 +111,16 @@ def resolve_escrow_task(
         async def _resolve():
             async with sessionmaker() as db:
                 try:
+                    # Buscar escrow por booking_id
+                    from app.services.escrow import get_escrow_by_booking
+                    escrow = await get_escrow_by_booking(uuid.UUID(booking_id), db)
+                    
+                    if not escrow:
+                        return {"status": "skipped", "reason": "No escrow found for booking"}
+                    
                     # Resolver escrow
                     result = await resolve_escrow(
-                        escrow_id=uuid.UUID(escrow_id),
+                        escrow_id=escrow.id,
                         db=db
                     )
                     
@@ -81,6 +134,10 @@ def resolve_escrow_task(
         
         result = asyncio.run(_resolve())
         
+        if result.get("status") == "skipped":
+            logger.info(f"Resolução de escrow pulada: {result['reason']}")
+            return result
+            
         logger.info(
             f"Escrow resolvido: {result['resolution']}, "
             f"melhoria={result['improvement_achieved']:.1f}, "

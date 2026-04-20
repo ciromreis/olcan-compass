@@ -542,6 +542,9 @@ interface GamificationStoreActions {
   
   // UI
   clearError: () => void
+
+  // Session reset
+  reset: () => void
 }
 
 // ============================================================================
@@ -1108,6 +1111,29 @@ export const useGamificationStore = create<
         
         clearError: () => {
           set({ error: null })
+        },
+
+        reset: () => {
+          set({
+            userProgress: {
+              totalXP: 0,
+              level: 1,
+              xpToNextLevel: calculateXPForLevel(2),
+              totalCoins: 0,
+              title: 'Apprentice',
+              titles: ['Apprentice'],
+              joinDate: new Date().toISOString(),
+              daysActive: 0,
+            },
+            achievements: CANONICAL_ACHIEVEMENTS.map(a => ({ ...a, isUnlocked: false, unlockedAt: null, progress: 0 })),
+            quests: generateDailyQuests(),
+            streaks: {
+              daily_care: { type: 'daily_care', currentCount: 0, bestCount: 0, lastActivityAt: null, multiplier: 1 },
+              weekly_engagement: { type: 'weekly_engagement', currentCount: 0, bestCount: 0, lastActivityAt: null, multiplier: 1 },
+            },
+            lastDailyQuestReset: new Date().toISOString().split('T')[0],
+            error: null,
+          })
         },
       }),
       {

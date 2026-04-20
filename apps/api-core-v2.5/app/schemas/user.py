@@ -2,6 +2,7 @@
 User schemas for request/response validation
 """
 
+import uuid
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import datetime
@@ -31,7 +32,7 @@ class UserUpdate(BaseModel):
 
 
 class UserInDB(UserBase):
-    id: int
+    id: uuid.UUID
     level: int
     xp: int
     is_active: bool
@@ -54,7 +55,7 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    user_id: Optional[int] = None
+    user_id: Optional[uuid.UUID] = None
     username: Optional[str] = None
 
 

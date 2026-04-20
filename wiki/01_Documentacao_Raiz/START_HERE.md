@@ -51,10 +51,11 @@ Este repositório consolidado é governado pela [**Bússola Mestra v2.5**](./wik
 
 | Ferramenta | Descrição |
 |-------------|-----------|
-| [[wiki/00_SOVEREIGN/Grafo_de_Conhecimento_Olcan.md\|Grafo de Conhecimento]] | Mapa visual Mermaid de todas as conexões |
-| [[wiki/00_SOVEREIGN/Verdade_do_Produto.md\|Verdade do Produto]] | Estado real sem inflação (atualizado 18/04/2026) |
-| [[wiki/03_Produto_Forge/Spec_Dossier_System_v2_5.md\|Spec Dossier v2.5]] | Sistema de dossier completo |
-| [[wiki/00_SOVEREIGN/MemPalace_Migration_Spec.md\|MemPalace]] | Metodologia Wiki |
+| [[wiki/00_SOVEREIGN/Grafo_de_Conhecimento_Olcan.md|Grafo de Conhecimento]] | Mapa visual Mermaid de todas as conexões |
+| [[wiki/00_SOVEREIGN/Verdade_do_Produto.md|Verdade do Produto]] | Estado real sem inflação (atualizado 20/04/2026) |
+| [[wiki/03_Produto_Forge/Spec_Dossier_System_v2_5.md|Spec Dossier v2.5]] | Sistema de dossier completo |
+| [[wiki/00_SOVEREIGN/MemPalace_Migration_Spec.md|MemPalace]] | Metodologia Wiki |
+| [[wiki/00_Onboarding_Inicio/Shippers_Guide_v2_5.md|🚀 Shipper's Guide]] | Como shippar sem quebrar produção |
 
 ---
 
@@ -68,3 +69,6 @@ Este repositório consolidado é governado pela [**Bússola Mestra v2.5**](./wik
 
 > [!TIP]
 > **Para Desenvolvedores**: O código funcional reside em `apps/` (v2 Online, v2.5 Dev) e `packages/`. Utilize esta Wiki para entender a intenção por trás de cada linha de código.
+
+> [!IMPORTANT]
+> **Para Agents de IA**: Leia [[wiki/00_Onboarding_Inicio/Shippers_Guide_v2_5.md|🚀 Shipper's Guide]] ANTES de fazer qualquer mudança. Isso garante que você não vai quebrar produção.

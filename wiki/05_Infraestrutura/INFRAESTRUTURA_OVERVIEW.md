@@ -147,6 +147,7 @@ Para deploy manual: ver [[RENDER_CLI.md]].
 | Tópico | Documento |
 |--------|-----------|
 | Deploy completo da API | [[DEPLOYMENT_RENDER.md]] |
+| Estado do CI/CD e gaps | [[CI_CD_Estado_Atual.md]] |
 | DNS e subdomínios | [[DNS_CLOUDFLARE.md]] |
 | Email transacional | [[EMAIL_RESEND.md]] |
 | CLI e API do Render | [[RENDER_CLI.md]] |

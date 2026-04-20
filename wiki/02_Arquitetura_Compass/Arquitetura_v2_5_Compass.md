@@ -3,10 +3,12 @@ title: Arquitetura v2.5 Compass
 type: drawer
 layer: 2
 status: active
-last_seen: 2026-04-17
+last_seen: 2026-04-20
 backlinks:
   - Olcan_Master_PRD_v2_5
   - Verdade_do_Produto
+  - Backend_API_Audit_v2_5
+  - SPEC_IO_System_v2_5
 ---
 
 # Arquitetura Técnica: Olcan Compass v2.5
@@ -67,6 +69,8 @@ Utilizamos **Versionamento Baseado em URL** (`/api/v1/*`) para garantir que nova
 - [[Verdade_do_Produto]] ← Estado real
 
 ## 🔗 Referências Relacionadas
+- [[02_Arquitetura_Compass/SPEC_IO_System_v2_5]] ← Sistema I/O (Input/Output)
+- [[02_Arquitetura_Compass/Backend_API_Audit_v2_5]] ← Auditoria completa da API
 - [[02_Arquitetura_Compass/Guia_de_Operacoes_Database.md]]
 - [[03_Produto_Forge/Blueprint_Sistema_de_Tarefas.md]]
 - [[02_Arquitetura_Compass/Seguranca_e_Entitlements.md]]

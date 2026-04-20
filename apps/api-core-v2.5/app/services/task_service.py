@@ -414,3 +414,57 @@ class TaskService:
             current_streak=progress.streak_current,
             best_streak=progress.streak_best
         )
+
+    @staticmethod
+    async def get_leaderboard(
+        db: AsyncSession,
+        user_id: UUID,
+        limit: int = 50
+    ) -> Tuple[List[dict], int, int]:
+        """Get global XP leaderboard."""
+        from app.db.models.user import User
+        
+        # Query for top users by total_xp
+        query = (
+            select(
+                UserProgress,
+                User.full_name,
+                User.email
+            )
+            .join(User, User.id == UserProgress.user_id)
+            .order_by(UserProgress.total_xp.desc())
+            .limit(limit)
+        )
+        
+        result = await db.execute(query)
+        rows = result.all()
+        
+        entries = []
+        for rank, row in enumerate(rows, 1):
+            progress, full_name, email = row
+            entries.append({
+                "rank": rank,
+                "user_id": progress.user_id,
+                "user_name": full_name or email.split("@")[0],
+                "user_email": email,
+                "total_xp": progress.total_xp,
+                "current_level": progress.current_level,
+                "level_title": XPCalculator.get_level_title(progress.current_level),
+                "tasks_completed": progress.tasks_completed_total,
+                "streak": progress.streak_current
+            })
+            
+        # Get total users
+        total_query = select(func.count(UserProgress.id))
+        total_result = await db.execute(total_query)
+        total_users = total_result.scalar()
+        
+        # Get current user's rank
+        user_rank_query = (
+            select(func.count(UserProgress.id))
+            .where(UserProgress.total_xp > select(UserProgress.total_xp).where(UserProgress.user_id == user_id).scalar_subquery())
+        )
+        user_rank_result = await db.execute(user_rank_query)
+        user_rank = user_rank_result.scalar() + 1
+        
+        return entries, user_rank, total_users

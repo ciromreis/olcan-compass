@@ -77,8 +77,11 @@ This file provides quick reference for development commands and project structur
 
 **Then proceed to:**
 - Migration Spec: [[wiki/00_SOVEREIGN/MemPalace_Migration_Spec.md]] - Wiki structure methodology
+- Shipper's Guide: [[wiki/00_Onboarding_Inicio/Shippers_Guide_v2_5.md]] - **OBRIGATÓRIO** antes de fazer mudanças
 - Vision: [[wiki/01_Visao_Estrategica/Carta_do_Projeto_Olcan_v2.5.md]]
 - Architecture: [[wiki/02_Arquitetura_Compass/Arquitetura_v2_5_Compass.md]]
+- API Audit: [[wiki/02_Arquitetura_Compass/Backend_API_Audit_v2_5.md]]
+- I/O Issues: [[wiki/02_Arquitetura_Compass/SPEC_IO_System_v2_5.md]]
 - Product: [[wiki/03_Produto_Forge/PRD_Master_Ethereal_Glass.md]]
 - Standards: [[wiki/00_Onboarding_Inicio/Padroes_de_Codigo.md]]
 - Roadmap: [[wiki/01_Visao_Estrategica/Roadmap_Implementacao_v2_5.md]]
@@ -144,15 +147,18 @@ This file provides quick reference for development commands and project structur
 **Excluded via .claudeignore:**
 - `_GRAVEYARD/` - Historical archives (2275+ files, all outdated)
 - `3_Vaults/` - Session logs (outdated)
-- `wiki/10_Arquivo_Permanente/` - Permanent archive (sessions, changelogs, legacy docs)
-- Frozen apps: `app-compass-v2/`, `api-core-v2/` (v2 production, read-only)
+- `wiki/10_Arquivo_Permanente/` - Permanent archive
+- Frozen apps: `app-compass-v2/`, `api-core-v2/` (read-only)
 - Build artifacts: `node_modules/`, `.next/`, `.venv/`, etc.
 - Environment files: `.env*`, `.secrets/`
+- `.netlify/` - LEGACY (not used anymore)
 
-**Why this matters:**
-- Saves 45,000+ tokens per context load
-- Focuses on active development (v2.5)
-- Preserves history without cluttering context
+**Hidden Folders to Audit:**
+- `.kiro/` - May contain specs
+- `.obsidian/` - May have notes not in wiki
+- `.openclaude/` - Check vs .claude/
+
+**Full audit:** [[wiki/05_Infraestrutura/HIDDEN_FOLDERS_AUDIT.md]]
 
 ## 🏛️ MemPalace Structure (Wings/Rooms/Drawers)
 

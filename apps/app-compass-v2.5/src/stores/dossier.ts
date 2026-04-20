@@ -631,12 +631,25 @@ export const useDossierStore = create<DossierState>()(
       // ========================================================================
 
       evaluateReadiness: async (dossierId: string) => {
-        // TODO: Implement comprehensive readiness evaluation
         const dossier = get().getDossierById(dossierId);
         if (!dossier) throw new Error("Dossier not found");
 
+        const docs = dossier.documents || [];
+        const totalDocs = Math.max(docs.length, 1);
+        const finalDocs = docs.filter(d => d.status === "final" || d.status === "submitted").length;
+        const docsScore = (finalDocs / totalDocs) * 50;
+
+        const profileScores = dossier.profileSnapshot?.readinessScores;
+        const profileAvg = profileScores 
+          ? (profileScores.logistic + profileScores.narrative + profileScores.performance + profileScores.psychological) / 4 
+          : 0;
+        
+        let overall = Math.round(docsScore + ((profileAvg || 20) * 0.5));
+        if (overall > 100) overall = 100;
+        if (overall <= 0 && docs.length > 0) overall = 10; // baseline if there are docs
+
         const readiness: ReadinessEvaluation = {
-          overall: 0,
+          overall,
           lastEvaluated: new Date(),
           perDocument: {},
           gaps: [],
@@ -644,6 +657,19 @@ export const useDossierStore = create<DossierState>()(
           strengths: [],
           risks: [],
         };
+
+        docs.forEach(doc => {
+          readiness.perDocument[doc.id] = {
+            documentId: doc.id,
+            score: doc.status === "final" || doc.status === "submitted" ? 100 : doc.completionPercentage || 0,
+            status: doc.status,
+            completeness: doc.completionPercentage || 0,
+            quality: doc.metrics?.competitivenessScore || 0,
+            alignment: doc.metrics?.alignmentScore || 0,
+            blockers: doc.blockedBy || [],
+            nextSteps: [],
+          };
+        });
 
         await get().updateReadiness(dossierId, readiness);
         return readiness;

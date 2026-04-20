@@ -170,7 +170,7 @@ async def complete_task(
         
         # NEW: Award aura XP if user has a companion
         try:
-            from app.models.companion import Companion
+            from app.db.models.companion import Companion
             companion_result = await db.execute(
                 select(Companion).where(Companion.user_id == UUID(user_id))
             )
@@ -282,13 +282,20 @@ async def get_leaderboard(
     db: AsyncSession = Depends(get_db),
     user_id: str = Depends(get_current_user_id)
 ):
-    """Get XP leaderboard (placeholder - needs user table join)."""
-    # TODO: Implement with proper user table join
-    return LeaderboardResponse(
-        entries=[],
-        user_rank=None,
-        total_users=0
-    )
+    """Get XP leaderboard with global ranking."""
+    try:
+        entries, user_rank, total_users = await TaskService.get_leaderboard(
+            db, UUID(user_id), limit=limit
+        )
+        
+        return LeaderboardResponse(
+            entries=entries,
+            user_rank=user_rank,
+            total_users=total_users
+        )
+    except Exception as e:
+        logger.error(f"Error getting leaderboard: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to load leaderboard")
 
 
 # ============================================================
@@ -358,9 +365,24 @@ async def claim_achievement(
     db: AsyncSession = Depends(get_db),
     user_id: str = Depends(get_current_user_id)
 ):
-    """Claim an achievement reward (if applicable)."""
-    # TODO: Implement achievement claiming
-    return MessageResponse(message="Achievement claimed successfully")
+    """Claim an achievement reward (XP bonus)."""
+    from app.services.achievement_service import AchievementService
+    
+    xp_bonus = await AchievementService.claim_achievement_reward(
+        db, UUID(user_id), achievement_id
+    )
+    
+    if xp_bonus is None:
+        raise HTTPException(
+            status_code=400, 
+            detail="Achievement not unlocked or reward already claimed"
+        )
+        
+    await db.commit()
+    return MessageResponse(
+        message=f"Successfully claimed {xp_bonus} XP bonus!",
+        success=True
+    )
 
 
 # ============================================================
