@@ -4,7 +4,6 @@ import { type UpdateProfilePayload, type UserProfile } from "@/lib/api";
 import { normalizeUserRole } from "@/lib/roles";
 import { apiClient, type AuthMeResponse } from "@/lib/api-client";
 import { eventBus } from "@/lib/event-bus";
-import { clearUserStores } from "@/lib/clear-user-stores";
 
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
@@ -99,7 +98,6 @@ export const useAuthStore = create<AuthState>()(
 
           await apiClient.login({ username: email, password });
           const userData = await apiClient.getCurrentUser();
-          clearUserStores();
           set({
             user: profileFromAuthMe(userData),
             isAuthenticated: true,
@@ -134,7 +132,6 @@ export const useAuthStore = create<AuthState>()(
           });
           await apiClient.login({ username: email, password });
           const userData = await apiClient.getCurrentUser();
-          clearUserStores();
           set({
             user: profileFromAuthMe(userData),
             isAuthenticated: true,
@@ -152,7 +149,6 @@ export const useAuthStore = create<AuthState>()(
 
       logout: () => {
         apiClient.clearToken();
-        clearUserStores();
         set({ user: null, isAuthenticated: false, error: null });
       },
 
