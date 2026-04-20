@@ -121,7 +121,7 @@ class MarketplaceAPI {
     return data;
   }
 
-  static async useAsset(inventoryId: string) {
+  static async consumeAsset(inventoryId: string) {
     const { data } = await api.post(`${ECONOMY_PREFIX}/use/${inventoryId}`);
     return data;
   }
@@ -247,7 +247,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
           set({ isLoading: true, error: null });
           
           try {
-            await MarketplaceAPI.useAsset(inventoryId);
+            await MarketplaceAPI.consumeAsset(inventoryId);
             
             // Refresh inventory and economy
             await Promise.all([
