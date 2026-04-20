@@ -182,7 +182,7 @@ export default function RouteOverviewPage() {
           className="card-surface p-4 text-center transition-colors hover:bg-cream-100"
         >
           <GitBranch className="mx-auto mb-1 h-5 w-5 text-sage-500" />
-          <span className="text-sm font-medium text-text-primary">Grafo DAG</span>
+          <span className="text-sm font-medium text-text-primary">Dependências</span>
         </Link>
         <Link
           href={`/routes/${routeId}/timeline`}

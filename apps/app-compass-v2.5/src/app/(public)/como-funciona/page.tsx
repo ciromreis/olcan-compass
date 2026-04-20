@@ -4,7 +4,7 @@ export const metadata = { title: "Como Funciona" };
 
 const STEPS = [
   { num: "01", icon: Target, title: "Perfil Inteligente", description: "Responda ao questionário de perfil e financeiro. A IA calibra seu perfil de mobilidade e identifica medos, pontos fortes e gaps reais." },
-  { num: "02", icon: Route, title: "Rota Estratégica", description: "Receba um grafo de dependências (DAG) personalizado com milestones, prazos e custos. Veja exatamente o que fazer primeiro." },
+  { num: "02", icon: Route, title: "Rota Estratégica", description: "Receba um mapa de dependências personalizado com milestones, prazos e custos. Veja exatamente o que fazer primeiro." },
   { num: "03", icon: FileEdit, title: "Forge de Documentos", description: "Crie CVs, cartas de motivação e propostas com IA especializada. Receba análise semântica e score de competitividade." },
   { num: "04", icon: Sparkles, title: "Simulador de Entrevista", description: "Pratique com perguntas reais, receba feedback em tempo real sobre clareza, hesitação e confiança projetada." },
   { num: "05", icon: Shield, title: "Marketplace Verificado", description: "Contrate advogados, coaches e tradutores vetados. Pagamento protegido — só libera quando o serviço é entregue." },

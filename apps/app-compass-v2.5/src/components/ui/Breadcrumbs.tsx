@@ -94,7 +94,7 @@ export function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
     "sprints": { label: "Sprints", stage: "EXECUTION" },
     "marketplace": { label: "Mercado", stage: "SUPPORT" },
     "profile": { label: "Perfil", stage: "BASE" },
-    "wiki": { label: "Perfil OIOS", stage: "BASE" },
+    "wiki": { label: "Arquétipo", stage: "BASE" },
   };
 
   const mapping = flowMap[firstSegment];

@@ -122,7 +122,7 @@ export const END_USER_NAV_SECTIONS: AppNavSection[] = [
       },
       {
         href: "/wiki",
-        label: "Perfil OIOS",
+        label: "Arquétipo",
         icon: ScanFace,
         description: "Seu arquétipo de mobilidade e orientação psicológica.",
         aliases: ["/wiki"],

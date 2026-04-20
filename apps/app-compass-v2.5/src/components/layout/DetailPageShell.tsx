@@ -165,7 +165,7 @@ export function routeDetailTabs(routeId: string): DetailTab[] {
     { key: "overview", label: "Visão Geral", href: base },
     { key: "milestones", label: "Milestones", href: `${base}/milestones` },
     { key: "timeline", label: "Linha do Tempo", href: `${base}/timeline` },
-    { key: "graph", label: "Grafo DAG", href: `${base}/graph` },
+    { key: "graph", label: "Dependências", href: `${base}/graph` },
     { key: "risk", label: "Riscos", href: `${base}/risk` },
     { key: "iterate", label: "Iterar", href: `${base}/iterate` },
     { key: "settings", label: "Ajustes", href: `${base}/settings` },

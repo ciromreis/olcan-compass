@@ -96,12 +96,12 @@ export function OperationalTelemetryHUD({ snapshot }: OperationalTelemetryHUDPro
         </div>
       </div>
 
-      {/* 3. OIOS DNA (Archetype) */}
+      {/* 3. Archetype DNA */}
       <div className="relative overflow-hidden rounded-[2rem] border border-amber-100 bg-white p-6 shadow-sm transition-all hover:shadow-md md:col-span-2 lg:col-span-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-amber-600">
             <Activity className="h-4 w-4" />
-            DNA OIOS (Arquétipo)
+            Seu Arquétipo
           </div>
         </div>
 

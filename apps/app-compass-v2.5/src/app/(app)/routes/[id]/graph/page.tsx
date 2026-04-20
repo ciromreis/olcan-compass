@@ -32,7 +32,7 @@ export default function RouteGraphPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <PageHeader backHref={`/routes/${id}`} title="Grafo de Dependências" subtitle={`Visualização DAG da rota ${route.name}`} />
+      <PageHeader backHref={`/routes/${id}`} title="Dependências" subtitle={`Fluxo entre milestones da rota ${route.name}`} />
 
       <div className="card-surface p-4 flex items-center gap-3 bg-cream-100">
         <Info className="w-5 h-5 text-brand-500 flex-shrink-0" />
