@@ -13,9 +13,14 @@ function stripApiSuffix(value: string) {
   return value.endsWith("/api") ? value.slice(0, -4) : value;
 }
 
+function stripVersionedApiSuffix(value: string) {
+  return value.replace(/\/api\/v\d+$/i, "");
+}
+
 export function resolveApiOrigin() {
   const configured = process.env.NEXT_PUBLIC_API_URL || "https://olcan-compass-api.onrender.com";
-  return stripApiSuffix(stripTrailingSlash(configured));
+  const normalized = stripTrailingSlash(configured);
+  return stripApiSuffix(stripVersionedApiSuffix(normalized));
 }
 
 export function resolveApiBaseUrl() {

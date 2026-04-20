@@ -14,7 +14,13 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
 
     # CORS
-    cors_allow_origins: str = "http://localhost:3000,http://localhost:3001,https://olcan-compass-web.netlify.app,https://compass.olcan.com.br"
+    cors_allow_origins: str = (
+        "http://localhost:3000,"
+        "http://localhost:3001,"
+        "https://compass.olcan.com.br,"
+        "https://app.olcan.com.br,"
+        "https://olcan-compass-web.vercel.app"
+    )
 
     # Database
     database_url: str = "postgresql+asyncpg://postgres:postgres@db:5432/compass"
@@ -103,6 +109,9 @@ class Settings(BaseSettings):
     # Anthropic (fallback / alternative)
     anthropic_api_key: str | None = None
     anthropic_default_model: str = "claude-sonnet-4-20250514"
+
+    # OAuth — Google Sign-In
+    google_client_id: str | None = None  # Set GOOGLE_CLIENT_ID env var
 
     # Feature Flags
     feature_credentials_enabled: bool = True
