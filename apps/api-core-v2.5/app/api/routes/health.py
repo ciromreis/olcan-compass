@@ -45,3 +45,32 @@ async def health(db: AsyncSession = Depends(get_db)) -> dict:
     }
 
 
+@router.get("/seed-db-render", summary="Trigger DB seed from browser (Render hack)")
+async def trigger_seed_render(secret_key: str = ""):
+    """Run seed scripts remotely since Render shell is not available."""
+    if secret_key != "olcan2026omega":
+        from fastapi import HTTPException
+        raise HTTPException(status_code=403, detail="Invalid secret")
+    
+    import os, sys
+    from subprocess import Popen, PIPE
+    
+    # scripts/seed_all.py is located at apps/api-core-v2.5/scripts/seed_all.py
+    # This health.py is at apps/api-core-v2.5/app/api/routes/health.py (3 levels deep inside apps/api-core-v2.5)
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    script_path = os.path.join(base_dir, "scripts", "seed_all.py")
+    
+    try:
+        process = Popen([sys.executable, script_path], stdout=PIPE, stderr=PIPE)
+        stdout, stderr = process.communicate(timeout=60)
+        
+        return {
+            "status": "Seed Process Executed" if process.returncode == 0 else "Seed Process Failed",
+            "stdout": stdout.decode("utf-8", errors="ignore"),
+            "stderr": stderr.decode("utf-8", errors="ignore"),
+            "returncode": process.returncode
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
