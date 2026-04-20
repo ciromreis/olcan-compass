@@ -4,6 +4,11 @@
   "outputDirectory": ".next",
   "framework": "nextjs",
   "regions": ["gru1"],
+  "env": {
+    "NEXT_PUBLIC_SITE_URL": "https://olcan.com.br",
+    "NEXT_PUBLIC_API_URL": "https://olcan-compass-api.onrender.com/api/v1",
+    "NEXT_PUBLIC_APP_URL": "https://compass.olcan.com.br"
+  },
   "headers": [
     {
       "source": "/(.*)",
@@ -19,6 +24,42 @@
       "source": "/home",
       "destination": "/",
       "permanent": true
+    },
+    {
+      "source": "/v2",
+      "destination": "https://compass.olcan.com.br",
+      "permanent": true
+    },
+    {
+      "source": "/v2/:path*",
+      "destination": "https://compass.olcan.com.br/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/login",
+      "destination": "https://compass.olcan.com.br/login",
+      "permanent": false
+    },
+    {
+      "source": "/register",
+      "destination": "https://compass.olcan.com.br/register",
+      "permanent": false
+    },
+    {
+      "source": "/dashboard/:path*",
+      "destination": "https://compass.olcan.com.br/dashboard/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/onboarding/:path*",
+      "destination": "https://compass.olcan.com.br/onboarding/:path*",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/health",
+      "destination": "/api/health"
     }
   ]
 }
