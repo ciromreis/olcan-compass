@@ -3,7 +3,7 @@ title: Verdade do Produto (Estado Real)
 type: drawer
 layer: 0
 status: active
-last_seen: 2026-04-18
+last_seen: 2026-04-21
 backlinks:
   - Olcan_Master_PRD_v2_5
   - Grafo_de_Conhecimento_Olcan
@@ -21,10 +21,10 @@ backlinks:
 **Camada (Layer)**: Identidade
 **Tags**: #audit #status #honestidade #verdade #estratégia
 **Criado**: 12/04/2026
-**Atualizado**: 18/04/2026
+**Atualizado**: 21/04/2026
 **Versão**: 2.5
 
-## 📊 snapshotCode: 2026-04-17
+## 📊 snapshotCode: 2026-04-21
 
 ---
 
@@ -45,6 +45,29 @@ O Olcan Compass é uma plataforma de suporte de carreira para imigrantes e profi
 ---
 
 ### O Que Realmente Existe (Abril 18, 2026 — atualizado por implementação)
+
+#### 🔴 BLOCKER: Auth Register/Login retorna 500 em produção (2026-04-21)
+
+**Contexto**: O model `User` no ORM declarava `username: str` NOT NULL, mas nenhuma
+migration criou essa coluna no PostgreSQL de produção. Isso crashava **todo endpoint
+autenticado** (`/auth/register`, `/auth/login`, `/auth/me`, dossiers, forge, etc.).
+
+**Fix aplicado** (commit `40d8736`, deployed via Render auto-deploy):
+- Migration `0026_add_users_username` — adiciona coluna nullable, backfill do email local-part
+- `user.py:30` — `username` agora `nullable=True`
+- `auth.py:155-167` — register auto-gera username único do email
+- `health.py:48` — endpoint `/api/migrate-db-render` para forçar migration remotamente
+
+**Status**: Deployed mas `POST /api/auth/register` **ainda retorna 500**.
+O agente anterior (Claude) não conseguiu diagnosticar a causa raiz antes de esgotar limite.
+
+**Investigação necessária**:
+1. Verificar se migration `0026` realmente executou (`GET /api/migrate-db-render?secret_key=olcan2026omega`)
+2. Checar stack trace real nos logs do Render
+3. Possível: outros campos do User model (forge_credits, subscription_plan, etc.) também não existem na tabela
+4. **Enquanto auth não funcionar, NENHUMA feature autenticada funciona** (forge, dossier, interviews, etc.)
+
+---
 
 #### ⚡ MAIO: Document Forge v2.5 (IMPLEMENTADO COMPLETO)
 **Features implementadas nesta sessão:**
@@ -172,7 +195,7 @@ O Olcan Compass é uma plataforma de suporte de carreira para imigrantes e profi
 - ✅ CRUD básico de companheiro (criar, visualizar, atividades de alimentar/treinar/jogar/descansar)
 - ✅ Website público (ao vivo no Vercel)
 - ✅ Backend v2.5 API (funcional, rotas registradas, Docker Postgres disponível)
-- ✅ **Build do App v2.5 passando** (23 stores, ~140 páginas, limpo)
+- ✅ **Build do App v2.5 passando** (26 stores, 169 páginas, limpo)
 - ✅ Routes OS frontend + backend conectados (`routesApi` com fallback gracioso)
 - ✅ Forge frontend + backend conectados (`forgeApi` → `/api/v1/documents/*`)
   - **BUG CORRIGIDO (12 Abr):** Rota de documentos v1 não estava montada. Agora corrigido.
@@ -210,6 +233,13 @@ O Olcan Compass é uma plataforma de suporte de carreira para imigrantes e profi
 - ❌ Recursos Sociais
 - ❌ Backend sync para dossier/sprints/tasks
 
+#### Bugs Conhecidos em Produção (2026-04-21)
+- 🔴 **Auth 500** — Register e Login retornam HTTP 500 (ver blocker acima)
+- 🐛 `profile.momentum` retorna `last_activity_days: 0` hardcoded (`auth.py:84`)
+- 🐛 `user.username` pode ser None (endpoint `/users/{user_id}` não trata)
+- 🔴 Tasks `tasks.py:185-196` importa de `app.api.v1.companions` que não existe
+- 🔴 Celery tasks referenciadas em psychology e marketplace não existem
+
 #### Status de Receita — Primeiro Recurso Pronto ✅
 **Paywall de Créditos do Forge (TOTALMENTE IMPLEMENTADO):**
 - ✅ Usuários começam com 3 créditos gratuitos.
@@ -224,12 +254,13 @@ O Olcan Compass é uma plataforma de suporte de carreira para imigrantes e profi
 
 | Objetivo | Tempo Estimado |
 |----------|----------------|
-| Consolidação de Stores (Fase 1-3) | ✅ Concluído (41→23 stores) |
+| Consolidação de Stores (Fase 1-3) | ✅ Concluído (41→26 stores) |
 | Correção de bugs críticos de roteamento | ✅ Concluído |
-| Fiação do quiz Olcan Compass Core ao backend | 1–2 semanas |
-| Primeiro recurso de receita | 2–3 semanas |
+| **Auth 500 blocker fix** | **URGENTE — bloqueia tudo** |
+| Fiação do quiz Olcan Compass Core ao backend | 1–2 semanas (após auth fix) |
+| Primeiro recurso de receita | 2–3 semanas (após auth fix) |
 | Testes ponta-a-ponta | 1 semana |
-| **App v2.5 pronto para substituir v2** | **4–6 semanas** |
+| **App v2.5 pronto para substituir v2** | **4–6 semanas (após auth fix)** |
 
 ## 🔗 Referências Relacionadas
 - [[Carta_do_Projeto_Olcan_v2.5]]

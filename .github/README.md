@@ -1,60 +1,54 @@
 # Olcan Compass — Workspace Overview
 
 **Active version:** v2.5  
-**Last updated:** 2026-04-20
+**Last updated:** 2026-04-21
 
----
-
-## Repository Structure
-
-```
-olcan-compass/
-├── apps/
-│   ├── app-compass-v2.5/     ← Frontend (Next.js) — ACTIVE
-│   ├── site-marketing-v2.5/  ← Marketing site (Next.js) — ACTIVE
-│   ├── api-core-v2.5/        ← Backend API (FastAPI/Python) — ACTIVE
-│   ├── app-compass-v2/       ← FROZEN (v2 legacy, read-only)
-│   └── api-core-v2/          ← FROZEN (v2 legacy, read-only)
-├── packages/
-│   ├── ui-components/        ← Liquid Glass design system
-│   └── shared-auth/          ← Unified identity service
-├── wiki/                     ← Source of truth for all documentation
-├── 2_Pipelines/scripts/      ← Local build and run scripts
-├── CLAUDE.md                 ← Navigation guide for LLMs and agents
-└── .github/workflows/        ← CI workflows (see note below)
-```
+> **⚠️ AUTH BLOCKER (2026-04-21):** Register/Login returns HTTP 500 in production.
+> This blocks ALL authenticated features. See `wiki/00_SOVEREIGN/Agent_Knowledge_Handbook.md` for debug steps.
 
 ---
 
 ## Where to Start
 
-**For agents and LLMs:** Read `CLAUDE.md` first — it has the navigation protocol, deployment state, and critical gotchas.
+**For agents, LLMs, and humans:** Read [`CLAUDE.md`](../CLAUDE.md) first — it is the single entry point. Then read [`wiki/00_SOVEREIGN/Agent_Knowledge_Handbook.md`](../wiki/00_SOVEREIGN/Agent_Knowledge_Handbook.md).
 
-**For humans:** Same — `CLAUDE.md` is the single entry point.
+All canonical documentation lives in `wiki/` using the **MemPalace + Karpathy** methodology.
+
+---
+
+## Current Stats (2026-04-21)
+
+| Metric | Value |
+|--------|-------|
+| Frontend pages | 169 (Next.js) |
+| Frontend stores | 26 (Zustand) |
+| Alembic migrations | 31 (head: `0026_add_users_username`) |
+| Build | ✅ Passes |
+| Auth | 🔴 500 in production |
 
 ---
 
 ## Deployment Model
 
-Deployment is **not triggered by GitHub Actions**. The workflows in `.github/workflows/` run tests only. Actual deployment works as follows:
+Deployment is **not triggered by GitHub Actions**. The workflows in `.github/workflows/` are broken and exist only for reference. Actual deployment:
 
 - **API (Render):** Push to `main` → Render detects via webhook → Docker build → auto-deploy
 - **Frontend (Vercel):** Push to `main` → Vercel detects via webhook → Next.js build → auto-deploy
 
-See `wiki/05_Infraestrutura/CI_CD_Estado_Atual.md` for known gaps in the current CI setup.
-
 ---
 
-## Known CI Issues
-
-Both workflow files have problems:
+## Known CI Issues (⚠️ BOTH WORKFLOWS ARE BROKEN)
 
 | File | Issue |
 |------|-------|
 | `ci.yml` | References `apps/api` (doesn't exist — should be `apps/api-core-v2.5`) |
 | `ci.yml` | Tests `pnpm build:v2` — active development is v2.5 |
 | `ci-cd.yml` | Deploy jobs are stubs (`echo "Deploying..."`) |
+| `ci-cd.yml` | Uses `npm ci` instead of `pnpm install` |
+| `ci-cd.yml` | References non-existent `tests/integration/` and `tests/performance/` dirs |
 | Both | Python 3.12 in CI vs 3.11 in production Dockerfile |
+
+**Do not rely on CI passing/failing — verify locally with `npm run type-check && npm run build`.**
 
 ---
 
@@ -62,10 +56,15 @@ Both workflow files have problems:
 
 | Topic | Document |
 |-------|---------|
-| Navigation map | `wiki/00_SOVEREIGN/Grafo_de_Conhecimento_Olcan.md` |
+| Agent onboarding | `wiki/00_SOVEREIGN/Agent_Knowledge_Handbook.md` |
 | Product truth | `wiki/00_SOVEREIGN/Verdade_do_Produto.md` |
 | Architecture | `wiki/02_Arquitetura_Compass/Arquitetura_v2_5_Compass.md` |
+| API audit | `wiki/02_Arquitetura_Compass/Backend_API_Audit_v2_5.md` |
 | API deployment | `wiki/05_Infraestrutura/DEPLOYMENT_RENDER.md` |
 | Infrastructure map | `wiki/05_Infraestrutura/INFRAESTRUTURA_OVERVIEW.md` |
-| CI/CD state | `wiki/05_Infraestrutura/CI_CD_Estado_Atual.md` |
-| Go-live plan | `wiki/00_Onboarding_Inicio/Plano_GoLive_v2_5_Abril_2026.md` |
+
+---
+
+## Scattered Config Warning
+
+This repo has accumulated config files from multiple tools (`.kiro/`, `.openclaude/`, `.netlify/`, `.playwright-cli/`). **These are outdated and should not be trusted.** The `.kiro/specs/` directory in particular contains 1296 lines of stale aspirational specs that contradict current priorities. See `.kiro/AGENT_NOTICE.md`.

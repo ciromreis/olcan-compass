@@ -1,20 +1,31 @@
 # .claudeignore — Claude Code Dead Zone
 # Files and directories in this list are excluded from Claude's context scanning.
 # This prevents AI agents from wasting tokens on archives, historical docs, and noise.
-# Last updated: 2026-04-15 (deep reorganization session)
+# Last updated: 2026-04-21 (agent alignment session)
+#
+# SOURCE OF TRUTH: wiki/ and CLAUDE.md — everything else is secondary.
 
 # ─── DEAD ZONES ──────────────────────────────────────────────────────────────
 # External repos, legacy apps, IDE junk, personal files — see _GRAVEYARD/README.md
 _GRAVEYARD/
 
 # Historical session logs and archive — 2275+ files, all outdated
-# Truth lives in 1_Pillars/ and CLAUDE.md, not here
+# Truth lives in wiki/ and CLAUDE.md, not here
 3_Vaults/
 
 # ─── FROZEN CODE ─────────────────────────────────────────────────────────────
 # These apps are live/protected. Read source sparingly, never modify.
 apps/app-compass-v2/
 apps/api-core-v2/
+
+# ─── STALE AGENT CONFIG ──────────────────────────────────────────────────────
+# .kiro/specs/ contains 1296 lines of outdated aspirational specs from a previous
+# session. They propose creating new stores and building P3 features — both violate
+# current rules. See .kiro/AGENT_NOTICE.md for details.
+.kiro/
+.openclaude/
+.netlify/
+.playwright-cli/
 
 # ─── BUILD ARTIFACTS ─────────────────────────────────────────────────────────
 node_modules/
@@ -25,6 +36,7 @@ build/
 __pycache__/
 *.pyc
 .pytest_cache/
+.ruff_cache/
 
 # Python virtual environments (equivalent to node_modules)
 .venv/
@@ -46,9 +58,7 @@ playwright-report/
 # ─── IDE / TOOL CONFIG ───────────────────────────────────────────────────────
 .vscode/
 .obsidian/
-.github/
-.netlify/
-.playwright-cli/
+.github/workflows/
 .mcp.example.json
 
 # ─── SESSION ARCHIVES ────────────────────────────────────────────────────────

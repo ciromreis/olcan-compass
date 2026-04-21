@@ -82,6 +82,45 @@ async def trigger_migrate_render(secret_key: str = ""):
         return {"error": str(exc), "type": type(exc).__name__}
 
 
+@router.get("/db-diagnostic", summary="Remote diagnostic: users table columns + migration head")
+async def db_diagnostic(secret_key: str = "", db: AsyncSession = Depends(get_db)):
+    """Report which columns exist on the users table and current alembic version.
+    Essential for diagnosing auth 500 without Render shell access."""
+    if secret_key != "olcan2026omega":
+        from fastapi import HTTPException
+        raise HTTPException(status_code=403, detail="Invalid secret")
+
+    info: dict = {"users_columns": [], "alembic_version": None, "psych_questions_count": 0}
+
+    try:
+        result = await db.execute(text(
+            "SELECT column_name, data_type, is_nullable "
+            "FROM information_schema.columns "
+            "WHERE table_name = 'users' AND table_schema = 'public' "
+            "ORDER BY ordinal_position"
+        ))
+        info["users_columns"] = [
+            {"name": r[0], "type": r[1], "nullable": r[2]} for r in result.fetchall()
+        ]
+    except Exception as exc:
+        info["users_columns_error"] = str(exc)
+
+    try:
+        result = await db.execute(text("SELECT version_num FROM alembic_version"))
+        rows = result.fetchall()
+        info["alembic_version"] = [r[0] for r in rows]
+    except Exception as exc:
+        info["alembic_version_error"] = str(exc)
+
+    try:
+        result = await db.execute(text("SELECT count(*) FROM psych_questions"))
+        info["psych_questions_count"] = result.scalar()
+    except Exception as exc:
+        info["psych_questions_error"] = str(exc)
+
+    return info
+
+
 @router.get("/seed-db-render", summary="Trigger DB seed from browser (Render hack)")
 async def trigger_seed_render(secret_key: str = ""):
     """Run seed scripts remotely since Render shell is not available."""

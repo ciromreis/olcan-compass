@@ -1,12 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { updateSession } from "@/lib/supabase/middleware";
 
 /**
  * Olcan Compass v2.5 Middleware
  * Handles:
  * 1. Subdomain Multitenancy (admin.*, vendors.*, app.*)
- * 2. Supabase Session Management
- * 3. Security Headers
+ * 2. Security Headers
+ *
+ * Auth is handled by the FastAPI backend via JWT tokens (not Supabase).
  */
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
@@ -47,11 +47,9 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 1. Authentication & Session Update
-  // Note: updateSession handles redirects for protected routes
-  const response = await updateSession(request);
-  
-  // 2. Security Hardening
+  const response = NextResponse.next({ request: { headers: request.headers } });
+
+  // Security Hardening
   addSecurityHeaders(response);
   
   return response;
@@ -83,7 +81,7 @@ function addSecurityHeaders(response: NextResponse) {
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' blob: data: https: https://*.googleusercontent.com",
       "font-src 'self' data: https://fonts.gstatic.com",
-      "connect-src 'self' https://*.supabase.co https://*.sentry.io https://api.olcan.com.br https://olcan-compass-api.onrender.com",
+      "connect-src 'self' https://*.sentry.io https://api.olcan.com.br https://olcan-compass-api.onrender.com",
       "frame-ancestors 'none'",
     ].join("; ")
   );

@@ -3,7 +3,7 @@ title: Backend API Code Audit v2.5
 type: drawer
 layer: 2
 status: active
-last_seen: 2026-04-20
+last_seen: 2026-04-21
 backlinks:
   - Arquitetura_v2_5_Compass
   - SPEC_IO_System_v2_5
@@ -18,7 +18,7 @@ backlinks:
 **Camada (Layer)**: Arquitetura / Backend
 **Tags**: #api #backend #audit #fastapi #endpoints #bugs
 **Criado**: 20/04/2026
-**Atualizado**: 20/04/2026
+**Atualizado**: 21/04/2026
 
 ---
 
@@ -28,8 +28,8 @@ backlinks:
 
 | Domain | Status | Endpoints | Issues |
 |--------|--------|-----------|--------|
-| Authentication | ✅ Working | 12 | 1 bug |
-| Users | ⚠️ Partial | 4 | Missing settings |
+| Authentication | 🔴 500 in prod | 12 | 2 bugs |
+| Users | ⚠️ Partial | 4 | Missing settings, username None |
 | Psychology | ✅ Working | 8 | Celery tasks missing |
 | Documents/Forge | ✅ Working | 18 | Polish not wired |
 | Routes | ✅ Working | 7 | 1 potential bug |
@@ -48,8 +48,8 @@ backlinks:
 
 | Method | Endpoint | File:Line | Status |
 |--------|----------|-----------|--------|
-| POST | `/auth/register` | `auth.py:125` | ✅ Working |
-| POST | `/auth/login` | `auth.py:200` | ✅ Working |
+| POST | `/auth/register` | `auth.py:125` | 🔴 500 in prod |
+| POST | `/auth/login` | `auth.py:228` | 🔴 500 in prod |
 | POST | `/auth/refresh` | `auth.py:253` | ✅ Working |
 | POST | `/auth/logout` | `auth.py:319` | ✅ Working |
 | GET | `/auth/me` | `auth.py:325` | ✅ Working |
@@ -66,6 +66,7 @@ backlinks:
 |------|-------|----------|
 | 84 | `profile.momentum` returns hardcoded `"last_activity_days": 0` | 🐛 BUG |
 | — | OAuth endpoints (Google, Apple) not connected | ⚠️ MISSING |
+| — | **Register/Login return 500 in production** (migration 0026 may not have run) | 🔴 BLOCKER |
 
 ---
 
@@ -86,7 +87,7 @@ backlinks:
 |-------|--------|
 | User settings endpoints | 🔴 MISSING |
 | User deletion/account closure | 🔴 MISSING |
-| Returns `user.username` but may be None | 🐛 BUG |
+| Returns `user.username` but may be None (fixed to nullable in 0026 migration) | 🐛 BUG |
 
 ---
 

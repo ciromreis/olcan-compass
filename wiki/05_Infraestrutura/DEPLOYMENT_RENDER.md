@@ -1,6 +1,6 @@
 # Deployment Runbook — Render API Service
 
-**Last updated:** 2026-04-19  
+**Last updated:** 2026-04-21  
 **Service:** `olcan-compass-api` (Render Docker Web Service)  
 **Status:** ✅ Live em produção
 
@@ -45,7 +45,7 @@ GitHub (monorepo)
 |-------|-------|
 | DB Instance ID | `dpg-d7i2qnkvikkc73aj0gm0-a` |
 | Internal hostname | `dpg-d7i2qnkvikkc73aj0gm0-a` |
-| Alembic status | `head` — migration `0025_enhanced_forge` |
+| Alembic status | `head` — migration `0026_add_users_username` |
 
 ---
 
@@ -170,12 +170,34 @@ render logs -r srv-d6jjhuea2pns73f73e5g --limit 100 --output text
 
 ---
 
+## Stealth Endpoints (Render Free-Tier Hack)
+
+O Render free-tier não oferece acesso ao shell do container. Estes endpoints permitem rodar operações administrativas remotamente:
+
+```bash
+# Forçar migrations (sem redeploy)
+curl "https://olcan-compass-api.onrender.com/api/migrate-db-render?secret_key=olcan2026omega"
+
+# Rodar seed scripts
+curl "https://olcan-compass-api.onrender.com/api/seed-db-render?secret_key=olcan2026omega"
+```
+
+> **Implementação**: `app/api/routes/health.py:48-116`
+> **Segurança**: Protegido por secret key hardcoded. Em produção final, mover para env var.
+
+---
+
 ## Checklist de Deploy Saudável
 
 1. `GET /api/health` retorna `{"status": "ok"}`
-2. Alembic em `head` — verificar via logs de startup (`Applied 0 migrations`)
-3. SMTP configurado — testar via fluxo de registro com email real
-4. `DATABASE_URL` tem `+asyncpg` — checar env vars no Render dashboard
+2. Alembic em `head` — verificar via logs de startup (`Applied 0 migrations`) ou via `/api/migrate-db-render`
+3. Auth funcional — testar `POST /api/auth/register` com email de teste
+4. SMTP configurado — testar via fluxo de registro com email real
+5. `DATABASE_URL` tem `+asyncpg` — checar env vars no Render dashboard
+
+### ⚠️ BLOCKER CONHECIDO (2026-04-21)
+
+`POST /api/auth/register` retorna 500. A migration `0026_add_users_username` foi deployada mas pode não ter executado. Ver [[../../00_SOVEREIGN/Agent_Knowledge_Handbook.md]] para passos de debug.
 
 ---
 

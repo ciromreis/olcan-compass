@@ -10,10 +10,28 @@ This repo follows hybrid **MemPalace + Karpathy** methodology:
 - **Session archives excluded** - See `.claudeignore` for what to skip
 - **Frozen apps protected** - v2 apps are read-only, focus on v2.5
 
+### Hub-and-Spoke Agent Alignment (2026-04-21)
+
+Multiple IDEs/agents read different config files. To keep them aligned, we use a
+**hub-and-spoke** model: every tool-specific file redirects to this file, which routes to `wiki/`.
+
+| File | Audience | Content |
+|------|----------|---------|
+| `CLAUDE.md` (this file) | Hub — all agents | Navigation, state, gotchas |
+| `.windsurfrules` | Windsurf/Cascade | Thin redirect → here + rules |
+| `.cursorrules` | Cursor | Thin redirect → here + rules |
+| `README.md` | GitHub / humans | Current stats, pointer to here |
+| `.github/README.md` | GitHub UI | CI status, pointer to here |
+| `.kiro/AGENT_NOTICE.md` | Kiro | Warning: specs are outdated |
+| `.claudeignore` | Claude Code | Excludes stale configs |
+
+**When updating project state**, update this file FIRST, then propagate to spokes if needed.
+Do NOT trust `.kiro/specs/` — those are outdated aspirational specs that contradict current rules.
+
 ## Navigation Protocol (MemPalace Style)
 
 ### For any new session/agent:
-1. **Always start here**: `wiki/00_SOVEREIGN/Olcan_Master_PRD_v2_5.md`
+1. **Always start here**: `wiki/00_SOVEREIGN/Agent_Knowledge_Handbook.md` ← **most comprehensive**
 2. **Check reality**: `wiki/00_SOVEREIGN/Verdade_do_Produto.md`
 3. **See knowledge map**: `wiki/00_SOVEREIGN/Grafo_de_Conhecimento_Olcan.md`
 4. **If technical**: `wiki/02_Arquitetura_Compass/Arquitetura_v2_5_Compass.md`
@@ -86,12 +104,12 @@ This file provides quick reference for development commands and project structur
 - Standards: [[wiki/00_Onboarding_Inicio/Padroes_de_Codigo.md]]
 - Roadmap: [[wiki/01_Visao_Estrategica/Roadmap_Implementacao_v2_5.md]]
 
-## Deployment State (atualizado 2026-04-19)
+## Deployment State (atualizado 2026-04-21)
 
 > **API em produção no Render.** Leia [[wiki/05_Infraestrutura/INFRAESTRUTURA_OVERVIEW.md]] para o mapa completo.
 
 | Componente | Plataforma | URL / ID |
-|------------|-----------|---------|
+|------------|-----------|--------|
 | API Core v2.5 | Render (Docker, Free) | `https://olcan-compass-api.onrender.com` |
 | Render Service ID | — | `srv-d6jjhuea2pns73f73e5g` |
 | PostgreSQL | Render | `dpg-d7i2qnkvikkc73aj0gm0-a` |
@@ -99,13 +117,31 @@ This file provides quick reference for development commands and project structur
 | DNS | Cloudflare | Zone `aa51bdbdc0a503f3121f810e46c16c0e` |
 | Email | Resend | `smtp.resend.com:465` |
 | Domínio | GoDaddy | `olcan.com.br` |
-| DB migration | Alembic | head = `0025_enhanced_forge` |
+| DB migration | Alembic | head = `0028_seed_psychology_questions` |
 
-**Gotchas críticos:**
+### ⚠️ AUTH FIX (2026-04-21): Root cause found and fixed
+
+**Root cause**: The `User` ORM model declared `bio` and `preferences` columns that were
+**never created by any Alembic migration**. After migration 0026 fixed the `username`
+column, `db.refresh(new_user)` still crashed because PostgreSQL couldn't find `bio` and
+`preferences` in the `users` table.
+
+**Fix**: Migration `0027_ensure_all_user_columns` defensively adds ALL missing User columns
+(with `IF NOT EXISTS` guards). Migration `0028` seeds 12 OIOS quiz questions.
+
+**After deploy**, trigger migration:
+1. `GET /api/migrate-db-render?secret_key=olcan2026omega`
+2. Verify with `GET /api/db-diagnostic?secret_key=olcan2026omega`
+3. Test `POST /api/auth/register` with a test account
+
+### Gotchas críticos:
 - `DATABASE_URL` deve ter `postgresql+asyncpg://` (não `postgresql://`)
 - `ENV PYTHONPATH=/app` é obrigatório no Dockerfile (alembic exige)
 - Render API PUT `/envVars` substitui TODAS as vars — sempre fetch antes de update
 - Cloudflare não importa todos os subdomínios automaticamente na migração — verificar manualmente
+- `GET /api/migrate-db-render?secret_key=olcan2026omega` — roda migrations remotamente sem redeploy
+- `GET /api/seed-db-render?secret_key=olcan2026omega` — roda seed scripts remotamente
+- `GET /api/db-diagnostic?secret_key=olcan2026omega` — inspects users table columns + alembic version + quiz count
 
 **Infra runbooks:** `wiki/05_Infraestrutura/`
 
@@ -141,6 +177,17 @@ This file provides quick reference for development commands and project structur
 - Format: Conventional Commits (`feat:`, `fix:`, `chore:`)
 - Branching: `feature/`, `fix/`, `refactor/`
 - Policy: No TODOs in production. All code must pass linting.
+
+## Current Code Stats (2026-04-21)
+
+| Metric | Value |
+|--------|-------|
+| Frontend stores | 26 (Zustand) |
+| Frontend pages | 169 (Next.js) |
+| Backend API routes (files) | 47 Python files in `app/api/routes/` + `app/api/v1/` |
+| Alembic migrations | 33 files (head: `0028_seed_psychology_questions`) |
+| Build status | ✅ Passes (zero errors, ~49 unused-import warnings) |
+| Auth status | � Fix deployed (0027+0028) — awaiting migration trigger |
 
 ## 🚫 What NOT to Read (Token Optimization)
 

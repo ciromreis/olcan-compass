@@ -3,10 +3,11 @@ title: Grafo de Conhecimento Olcan
 type: drawer
 layer: 0
 status: active
-last_seen: 2026-04-18
+last_seen: 2026-04-21
 backlinks:
   - Olcan_Master_PRD_v2_5
   - Verdade_do_Produto
+  - Radiografia_do_Produto
   - Spec_Dossier_System_v2_5
   - MemPalace_Migration_Spec
 ---
@@ -30,71 +31,88 @@ Este grafo representa o estado final da consolidação "Ground Truth" (Karpathy 
 
 ```mermaid
 graph TD
-    %% Centro Gravitacional
-    User((Usuário Final)):::user_node
-    
-    %% Camada 1: Experiência Aura & Narrativa
-    subgraph View_User [Vista do Usuário: Jornada & Forge]
-        User --> Diagnostic[Diagnóstico Mirror]
-        Diagnostic --> Archetypes[Arquétipos & Recombinação]
-        User --> Forge[Narrative Forge]
-        Forge --> Dossier[Dossier System]
-        Dossier --> Hub[DossierHub]
-        Dossier --> Export[Export Control]
-        Dossier --> Timeline[Timeline View]
-        Forge --> Guidance[Document Guidance]
-        Forge --> Profile[Profile Integrator]
-        Forge --> AIScoring[IA: Pillar 06]
-        User --> TaskEngine[Motor de Tarefas / XP]
+    %% === THE AUTH GATE (everything depends on this) ===
+    AUTH[🔴 Auth Gate — 500 in prod]:::blocker
+
+    %% === STAKEHOLDER ENTRY POINTS ===
+    User((End User)):::user_node
+    Vendor((Provider)):::vendor_node
+    OrgAdmin((Org Admin)):::org_node
+    CEO((CEO)):::ceo_node
+    Admin((Platform Admin)):::admin_node
+
+    User --> AUTH
+    Vendor --> AUTH
+    OrgAdmin --> AUTH
+
+    %% === USER CRITICAL PATH (code exists, blocked by auth) ===
+    subgraph View_User ["End User Journey (Tier 1 — needs auth fix only)"]
+        AUTH --> Quiz[OIOS Quiz ⚠️ needs seed]
+        Quiz --> Archetype[Archetype Result]
+        AUTH --> Forge[Narrative Forge ✅]
+        Forge --> Docs[Documents CRUD ✅]
+        Forge --> Polish[AI Polish ⚠️ needs keys]
+        Forge --> Dossier[Dossier System ✅]
+        Dossier --> Export[DOCX Export ✅]
+        AUTH --> Routes[Route Planning ✅]
+        AUTH --> Interviews[Interview Sim ✅]
+        AUTH --> Apps[Application Tracker ✅]
+        AUTH --> Readiness[Readiness Score ✅]
     end
 
-    %% Camada 2: Operação Nexus & Dados
-    subgraph View_Employee [Vista da Operação: Nexus]
-        Nexus[Nexus Orchestrator] --> Agents[Agentes Especialistas]
-        Agents --> Pipeline[Pipeline Automático]
-        Pipeline --> DB_Ops[Operações / Pillar 02]
-        Pipeline --> Runbook[Runbook / Pillar 00]
+    %% === REVENUE PATH ===
+    subgraph View_CEO ["CEO: Revenue & Metrics (Tier 3 — needs Stripe)"]
+        AUTH --> Billing[Billing API ⚠️ needs Stripe]
+        Billing --> Credits[Credit Packs]
+        Billing --> Subs[Subscriptions]
+        Credits --> Revenue[💰 First Revenue]
+        Subs --> Revenue
+        CEO --> AdminPanel[Admin Dashboard 🟡 reads stores]
+        CEO --> Analytics[Analytics API ✅]
+        CEO --> CRM[CRM Bridge ⚠️ needs Twenty]
     end
 
-    %% Camada 3: Inteligência Econômica & Marketplace
-    subgraph View_Vendor [Vista Econômica: Marketplace]
-        Vendor[Vendedor / Partner] --> Portal[Seller Portal]
-        Portal --> Escrow[Escrow: Pillar 05]
-        Portal --> CRM[Integração CRM]
-        User --> Pareto[Simulador de Pareto]
-        User --> OppCost[Custo de Oportunidade]
+    %% === VENDOR PATH ===
+    subgraph View_Vendor ["Provider: Marketplace (Tier 4 — after revenue)"]
+        AUTH --> ProviderOnboard[Provider Onboarding]
+        ProviderOnboard --> Services[Service Listings ✅ backend]
+        Services --> Bookings[Bookings ✅ backend]
+        Bookings --> Payouts[Payouts 🔴 no Stripe Connect]
+        Vendor --> ProviderOnboard
     end
 
-    %% Camada 4: Gestão Mestra (O Cérebro)
-    subgraph View_CEO [Vista do CEO: Master View]
-        CEO[Olcan CEO] --> Matrix[Matriz de Comando]
-        Matrix --> SuccessKPIs[Os 5 KPIs de Sucesso]
-        Matrix --> Security[Segurança & Entitlements]
-        Matrix --> Vision[PRD Master / Pillar 03]
+    %% === ADMIN PATH ===
+    subgraph View_Admin ["Admin: Operations"]
+        Admin --> UserMgmt[User Management ✅]
+        Admin --> ProviderVerify[Provider Verification ✅]
+        Admin --> Moderation[Content Moderation 🟡]
+        Admin --> EconIntel[Economics Intelligence ✅]
     end
 
-    %% Camada 5: Memória Permanente (O Arquivo)
-    subgraph View_Archive [Pilar 10: Memória do Sistema]
-        Archive[Arquivo Permanente] --> Skills[AGENT_SKILLS]
-        Archive --> Reports[PHASE_REPORTS]
-        Archive --> Legacy[LEGACY_PRDS]
-        Archive --> Technical[LINT_AND_CONVENTIONS]
+    %% === ORG PATH ===
+    subgraph View_Org ["Org Admin: B2B (future)"]
+        OrgAdmin --> Members[Member Management ✅]
+        OrgAdmin --> Cohorts[Cohort Tracking 🟡]
     end
 
-    %% Conexões de Ground Truth
-    AIScoring -.-> Vision
-    OppCost --> Matrix
-    Escrow --> SuccessKPIs
-    DB_Ops -.-> Security
-    Archive -.-> Nexus
+    %% === DEPENDENCIES ===
+    Revenue -.->|enables| View_Vendor
+    Export -->|core value proof| Revenue
+    Archetype -->|personalizes| Routes
+    Archetype -->|personalizes| Readiness
 
-    %% Estilização
-    classDef user_node fill:#8B5CF6,stroke:#fff,stroke-width:4px,color:#fff,font-weight:bold
+    %% === STYLING ===
+    classDef blocker fill:#ef4444,stroke:#fff,stroke-width:3px,color:#fff,font-weight:bold
+    classDef user_node fill:#8B5CF6,stroke:#fff,stroke-width:3px,color:#fff,font-weight:bold
+    classDef vendor_node fill:#F59E0B,stroke:#fff,stroke-width:3px,color:#fff,font-weight:bold
+    classDef org_node fill:#10B981,stroke:#fff,stroke-width:3px,color:#fff,font-weight:bold
+    classDef ceo_node fill:#EF4444,stroke:#fff,stroke-width:3px,color:#fff,font-weight:bold
+    classDef admin_node fill:#6366F1,stroke:#fff,stroke-width:3px,color:#fff,font-weight:bold
     style View_User fill:#f5f3ff,stroke:#8B5CF6
-    style View_Employee fill:#ecfdf5,stroke:#10B981
-    style View_Vendor fill:#fff7ed,stroke:#F59E0B
     style View_CEO fill:#fdf2f2,stroke:#EF4444
-    style View_Archive fill:#f3f4f6,stroke:#374151
+    style View_Vendor fill:#fff7ed,stroke:#F59E0B
+    style View_Admin fill:#eef2ff,stroke:#6366F1
+    style View_Org fill:#ecfdf5,stroke:#10B981
 ```
 
 ---
@@ -113,6 +131,7 @@ Este ecossistema de Wiki agora cobre:
 ### 🏛️ 00_SOVEREIGN — Fonte da Verdade
 - [[00_SOVEREIGN/Olcan_Master_PRD_v2_5]] — visão completa do produto
 - [[00_SOVEREIGN/Verdade_do_Produto]] — estado real do produto (sem inflação)
+- [[00_SOVEREIGN/Radiografia_do_Produto]] — **multi-stakeholder x-ray** (2026-04-21)
 - [[00_SOVEREIGN/Agent_Knowledge_Handbook]] — manual para agentes IA
 - [[00_SOVEREIGN/Analise_Historiador_Nexus]] — contexto histórico e decisões
 - [[00_SOVEREIGN/MemPalace_Migration_Spec]] — metodologia do wiki

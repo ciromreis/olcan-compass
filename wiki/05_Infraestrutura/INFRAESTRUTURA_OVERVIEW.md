@@ -1,6 +1,6 @@
 # Infraestrutura Olcan — Mapa Geral
 
-**Last updated:** 2026-04-19  
+**Last updated:** 2026-04-21  
 **Versão:** v2.5 (produção ativa)
 
 ---
@@ -44,10 +44,16 @@
 |-------|-------|
 | Plataforma | Render PostgreSQL |
 | Instance ID | `dpg-d7i2qnkvikkc73aj0gm0-a` |
-| Migrations | Alembic — `0025_enhanced_forge` (head) |
+| Migrations | Alembic — `0026_add_users_username` (head) |
 | Driver | `asyncpg` (conexão async) |
 
 > **Gotcha:** A DATABASE_URL deve ter o prefixo `postgresql+asyncpg://` — não o padrão `postgresql://` que o Render fornece.
+
+> **Stealth endpoints** (Render free-tier não tem shell):
+> - `GET /api/migrate-db-render?secret_key=olcan2026omega` — força `alembic upgrade head`
+> - `GET /api/seed-db-render?secret_key=olcan2026omega` — roda seed scripts
+
+> **⚠️ BLOCKER (2026-04-21):** Auth register/login retorna 500. Migration `0026` pode não ter executado. Ver [[../../00_SOVEREIGN/Agent_Knowledge_Handbook.md]] para debug steps.
 
 ### 3. Frontend — App Compass
 
