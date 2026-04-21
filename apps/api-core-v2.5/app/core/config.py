@@ -119,7 +119,7 @@ class Settings(BaseSettings):
     feature_opportunity_cost_enabled: bool = True
     feature_escrow_enabled: bool = True
     feature_scenario_optimization_enabled: bool = True
-    
+
     # CRM Sync Feature Flags (control automatic sync behavior)
     feature_crm_sync_registration_enabled: bool = False  # Auto-sync on registration
     feature_crm_sync_email_verification_enabled: bool = False  # Auto-sync on email verify
@@ -136,12 +136,15 @@ class Settings(BaseSettings):
         return self.env.lower() == "production"
 
     def validate_runtime_configuration(self) -> None:
-        insecure_defaults = {
+        core_insecure_defaults = {
             "jwt_secret_key": "change-this-to-a-secure-random-string-in-production",
+            "encryption_key": "your-32-byte-encryption-key-change-in-production",
+        }
+
+        optional_insecure_defaults = {
             "stripe_secret_key": "sk_test_your_stripe_secret_key",
             "stripe_publishable_key": "pk_test_your_stripe_publishable_key",
             "stripe_webhook_secret": "whsec_your_webhook_secret",
-            "encryption_key": "your-32-byte-encryption-key-change-in-production",
         }
 
         if not self.is_production:
@@ -149,13 +152,18 @@ class Settings(BaseSettings):
 
         invalid_fields = [
             field_name
-            for field_name, insecure_value in insecure_defaults.items()
+            for field_name, insecure_value in core_insecure_defaults.items()
             if getattr(self, field_name) == insecure_value
         ]
 
+        for field_name, insecure_value in optional_insecure_defaults.items():
+            current_value = getattr(self, field_name)
+            if current_value and current_value != insecure_value:
+                continue
+
         if invalid_fields:
             raise ValueError(
-                "Production configuration contains insecure defaults for: "
+                "Production configuration contains insecure defaults for core secrets: "
                 + ", ".join(invalid_fields)
             )
 
