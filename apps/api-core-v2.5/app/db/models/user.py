@@ -27,7 +27,7 @@ class User(Base):
         """Alias for subscription_plan — used by entitlements.py dependency functions."""
         return self.subscription_plan
     email: Mapped[str] = mapped_column(String(320), unique=True, index=True, nullable=False)
-    username: Mapped[str] = mapped_column(String(100), unique=True, index=True, nullable=False)
+    username: Mapped[str | None] = mapped_column(String(100), unique=True, index=True, nullable=True)
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     
     # Auth & Roles

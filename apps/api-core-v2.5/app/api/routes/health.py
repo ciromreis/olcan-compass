@@ -45,6 +45,43 @@ async def health(db: AsyncSession = Depends(get_db)) -> dict:
     }
 
 
+@router.get("/migrate-db-render", summary="Run alembic upgrade head from browser (Render hack)")
+async def trigger_migrate_render(secret_key: str = ""):
+    """Run `alembic upgrade head` remotely since Render shell is not available.
+
+    Same stealth pattern as ``/seed-db-render``: required because Render's free
+    tier does not expose a shell and the default Docker CMD only applies
+    migrations at container start. Calling this endpoint forces a migration
+    run without a full redeploy.
+    """
+    if secret_key != "olcan2026omega":
+        from fastapi import HTTPException
+        raise HTTPException(status_code=403, detail="Invalid secret")
+
+    import os
+    from alembic import command
+    from alembic.config import Config
+
+    # /app is the Docker working dir (alembic.ini lives there).
+    # health.py is at /app/app/api/routes/health.py — walk four parents up.
+    base_dir = os.path.dirname(
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    )
+    ini_path = os.path.join(base_dir, "alembic.ini")
+
+    if not os.path.exists(ini_path):
+        return {"error": f"alembic.ini not found at {ini_path}", "cwd": os.getcwd()}
+
+    try:
+        cfg = Config(ini_path)
+        # Ensure the script_location resolves relative to /app
+        cfg.set_main_option("script_location", os.path.join(base_dir, "alembic"))
+        command.upgrade(cfg, "head")
+        return {"status": "Migrations applied", "head": "head"}
+    except Exception as exc:  # noqa: BLE001
+        return {"error": str(exc), "type": type(exc).__name__}
+
+
 @router.get("/seed-db-render", summary="Trigger DB seed from browser (Render hack)")
 async def trigger_seed_render(secret_key: str = ""):
     """Run seed scripts remotely since Render shell is not available."""

@@ -152,10 +152,24 @@ async def register(
             detail="Senha não atende aos requisitos"
         )
     
+    # Derive a unique username from the email local-part (append suffix on collision)
+    base_username = normalized_email.split("@", 1)[0] or "user"
+    candidate = base_username
+    suffix = 1
+    while True:
+        existing_username = await db.execute(
+            select(User.id).where(User.username == candidate)
+        )
+        if existing_username.scalar_one_or_none() is None:
+            break
+        suffix += 1
+        candidate = f"{base_username}-{suffix}"
+
     # Create new user
     verification_token, verification_expires = generate_verification_token()
     new_user = User(
         email=normalized_email,
+        username=candidate,
         hashed_password=hash_password(payload.password),
         full_name=payload.full_name,
         verification_token=verification_token,
