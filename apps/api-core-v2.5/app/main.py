@@ -7,6 +7,7 @@ from app.api.router import api_router
 from app.core.config import get_settings
 from app.core.database import init_db, test_db_connection
 from app.core.rate_limit import limiter
+from app.core.startup import validate_environment
 from contextlib import asynccontextmanager
 import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
@@ -19,7 +20,13 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     # Initialize database
     logger.info("🚀 Starting Olcan Compass API v2.5...")
-    
+
+    # Validate environment/runtime safety before serving traffic
+    await validate_environment()
+    settings = get_settings()
+    settings.validate_runtime_configuration()
+    logger.info("✅ Environment/runtime validation passed")
+
     # Test database connection (non-blocking)
     try:
         if await test_db_connection():
@@ -31,9 +38,9 @@ async def lifespan(app: FastAPI):
             logger.warning("⚠️  Database connection failed - API will start but database features unavailable")
     except Exception as e:
         logger.warning(f"⚠️  Database initialization error: {e} - API will start in limited mode")
-    
+
     yield
-    
+
     logger.info("🛑 Shutting down Olcan Compass API...")
 
 
@@ -77,12 +84,12 @@ def create_app() -> FastAPI:
         return response
 
     app.include_router(api_router, prefix="/api")
-    
+
     @app.get("/health")
     async def health_check():
         """Health check endpoint"""
         return {"status": "healthy", "version": "2.5.0"}
-    
+
     return app
 
 

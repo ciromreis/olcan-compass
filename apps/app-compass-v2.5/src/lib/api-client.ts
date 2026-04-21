@@ -13,31 +13,32 @@ import {
 } from "@/lib/api";
 
 const API_BASE_URL = resolveApiBaseUrl();
-const AUTH_STATE_COOKIE = 'olcan_session_state';
-const AUTH_HINT_COOKIE = 'olcan_known_user';
+const AUTH_STATE_COOKIE = "olcan_session_state";
+const AUTH_HINT_COOKIE = "olcan_known_user";
 
-const AUTH_TOKEN_COOKIE = 'olcan_token';
+const AUTH_TOKEN_COOKIE = "olcan_token";
 
 function writeAuthCookies(isAuthenticated: boolean, token?: string) {
-  if (typeof document === 'undefined') {
+  if (typeof document === "undefined") {
     return;
   }
 
-  const maxAge = isAuthenticated ? '2592000' : '0';
-  const sameSite = 'SameSite=Lax';
-  const path = 'Path=/';
-  
+  const maxAge = isAuthenticated ? "2592000" : "0";
+  const sameSite = "SameSite=Lax";
+  const path = "Path=/";
+
   // Determine domain for SSO (e.g., .olcan.com.br)
   const hostname = window.location.hostname;
-  const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
-  const domainParts = hostname.split('.');
-  const rootDomain = isLocalhost || domainParts.length < 2 
-    ? '' 
-    : `; Domain=.${domainParts.slice(-2).join('.')}`;
+  const isLocalhost = hostname === "localhost" || hostname === "127.0.0.1";
+  const domainParts = hostname.split(".");
+  const rootDomain =
+    isLocalhost || domainParts.length < 2
+      ? ""
+      : `; Domain=.${domainParts.slice(-2).join(".")}`;
 
-  document.cookie = `${AUTH_STATE_COOKIE}=${isAuthenticated ? 'authenticated' : 'guest'}; Max-Age=${maxAge}; ${path}; ${sameSite}${rootDomain}`;
-  document.cookie = `${AUTH_HINT_COOKIE}=${isAuthenticated ? '1' : '0'}; Max-Age=${maxAge}; ${path}; ${sameSite}${rootDomain}`;
-  
+  document.cookie = `${AUTH_STATE_COOKIE}=${isAuthenticated ? "authenticated" : "guest"}; Max-Age=${maxAge}; ${path}; ${sameSite}${rootDomain}`;
+  document.cookie = `${AUTH_HINT_COOKIE}=${isAuthenticated ? "1" : "0"}; Max-Age=${maxAge}; ${path}; ${sameSite}${rootDomain}`;
+
   if (isAuthenticated && token) {
     // Store token in cookie for cross-subdomain API access / SSR
     document.cookie = `${AUTH_TOKEN_COOKIE}=${token}; Max-Age=${maxAge}; ${path}; ${sameSite}${rootDomain}`;
@@ -185,17 +186,21 @@ function normalizeCommerceProduct(product: unknown): Record<string, unknown> {
 
   return {
     id: p.id,
-    seller_id: p.seller_id || 'vendor_olcan_official',
+    seller_id: p.seller_id || "vendor_olcan_official",
     name: p.name || p.title,
     title: p.title || p.name,
-    description: p.description || p.short_description || '',
-    short_description: p.short_description || p.description || '',
-    product_type: p.product_type || 'digital',
-    category: p.category || 'Marketplace',
-    status: p.status || 'active',
+    description: p.description || p.short_description || "",
+    short_description: p.short_description || p.description || "",
+    product_type: p.product_type || "digital",
+    category: p.category || "Marketplace",
+    status: p.status || "active",
     price: p.price ?? (p as Record<string, unknown>).price_amount ?? 0,
-    compare_at_price: p.compare_at_price ?? (p as Record<string, unknown>).compare_at_price_amount ?? undefined,
-    currency: p.currency || (p as Record<string, unknown>).price_currency || 'BRL',
+    compare_at_price:
+      p.compare_at_price ??
+      (p as Record<string, unknown>).compare_at_price_amount ??
+      undefined,
+    currency:
+      p.currency || (p as Record<string, unknown>).price_currency || "BRL",
     slug: p.slug || p.handle,
     handle: p.handle || p.slug,
     images: p.images || (p.thumbnail ? [p.thumbnail] : []),
@@ -227,14 +232,14 @@ export class ApiClient {
 
   constructor(baseUrl?: string) {
     this.baseUrl = baseUrl || resolveApiBaseUrl();
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       this.token = readAccessToken();
       const tokenCookie = document.cookie
-        .split('; ')
+        .split("; ")
         .find((item) => item.startsWith(`${AUTH_TOKEN_COOKIE}=`));
 
       if (!this.token && tokenCookie) {
-        this.token = tokenCookie.split('=')[1]?.trim() || null;
+        this.token = tokenCookie.split("=")[1]?.trim() || null;
       }
 
       if (this.token) {
@@ -246,11 +251,11 @@ export class ApiClient {
 
   private getHeaders(includeAuth: boolean = false): HeadersInit {
     const headers: HeadersInit = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     };
 
     if (includeAuth && this.token) {
-      headers['Authorization'] = `Bearer ${this.token}`;
+      headers["Authorization"] = `Bearer ${this.token}`;
     }
 
     return headers;
@@ -267,7 +272,9 @@ export class ApiClient {
           detail = parsed.detail;
         } else if (Array.isArray(parsed?.detail)) {
           detail = parsed.detail
-            .map((item: Record<string, unknown>) => String(item?.msg || item?.type || "Erro de validação"))
+            .map((item: Record<string, unknown>) =>
+              String(item?.msg || item?.type || "Erro de validação"),
+            )
             .join("; ");
         }
       } catch {
@@ -275,7 +282,9 @@ export class ApiClient {
       }
 
       if (!detail) {
-        detail = bodyText?.trim().slice(0, 240) || `HTTP ${response.status}: ${response.statusText}`;
+        detail =
+          bodyText?.trim().slice(0, 240) ||
+          `HTTP ${response.status}: ${response.statusText}`;
       }
 
       throw new Error(detail);
@@ -285,7 +294,7 @@ export class ApiClient {
 
   setToken(token: string) {
     this.token = token;
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       persistAuthTokens(token);
       writeAuthCookies(true, token);
     }
@@ -297,7 +306,7 @@ export class ApiClient {
 
   clearToken() {
     this.token = null;
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       clearPersistedAuthTokens();
       writeAuthCookies(false);
     }
@@ -306,7 +315,7 @@ export class ApiClient {
   // Authentication endpoints
   async register(data: RegisterData): Promise<AuthRegisterApiResponse> {
     const response = await fetch(`${this.baseUrl}/auth/register`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(),
       body: JSON.stringify(data),
     });
@@ -316,31 +325,38 @@ export class ApiClient {
   async login(data: LoginData): Promise<TokenResponse> {
     // OAuth2 password flow requires form data
     const formData = new URLSearchParams();
-    formData.append('username', data.username);
-    formData.append('password', data.password);
+    formData.append("username", data.username);
+    formData.append("password", data.password);
 
     const response = await fetch(`${this.baseUrl}/auth/login`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        "Content-Type": "application/x-www-form-urlencoded",
       },
       body: formData,
     });
 
     const tokenData = await this.handleResponse<TokenResponse>(response);
-    
+
     // Store tokens
     this.setToken(tokenData.access_token);
-    if (tokenData.refresh_token && typeof window !== 'undefined') {
+    if (tokenData.refresh_token && typeof window !== "undefined") {
       localStorage.setItem(AUTH_REFRESH_TOKEN_KEY, tokenData.refresh_token);
-      localStorage.setItem('refresh_token', tokenData.refresh_token);
+      localStorage.setItem("refresh_token", tokenData.refresh_token);
     }
 
     return tokenData;
   }
 
-  async getCurrentUser(): Promise<AuthMeResponse> {
-    const response = await fetch(`${this.baseUrl}/auth/me`, {
+  async getCurrentUser(
+    includeTelemetry: boolean = false,
+  ): Promise<AuthMeResponse> {
+    const url = new URL(`${this.baseUrl}/auth/me`);
+    if (includeTelemetry) {
+      url.searchParams.set("include_telemetry", "true");
+    }
+
+    const response = await fetch(url.toString(), {
       headers: this.getHeaders(true),
     });
     return this.handleResponse<AuthMeResponse>(response);
@@ -358,7 +374,7 @@ export class ApiClient {
   async logout(): Promise<void> {
     try {
       await fetch(`${this.baseUrl}/auth/logout`, {
-        method: 'POST',
+        method: "POST",
         headers: this.getHeaders(true),
       });
     } finally {
@@ -376,7 +392,7 @@ export class ApiClient {
 
   async updateUserProfile(data: Partial<User>): Promise<User> {
     const response = await fetch(`${this.baseUrl}/users/profile`, {
-      method: 'PUT',
+      method: "PUT",
       headers: this.getHeaders(true),
       body: JSON.stringify(data),
     });
@@ -398,68 +414,77 @@ export class ApiClient {
     return this.handleResponse<unknown>(response);
   }
 
-  async createAura(data: { name: string; aura_type: string }): Promise<unknown> {
+  async createAura(data: {
+    name: string;
+    aura_type: string;
+  }): Promise<unknown> {
     const response = await fetch(`${this.baseUrl}/companions/`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
       body: JSON.stringify({
         name: data.name,
         archetype: data.aura_type,
-      })
+      }),
     });
     return this.handleResponse<unknown>(response);
   }
 
   async feedAura(id: number): Promise<unknown> {
     const response = await fetch(`${this.baseUrl}/companions/${id}/care`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
-      body: JSON.stringify({ activity_type: 'feed' }),
+      body: JSON.stringify({ activity_type: "feed" }),
     });
     return this.handleResponse<unknown>(response);
   }
 
   async trainAura(id: number): Promise<unknown> {
     const response = await fetch(`${this.baseUrl}/companions/${id}/care`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
-      body: JSON.stringify({ activity_type: 'train' }),
+      body: JSON.stringify({ activity_type: "train" }),
     });
     return this.handleResponse<unknown>(response);
   }
 
   async playWithAura(id: number): Promise<unknown> {
     const response = await fetch(`${this.baseUrl}/companions/${id}/care`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
-      body: JSON.stringify({ activity_type: 'play' }),
+      body: JSON.stringify({ activity_type: "play" }),
     });
     return this.handleResponse<unknown>(response);
   }
 
   async restAura(id: number): Promise<unknown> {
     const response = await fetch(`${this.baseUrl}/companions/${id}/care`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
-      body: JSON.stringify({ activity_type: 'rest' }),
+      body: JSON.stringify({ activity_type: "rest" }),
     });
     return this.handleResponse<unknown>(response);
   }
 
   async getAuraActivities(id: number, limit: number = 10): Promise<unknown[]> {
-    const response = await fetch(`${this.baseUrl}/companions/${id}/activities?limit=${limit}`, {
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/companions/${id}/activities?limit=${limit}`,
+      {
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown[]>(response);
   }
 
   // Marketplace endpoints
-  async getProviders(params?: { category?: string; search?: string }): Promise<unknown[]> {
+  async getProviders(params?: {
+    category?: string;
+    search?: string;
+  }): Promise<unknown[]> {
     const queryParams = new URLSearchParams();
-    if (params?.category) queryParams.append('category', params.category);
-    if (params?.search) queryParams.append('search', params.search);
+    if (params?.category) queryParams.append("category", params.category);
+    if (params?.search) queryParams.append("search", params.search);
 
-    const url = `${this.baseUrl}/marketplace/providers${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+    const url = `${this.baseUrl}/marketplace/providers${queryParams.toString() ? "?" + queryParams.toString() : ""}`;
     const response = await fetch(url, {
       headers: this.getHeaders(true),
     });
@@ -467,17 +492,23 @@ export class ApiClient {
   }
 
   async getProvider(id: number): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/marketplace/providers/${id}`, {
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/marketplace/providers/${id}`,
+      {
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
   async contactProvider(id: number, message: string): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/marketplace/providers/${id}/contact?message=${encodeURIComponent(message)}`, {
-      method: 'POST',
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/marketplace/providers/${id}/contact?message=${encodeURIComponent(message)}`,
+      {
+        method: "POST",
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
@@ -490,17 +521,20 @@ export class ApiClient {
     timezone: string;
   }): Promise<unknown> {
     const queryParams = new URLSearchParams();
-    queryParams.append('name', data.name);
-    queryParams.append('bio', data.bio);
-    queryParams.append('country', data.country);
-    queryParams.append('timezone', data.timezone);
-    data.specialties.forEach(s => queryParams.append('specialties', s));
-    data.languages.forEach(l => queryParams.append('languages', l));
+    queryParams.append("name", data.name);
+    queryParams.append("bio", data.bio);
+    queryParams.append("country", data.country);
+    queryParams.append("timezone", data.timezone);
+    data.specialties.forEach((s) => queryParams.append("specialties", s));
+    data.languages.forEach((l) => queryParams.append("languages", l));
 
-    const response = await fetch(`${this.baseUrl}/marketplace/providers?${queryParams.toString()}`, {
-      method: 'POST',
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/marketplace/providers?${queryParams.toString()}`,
+      {
+        method: "POST",
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
@@ -512,31 +546,43 @@ export class ApiClient {
   }
 
   async getMessages(conversationId: number): Promise<unknown[]> {
-    const response = await fetch(`${this.baseUrl}/marketplace/conversations/${conversationId}/messages`, {
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/marketplace/conversations/${conversationId}/messages`,
+      {
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown[]>(response);
   }
 
   // Leaderboard endpoints
   async getTopAuras(limit: number = 10): Promise<unknown[]> {
-    const response = await fetch(`${this.baseUrl}/leaderboard/companions/top?limit=${limit}`, {
-      headers: this.getHeaders(false),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/leaderboard/companions/top?limit=${limit}`,
+      {
+        headers: this.getHeaders(false),
+      },
+    );
     return this.handleResponse<unknown[]>(response);
   }
 
   async getTopUsers(limit: number = 10): Promise<unknown[]> {
-    const response = await fetch(`${this.baseUrl}/leaderboard/users/top?limit=${limit}`, {
-      headers: this.getHeaders(false),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/leaderboard/users/top?limit=${limit}`,
+      {
+        headers: this.getHeaders(false),
+      },
+    );
     return this.handleResponse<unknown[]>(response);
   }
 
   async getRecentActivities(limit: number = 20): Promise<unknown[]> {
-    const response = await fetch(`${this.baseUrl}/leaderboard/activities/recent?limit=${limit}`, {
-      headers: this.getHeaders(false),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/leaderboard/activities/recent?limit=${limit}`,
+      {
+        headers: this.getHeaders(false),
+      },
+    );
     return this.handleResponse<unknown[]>(response);
   }
 
@@ -548,9 +594,12 @@ export class ApiClient {
   }
 
   async getUserStats(userId: number): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/leaderboard/stats/user/${userId}`, {
-      headers: this.getHeaders(false),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/leaderboard/stats/user/${userId}`,
+      {
+        headers: this.getHeaders(false),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
@@ -564,20 +613,27 @@ export class ApiClient {
   // Document endpoints (Narrative Forge)
   async createDocument(data: Record<string, unknown>): Promise<unknown> {
     const response = await fetch(`${this.baseUrl}/documents`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
       body: JSON.stringify(data),
     });
     return this.handleResponse<unknown>(response);
   }
 
-  async listDocuments(params?: { skip?: number; limit?: number; document_type?: string; status?: string; search?: string }): Promise<unknown> {
+  async listDocuments(params?: {
+    skip?: number;
+    limit?: number;
+    document_type?: string;
+    status?: string;
+    search?: string;
+  }): Promise<unknown> {
     const queryParams = new URLSearchParams();
-    if (params?.skip) queryParams.append('skip', params.skip.toString());
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.document_type) queryParams.append('document_type', params.document_type);
-    if (params?.status) queryParams.append('status', params.status);
-    if (params?.search) queryParams.append('search', params.search);
+    if (params?.skip) queryParams.append("skip", params.skip.toString());
+    if (params?.limit) queryParams.append("limit", params.limit.toString());
+    if (params?.document_type)
+      queryParams.append("document_type", params.document_type);
+    if (params?.status) queryParams.append("status", params.status);
+    if (params?.search) queryParams.append("search", params.search);
 
     const response = await fetch(`${this.baseUrl}/documents?${queryParams}`, {
       headers: this.getHeaders(true),
@@ -592,9 +648,12 @@ export class ApiClient {
     return this.handleResponse<unknown>(response);
   }
 
-  async updateDocument(documentId: string, data: Record<string, unknown>): Promise<unknown> {
+  async updateDocument(
+    documentId: string,
+    data: Record<string, unknown>,
+  ): Promise<unknown> {
     const response = await fetch(`${this.baseUrl}/documents/${documentId}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: this.getHeaders(true),
       body: JSON.stringify(data),
     });
@@ -603,7 +662,7 @@ export class ApiClient {
 
   async deleteDocument(documentId: string): Promise<void> {
     const response = await fetch(`${this.baseUrl}/documents/${documentId}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: this.getHeaders(true),
     });
     if (!response.ok) {
@@ -611,53 +670,87 @@ export class ApiClient {
     }
   }
 
-  async polishDocument(documentId: string, data: Record<string, unknown>): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/documents/${documentId}/polish`, {
-      method: 'POST',
-      headers: this.getHeaders(true),
-      body: JSON.stringify(data),
-    });
+  async polishDocument(
+    documentId: string,
+    data: Record<string, unknown>,
+  ): Promise<unknown> {
+    const response = await fetch(
+      `${this.baseUrl}/documents/${documentId}/polish`,
+      {
+        method: "POST",
+        headers: this.getHeaders(true),
+        body: JSON.stringify(data),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
   async getPolishHistory(documentId: string): Promise<unknown[]> {
-    const response = await fetch(`${this.baseUrl}/documents/${documentId}/polish`, {
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/documents/${documentId}/polish`,
+      {
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown[]>(response);
   }
 
-  async submitPolishFeedback(documentId: string, polishId: string, feedback: Record<string, unknown>): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/documents/${documentId}/polish/${polishId}/feedback`, {
-      method: 'PUT',
-      headers: this.getHeaders(true),
-      body: JSON.stringify(feedback),
-    });
+  async submitPolishFeedback(
+    documentId: string,
+    polishId: string,
+    feedback: Record<string, unknown>,
+  ): Promise<unknown> {
+    const response = await fetch(
+      `${this.baseUrl}/documents/${documentId}/polish/${polishId}/feedback`,
+      {
+        method: "PUT",
+        headers: this.getHeaders(true),
+        body: JSON.stringify(feedback),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
-  async updateCharacterCount(documentId: string, content: string): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/documents/${documentId}/count`, {
-      method: 'POST',
-      headers: this.getHeaders(true),
-      body: JSON.stringify({ content }),
-    });
+  async updateCharacterCount(
+    documentId: string,
+    content: string,
+  ): Promise<unknown> {
+    const response = await fetch(
+      `${this.baseUrl}/documents/${documentId}/count`,
+      {
+        method: "POST",
+        headers: this.getHeaders(true),
+        body: JSON.stringify({ content }),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
   async getVersionHistory(documentId: string): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/documents/${documentId}/versions`, {
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/documents/${documentId}/versions`,
+      {
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
-  async trackFocusSession(documentId: string, durationSeconds: number): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/documents/${documentId}/focus`, {
-      method: 'POST',
-      headers: this.getHeaders(true),
-      body: JSON.stringify({ document_id: documentId, duration_seconds: durationSeconds }),
-    });
+  async trackFocusSession(
+    documentId: string,
+    durationSeconds: number,
+  ): Promise<unknown> {
+    const response = await fetch(
+      `${this.baseUrl}/documents/${documentId}/focus`,
+      {
+        method: "POST",
+        headers: this.getHeaders(true),
+        body: JSON.stringify({
+          document_id: documentId,
+          duration_seconds: durationSeconds,
+        }),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
@@ -676,16 +769,19 @@ export class ApiClient {
   }
 
   async listDocumentTemplates(category?: string): Promise<unknown> {
-    const queryParams = category ? `?category=${category}` : '';
-    const response = await fetch(`${this.baseUrl}/documents/templates${queryParams}`, {
-      headers: this.getHeaders(false),
-    });
+    const queryParams = category ? `?category=${category}` : "";
+    const response = await fetch(
+      `${this.baseUrl}/documents/templates${queryParams}`,
+      {
+        headers: this.getHeaders(false),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
   async createFromTemplate(data: Record<string, unknown>): Promise<unknown> {
     const response = await fetch(`${this.baseUrl}/documents/from-template`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
       body: JSON.stringify(data),
     });
@@ -709,19 +805,26 @@ export class ApiClient {
     offset?: number;
   }): Promise<unknown[]> {
     const queryParams = new URLSearchParams();
-    if (params?.product_type) queryParams.append('product_type', params.product_type);
-    if (params?.category) queryParams.append('category', params.category);
-    if (params?.search) queryParams.append('search', params.search);
-    if (params?.min_price !== undefined) queryParams.append('min_price', params.min_price.toString());
-    if (params?.max_price !== undefined) queryParams.append('max_price', params.max_price.toString());
-    if (params?.tags) params.tags.forEach(tag => queryParams.append('tags', tag));
-    if (params?.sort_by) queryParams.append('sort_by', params.sort_by);
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.offset) queryParams.append('offset', params.offset.toString());
+    if (params?.product_type)
+      queryParams.append("product_type", params.product_type);
+    if (params?.category) queryParams.append("category", params.category);
+    if (params?.search) queryParams.append("search", params.search);
+    if (params?.min_price !== undefined)
+      queryParams.append("min_price", params.min_price.toString());
+    if (params?.max_price !== undefined)
+      queryParams.append("max_price", params.max_price.toString());
+    if (params?.tags)
+      params.tags.forEach((tag) => queryParams.append("tags", tag));
+    if (params?.sort_by) queryParams.append("sort_by", params.sort_by);
+    if (params?.limit) queryParams.append("limit", params.limit.toString());
+    if (params?.offset) queryParams.append("offset", params.offset.toString());
 
-    const response = await fetch(`${this.baseUrl}/marketplace/products?${queryParams}`, {
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/marketplace/products?${queryParams}`,
+      {
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown[]>(response);
   }
 
@@ -739,26 +842,41 @@ export class ApiClient {
     offset?: number;
   }): Promise<unknown[]> {
     const queryParams = new URLSearchParams();
-    if (params?.product_type) queryParams.append('product_type', params.product_type);
-    if (params?.category) queryParams.append('category', params.category);
-    if (params?.is_olcan_official !== undefined) queryParams.append('is_olcan_official', params.is_olcan_official.toString());
-    if (params?.is_featured !== undefined) queryParams.append('is_featured', params.is_featured.toString());
-    if (params?.search) queryParams.append('search', params.search);
-    if (params?.min_price !== undefined) queryParams.append('min_price', params.min_price.toString());
-    if (params?.max_price !== undefined) queryParams.append('max_price', params.max_price.toString());
-    if (params?.tags) params.tags.forEach(tag => queryParams.append('tags', tag));
-    if (params?.sort_by) queryParams.append('sort_by', params.sort_by);
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.offset) queryParams.append('offset', params.offset.toString());
+    if (params?.product_type)
+      queryParams.append("product_type", params.product_type);
+    if (params?.category) queryParams.append("category", params.category);
+    if (params?.is_olcan_official !== undefined)
+      queryParams.append(
+        "is_olcan_official",
+        params.is_olcan_official.toString(),
+      );
+    if (params?.is_featured !== undefined)
+      queryParams.append("is_featured", params.is_featured.toString());
+    if (params?.search) queryParams.append("search", params.search);
+    if (params?.min_price !== undefined)
+      queryParams.append("min_price", params.min_price.toString());
+    if (params?.max_price !== undefined)
+      queryParams.append("max_price", params.max_price.toString());
+    if (params?.tags)
+      params.tags.forEach((tag) => queryParams.append("tags", tag));
+    if (params?.sort_by) queryParams.append("sort_by", params.sort_by);
+    if (params?.limit) queryParams.append("limit", params.limit.toString());
+    if (params?.offset) queryParams.append("offset", params.offset.toString());
 
-    const response = await fetch(`${this.baseUrl}/commerce/public/products?${queryParams}`, {
-      headers: this.getHeaders(false),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/commerce/public/products?${queryParams}`,
+      {
+        headers: this.getHeaders(false),
+      },
+    );
     const data = await this.handleResponse<{ items: unknown[] }>(response);
     return (data.items || []).map(normalizeCommerceProduct);
   }
 
-  async getOlcanOfficialProducts(category?: string, limit: number = 50): Promise<unknown[]> {
+  async getOlcanOfficialProducts(
+    category?: string,
+    limit: number = 50,
+  ): Promise<unknown[]> {
     const products = await this.getPublicProducts({ limit });
     return products.filter((product) => {
       const p = product as Record<string, unknown>;
@@ -770,20 +888,28 @@ export class ApiClient {
 
   async getFeaturedProducts(limit: number = 10): Promise<unknown[]> {
     const products = await this.getPublicProducts({ limit });
-    return products.filter((product) => (product as Record<string, unknown>).is_featured).slice(0, limit);
+    return products
+      .filter((product) => (product as Record<string, unknown>).is_featured)
+      .slice(0, limit);
   }
 
   async getProduct(productId: string): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/marketplace/products/${productId}`, {
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/marketplace/products/${productId}`,
+      {
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
   async getProductBySlug(slug: string): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/commerce/public/products/${slug}`, {
-      headers: this.getHeaders(false),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/commerce/public/products/${slug}`,
+      {
+        headers: this.getHeaders(false),
+      },
+    );
     const data = await this.handleResponse<{ item: unknown }>(response);
     return normalizeCommerceProduct(data.item);
   }
@@ -797,39 +923,51 @@ export class ApiClient {
 
   async createCheckoutIntent(
     handle: string,
-    origin: string = 'compass-product-page'
+    origin: string = "compass-product-page",
   ): Promise<CheckoutIntentResponse> {
-    const response = await fetch(`${this.baseUrl}/commerce/me/checkout-intents`, {
-      method: 'POST',
-      headers: this.getHeaders(true),
-      body: JSON.stringify({ handle, origin }),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/commerce/me/checkout-intents`,
+      {
+        method: "POST",
+        headers: this.getHeaders(true),
+        body: JSON.stringify({ handle, origin }),
+      },
+    );
     return this.handleResponse<CheckoutIntentResponse>(response);
   }
 
   async createProduct(data: Record<string, unknown>): Promise<unknown> {
     const response = await fetch(`${this.baseUrl}/marketplace/products`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
       body: JSON.stringify(data),
     });
     return this.handleResponse<unknown>(response);
   }
 
-  async updateProduct(productId: string, data: Record<string, unknown>): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/marketplace/products/${productId}`, {
-      method: 'PATCH',
-      headers: this.getHeaders(true),
-      body: JSON.stringify(data),
-    });
+  async updateProduct(
+    productId: string,
+    data: Record<string, unknown>,
+  ): Promise<unknown> {
+    const response = await fetch(
+      `${this.baseUrl}/marketplace/products/${productId}`,
+      {
+        method: "PATCH",
+        headers: this.getHeaders(true),
+        body: JSON.stringify(data),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
   async publishProduct(productId: string): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/marketplace/products/${productId}/publish`, {
-      method: 'POST',
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/marketplace/products/${productId}/publish`,
+      {
+        method: "POST",
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
@@ -848,7 +986,7 @@ export class ApiClient {
     booking_notes?: string;
   }): Promise<unknown> {
     const response = await fetch(`${this.baseUrl}/marketplace/cart/items`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
       body: JSON.stringify(data),
     });
@@ -856,27 +994,35 @@ export class ApiClient {
   }
 
   async updateCartItem(cartItemId: string, quantity: number): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/marketplace/cart/items/${cartItemId}`, {
-      method: 'PATCH',
-      headers: this.getHeaders(true),
-      body: JSON.stringify({ quantity }),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/marketplace/cart/items/${cartItemId}`,
+      {
+        method: "PATCH",
+        headers: this.getHeaders(true),
+        body: JSON.stringify({ quantity }),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
   async removeFromCart(cartItemId: string): Promise<void> {
-    const response = await fetch(`${this.baseUrl}/marketplace/cart/items/${cartItemId}`, {
-      method: 'DELETE',
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/marketplace/cart/items/${cartItemId}`,
+      {
+        method: "DELETE",
+        headers: this.getHeaders(true),
+      },
+    );
     if (!response.ok) {
-      throw new Error(`Failed to remove item from cart: ${response.statusText}`);
+      throw new Error(
+        `Failed to remove item from cart: ${response.statusText}`,
+      );
     }
   }
 
   async clearCart(): Promise<void> {
     const response = await fetch(`${this.baseUrl}/marketplace/cart`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: this.getHeaders(true),
     });
     if (!response.ok) {
@@ -892,7 +1038,7 @@ export class ApiClient {
     customer_notes?: string;
   }): Promise<unknown> {
     const response = await fetch(`${this.baseUrl}/marketplace/orders`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
       body: JSON.stringify(data),
     });
@@ -905,35 +1051,47 @@ export class ApiClient {
     offset?: number;
   }): Promise<unknown[]> {
     const queryParams = new URLSearchParams();
-    if (params?.status) queryParams.append('status', params.status);
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.offset) queryParams.append('offset', params.offset.toString());
+    if (params?.status) queryParams.append("status", params.status);
+    if (params?.limit) queryParams.append("limit", params.limit.toString());
+    if (params?.offset) queryParams.append("offset", params.offset.toString());
 
-    const response = await fetch(`${this.baseUrl}/marketplace/orders?${queryParams}`, {
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/marketplace/orders?${queryParams}`,
+      {
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown[]>(response);
   }
 
   async getOrder(orderId: string): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/marketplace/orders/${orderId}`, {
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/marketplace/orders/${orderId}`,
+      {
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
   // Review endpoints
-  async createReview(productId: string, data: {
-    rating: number;
-    title?: string;
-    comment?: string;
-    order_id?: string;
-  }): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/marketplace/products/${productId}/reviews`, {
-      method: 'POST',
-      headers: this.getHeaders(true),
-      body: JSON.stringify(data),
-    });
+  async createReview(
+    productId: string,
+    data: {
+      rating: number;
+      title?: string;
+      comment?: string;
+      order_id?: string;
+    },
+  ): Promise<unknown> {
+    const response = await fetch(
+      `${this.baseUrl}/marketplace/products/${productId}/reviews`,
+      {
+        method: "POST",
+        headers: this.getHeaders(true),
+        body: JSON.stringify(data),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
@@ -947,11 +1105,14 @@ export class ApiClient {
     years_experience?: number;
     hourly_rate?: number;
   }): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/marketplace/service-providers`, {
-      method: 'POST',
-      headers: this.getHeaders(true),
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/marketplace/service-providers`,
+      {
+        method: "POST",
+        headers: this.getHeaders(true),
+        body: JSON.stringify(data),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
@@ -963,15 +1124,23 @@ export class ApiClient {
     offset?: number;
   }): Promise<unknown[]> {
     const queryParams = new URLSearchParams();
-    if (params?.specializations) params.specializations.forEach(s => queryParams.append('specializations', s));
-    if (params?.is_verified !== undefined) queryParams.append('is_verified', params.is_verified.toString());
-    if (params?.min_rating !== undefined) queryParams.append('min_rating', params.min_rating.toString());
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.offset) queryParams.append('offset', params.offset.toString());
+    if (params?.specializations)
+      params.specializations.forEach((s) =>
+        queryParams.append("specializations", s),
+      );
+    if (params?.is_verified !== undefined)
+      queryParams.append("is_verified", params.is_verified.toString());
+    if (params?.min_rating !== undefined)
+      queryParams.append("min_rating", params.min_rating.toString());
+    if (params?.limit) queryParams.append("limit", params.limit.toString());
+    if (params?.offset) queryParams.append("offset", params.offset.toString());
 
-    const response = await fetch(`${this.baseUrl}/marketplace/service-providers?${queryParams}`, {
-      headers: this.getHeaders(false),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/marketplace/service-providers?${queryParams}`,
+      {
+        headers: this.getHeaders(false),
+      },
+    );
     return this.handleResponse<unknown[]>(response);
   }
 
@@ -983,10 +1152,11 @@ export class ApiClient {
     offset?: number;
   }): Promise<unknown[]> {
     const queryParams = new URLSearchParams();
-    if (params?.interview_type) queryParams.append('interview_type', params.interview_type);
-    if (params?.status) queryParams.append('status', params.status);
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.offset) queryParams.append('offset', params.offset.toString());
+    if (params?.interview_type)
+      queryParams.append("interview_type", params.interview_type);
+    if (params?.status) queryParams.append("status", params.status);
+    if (params?.limit) queryParams.append("limit", params.limit.toString());
+    if (params?.offset) queryParams.append("offset", params.offset.toString());
 
     const response = await fetch(`${this.baseUrl}/interviews?${queryParams}`, {
       headers: this.getHeaders(true),
@@ -996,7 +1166,7 @@ export class ApiClient {
 
   async createInterview(data: Record<string, unknown>): Promise<unknown> {
     const response = await fetch(`${this.baseUrl}/interviews`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
       body: JSON.stringify(data),
     });
@@ -1011,27 +1181,39 @@ export class ApiClient {
   }
 
   async startInterview(interviewId: string): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/interviews/${interviewId}/start`, {
-      method: 'POST',
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/interviews/${interviewId}/start`,
+      {
+        method: "POST",
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
-  async submitInterviewResponse(interviewId: string, data: Record<string, unknown>): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/interviews/${interviewId}/responses`, {
-      method: 'POST',
-      headers: this.getHeaders(true),
-      body: JSON.stringify(data),
-    });
+  async submitInterviewResponse(
+    interviewId: string,
+    data: Record<string, unknown>,
+  ): Promise<unknown> {
+    const response = await fetch(
+      `${this.baseUrl}/interviews/${interviewId}/responses`,
+      {
+        method: "POST",
+        headers: this.getHeaders(true),
+        body: JSON.stringify(data),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
   async completeInterview(interviewId: string): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/interviews/${interviewId}/complete`, {
-      method: 'POST',
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/interviews/${interviewId}/complete`,
+      {
+        method: "POST",
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
@@ -1045,12 +1227,14 @@ export class ApiClient {
     offset?: number;
   }): Promise<unknown[]> {
     const queryParams = new URLSearchParams();
-    if (params?.search) queryParams.append('search', params.search);
-    if (params?.is_public !== undefined) queryParams.append('is_public', params.is_public.toString());
-    if (params?.tags) params.tags.forEach(tag => queryParams.append('tags', tag));
-    if (params?.sort_by) queryParams.append('sort_by', params.sort_by);
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.offset) queryParams.append('offset', params.offset.toString());
+    if (params?.search) queryParams.append("search", params.search);
+    if (params?.is_public !== undefined)
+      queryParams.append("is_public", params.is_public.toString());
+    if (params?.tags)
+      params.tags.forEach((tag) => queryParams.append("tags", tag));
+    if (params?.sort_by) queryParams.append("sort_by", params.sort_by);
+    if (params?.limit) queryParams.append("limit", params.limit.toString());
+    if (params?.offset) queryParams.append("offset", params.offset.toString());
 
     const response = await fetch(`${this.baseUrl}/guilds?${queryParams}`, {
       headers: this.getHeaders(true),
@@ -1060,7 +1244,7 @@ export class ApiClient {
 
   async createGuild(data: Record<string, unknown>): Promise<unknown> {
     const response = await fetch(`${this.baseUrl}/guilds`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
       body: JSON.stringify(data),
     });
@@ -1076,7 +1260,7 @@ export class ApiClient {
 
   async joinGuild(guildId: string): Promise<unknown> {
     const response = await fetch(`${this.baseUrl}/guilds/${guildId}/join`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
     });
     return this.handleResponse<unknown>(response);
@@ -1084,7 +1268,7 @@ export class ApiClient {
 
   async leaveGuild(guildId: string): Promise<unknown> {
     const response = await fetch(`${this.baseUrl}/guilds/${guildId}/leave`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
     });
     return this.handleResponse<unknown>(response);
@@ -1118,36 +1302,49 @@ export class ApiClient {
     offset?: number;
   }): Promise<unknown[]> {
     const queryParams = new URLSearchParams();
-    if (params?.activity_type) queryParams.append('activity_type', params.activity_type);
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.offset) queryParams.append('offset', params.offset.toString());
+    if (params?.activity_type)
+      queryParams.append("activity_type", params.activity_type);
+    if (params?.limit) queryParams.append("limit", params.limit.toString());
+    if (params?.offset) queryParams.append("offset", params.offset.toString());
 
-    const response = await fetch(`${this.baseUrl}/social/activities?${queryParams}`, {
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/social/activities?${queryParams}`,
+      {
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown[]>(response);
   }
 
   async likeActivity(activityId: string): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/social/activities/${activityId}/like`, {
-      method: 'POST',
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/social/activities/${activityId}/like`,
+      {
+        method: "POST",
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
-  async commentOnActivity(activityId: string, comment: string): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/social/activities/${activityId}/comments`, {
-      method: 'POST',
-      headers: this.getHeaders(true),
-      body: JSON.stringify({ comment }),
-    });
+  async commentOnActivity(
+    activityId: string,
+    comment: string,
+  ): Promise<unknown> {
+    const response = await fetch(
+      `${this.baseUrl}/social/activities/${activityId}/comments`,
+      {
+        method: "POST",
+        headers: this.getHeaders(true),
+        body: JSON.stringify({ comment }),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
   async followUser(userId: string): Promise<unknown> {
     const response = await fetch(`${this.baseUrl}/social/follow/${userId}`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
     });
     return this.handleResponse<unknown>(response);
@@ -1155,16 +1352,19 @@ export class ApiClient {
 
   async unfollowUser(userId: string): Promise<unknown> {
     const response = await fetch(`${this.baseUrl}/social/unfollow/${userId}`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
     });
     return this.handleResponse<unknown>(response);
   }
 
   async getUnreadNotificationCount(): Promise<number> {
-    const response = await fetch(`${this.baseUrl}/social/notifications/unread/count`, {
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/social/notifications/unread/count`,
+      {
+        headers: this.getHeaders(true),
+      },
+    );
     const data = await this.handleResponse<{ count?: number }>(response);
     return data.count || 0;
   }
@@ -1173,9 +1373,13 @@ export class ApiClient {
   // Psychology / OIOS Quiz
   // -----------------------------------------------------------------------
 
-  async startPsychAssessment(): Promise<{ session_id: string; total_questions: number; current_question_index: number }> {
+  async startPsychAssessment(): Promise<{
+    session_id: string;
+    total_questions: number;
+    current_question_index: number;
+  }> {
     const response = await fetch(`${this.baseUrl}/psych/assessment/start`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
       body: JSON.stringify({}),
     });
@@ -1183,9 +1387,12 @@ export class ApiClient {
   }
 
   async getPsychQuestion(sessionId: string): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/psych/assessment/${sessionId}/question`, {
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/psych/assessment/${sessionId}/question`,
+      {
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse(response);
   }
 
@@ -1196,7 +1403,7 @@ export class ApiClient {
     answer_text?: string;
   }): Promise<{ next_index: number; is_complete: boolean }> {
     const response = await fetch(`${this.baseUrl}/psych/assessment/answer`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
       body: JSON.stringify(data),
     });
@@ -1210,9 +1417,12 @@ export class ApiClient {
     mobility_state: string | null;
     scores_snapshot: Record<string, number>;
   }> {
-    const response = await fetch(`${this.baseUrl}/psych/assessment/${sessionId}/result`, {
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/psych/assessment/${sessionId}/result`,
+      {
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse(response);
   }
 
@@ -1229,7 +1439,7 @@ export class ApiClient {
 
   async forgePolishDirect(data: {
     content: string;
-    methodology: 'STAR' | 'CAR' | 'free';
+    methodology: "STAR" | "CAR" | "free";
     target_word_count: number;
   }): Promise<{
     polished_content: string;
@@ -1240,7 +1450,7 @@ export class ApiClient {
     credits_remaining: number;
   }> {
     const response = await fetch(`${this.baseUrl}/forge/polish`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
       body: JSON.stringify(data),
     });
@@ -1249,7 +1459,7 @@ export class ApiClient {
 
   async forgePolish(
     narrativeId: string,
-    data: { methodology: 'STAR' | 'CAR' | 'free'; target_word_count: number }
+    data: { methodology: "STAR" | "CAR" | "free"; target_word_count: number },
   ): Promise<{
     narrative_id: string;
     new_version_id: string;
@@ -1260,11 +1470,14 @@ export class ApiClient {
     methodology_applied: string;
     credits_remaining: number;
   }> {
-    const response = await fetch(`${this.baseUrl}/forge/${narrativeId}/polish`, {
-      method: 'POST',
-      headers: this.getHeaders(true),
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/forge/${narrativeId}/polish`,
+      {
+        method: "POST",
+        headers: this.getHeaders(true),
+        body: JSON.stringify(data),
+      },
+    );
     return this.handleResponse(response);
   }
 
@@ -1273,10 +1486,15 @@ export class ApiClient {
   // -----------------------------------------------------------------------
 
   async createBillingCheckout(
-    pack: 'starter' | 'pro'
-  ): Promise<{ checkout_url: string; session_id: string; credits: number; amount_brl: string }> {
+    pack: "starter" | "pro",
+  ): Promise<{
+    checkout_url: string;
+    session_id: string;
+    credits: number;
+    amount_brl: string;
+  }> {
     const response = await fetch(`${this.baseUrl}/billing/checkout`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(true),
       body: JSON.stringify({ pack }),
     });
@@ -1296,19 +1514,32 @@ export class ApiClient {
   }
 
   async createSubscriptionCheckout(
-    plan: 'pro' | 'premium'
-  ): Promise<{ checkout_url: string; session_id: string; plan: string; price_brl: string }> {
-    const response = await fetch(`${this.baseUrl}/billing/subscription-checkout`, {
-      method: 'POST',
-      headers: this.getHeaders(true),
-      body: JSON.stringify({ plan }),
-    });
+    plan: "pro" | "premium",
+  ): Promise<{
+    checkout_url: string;
+    session_id: string;
+    plan: string;
+    price_brl: string;
+  }> {
+    const response = await fetch(
+      `${this.baseUrl}/billing/subscription-checkout`,
+      {
+        method: "POST",
+        headers: this.getHeaders(true),
+        body: JSON.stringify({ plan }),
+      },
+    );
     return this.handleResponse(response);
   }
 
   // ── Task Management ───────────────────────────────────────
 
-  async fetchJson<T>(method: string, path: string, body?: unknown, params?: Record<string, unknown>): Promise<T> {
+  async fetchJson<T>(
+    method: string,
+    path: string,
+    body?: unknown,
+    params?: Record<string, unknown>,
+  ): Promise<T> {
     let url = `${this.baseUrl}${path}`;
     if (params) {
       const qs = new URLSearchParams();
@@ -1328,9 +1559,12 @@ export class ApiClient {
 
   // Admin Economics endpoints
   async getAdminSuccessMetrics(): Promise<AdminSuccessMetricsResponse> {
-    const response = await fetch(`${this.baseUrl}/admin/economics-intelligence/success-metrics`, {
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/admin/economics-intelligence/success-metrics`,
+      {
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<AdminSuccessMetricsResponse>(response);
   }
 
@@ -1341,47 +1575,68 @@ export class ApiClient {
     page_size?: number;
   }): Promise<AdminCredentialsDashboardResponse> {
     const qs = new URLSearchParams();
-    if (params?.start_date) qs.append('start_date', params.start_date);
-    if (params?.end_date) qs.append('end_date', params.end_date);
-    if (params?.page) qs.append('page', params.page.toString());
-    if (params?.page_size) qs.append('page_size', params.page_size.toString());
+    if (params?.start_date) qs.append("start_date", params.start_date);
+    if (params?.end_date) qs.append("end_date", params.end_date);
+    if (params?.page) qs.append("page", params.page.toString());
+    if (params?.page_size) qs.append("page_size", params.page_size.toString());
 
-    const response = await fetch(`${this.baseUrl}/admin/economics-intelligence/credentials${qs.toString() ? '?' + qs.toString() : ''}`, {
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/admin/economics-intelligence/credentials${qs.toString() ? "?" + qs.toString() : ""}`,
+      {
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<AdminCredentialsDashboardResponse>(response);
   }
 
-  async getAdminOpportunityCostStats(params?: { start_date?: string; end_date?: string }): Promise<unknown> {
+  async getAdminOpportunityCostStats(params?: {
+    start_date?: string;
+    end_date?: string;
+  }): Promise<unknown> {
     const qs = new URLSearchParams();
-    if (params?.start_date) qs.append('start_date', params.start_date);
-    if (params?.end_date) qs.append('end_date', params.end_date);
+    if (params?.start_date) qs.append("start_date", params.start_date);
+    if (params?.end_date) qs.append("end_date", params.end_date);
 
-    const response = await fetch(`${this.baseUrl}/admin/economics-intelligence/opportunity-cost${qs.toString() ? '?' + qs.toString() : ''}`, {
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/admin/economics-intelligence/opportunity-cost${qs.toString() ? "?" + qs.toString() : ""}`,
+      {
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
-  async getAdminMarketplaceStats(params?: { start_date?: string; end_date?: string }): Promise<unknown> {
+  async getAdminMarketplaceStats(params?: {
+    start_date?: string;
+    end_date?: string;
+  }): Promise<unknown> {
     const qs = new URLSearchParams();
-    if (params?.start_date) qs.append('start_date', params.start_date);
-    if (params?.end_date) qs.append('end_date', params.end_date);
+    if (params?.start_date) qs.append("start_date", params.start_date);
+    if (params?.end_date) qs.append("end_date", params.end_date);
 
-    const response = await fetch(`${this.baseUrl}/admin/economics-intelligence/marketplace${qs.toString() ? '?' + qs.toString() : ''}`, {
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/admin/economics-intelligence/marketplace${qs.toString() ? "?" + qs.toString() : ""}`,
+      {
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
-  async getAdminScenarioStats(params?: { start_date?: string; end_date?: string }): Promise<unknown> {
+  async getAdminScenarioStats(params?: {
+    start_date?: string;
+    end_date?: string;
+  }): Promise<unknown> {
     const qs = new URLSearchParams();
-    if (params?.start_date) qs.append('start_date', params.start_date);
-    if (params?.end_date) qs.append('end_date', params.end_date);
+    if (params?.start_date) qs.append("start_date", params.start_date);
+    if (params?.end_date) qs.append("end_date", params.end_date);
 
-    const response = await fetch(`${this.baseUrl}/admin/economics-intelligence/scenarios${qs.toString() ? '?' + qs.toString() : ''}`, {
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/admin/economics-intelligence/scenarios${qs.toString() ? "?" + qs.toString() : ""}`,
+      {
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
@@ -1389,7 +1644,7 @@ export class ApiClient {
 
   async getEconomicsCredentials(includeExpired = false): Promise<unknown> {
     const response = await fetch(
-      `${this.baseUrl}/credentials/me${includeExpired ? '?include_expired=true' : ''}`,
+      `${this.baseUrl}/credentials/me${includeExpired ? "?include_expired=true" : ""}`,
       { headers: this.getHeaders(true) },
     );
     return this.handleResponse<unknown>(response);
@@ -1405,16 +1660,19 @@ export class ApiClient {
   }
 
   async markNotificationRead(notificationId: string): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/notifications/${notificationId}/read`, {
-      method: 'PATCH',
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/notifications/${notificationId}/read`,
+      {
+        method: "PATCH",
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
   async markAllNotificationsRead(): Promise<unknown> {
     const response = await fetch(`${this.baseUrl}/notifications/read-all`, {
-      method: 'PATCH',
+      method: "PATCH",
       headers: this.getHeaders(true),
     });
     return this.handleResponse<unknown>(response);
@@ -1423,30 +1681,39 @@ export class ApiClient {
   // === LEADERBOARD ===
 
   async getLeaderboard(limit = 20): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/gamification/leaderboard?limit=${limit}`, {
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/gamification/leaderboard?limit=${limit}`,
+      {
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 
   // === SOCIAL ACTIVITY FEED ===
 
-  async getSocialPosts(params?: { skip?: number; limit?: number }): Promise<unknown> {
+  async getSocialPosts(params?: {
+    skip?: number;
+    limit?: number;
+  }): Promise<unknown> {
     const qs = new URLSearchParams();
-    if (params?.skip !== undefined) qs.append('skip', String(params.skip));
-    if (params?.limit !== undefined) qs.append('limit', String(params.limit));
+    if (params?.skip !== undefined) qs.append("skip", String(params.skip));
+    if (params?.limit !== undefined) qs.append("limit", String(params.limit));
     const response = await fetch(
-      `${this.baseUrl}/social/posts${qs.toString() ? '?' + qs.toString() : ''}`,
+      `${this.baseUrl}/social/posts${qs.toString() ? "?" + qs.toString() : ""}`,
       { headers: this.getHeaders(false) },
     );
     return this.handleResponse<unknown>(response);
   }
 
   async likePost(postId: string): Promise<unknown> {
-    const response = await fetch(`${this.baseUrl}/social/posts/${postId}/like`, {
-      method: 'POST',
-      headers: this.getHeaders(true),
-    });
+    const response = await fetch(
+      `${this.baseUrl}/social/posts/${postId}/like`,
+      {
+        method: "POST",
+        headers: this.getHeaders(true),
+      },
+    );
     return this.handleResponse<unknown>(response);
   }
 }

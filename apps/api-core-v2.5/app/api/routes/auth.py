@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, status, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status, BackgroundTasks
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
@@ -10,8 +10,8 @@ from app.core.config import get_settings
 from app.core.security import hash_password, create_token_pair, verify_password
 from app.core.security.tokens import generate_verification_token, generate_password_reset_token
 from app.core.auth import (
-    get_current_user, 
-    authenticate_user, 
+    get_current_user,
+    authenticate_user,
     validate_password_strength
 )
 from app.core.rate_limit import limiter
@@ -66,9 +66,16 @@ def _user_profile_response(user: User) -> UserProfileResponse:
     )
 
 
-async def _build_user_profile_response(user: User, db: AsyncSession) -> UserProfileResponse:
+async def _build_user_profile_response(
+    user: User,
+    db: AsyncSession,
+    include_telemetry: bool = True,
+) -> UserProfileResponse:
     profile = _user_profile_response(user)
-    
+
+    if not include_telemetry:
+        return profile
+
     # Economics Telemetry
     try:
         # Get active route to find an opportunity for cost calculation
@@ -78,11 +85,11 @@ async def _build_user_profile_response(user: User, db: AsyncSession) -> UserProf
             select(Route).where(Route.user_id == user.id, Route.is_active == True).limit(1)
         )
         active_route = route_result.scalar_one_or_none()
-        
+
         # Calculate Economics
         momentum = await calculate_user_momentum(user.id, db)
         profile.momentum = {"momentum_score": momentum, "last_activity_days": 0} # Simplified for now
-        
+
         if active_route and active_route.opportunity_id:
             econ_data = await calculate_cumulative_opportunity_cost(user.id, active_route.opportunity_id, db)
             profile.economics = econ_data
@@ -138,20 +145,20 @@ async def register(
         select(User).where(func.lower(User.email) == normalized_email)
     )
     existing_user = result.scalar_one_or_none()
-    
+
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email já cadastrado"
         )
-    
+
     # Validate password strength
     if not validate_password_strength(payload.password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Senha não atende aos requisitos"
         )
-    
+
     # Derive a unique username from the email local-part (append suffix on collision)
     base_username = normalized_email.split("@", 1)[0] or "user"
     candidate = base_username
@@ -177,7 +184,7 @@ async def register(
         language=settings.default_user_language,
         timezone=settings.default_user_timezone,
     )
-    
+
     db.add(new_user)
     await db.commit()
     await db.refresh(new_user)
@@ -189,7 +196,7 @@ async def register(
     # Wait, the current implementation is "await on_user_registered(db, new_user)". Let's just create a helper or run it directly if it's not actually blocking, or use a background runner that creates a new session.
     # Actually, sending the email doesn't need DB. Let's defer only the email. CRM sync might need DB, or we can just defer it safely.
     # We will defer email.
-    
+
     async def run_deferred_setup(user_id: str, email: str, full_name: str, token: str):
         import logging
         try:
@@ -204,18 +211,18 @@ async def register(
     background_tasks.add_task(
         run_deferred_setup, str(new_user.id), new_user.email, new_user.full_name, verification_token
     )
-    
+
     # Run CRM sync synchronously for now because it relies on the DB session lifecycle,
     # but we can try to defer it if we instantiate a new session. For now, email is the slowest.
     await on_user_registered(db, new_user, source="web_registration")
-    
+
     # Create tokens
     access_token, refresh_token = create_token_pair(
         str(new_user.id),
         new_user.email,
         new_user.role.value
     )
-    
+
     return AuthResponse(
         user_id=str(new_user.id),
         email=new_user.email,
@@ -285,34 +292,34 @@ async def refresh_token(
 ):
     """Atualizar token de acesso usando token de atualização"""
     token = credentials.credentials
-    
+
     try:
         payload = jwt.decode(
             token,
             settings.jwt_secret_key,
             algorithms=[settings.jwt_algorithm]
         )
-        
+
         if payload.get("type") != "refresh":
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Tipo de token inválido"
             )
-        
+
         user_id = payload.get("sub")
         if user_id is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Token inválido"
             )
-        
+
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Não foi possível validar credenciais",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     # Get user - convert to UUID
     try:
         user_uuid = uuid.UUID(user_id)
@@ -321,23 +328,23 @@ async def refresh_token(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token inválido"
         )
-    
+
     result = await db.execute(select(User).where(User.id == user_uuid))
     user = result.scalar_one_or_none()
-    
+
     if not user or not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Usuário não encontrado ou inativo"
         )
-    
+
     # Create new token pair
     access_token, refresh_token = create_token_pair(
         str(user.id),
         user.email,
         user.role.value
     )
-    
+
     return Token(
         access_token=access_token,
         refresh_token=refresh_token
@@ -352,11 +359,12 @@ async def logout():
 
 @router.get("/me", response_model=UserProfileResponse)
 async def get_me(
+    include_telemetry: bool = Query(False, description="Include heavier telemetry enrichment in the profile response"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    """Obter perfil do usuário atual com telemetria Omega"""
-    return await _build_user_profile_response(current_user, db)
+    """Obter perfil do usuário atual com telemetria Omega opcional"""
+    return await _build_user_profile_response(current_user, db, include_telemetry=include_telemetry)
 
 
 @router.put("/me", response_model=UserProfileResponse)
@@ -398,18 +406,18 @@ async def change_password(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Senha atual incorreta"
         )
-    
+
     # Validate new password
     if not validate_password_strength(request.new_password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Nova senha não atende aos requisitos"
         )
-    
+
     # Update password
     current_user.hashed_password = hash_password(request.new_password)
     await db.commit()
-    
+
     return {"message": "Senha atualizada com sucesso"}
 
 
@@ -425,25 +433,25 @@ async def verify_email(
         select(User).where(User.verification_token == request.token)
     )
     user = result.scalar_one_or_none()
-    
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Token de verificação inválido"
         )
-    
+
     if user.is_verified:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email já verificado"
         )
-    
+
     if user.verification_token_expires and user.verification_token_expires < datetime.now(timezone.utc):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Token de verificação expirado"
         )
-    
+
     user.is_verified = True
     user.verified_at = datetime.now(timezone.utc)
     user.verification_token = None
@@ -472,20 +480,20 @@ async def resend_verification(
         select(User).where(func.lower(User.email) == normalized_email)
     )
     user = result.scalar_one_or_none()
-    
+
     if not user:
         return {"message": "Se o email existir, um novo link de verificação será enviado"}
-    
+
     if user.is_verified:
         return {"message": "Email já verificado"}
-    
+
     # Generate new token
     token, expires = generate_verification_token()
     user.verification_token = token
     user.verification_token_expires = expires
-    
+
     await db.commit()
-    
+
     try:
         await send_verification_email(
             to_email=user.email,
@@ -543,31 +551,31 @@ async def forgot_password(
         select(User).where(func.lower(User.email) == normalized_email)
     )
     user = result.scalar_one_or_none()
-    
+
     if not user:
         return {"message": "Se o email existir, um link de recuperação será enviado"}
-    
+
     if not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Conta desativada"
         )
-    
+
     # Rate limiting: max 3 password resets per day
     if user.password_reset_count >= 3:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="Número máximo de tentativas excedido. Tente novamente amanhã."
         )
-    
+
     # Generate reset token
     token, expires = generate_password_reset_token()
     user.password_reset_token = token
     user.password_reset_token_expires = expires
     user.password_reset_count += 1
-    
+
     await db.commit()
-    
+
     reset_url = build_password_reset_url(token)
     try:
         await send_password_reset_email(
@@ -602,31 +610,31 @@ async def reset_password(
         select(User).where(User.password_reset_token == request.token)
     )
     user = result.scalar_one_or_none()
-    
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Token de redefinição inválido"
         )
-    
+
     if user.password_reset_token_expires and user.password_reset_token_expires < datetime.now(timezone.utc):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Token de redefinição expirado"
         )
-    
+
     if not validate_password_strength(request.new_password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Nova senha não atende aos requisitos"
         )
-    
+
     user.hashed_password = hash_password(request.new_password)
     user.password_reset_token = None
     user.password_reset_token_expires = None
-    
+
     await db.commit()
-    
+
     return PasswordResetResponse(
         message="Senha redefinida com sucesso"
     )

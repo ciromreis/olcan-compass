@@ -28,7 +28,10 @@ function makeDemoProfile(email: string, fullName?: string): UserProfile {
   };
 }
 
-function profileFromAuthMe(data: AuthMeResponse, previous?: UserProfile | null): UserProfile {
+function profileFromAuthMe(
+  data: AuthMeResponse,
+  previous?: UserProfile | null,
+): UserProfile {
   return normalizeProfile({
     id: String(data.id),
     email: data.email,
@@ -69,12 +72,18 @@ interface AuthState {
   error: string | null;
 
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, fullName: string) => Promise<void>;
+  register: (
+    email: string,
+    password: string,
+    fullName: string,
+  ) => Promise<void>;
   logout: () => void;
-  fetchProfile: () => Promise<boolean>;
+  fetchProfile: (includeTelemetry?: boolean) => Promise<boolean>;
   clearError: () => void;
   updateLocalUser: (
-    updates: Partial<Pick<UserProfile, "full_name" | "language" | "timezone" | "avatar_url">>,
+    updates: Partial<
+      Pick<UserProfile, "full_name" | "language" | "timezone" | "avatar_url">
+    >,
   ) => void;
   updateProfile: (updates: UpdateProfilePayload) => Promise<void>;
 }
@@ -92,12 +101,16 @@ export const useAuthStore = create<AuthState>()(
         try {
           if (DEMO_MODE) {
             await new Promise((r) => setTimeout(r, 400));
-            set({ user: normalizeProfile(makeDemoProfile(email)), isAuthenticated: true, isLoading: false });
+            set({
+              user: normalizeProfile(makeDemoProfile(email)),
+              isAuthenticated: true,
+              isLoading: false,
+            });
             return;
           }
 
           await apiClient.login({ username: email, password });
-          const userData = await apiClient.getCurrentUser();
+          const userData = await apiClient.getCurrentUser(false);
           set({
             user: profileFromAuthMe(userData),
             isAuthenticated: true,
@@ -120,18 +133,22 @@ export const useAuthStore = create<AuthState>()(
         try {
           if (DEMO_MODE) {
             await new Promise((r) => setTimeout(r, 500));
-            set({ user: normalizeProfile(makeDemoProfile(email, fullName)), isAuthenticated: true, isLoading: false });
+            set({
+              user: normalizeProfile(makeDemoProfile(email, fullName)),
+              isAuthenticated: true,
+              isLoading: false,
+            });
             return;
           }
 
           await apiClient.register({
             email,
-            username: email.split('@')[0],
+            username: email.split("@")[0],
             password,
             full_name: fullName,
           });
           await apiClient.login({ username: email, password });
-          const userData = await apiClient.getCurrentUser();
+          const userData = await apiClient.getCurrentUser(false);
           set({
             user: profileFromAuthMe(userData),
             isAuthenticated: true,
@@ -152,10 +169,10 @@ export const useAuthStore = create<AuthState>()(
         set({ user: null, isAuthenticated: false, error: null });
       },
 
-      fetchProfile: async () => {
+      fetchProfile: async (includeTelemetry = false) => {
         try {
           if (DEMO_MODE) return true;
-          const userData = await apiClient.getCurrentUser();
+          const userData = await apiClient.getCurrentUser(includeTelemetry);
           set((state) => ({
             user: profileFromAuthMe(userData, state.user),
             isAuthenticated: true,
@@ -181,10 +198,18 @@ export const useAuthStore = create<AuthState>()(
             user: state.user
               ? normalizeProfile({
                   ...state.user,
-                  ...(updates.full_name !== undefined ? { full_name: updates.full_name } : {}),
-                  ...(updates.language !== undefined ? { language: updates.language } : {}),
-                  ...(updates.timezone !== undefined ? { timezone: updates.timezone } : {}),
-                  ...(updates.avatar_url !== undefined ? { avatar_url: updates.avatar_url } : {}),
+                  ...(updates.full_name !== undefined
+                    ? { full_name: updates.full_name }
+                    : {}),
+                  ...(updates.language !== undefined
+                    ? { language: updates.language }
+                    : {}),
+                  ...(updates.timezone !== undefined
+                    ? { timezone: updates.timezone }
+                    : {}),
+                  ...(updates.avatar_url !== undefined
+                    ? { avatar_url: updates.avatar_url }
+                    : {}),
                 })
               : state.user,
           }));
@@ -202,6 +227,6 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
-    }
-  )
+    },
+  ),
 );

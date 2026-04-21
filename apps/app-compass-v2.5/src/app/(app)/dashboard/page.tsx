@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowRight,
@@ -73,11 +73,16 @@ function DashboardWelcomeStrip() {
   return (
     <div className="flex flex-col gap-4 rounded-[1.6rem] border border-slate-200 bg-slate-50/90 p-5 text-slate-900 shadow-sm md:flex-row md:items-center md:justify-between">
       <div className="min-w-0 space-y-2">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Primeiros passos</p>
-        <p className="text-sm font-semibold text-slate-950">Bem-vindo ao Compass — sua base para internacionalização profissional</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+          Primeiros passos
+        </p>
+        <p className="text-sm font-semibold text-slate-950">
+          Bem-vindo ao Compass — sua base para internacionalização profissional
+        </p>
         <p className="text-sm leading-relaxed text-slate-600">
-          Comece pelo diagnóstico de mobilidade. Ele alinha rota, documentos e leituras de prontidão ao seu perfil. Se recebeu e-mail de
-          confirmação, abra o link quando puder — sua conta já está ativa para explorar.
+          Comece pelo diagnóstico de mobilidade. Ele alinha rota, documentos e
+          leituras de prontidão ao seu perfil. Se recebeu e-mail de confirmação,
+          abra o link quando puder — sua conta já está ativa para explorar.
         </p>
       </div>
       <div className="flex shrink-0 flex-wrap items-center gap-2">
@@ -103,9 +108,28 @@ function DashboardWelcomeStrip() {
 
 export default function DashboardPage() {
   const ready = useHydration();
-  const { user } = useAuthStore();
+  const { user, fetchProfile } = useAuthStore();
   const { snapshot, routeSignals } = useJourneySnapshot();
   const firstName = user?.full_name?.split(" ")[0] || "viajante";
+  const telemetryHydratedRef = useRef(false);
+
+  useEffect(() => {
+    if (!ready || !user?.id || telemetryHydratedRef.current) return;
+    if (user.economics && user.momentum && user.psychology) {
+      telemetryHydratedRef.current = true;
+      return;
+    }
+
+    telemetryHydratedRef.current = true;
+    void fetchProfile();
+  }, [
+    ready,
+    user?.id,
+    user?.economics,
+    user?.momentum,
+    user?.psychology,
+    fetchProfile,
+  ]);
 
   if (!ready) {
     return (
@@ -145,8 +169,9 @@ export default function DashboardPage() {
               {getGreeting()}, {firstName}
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/80 lg:text-base">
-              O Compass agora prioriza uma única leitura operacional da sua jornada:
-              rota, execução, contexto editorial e apoio comercial dentro do mesmo fluxo.
+              O Compass agora prioriza uma única leitura operacional da sua
+              jornada: rota, execução, contexto editorial e apoio comercial
+              dentro do mesmo fluxo.
             </p>
           </div>
 
@@ -155,7 +180,9 @@ export default function DashboardPage() {
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/60">
                 Próxima melhor ação
               </p>
-              <p className="mt-3 text-xl font-semibold">{snapshot.nextBestAction.title}</p>
+              <p className="mt-3 text-xl font-semibold">
+                {snapshot.nextBestAction.title}
+              </p>
               <p className="mt-2 text-sm leading-relaxed text-white/70">
                 {snapshot.nextBestAction.description}
               </p>
@@ -197,14 +224,18 @@ export default function DashboardPage() {
       <section className="rounded-[2rem] border border-slate-200 bg-white/82 p-5 shadow-sm">
         <div className="flex items-center gap-2 text-slate-500">
           <Compass className="h-4 w-4" />
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Sistema operacional da oportunidade</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+            Sistema operacional da oportunidade
+          </p>
         </div>
         <div className="mt-3 max-w-3xl">
-          <h2 className="text-xl font-semibold text-slate-950">Da aspiracao ao dossier executavel</h2>
+          <h2 className="text-xl font-semibold text-slate-950">
+            Da aspiracao ao dossier executavel
+          </h2>
           <p className="mt-2 text-sm leading-relaxed text-slate-600">
-            O Compass organiza a mesma oportunidade sob perspectivas diferentes, sem sobreposicao:
-            descoberta e priorizacao, candidatura, dossier e materiais, execucao de tarefas,
-            prontidao e pratica de performance.
+            O Compass organiza a mesma oportunidade sob perspectivas diferentes,
+            sem sobreposicao: descoberta e priorizacao, candidatura, dossier e
+            materiais, execucao de tarefas, prontidao e pratica de performance.
           </p>
         </div>
         <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -248,7 +279,9 @@ export default function DashboardPage() {
           <div className="rounded-[2rem] border border-slate-200 bg-white/82 p-5 shadow-sm">
             <div className="flex items-center gap-2 text-slate-500">
               <Target className="h-4 w-4" />
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em]">Ações Prioritárias</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em]">
+                Ações Prioritárias
+              </p>
             </div>
             <div className="mt-5 space-y-3">
               {snapshot.actionItems.map((item) => (
@@ -258,16 +291,24 @@ export default function DashboardPage() {
                   className="flex flex-col gap-3 rounded-[1.4rem] border border-slate-200 bg-slate-50/70 p-4 transition-all hover:-translate-y-0.5 hover:bg-white hover:shadow-sm"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] ${priorityTone(item.priority)}`}>
+                    <div
+                      className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] ${priorityTone(item.priority)}`}
+                    >
                       {item.priority}
                     </div>
                     {item.meta ? (
-                      <p className="text-xs font-medium text-slate-500">{item.meta}</p>
+                      <p className="text-xs font-medium text-slate-500">
+                        {item.meta}
+                      </p>
                     ) : null}
                   </div>
                   <div>
-                    <h2 className="text-base font-semibold text-slate-950">{item.title}</h2>
-                    <p className="mt-1 text-sm leading-relaxed text-slate-600">{item.description}</p>
+                    <h2 className="text-base font-semibold text-slate-950">
+                      {item.title}
+                    </h2>
+                    <p className="mt-1 text-sm leading-relaxed text-slate-600">
+                      {item.description}
+                    </p>
                   </div>
                   <div className="inline-flex items-center gap-2 text-sm font-semibold text-slate-900">
                     {item.cta}
@@ -293,8 +334,12 @@ export default function DashboardPage() {
                   )}
                   {card.meta}
                 </div>
-                <h3 className="mt-3 text-lg font-semibold text-slate-950">{card.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">{card.description}</p>
+                <h3 className="mt-3 text-lg font-semibold text-slate-950">
+                  {card.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                  {card.description}
+                </p>
                 <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-900">
                   {card.cta}
                   <ArrowRight className="h-4 w-4" />
@@ -320,7 +365,8 @@ export default function DashboardPage() {
                 {snapshot.commerceRecommendation.name}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                {snapshot.commerceRecommendation.short_description || snapshot.commerceRecommendation.description}
+                {snapshot.commerceRecommendation.short_description ||
+                  snapshot.commerceRecommendation.description}
               </p>
               <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-900">
                 Ver oferta
@@ -367,8 +413,12 @@ function MetricCard({
 }) {
   return (
     <div className="rounded-[1.6rem] border border-slate-200 bg-white/82 p-5 shadow-sm">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">{label}</p>
-      <p className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">{value}</p>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">
+        {label}
+      </p>
+      <p className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">
+        {value}
+      </p>
       <p className="mt-2 text-sm text-slate-500">{detail}</p>
     </div>
   );
@@ -399,7 +449,9 @@ function OperatingSystemCard({
         {eyebrow}
       </div>
       <h3 className="mt-3 text-base font-semibold text-slate-950">{title}</h3>
-      <p className="mt-2 text-sm leading-relaxed text-slate-600">{description}</p>
+      <p className="mt-2 text-sm leading-relaxed text-slate-600">
+        {description}
+      </p>
       <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-900">
         {cta}
         <ArrowRight className="h-4 w-4" />
