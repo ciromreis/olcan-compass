@@ -2,8 +2,14 @@ import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 
 export const AUTH_ACCESS_TOKEN_KEY = "olcan_access_token";
 export const AUTH_REFRESH_TOKEN_KEY = "olcan_refresh_token";
-export const LEGACY_ACCESS_TOKEN_KEYS = [AUTH_ACCESS_TOKEN_KEY, "access_token"] as const;
-export const LEGACY_REFRESH_TOKEN_KEYS = [AUTH_REFRESH_TOKEN_KEY, "refresh_token"] as const;
+export const LEGACY_ACCESS_TOKEN_KEYS = [
+  AUTH_ACCESS_TOKEN_KEY,
+  "access_token",
+] as const;
+export const LEGACY_REFRESH_TOKEN_KEYS = [
+  AUTH_REFRESH_TOKEN_KEY,
+  "refresh_token",
+] as const;
 
 function stripTrailingSlash(value: string) {
   return value.endsWith("/") ? value.slice(0, -1) : value;
@@ -18,7 +24,8 @@ function stripVersionedApiSuffix(value: string) {
 }
 
 export function resolveApiOrigin() {
-  const configured = process.env.NEXT_PUBLIC_API_URL || "https://olcan-compass-api.onrender.com";
+  const configured =
+    process.env.NEXT_PUBLIC_API_URL || "https://olcan-compass-api.onrender.com";
   const normalized = stripTrailingSlash(configured);
   return stripApiSuffix(stripVersionedApiSuffix(normalized));
 }
@@ -33,7 +40,7 @@ export function resolveApiBaseUrl() {
  */
 export function resolveApiV1BaseUrl(): string {
   const raw = stripTrailingSlash(
-    process.env.NEXT_PUBLIC_API_URL || "https://olcan-compass-api.onrender.com"
+    process.env.NEXT_PUBLIC_API_URL || "https://olcan-compass-api.onrender.com",
   );
   if (/\/api\/v1(\/|$)/.test(raw)) {
     return raw;
@@ -76,7 +83,10 @@ export function readRefreshToken() {
   return readStoredToken(LEGACY_REFRESH_TOKEN_KEYS);
 }
 
-export function persistAuthTokens(accessToken: string, refreshToken?: string | null) {
+export function persistAuthTokens(
+  accessToken: string,
+  refreshToken?: string | null,
+) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(AUTH_ACCESS_TOKEN_KEY, accessToken);
   window.localStorage.setItem("access_token", accessToken);
@@ -88,7 +98,10 @@ export function persistAuthTokens(accessToken: string, refreshToken?: string | n
 
 export function clearPersistedAuthTokens() {
   if (typeof window === "undefined") return;
-  for (const key of [...LEGACY_ACCESS_TOKEN_KEYS, ...LEGACY_REFRESH_TOKEN_KEYS]) {
+  for (const key of [
+    ...LEGACY_ACCESS_TOKEN_KEYS,
+    ...LEGACY_REFRESH_TOKEN_KEYS,
+  ]) {
     window.localStorage.removeItem(key);
   }
 }
@@ -114,7 +127,9 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -129,11 +144,14 @@ api.interceptors.response.use(
               headers: {
                 Authorization: `Bearer ${refreshToken}`,
               },
-            }
+            },
           );
           const newToken = data.token?.access_token || data.access_token;
           if (newToken) {
-            persistAuthTokens(newToken, data.token?.refresh_token || data.refresh_token);
+            persistAuthTokens(
+              newToken,
+              data.token?.refresh_token || data.refresh_token,
+            );
             originalRequest.headers.Authorization = `Bearer ${newToken}`;
             return api(originalRequest);
           }
@@ -147,7 +165,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 // ── Auth API ───────────────────────────────────────────────
@@ -230,21 +248,26 @@ export const authApi = {
   resetPassword: (token: string, password: string) =>
     api.post("/auth/reset-password", { token, new_password: password }),
 
-  verifyEmail: (token: string) =>
-    api.post("/auth/verify-email", { token }),
+  verifyEmail: (token: string) => api.post("/auth/verify-email", { token }),
 
   resendVerification: (email: string) =>
     api.post("/auth/resend-verification", { email }),
 
-  requestOrganizationAccess: (payload: { organization_name: string; requested_role: string }) =>
-    api.post("/auth/request-organization-access", payload),
+  requestOrganizationAccess: (payload: {
+    organization_name: string;
+    requested_role: string;
+  }) => api.post("/auth/request-organization-access", payload),
 
   refresh: (refreshToken: string) =>
-    api.post<AuthResponse>("/auth/refresh", {}, {
-      headers: {
-        Authorization: `Bearer ${refreshToken}`,
+    api.post<AuthResponse>(
+      "/auth/refresh",
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${refreshToken}`,
+        },
       },
-    }),
+    ),
 };
 
 /** Product analytics events (`POST /analytics/events`). */
@@ -272,23 +295,35 @@ export const analyticsApi = {
     api.post<AnalyticsEventBatchResponse>("/analytics/events", { events }),
 
   listAttributes: (namespace?: string) =>
-    api.get<{ items: { namespace: string; key: string; value: string; updated_at: string }[] }>(
-      "/analytics/me/attributes",
-      { params: namespace ? { namespace } : {} },
-    ),
+    api.get<{
+      items: {
+        namespace: string;
+        key: string;
+        value: string;
+        updated_at: string;
+      }[];
+    }>("/analytics/me/attributes", { params: namespace ? { namespace } : {} }),
 
-  upsertAttribute: (payload: { namespace?: string; key: string; value: string }) =>
-    api.put<{ namespace: string; key: string; value: string; updated_at: string }>(
-      "/analytics/me/attributes",
-      {
-        namespace: payload.namespace ?? "analytics",
-        key: payload.key,
-        value: payload.value,
-      },
-    ),
+  upsertAttribute: (payload: {
+    namespace?: string;
+    key: string;
+    value: string;
+  }) =>
+    api.put<{
+      namespace: string;
+      key: string;
+      value: string;
+      updated_at: string;
+    }>("/analytics/me/attributes", {
+      namespace: payload.namespace ?? "analytics",
+      key: payload.key,
+      value: payload.value,
+    }),
 
   getExperimentVariant: (slug: string) =>
-    api.get<ExperimentVariantApiResponse>(`/analytics/experiments/${encodeURIComponent(slug)}/variant`),
+    api.get<ExperimentVariantApiResponse>(
+      `/analytics/experiments/${encodeURIComponent(slug)}/variant`,
+    ),
 };
 
 // ── Psychology API ─────────────────────────────────────────
@@ -309,8 +344,7 @@ export const routesApi = {
   getTemplates: () => api.get("/routes/templates"),
   getUserRoutes: () => api.get("/routes"),
   getRoute: (id: string) => api.get(`/routes/${id}`),
-  createRoute: (data: Record<string, unknown>) =>
-    api.post("/routes", data),
+  createRoute: (data: Record<string, unknown>) => api.post("/routes", data),
   updateRoute: (id: string, data: Record<string, unknown>) =>
     api.put(`/routes/${id}`, data),
   deleteRoute: (id: string) => api.delete(`/routes/${id}`),
@@ -329,19 +363,17 @@ export const forgeApi = {
     api.put(`/v1/documents/${id}`, data),
   updateContent: (id: string, content: string) =>
     api.put(`/v1/documents/${id}`, { content }),
-  deleteDocument: (id: string) =>
-    api.delete(`/v1/documents/${id}`),
-  analyzeDocument: (id: string) =>
-    api.post(`/v1/documents/${id}/analyze`),
-  polishDocument: (id: string) =>
-    api.post(`/v1/documents/${id}/polish`),
+  deleteDocument: (id: string) => api.delete(`/v1/documents/${id}`),
+  analyzeDocument: (id: string) => api.post(`/v1/documents/${id}/analyze`),
+  polishDocument: (id: string) => api.post(`/v1/documents/${id}/polish`),
   getVersions: (id: string) => api.get(`/v1/documents/${id}/versions`),
   createVersion: (id: string, data: Record<string, unknown>) =>
     api.post(`/v1/documents/${id}/versions`, data),
-  atsAnalyzeDocument: (id: string, data: { job_description?: string; target_keywords?: string[] }) =>
-    api.post(`/v1/documents/${id}/ats-analyze`, data),
-  getDossierData: () =>
-    api.get("/v1/documents/dossier"),
+  atsAnalyzeDocument: (
+    id: string,
+    data: { job_description?: string; target_keywords?: string[] },
+  ) => api.post(`/v1/documents/${id}/ats-analyze`, data),
+  getDossierData: () => api.get("/v1/documents/dossier"),
 };
 
 // ── Interviews API ─────────────────────────────────────────
@@ -402,11 +434,16 @@ export const applicationsApi = {
   getWatchlist: () => api.get("/applications/watchlist"),
   addToWatchlist: (data: Record<string, unknown>) =>
     api.post("/applications/watchlist", data),
-  removeFromWatchlist: (id: string) => api.delete(`/applications/watchlist/${id}`),
+  removeFromWatchlist: (id: string) =>
+    api.delete(`/applications/watchlist/${id}`),
   getStats: () => api.get("/applications/stats/dashboard"),
   getDocuments: (applicationId: string) =>
     api.get(`/applications/${applicationId}/documents`),
-  updateDocument: (applicationId: string, documentId: string, data: Record<string, unknown>) =>
+  updateDocument: (
+    applicationId: string,
+    documentId: string,
+    data: Record<string, unknown>,
+  ) =>
     api.patch(`/applications/${applicationId}/documents/${documentId}`, data),
 };
 
@@ -425,10 +462,16 @@ export const sprintsApi = {
   /** Bulk-create tasks in a single request — avoids Neon connection exhaustion */
   createTasksBulk: (sprintId: string, tasks: Record<string, unknown>[]) =>
     api.post(`/sprints/${sprintId}/tasks/bulk`, { tasks }),
-  updateTask: (sprintId: string, taskId: string, data: Record<string, unknown>) =>
-    api.patch(`/sprints/${sprintId}/tasks/${taskId}`, data),
-  completeTask: (sprintId: string, taskId: string, data: Record<string, unknown> = {}) =>
-    api.post(`/sprints/${sprintId}/tasks/${taskId}/complete`, data),
+  updateTask: (
+    sprintId: string,
+    taskId: string,
+    data: Record<string, unknown>,
+  ) => api.patch(`/sprints/${sprintId}/tasks/${taskId}`, data),
+  completeTask: (
+    sprintId: string,
+    taskId: string,
+    data: Record<string, unknown> = {},
+  ) => api.post(`/sprints/${sprintId}/tasks/${taskId}/complete`, data),
   getTemplates: () => api.get("/sprints/templates"),
 };
 
@@ -439,8 +482,7 @@ export const orgApi = {
   getMembers: () => api.get("/org/members"),
   inviteMember: (data: { email: string; role: string }) =>
     api.post("/org/invite", data),
-  removeMember: (memberId: string) =>
-    api.delete(`/org/members/${memberId}`),
+  removeMember: (memberId: string) => api.delete(`/org/members/${memberId}`),
   updateMember: (memberId: string, data: { role?: string; status?: string }) =>
     api.patch(`/org/members/${memberId}`, data),
   getStats: () => api.get("/org/stats"),
@@ -465,9 +507,33 @@ export const marketplaceApi = {
   getMessages: (conversationId: string) =>
     api.get(`/marketplace/conversations/${conversationId}/messages`),
   sendMessage: (conversationId: string, content: string) =>
-    api.post(`/marketplace/conversations/${conversationId}/messages`, { content }),
-  createReview: (bookingId: string, data: { rating: number; comment: string }) =>
-    api.post(`/marketplace/bookings/${bookingId}/review`, data),
+    api.post(`/marketplace/conversations/${conversationId}/messages`, {
+      content,
+    }),
+  createReview: (
+    bookingId: string,
+    data: {
+      rating: number;
+      comment: string;
+      title?: string;
+      communicationRating?: number;
+      expertiseRating?: number;
+      valueRating?: number;
+      wouldRecommend?: boolean;
+      isPublic?: boolean;
+    },
+  ) =>
+    api.post("/marketplace/reviews", {
+      booking_id: bookingId,
+      overall_rating: data.rating,
+      content: data.comment,
+      title: data.title,
+      communication_rating: data.communicationRating,
+      expertise_rating: data.expertiseRating,
+      value_rating: data.valueRating,
+      would_recommend: data.wouldRecommend,
+      is_public: data.isPublic ?? true,
+    }),
 
   // Provider Management
   getProfileMe: () => api.get("/marketplace/providers/me"),
@@ -478,14 +544,14 @@ export const marketplaceApi = {
     api.post("/marketplace/services", data),
   updateService: (id: string, data: Record<string, unknown>) =>
     api.patch(`/marketplace/services/${id}`, data),
-  deleteService: (id: string) =>
-    api.delete(`/marketplace/services/${id}`),
-  updateBooking: (id: string, data: { status: string; reason?: string; summary?: string }) =>
-    api.patch(`/marketplace/bookings/${id}`, data),
+  deleteService: (id: string) => api.delete(`/marketplace/services/${id}`),
+  updateBooking: (
+    id: string,
+    data: { status: string; reason?: string; summary?: string },
+  ) => api.patch(`/marketplace/bookings/${id}`, data),
 
   // Stripe Connect Onboarding
-  startConnectOnboarding: () =>
-    api.post("/marketplace/providers/onboard"),
+  startConnectOnboarding: () => api.post("/marketplace/providers/onboard"),
   getConnectOnboardingStatus: () =>
     api.get("/marketplace/providers/onboard/status"),
 };
@@ -508,7 +574,7 @@ export const dossiersApi = {
   updateDocument: (
     dossierId: string,
     documentId: string,
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
   ) => api.put(`/v1/dossiers/${dossierId}/documents/${documentId}`, data),
 
   // Tasks within a dossier
@@ -517,7 +583,7 @@ export const dossiersApi = {
   updateTask: (
     dossierId: string,
     taskId: string,
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
   ) => api.put(`/v1/dossiers/${dossierId}/tasks/${taskId}`, data),
 };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -20,7 +20,14 @@ import {
 } from "lucide-react";
 import { useDossierStore } from "@/stores/dossier";
 import { useHydration } from "@/hooks";
-import { Button, Skeleton, Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
+import {
+  Button,
+  Skeleton,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui";
 import { DocumentTypeSelector } from "@/components/dossier/DocumentTypeSelector";
 import { DocumentWizard } from "@/components/dossier/DocumentWizard";
 import { cn } from "@/lib/utils";
@@ -37,6 +44,7 @@ export default function DossierDetailPage() {
     getDocumentsByStatus,
     getTasksByStatus,
     getOverdueTasks,
+    syncDossier,
     updateDossierStatus,
     deleteDossier,
   } = useDossierStore();
@@ -45,17 +53,69 @@ export default function DossierDetailPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showTypeSelector, setShowTypeSelector] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
-  const [selectedDocType, setSelectedDocType] = useState<DocumentType | null>(null);
+  const [selectedDocType, setSelectedDocType] = useState<DocumentType | null>(
+    null,
+  );
 
   const dossier = getDossierById(dossierId);
+  const [isResolvingDossier, setIsResolvingDossier] = useState(false);
+  const [resolutionAttempted, setResolutionAttempted] = useState(false);
 
   useEffect(() => {
-    if (!dossier && hydrated) {
+    if (
+      !hydrated ||
+      !dossierId ||
+      dossier ||
+      resolutionAttempted ||
+      isResolvingDossier
+    ) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const resolveDossier = async () => {
+      setIsResolvingDossier(true);
+      try {
+        await syncDossier(dossierId);
+      } finally {
+        if (!cancelled) {
+          setResolutionAttempted(true);
+          setIsResolvingDossier(false);
+        }
+      }
+    };
+
+    void resolveDossier();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    hydrated,
+    dossierId,
+    dossier,
+    resolutionAttempted,
+    isResolvingDossier,
+    syncDossier,
+  ]);
+
+  useEffect(() => {
+    if (!hydrated || isResolvingDossier) {
+      return;
+    }
+
+    if (!dossier && resolutionAttempted) {
       router.push("/dossiers");
     }
-  }, [dossier, hydrated, router]);
+  }, [dossier, hydrated, isResolvingDossier, resolutionAttempted, router]);
 
-  if (!hydrated || !dossier) {
+  const shouldShowLoading = useMemo(
+    () => !hydrated || !dossier || isResolvingDossier,
+    [hydrated, dossier, isResolvingDossier],
+  );
+
+  if (shouldShowLoading || !dossier) {
     return (
       <div className="mx-auto max-w-7xl space-y-6 p-4 sm:p-6">
         <Skeleton className="h-12 w-64" />
@@ -82,10 +142,12 @@ export default function DossierDetailPage() {
 
   const totalDocs = dossier.documents.length;
   const completedDocs = finalDocs.length;
-  const completionPercentage = totalDocs > 0 ? Math.round((completedDocs / totalDocs) * 100) : 0;
+  const completionPercentage =
+    totalDocs > 0 ? Math.round((completedDocs / totalDocs) * 100) : 0;
 
   const daysUntilDeadline = Math.ceil(
-    (new Date(dossier.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+    (new Date(dossier.deadline).getTime() - new Date().getTime()) /
+      (1000 * 60 * 60 * 24),
   );
 
   const handleDelete = async () => {
@@ -106,7 +168,7 @@ export default function DossierDetailPage() {
   const handleWizardComplete = async (documentData: any) => {
     // Create document in store
     const { addDocument } = useDossierStore.getState();
-    
+
     await addDocument(dossierId, {
       type: selectedDocType!,
       title: documentData.title || `New ${selectedDocType}`,
@@ -172,11 +234,14 @@ export default function DossierDetailPage() {
             <ArrowLeft className="h-5 w-5 text-text-muted" />
           </Link>
           <div>
-            <h1 className="font-heading text-h2 text-text-primary">{dossier.title}</h1>
+            <h1 className="font-heading text-h2 text-text-primary">
+              {dossier.title}
+            </h1>
             {dossier.opportunity.program && (
               <p className="mt-1 text-body text-text-secondary">
                 {dossier.opportunity.program}
-                {dossier.opportunity.institution && ` • ${dossier.opportunity.institution}`}
+                {dossier.opportunity.institution &&
+                  ` • ${dossier.opportunity.institution}`}
               </p>
             )}
           </div>
@@ -228,7 +293,9 @@ export default function DossierDetailPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-text-muted">Progresso</p>
-              <p className="mt-1 text-2xl font-bold text-text-primary">{completionPercentage}%</p>
+              <p className="mt-1 text-2xl font-bold text-text-primary">
+                {completionPercentage}%
+              </p>
             </div>
             <div className="rounded-lg bg-brand-100 p-2">
               <TrendingUp className="h-5 w-5 text-brand-600" />
@@ -254,7 +321,9 @@ export default function DossierDetailPage() {
               <FileText className="h-5 w-5 text-emerald-600" />
             </div>
           </div>
-          <p className="mt-2 text-xs text-text-muted">{completedDocs} finalizados</p>
+          <p className="mt-2 text-xs text-text-muted">
+            {completedDocs} finalizados
+          </p>
         </div>
 
         <div className="rounded-2xl border border-cream-200 bg-white p-4">
@@ -279,7 +348,7 @@ export default function DossierDetailPage() {
             "rounded-2xl border p-4",
             daysUntilDeadline <= 7
               ? "border-clay-200 bg-clay-50"
-              : "border-cream-200 bg-white"
+              : "border-cream-200 bg-white",
           )}
         >
           <div className="flex items-center justify-between">
@@ -288,7 +357,9 @@ export default function DossierDetailPage() {
               <p
                 className={cn(
                   "mt-1 text-2xl font-bold",
-                  daysUntilDeadline <= 7 ? "text-clay-700" : "text-text-primary"
+                  daysUntilDeadline <= 7
+                    ? "text-clay-700"
+                    : "text-text-primary",
                 )}
               >
                 {daysUntilDeadline}d
@@ -297,11 +368,14 @@ export default function DossierDetailPage() {
             <div
               className={cn(
                 "rounded-lg p-2",
-                daysUntilDeadline <= 7 ? "bg-clay-200" : "bg-slate-100"
+                daysUntilDeadline <= 7 ? "bg-clay-200" : "bg-slate-100",
               )}
             >
               <Calendar
-                className={cn("h-5 w-5", daysUntilDeadline <= 7 ? "text-clay-700" : "text-slate-600")}
+                className={cn(
+                  "h-5 w-5",
+                  daysUntilDeadline <= 7 ? "text-clay-700" : "text-slate-600",
+                )}
               />
             </div>
           </div>
@@ -340,7 +414,9 @@ export default function DossierDetailPage() {
                 {dossier.documents.length === 0 ? (
                   <div className="rounded-lg border border-dashed border-cream-300 bg-cream-50 p-8 text-center">
                     <FileText className="mx-auto h-12 w-12 text-cream-400" />
-                    <p className="mt-3 font-medium text-text-primary">Nenhum documento ainda</p>
+                    <p className="mt-3 font-medium text-text-primary">
+                      Nenhum documento ainda
+                    </p>
                     <p className="mt-1 text-sm text-text-muted">
                       Comece adicionando documentos ao seu dossier
                     </p>
@@ -355,16 +431,19 @@ export default function DossierDetailPage() {
                         <div className="flex items-center gap-3">
                           <FileText className="h-5 w-5 text-brand-500" />
                           <div>
-                            <p className="font-medium text-text-primary">{doc.title}</p>
+                            <p className="font-medium text-text-primary">
+                              {doc.title}
+                            </p>
                             <p className="text-xs text-text-muted">
-                              {getDocumentTypeLabel(doc.type)} • {doc.wordCount} palavras
+                              {getDocumentTypeLabel(doc.type)} • {doc.wordCount}{" "}
+                              palavras
                             </p>
                           </div>
                         </div>
                         <span
                           className={cn(
                             "rounded-full border px-2 py-0.5 text-xs font-medium",
-                            getDocumentStatusColor(doc.status)
+                            getDocumentStatusColor(doc.status),
                           )}
                         >
                           {getDocumentStatusLabel(doc.status)}
@@ -397,31 +476,41 @@ export default function DossierDetailPage() {
                 {todoTasks.length === 0 && inProgressTasks.length === 0 ? (
                   <div className="rounded-lg border border-dashed border-cream-300 bg-cream-50 p-8 text-center">
                     <CheckCircle className="mx-auto h-12 w-12 text-cream-400" />
-                    <p className="mt-3 font-medium text-text-primary">Nenhuma tarefa pendente</p>
-                    <p className="mt-1 text-sm text-text-muted">Você está em dia!</p>
+                    <p className="mt-3 font-medium text-text-primary">
+                      Nenhuma tarefa pendente
+                    </p>
+                    <p className="mt-1 text-sm text-text-muted">
+                      Você está em dia!
+                    </p>
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {[...inProgressTasks, ...todoTasks].slice(0, 5).map((task) => (
-                      <div
-                        key={task.id}
-                        className="flex items-start gap-3 rounded-lg border border-cream-200 bg-cream-50 p-3"
-                      >
-                        <input
-                          type="checkbox"
-                          className="mt-1 h-4 w-4 rounded border-cream-300"
-                        />
-                        <div className="flex-1">
-                          <p className="font-medium text-text-primary">{task.title}</p>
-                          {task.dueDate && (
-                            <p className="mt-1 text-xs text-text-muted">
-                              <Clock className="mr-1 inline h-3 w-3" />
-                              {new Date(task.dueDate).toLocaleDateString("pt-BR")}
+                    {[...inProgressTasks, ...todoTasks]
+                      .slice(0, 5)
+                      .map((task) => (
+                        <div
+                          key={task.id}
+                          className="flex items-start gap-3 rounded-lg border border-cream-200 bg-cream-50 p-3"
+                        >
+                          <input
+                            type="checkbox"
+                            className="mt-1 h-4 w-4 rounded border-cream-300"
+                          />
+                          <div className="flex-1">
+                            <p className="font-medium text-text-primary">
+                              {task.title}
                             </p>
-                          )}
+                            {task.dueDate && (
+                              <p className="mt-1 text-xs text-text-muted">
+                                <Clock className="mr-1 inline h-3 w-3" />
+                                {new Date(task.dueDate).toLocaleDateString(
+                                  "pt-BR",
+                                )}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 )}
               </div>
@@ -444,8 +533,8 @@ export default function DossierDetailPage() {
                     {dossier.readiness?.overall >= 80
                       ? "Excelente! Você está pronto."
                       : dossier.readiness?.overall >= 60
-                      ? "Bom progresso. Continue!"
-                      : "Ainda há trabalho a fazer."}
+                        ? "Bom progresso. Continue!"
+                        : "Ainda há trabalho a fazer."}
                   </p>
                 </div>
               </div>
@@ -489,7 +578,9 @@ export default function DossierDetailPage() {
         {/* Documents Tab */}
         <TabsContent value="documents" className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-text-muted">{dossier.documents.length} documentos</p>
+            <p className="text-sm text-text-muted">
+              {dossier.documents.length} documentos
+            </p>
             <Button onClick={handleAddDocument}>
               <Plus className="mr-2 h-4 w-4" />
               Novo Documento
@@ -529,7 +620,7 @@ export default function DossierDetailPage() {
                     <span
                       className={cn(
                         "rounded-full border px-2 py-0.5 text-xs font-medium",
-                        getDocumentStatusColor(doc.status)
+                        getDocumentStatusColor(doc.status),
                       )}
                     >
                       {getDocumentStatusLabel(doc.status)}
@@ -538,7 +629,9 @@ export default function DossierDetailPage() {
 
                   <div className="mb-3 flex items-center gap-4 text-xs text-text-muted">
                     <span>{doc.wordCount} palavras</span>
-                    {doc.metrics.atsScore && <span>ATS: {doc.metrics.atsScore}%</span>}
+                    {doc.metrics.atsScore && (
+                      <span>ATS: {doc.metrics.atsScore}%</span>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -555,12 +648,16 @@ export default function DossierDetailPage() {
 
         {/* Tasks Tab */}
         <TabsContent value="tasks">
-          <p className="text-sm text-text-muted">Gerenciamento de tarefas em desenvolvimento...</p>
+          <p className="text-sm text-text-muted">
+            Gerenciamento de tarefas em desenvolvimento...
+          </p>
         </TabsContent>
 
         {/* Readiness Tab */}
         <TabsContent value="readiness">
-          <p className="text-sm text-text-muted">Relatório de prontidão em desenvolvimento...</p>
+          <p className="text-sm text-text-muted">
+            Relatório de prontidão em desenvolvimento...
+          </p>
         </TabsContent>
       </Tabs>
 

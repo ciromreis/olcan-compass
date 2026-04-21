@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Upload, FileText, X, Loader2, CheckCircle, AlertCircle } from "lucide-react";
+import {
+  Upload,
+  FileText,
+  X,
+  Loader2,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
 import { useToast } from "@/components/ui";
 
 interface FileUploadProps {
@@ -35,23 +42,23 @@ export function FileUpload({ onContentExtracted, onClose }: FileUploadProps) {
     try {
       // Check file type
       const validTypes = [
-        'application/pdf',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/msword',
-        'text/plain'
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/msword",
+        "text/plain",
       ];
 
       if (!validTypes.includes(file.type)) {
-        throw new Error('Formato não suportado. Use PDF, DOCX ou TXT.');
+        throw new Error("Formato não suportado. Use PDF, DOCX ou TXT.");
       }
 
       // Check file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        throw new Error('Arquivo muito grande. Máximo 5MB.');
+        throw new Error("Arquivo muito grande. Máximo 5MB.");
       }
 
       // For text files, read directly
-      if (file.type === 'text/plain') {
+      if (file.type === "text/plain") {
         const text = await file.text();
         setExtractedContent(text);
         toast({
@@ -62,35 +69,16 @@ export function FileUpload({ onContentExtracted, onClose }: FileUploadProps) {
         return;
       }
 
-      // For PDF/DOCX, we'd normally call a backend API
-      // For now, show a placeholder message
-      const placeholderContent = `# ${file.name}
-
-[Conteúdo extraído do arquivo]
-
-Este é um placeholder. Em produção, o conteúdo seria extraído do arquivo ${file.type === 'application/pdf' ? 'PDF' : 'DOCX'} usando um serviço de parsing no backend.
-
-Para implementar:
-1. Enviar arquivo para /api/parse-document
-2. Backend usa biblioteca de parsing (PyPDF2, python-docx, etc.)
-3. Retorna texto extraído
-4. Exibe no editor
-
-Por enquanto, você pode:
-- Copiar e colar o conteúdo manualmente
-- Ou usar arquivos .txt que funcionam diretamente
-`;
-
-      setExtractedContent(placeholderContent);
-      
-      toast({
-        title: "Arquivo carregado",
-        description: `${file.name} - Parsing completo em breve`,
-        variant: "success",
-      });
-
+      // Binary parsing is not implemented yet in the active v2.5 flow.
+      // Fail honestly instead of injecting placeholder content into the editor.
+      throw new Error(
+        file.type === "application/pdf"
+          ? "Importação de PDF ainda não está disponível nesta versão. Use um arquivo TXT ou copie e cole o conteúdo manualmente."
+          : "Importação de DOC/DOCX ainda não está disponível nesta versão. Use um arquivo TXT ou copie e cole o conteúdo manualmente.",
+      );
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Erro ao processar arquivo';
+      const message =
+        err instanceof Error ? err.message : "Erro ao processar arquivo";
       setError(message);
       toast({
         title: "Erro no upload",
@@ -112,12 +100,15 @@ Por enquanto, você pode:
     }
   }, []);
 
-  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      await processFile(files[0]);
-    }
-  }, []);
+  const handleFileSelect = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = e.target.files;
+      if (files && files.length > 0) {
+        await processFile(files[0]);
+      }
+    },
+    [],
+  );
 
   const handleUseContent = () => {
     if (extractedContent && uploadedFile) {
@@ -149,7 +140,9 @@ Por enquanto, você pode:
               : "border-cream-300 bg-cream-50 hover:border-brand-400"
           }`}
         >
-          <Upload className={`w-12 h-12 mx-auto mb-4 ${isDragging ? "text-brand-500" : "text-text-muted"}`} />
+          <Upload
+            className={`w-12 h-12 mx-auto mb-4 ${isDragging ? "text-brand-500" : "text-text-muted"}`}
+          />
           <h3 className="font-heading text-h4 text-text-primary mb-2">
             Arraste seu arquivo aqui
           </h3>
@@ -167,7 +160,8 @@ Por enquanto, você pode:
             />
           </label>
           <p className="text-xs text-text-muted mt-4">
-            Formatos suportados: PDF, DOCX, TXT (máx. 5MB)
+            Importação direta disponível para TXT. PDF e DOCX ainda não possuem
+            extração automática nesta versão. Máx. 5MB.
           </p>
         </div>
       ) : (
@@ -176,13 +170,19 @@ Por enquanto, você pode:
           <div className="flex items-center gap-3 p-4 bg-cream-50 rounded-lg border border-cream-300">
             <FileText className="w-8 h-8 text-brand-500 flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-text-primary truncate">{uploadedFile.name}</p>
+              <p className="font-medium text-text-primary truncate">
+                {uploadedFile.name}
+              </p>
               <p className="text-xs text-text-muted">
                 {(uploadedFile.size / 1024).toFixed(1)} KB
               </p>
             </div>
-            {isProcessing && <Loader2 className="w-5 h-5 text-brand-500 animate-spin" />}
-            {!isProcessing && !error && <CheckCircle className="w-5 h-5 text-brand-500" />}
+            {isProcessing && (
+              <Loader2 className="w-5 h-5 text-brand-500 animate-spin" />
+            )}
+            {!isProcessing && !error && (
+              <CheckCircle className="w-5 h-5 text-brand-500" />
+            )}
             {error && <AlertCircle className="w-5 h-5 text-red-500" />}
             <button
               onClick={handleReset}
@@ -213,7 +213,8 @@ Por enquanto, você pode:
                   </pre>
                 </div>
                 <p className="text-xs text-text-muted mt-2">
-                  {extractedContent.split(/\s+/).filter(Boolean).length} palavras extraídas
+                  {extractedContent.split(/\s+/).filter(Boolean).length}{" "}
+                  palavras extraídas
                 </p>
               </div>
 

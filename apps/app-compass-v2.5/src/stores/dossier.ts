@@ -1,6 +1,6 @@
 /**
  * Dossier Store - Complete Application Package Management
- * 
+ *
  * Manages opportunity-bound dossiers containing:
  * - Profile snapshot
  * - Opportunity context
@@ -48,30 +48,110 @@ const FRONTEND_TO_BACKEND_STATUS: Record<DossierStatus, string> = {
 
 function mapBackendDossier(raw: Record<string, unknown>): Dossier {
   const ctx = (raw.opportunity_context as Record<string, unknown>) || {};
-  const readinessEval = (raw.readiness_evaluation as Record<string, unknown>) || {};
+  const readinessEval =
+    (raw.readiness_evaluation as Record<string, unknown>) || {};
+  const rawDocuments = Array.isArray(raw.documents)
+    ? (raw.documents as Array<Record<string, unknown>>)
+    : [];
+  const rawTasks = Array.isArray(raw.tasks)
+    ? (raw.tasks as Array<Record<string, unknown>>)
+    : [];
+
+  const mappedTasks: Task[] = rawTasks.map((task) => ({
+    id: String(task.id),
+    dossierId: String(task.dossier_id || raw.id || ""),
+    title: String(task.title || "Task"),
+    description:
+      typeof task.description === "string" ? task.description : undefined,
+    type: "other",
+    category: "other",
+    status:
+      task.status === "done"
+        ? "done"
+        : task.status === "in_progress"
+          ? "in_progress"
+          : task.status === "blocked"
+            ? "blocked"
+            : "todo",
+    priority:
+      task.priority === "critical"
+        ? "critical"
+        : task.priority === "high"
+          ? "high"
+          : task.priority === "low"
+            ? "low"
+            : "medium",
+    createdAt: task.created_at ? new Date(String(task.created_at)) : new Date(),
+    dueDate: task.due_date ? new Date(String(task.due_date)) : undefined,
+    completedAt: task.completed_at
+      ? new Date(String(task.completed_at))
+      : undefined,
+    relatedDocumentId: task.document_id ? String(task.document_id) : undefined,
+  }));
+
+  const mappedDocuments: DossierDocument[] = rawDocuments.map((doc) => {
+    const documentTasks = mappedTasks.filter(
+      (task) => task.relatedDocumentId === String(doc.id),
+    );
+
+    return {
+      id: String(doc.id),
+      dossierId: String(doc.dossier_id || raw.id || ""),
+      type: ((doc.type as string) || "other") as DossierDocument["type"],
+      title: String(doc.title || "Untitled Document"),
+      description: undefined,
+      content: String(doc.content || ""),
+      wordCount: Number(doc.word_count || 0),
+      status:
+        doc.status === "final" || doc.status === "polished"
+          ? "final"
+          : doc.status === "review"
+            ? "in_review"
+            : doc.status === "draft"
+              ? "draft"
+              : "not_started",
+      completionPercentage: Number(doc.completion_percentage || 0),
+      metrics: (doc.metrics as DossierDocument["metrics"]) || {},
+      requiredFor: [],
+      blockedBy: [],
+      versions: [],
+      currentVersionId: "",
+      tasks: documentTasks,
+      createdAt: doc.created_at ? new Date(String(doc.created_at)) : new Date(),
+      updatedAt: doc.updated_at ? new Date(String(doc.updated_at)) : new Date(),
+      lastEditedAt: doc.updated_at
+        ? new Date(String(doc.updated_at))
+        : new Date(),
+    };
+  });
 
   return {
     id: raw.id as string,
     userId: raw.user_id as string,
     opportunityId: (raw.opportunity_id as string) || "",
     title: (raw.title as string) || "Dossier",
-    status:
-      BACKEND_TO_FRONTEND_STATUS[raw.status as string] ?? "draft",
-    deadline: raw.deadline ? new Date(raw.deadline as string) : new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+    status: BACKEND_TO_FRONTEND_STATUS[raw.status as string] ?? "draft",
+    deadline: raw.deadline
+      ? new Date(raw.deadline as string)
+      : new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
     createdAt: new Date(raw.created_at as string),
     updatedAt: new Date(raw.updated_at as string),
-    profileSnapshot: (raw.profile_snapshot as ProfileSnapshot) || ({} as ProfileSnapshot),
+    profileSnapshot:
+      (raw.profile_snapshot as ProfileSnapshot) || ({} as ProfileSnapshot),
     opportunity: {
       program: (ctx.program as string) || "",
       institution: (ctx.institution as string) || "",
       location: (ctx.location as string) || "",
       country: (ctx.country as string) || "",
       type: ((ctx.type as string) || "other") as OpportunityContext["type"],
-      requirements: (ctx.requirements as OpportunityContext["requirements"]) || [],
+      requirements:
+        (ctx.requirements as OpportunityContext["requirements"]) || [],
       criteria: (ctx.criteria as Record<string, unknown>) || {},
-      applicationDeadline: raw.deadline ? new Date(raw.deadline as string) : new Date(),
+      applicationDeadline: raw.deadline
+        ? new Date(raw.deadline as string)
+        : new Date(),
     } as unknown as OpportunityContext,
-    documents: [],
+    documents: mappedDocuments,
     preparation: {
       interviews: [],
       events: [],
@@ -84,11 +164,122 @@ function mapBackendDossier(raw: Record<string, unknown>): Dossier {
       lastEvaluated: readinessEval.last_evaluation
         ? new Date(readinessEval.last_evaluation as string)
         : new Date(),
-      perDocument: {},
-      gaps: [],
-      recommendations: [],
-      strengths: [],
-      risks: [],
+      perDocument: mappedDocuments.reduce(
+        (acc, doc) => {
+          acc[doc.id] = {
+            documentId: doc.id,
+            score:
+              doc.status === "final" || doc.status === "submitted"
+                ? 100
+                : doc.completionPercentage || 0,
+            status: doc.status,
+            completeness: doc.completionPercentage || 0,
+            quality: doc.metrics?.competitivenessScore || 0,
+            alignment: doc.metrics?.alignmentScore || 0,
+            blockers: doc.blockedBy || [],
+            nextSteps: [],
+          };
+          return acc;
+        },
+        {} as ReadinessEvaluation["perDocument"],
+      ),
+      gaps: Array.isArray(readinessEval.gaps)
+        ? (readinessEval.gaps as Array<Record<string, unknown>>).map(
+            (gap, index) => ({
+              id: String(gap.id || `gap-${index}`),
+              category:
+                gap.category === "skill" ||
+                gap.category === "experience" ||
+                gap.category === "qualification"
+                  ? gap.category
+                  : "document",
+              severity:
+                gap.severity === "critical" ||
+                gap.severity === "important" ||
+                gap.severity === "minor"
+                  ? gap.severity
+                  : "important",
+              description: String(gap.description || ""),
+              impact: String(gap.impact || ""),
+              suggestedActions: Array.isArray(gap.suggestedActions)
+                ? (gap.suggestedActions as string[])
+                : [],
+              estimatedEffort:
+                gap.estimatedEffort === "low" ||
+                gap.estimatedEffort === "medium" ||
+                gap.estimatedEffort === "high"
+                  ? gap.estimatedEffort
+                  : "medium",
+            }),
+          )
+        : [],
+      recommendations: Array.isArray(readinessEval.recommendations)
+        ? (readinessEval.recommendations as Array<Record<string, unknown>>).map(
+            (recommendation, index) => ({
+              id: String(recommendation.id || `rec-${index}`),
+              priority:
+                recommendation.priority === "high" ||
+                recommendation.priority === "medium" ||
+                recommendation.priority === "low"
+                  ? recommendation.priority
+                  : "medium",
+              category: String(recommendation.category || "general"),
+              title: String(recommendation.title || ""),
+              description: String(recommendation.description || ""),
+              expectedImpact: Number(recommendation.expectedImpact || 0),
+              effort:
+                recommendation.effort === "low" ||
+                recommendation.effort === "medium" ||
+                recommendation.effort === "high"
+                  ? recommendation.effort
+                  : "medium",
+              actionSteps: Array.isArray(recommendation.actionSteps)
+                ? (recommendation.actionSteps as string[])
+                : [],
+              deadline: recommendation.deadline
+                ? new Date(String(recommendation.deadline))
+                : undefined,
+            }),
+          )
+        : [],
+      strengths: Array.isArray(readinessEval.strengths)
+        ? (readinessEval.strengths as string[])
+        : [],
+      risks: Array.isArray(readinessEval.risks)
+        ? (readinessEval.risks as Array<Record<string, unknown>>).map(
+            (risk, index) => ({
+              id: String(risk.id || `risk-${index}`),
+              category:
+                risk.category === "deadline" ||
+                risk.category === "quality" ||
+                risk.category === "requirement"
+                  ? risk.category
+                  : "other",
+              likelihood:
+                risk.likelihood === "low" ||
+                risk.likelihood === "medium" ||
+                risk.likelihood === "high"
+                  ? risk.likelihood
+                  : risk.probability === "low" ||
+                      risk.probability === "medium" ||
+                      risk.probability === "high"
+                    ? risk.probability
+                    : "medium",
+              severity:
+                risk.severity === "low" ||
+                risk.severity === "medium" ||
+                risk.severity === "high"
+                  ? risk.severity
+                  : "medium",
+              description: String(risk.description || ""),
+              mitigation: Array.isArray(risk.mitigation)
+                ? (risk.mitigation as string[])
+                : Array.isArray(risk.mitigationStrategies)
+                  ? (risk.mitigationStrategies as string[])
+                  : [],
+            }),
+          )
+        : [],
     },
     exports: [],
   };
@@ -102,74 +293,115 @@ interface DossierState {
   // Data
   dossiers: Dossier[];
   currentDossierId: string | null;
-  
+
   // Loading states
   loading: boolean;
   syncing: boolean;
-  
+
   // Error handling
   error: string | null;
-  
+
   // Getters
   getDossierById: (id: string) => Dossier | undefined;
   getCurrentDossier: () => Dossier | undefined;
   getDossiersByStatus: (status: DossierStatus) => Dossier[];
   getActiveDossiers: () => Dossier[];
   getUpcomingDeadlines: () => Array<{ dossier: Dossier; daysUntil: number }>;
-  
+
   // Document getters
-  getDocumentById: (dossierId: string, documentId: string) => DossierDocument | undefined;
+  getDocumentById: (
+    dossierId: string,
+    documentId: string,
+  ) => DossierDocument | undefined;
   getDocumentsByType: (dossierId: string, type: string) => DossierDocument[];
-  getDocumentsByStatus: (dossierId: string, status: DocumentStatus) => DossierDocument[];
-  
+  getDocumentsByStatus: (
+    dossierId: string,
+    status: DocumentStatus,
+  ) => DossierDocument[];
+
   // Task getters
   getTasksByStatus: (dossierId: string, status: TaskStatus) => Task[];
   getOverdueTasks: (dossierId: string) => Task[];
   getTasksByDocument: (dossierId: string, documentId: string) => Task[];
-  
+
   // Milestone getters
   getUpcomingMilestones: (dossierId: string) => Milestone[];
   getCompletedMilestones: (dossierId: string) => Milestone[];
-  
+
   // Dossier actions
   createDossier: (data: Partial<Dossier>) => Promise<Dossier>;
   updateDossier: (id: string, data: Partial<Dossier>) => Promise<void>;
   deleteDossier: (id: string) => Promise<void>;
   setCurrentDossier: (id: string | null) => void;
   updateDossierStatus: (id: string, status: DossierStatus) => Promise<void>;
-  
+
   // Document actions
-  addDocument: (dossierId: string, document: Partial<DossierDocument>) => Promise<DossierDocument>;
-  updateDocument: (dossierId: string, documentId: string, data: Partial<DossierDocument>) => Promise<void>;
+  addDocument: (
+    dossierId: string,
+    document: Partial<DossierDocument>,
+  ) => Promise<DossierDocument>;
+  updateDocument: (
+    dossierId: string,
+    documentId: string,
+    data: Partial<DossierDocument>,
+  ) => Promise<void>;
   deleteDocument: (dossierId: string, documentId: string) => Promise<void>;
-  updateDocumentStatus: (dossierId: string, documentId: string, status: DocumentStatus) => Promise<void>;
-  updateDocumentContent: (dossierId: string, documentId: string, content: string) => Promise<void>;
-  
+  updateDocumentStatus: (
+    dossierId: string,
+    documentId: string,
+    status: DocumentStatus,
+  ) => Promise<void>;
+  updateDocumentContent: (
+    dossierId: string,
+    documentId: string,
+    content: string,
+  ) => Promise<void>;
+
   // Task actions
   addTask: (dossierId: string, task: Partial<Task>) => Promise<Task>;
-  updateTask: (dossierId: string, taskId: string, data: Partial<Task>) => Promise<void>;
+  updateTask: (
+    dossierId: string,
+    taskId: string,
+    data: Partial<Task>,
+  ) => Promise<void>;
   deleteTask: (dossierId: string, taskId: string) => Promise<void>;
   completeTask: (dossierId: string, taskId: string) => Promise<void>;
-  
+
   // Milestone actions
-  addMilestone: (dossierId: string, milestone: Partial<Milestone>) => Promise<Milestone>;
-  updateMilestone: (dossierId: string, milestoneId: string, data: Partial<Milestone>) => Promise<void>;
+  addMilestone: (
+    dossierId: string,
+    milestone: Partial<Milestone>,
+  ) => Promise<Milestone>;
+  updateMilestone: (
+    dossierId: string,
+    milestoneId: string,
+    data: Partial<Milestone>,
+  ) => Promise<void>;
   completeMilestone: (dossierId: string, milestoneId: string) => Promise<void>;
-  
+
   // Profile actions
-  updateProfileSnapshot: (dossierId: string, profile: Partial<ProfileSnapshot>) => Promise<void>;
-  
+  updateProfileSnapshot: (
+    dossierId: string,
+    profile: Partial<ProfileSnapshot>,
+  ) => Promise<void>;
+
   // Opportunity actions
-  updateOpportunityContext: (dossierId: string, opportunity: Partial<OpportunityContext>) => Promise<void>;
-  
+  updateOpportunityContext: (
+    dossierId: string,
+    opportunity: Partial<OpportunityContext>,
+  ) => Promise<void>;
+
   // Readiness actions
   evaluateReadiness: (dossierId: string) => Promise<ReadinessEvaluation>;
-  updateReadiness: (dossierId: string, readiness: Partial<ReadinessEvaluation>) => Promise<void>;
-  
+  updateReadiness: (
+    dossierId: string,
+    readiness: Partial<ReadinessEvaluation>,
+  ) => Promise<void>;
+
   // Sync actions
   syncFromApi: () => Promise<void>;
   syncDossier: (id: string) => Promise<void>;
-  
+
   // Utility actions
   clearError: () => void;
   reset: () => void;
@@ -216,18 +448,21 @@ export const useDossierStore = create<DossierState>()(
 
       getActiveDossiers: () => {
         return get().dossiers.filter(
-          (d) => d.status !== "archived" && d.status !== "submitted"
+          (d) => d.status !== "archived" && d.status !== "submitted",
         );
       },
 
       getUpcomingDeadlines: () => {
         const now = new Date();
         return get()
-          .dossiers.filter((d) => d.status !== "archived" && d.status !== "submitted")
+          .dossiers.filter(
+            (d) => d.status !== "archived" && d.status !== "submitted",
+          )
           .map((dossier) => ({
             dossier,
             daysUntil: Math.ceil(
-              (new Date(dossier.deadline).getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+              (new Date(dossier.deadline).getTime() - now.getTime()) /
+                (1000 * 60 * 60 * 24),
             ),
           }))
           .filter((item) => item.daysUntil >= 0)
@@ -252,25 +487,27 @@ export const useDossierStore = create<DossierState>()(
       getTasksByStatus: (dossierId: string, status: TaskStatus) => {
         const dossier = get().getDossierById(dossierId);
         if (!dossier) return [];
-        
+
         // Collect tasks from dossier and all documents
-        const dossierTasks = dossier.documents.flatMap((doc) => doc.tasks || []);
+        const dossierTasks = dossier.documents.flatMap(
+          (doc) => doc.tasks || [],
+        );
         return dossierTasks.filter((t) => t.status === status);
       },
 
       getOverdueTasks: (dossierId: string) => {
         const dossier = get().getDossierById(dossierId);
         if (!dossier) return [];
-        
+
         const now = new Date();
         const allTasks = dossier.documents.flatMap((doc) => doc.tasks || []);
-        
+
         return allTasks.filter(
           (t) =>
             t.status !== "done" &&
             t.status !== "cancelled" &&
             t.dueDate &&
-            new Date(t.dueDate) < now
+            new Date(t.dueDate) < now,
         );
       },
 
@@ -282,7 +519,7 @@ export const useDossierStore = create<DossierState>()(
       getUpcomingMilestones: (dossierId: string) => {
         const dossier = get().getDossierById(dossierId);
         if (!dossier || !dossier.preparation) return [];
-        
+
         // Note: Milestones would be in preparation.milestones when we add that field
         return [];
       },
@@ -290,7 +527,7 @@ export const useDossierStore = create<DossierState>()(
       getCompletedMilestones: (dossierId: string) => {
         const dossier = get().getDossierById(dossierId);
         if (!dossier || !dossier.preparation) return [];
-        
+
         return [];
       },
 
@@ -305,7 +542,9 @@ export const useDossierStore = create<DossierState>()(
           const payload: Record<string, unknown> = {
             title: data.title || "New Dossier",
             status: FRONTEND_TO_BACKEND_STATUS[data.status || "draft"],
-            deadline: data.deadline ? new Date(data.deadline).toISOString() : null,
+            deadline: data.deadline
+              ? new Date(data.deadline).toISOString()
+              : null,
             opportunity_id: data.opportunityId || null,
             opportunity_context: data.opportunity || {},
             profile_snapshot: data.profileSnapshot || {},
@@ -324,14 +563,30 @@ export const useDossierStore = create<DossierState>()(
               opportunityId: data.opportunityId || "",
               title: data.title || "New Dossier",
               status: data.status || "draft",
-              deadline: data.deadline || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+              deadline:
+                data.deadline ||
+                new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
               createdAt: new Date(),
               updatedAt: new Date(),
               profileSnapshot: data.profileSnapshot || ({} as ProfileSnapshot),
               opportunity: data.opportunity || ({} as OpportunityContext),
               documents: [],
-              preparation: { interviews: [], events: [], skills: [], connections: [], research: [] },
-              readiness: { overall: 0, lastEvaluated: new Date(), perDocument: {}, gaps: [], recommendations: [], strengths: [], risks: [] },
+              preparation: {
+                interviews: [],
+                events: [],
+                skills: [],
+                connections: [],
+                research: [],
+              },
+              readiness: {
+                overall: 0,
+                lastEvaluated: new Date(),
+                perDocument: {},
+                gaps: [],
+                recommendations: [],
+                strengths: [],
+                risks: [],
+              },
               exports: [],
             };
           }
@@ -356,7 +611,7 @@ export const useDossierStore = create<DossierState>()(
           // Optimistic local update
           set((state) => ({
             dossiers: state.dossiers.map((d) =>
-              d.id === id ? { ...d, ...data, updatedAt: new Date() } : d
+              d.id === id ? { ...d, ...data, updatedAt: new Date() } : d,
             ),
             loading: false,
           }));
@@ -368,12 +623,16 @@ export const useDossierStore = create<DossierState>()(
             if (data.status !== undefined)
               payload.status = FRONTEND_TO_BACKEND_STATUS[data.status];
             if (data.deadline !== undefined)
-              payload.deadline = data.deadline ? new Date(data.deadline).toISOString() : null;
+              payload.deadline = data.deadline
+                ? new Date(data.deadline).toISOString()
+                : null;
             if (data.opportunity !== undefined)
               payload.opportunity_context = data.opportunity;
             if (data.profileSnapshot !== undefined)
               payload.profile_snapshot = data.profileSnapshot;
-            await dossiersApi.update(id, payload).catch(() => {/* silent — optimistic already applied */});
+            await dossiersApi.update(id, payload).catch(() => {
+              /* silent — optimistic already applied */
+            });
           }
         } catch (error) {
           set({ error: (error as Error).message, loading: false });
@@ -387,12 +646,15 @@ export const useDossierStore = create<DossierState>()(
         try {
           set((state) => ({
             dossiers: state.dossiers.filter((d) => d.id !== id),
-            currentDossierId: state.currentDossierId === id ? null : state.currentDossierId,
+            currentDossierId:
+              state.currentDossierId === id ? null : state.currentDossierId,
             loading: false,
           }));
 
           if (!id.startsWith("local-")) {
-            await dossiersApi.delete(id).catch(() => {/* silent */});
+            await dossiersApi.delete(id).catch(() => {
+              /* silent */
+            });
           }
         } catch (error) {
           set({ error: (error as Error).message, loading: false });
@@ -412,12 +674,15 @@ export const useDossierStore = create<DossierState>()(
       // DOCUMENT ACTIONS
       // ========================================================================
 
-      addDocument: async (dossierId: string, documentData: Partial<DossierDocument>) => {
+      addDocument: async (
+        dossierId: string,
+        documentData: Partial<DossierDocument>,
+      ) => {
         set({ loading: true, error: null });
 
         try {
           const documentId = `doc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-          
+
           const newDocument: DossierDocument = {
             id: documentId,
             dossierId,
@@ -446,7 +711,7 @@ export const useDossierStore = create<DossierState>()(
                     documents: [...d.documents, newDocument],
                     updatedAt: new Date(),
                   }
-                : d
+                : d,
             ),
             loading: false,
           }));
@@ -458,7 +723,11 @@ export const useDossierStore = create<DossierState>()(
         }
       },
 
-      updateDocument: async (dossierId: string, documentId: string, data: Partial<DossierDocument>) => {
+      updateDocument: async (
+        dossierId: string,
+        documentId: string,
+        data: Partial<DossierDocument>,
+      ) => {
         set((state) => ({
           dossiers: state.dossiers.map((d) =>
             d.id === dossierId
@@ -467,11 +736,11 @@ export const useDossierStore = create<DossierState>()(
                   documents: d.documents.map((doc) =>
                     doc.id === documentId
                       ? { ...doc, ...data, updatedAt: new Date() }
-                      : doc
+                      : doc,
                   ),
                   updatedAt: new Date(),
                 }
-              : d
+              : d,
           ),
         }));
       },
@@ -485,16 +754,24 @@ export const useDossierStore = create<DossierState>()(
                   documents: d.documents.filter((doc) => doc.id !== documentId),
                   updatedAt: new Date(),
                 }
-              : d
+              : d,
           ),
         }));
       },
 
-      updateDocumentStatus: async (dossierId: string, documentId: string, status: DocumentStatus) => {
+      updateDocumentStatus: async (
+        dossierId: string,
+        documentId: string,
+        status: DocumentStatus,
+      ) => {
         await get().updateDocument(dossierId, documentId, { status });
       },
 
-      updateDocumentContent: async (dossierId: string, documentId: string, content: string) => {
+      updateDocumentContent: async (
+        dossierId: string,
+        documentId: string,
+        content: string,
+      ) => {
         const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
         await get().updateDocument(dossierId, documentId, {
           content,
@@ -509,7 +786,7 @@ export const useDossierStore = create<DossierState>()(
 
       addTask: async (dossierId: string, taskData: Partial<Task>) => {
         const taskId = `task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        
+
         const newTask: Task = {
           id: taskId,
           dossierId,
@@ -535,10 +812,10 @@ export const useDossierStore = create<DossierState>()(
                     documents: d.documents.map((doc) =>
                       doc.id === taskData.relatedDocumentId
                         ? { ...doc, tasks: [...(doc.tasks || []), newTask] }
-                        : doc
+                        : doc,
                     ),
                   }
-                : d
+                : d,
             ),
           }));
         }
@@ -546,7 +823,11 @@ export const useDossierStore = create<DossierState>()(
         return newTask;
       },
 
-      updateTask: async (dossierId: string, taskId: string, data: Partial<Task>) => {
+      updateTask: async (
+        dossierId: string,
+        taskId: string,
+        data: Partial<Task>,
+      ) => {
         set((state) => ({
           dossiers: state.dossiers.map((d) =>
             d.id === dossierId
@@ -555,11 +836,11 @@ export const useDossierStore = create<DossierState>()(
                   documents: d.documents.map((doc) => ({
                     ...doc,
                     tasks: (doc.tasks || []).map((task) =>
-                      task.id === taskId ? { ...task, ...data } : task
+                      task.id === taskId ? { ...task, ...data } : task,
                     ),
                   })),
                 }
-              : d
+              : d,
           ),
         }));
       },
@@ -572,10 +853,12 @@ export const useDossierStore = create<DossierState>()(
                   ...d,
                   documents: d.documents.map((doc) => ({
                     ...doc,
-                    tasks: (doc.tasks || []).filter((task) => task.id !== taskId),
+                    tasks: (doc.tasks || []).filter(
+                      (task) => task.id !== taskId,
+                    ),
                   })),
                 }
-              : d
+              : d,
           ),
         }));
       },
@@ -591,12 +874,19 @@ export const useDossierStore = create<DossierState>()(
       // MILESTONE ACTIONS
       // ========================================================================
 
-      addMilestone: async (dossierId: string, milestoneData: Partial<Milestone>) => {
+      addMilestone: async (
+        dossierId: string,
+        milestoneData: Partial<Milestone>,
+      ) => {
         // TODO: Implement when we add milestones to dossier structure
         return {} as Milestone;
       },
 
-      updateMilestone: async (dossierId: string, milestoneId: string, data: Partial<Milestone>) => {
+      updateMilestone: async (
+        dossierId: string,
+        milestoneId: string,
+        data: Partial<Milestone>,
+      ) => {
         // TODO: Implement
       },
 
@@ -608,7 +898,10 @@ export const useDossierStore = create<DossierState>()(
       // PROFILE & OPPORTUNITY ACTIONS
       // ========================================================================
 
-      updateProfileSnapshot: async (dossierId: string, profile: Partial<ProfileSnapshot>) => {
+      updateProfileSnapshot: async (
+        dossierId: string,
+        profile: Partial<ProfileSnapshot>,
+      ) => {
         await get().updateDossier(dossierId, {
           profileSnapshot: {
             ...get().getDossierById(dossierId)?.profileSnapshot,
@@ -617,7 +910,10 @@ export const useDossierStore = create<DossierState>()(
         });
       },
 
-      updateOpportunityContext: async (dossierId: string, opportunity: Partial<OpportunityContext>) => {
+      updateOpportunityContext: async (
+        dossierId: string,
+        opportunity: Partial<OpportunityContext>,
+      ) => {
         await get().updateDossier(dossierId, {
           opportunity: {
             ...get().getDossierById(dossierId)?.opportunity,
@@ -636,15 +932,21 @@ export const useDossierStore = create<DossierState>()(
 
         const docs = dossier.documents || [];
         const totalDocs = Math.max(docs.length, 1);
-        const finalDocs = docs.filter(d => d.status === "final" || d.status === "submitted").length;
+        const finalDocs = docs.filter(
+          (d) => d.status === "final" || d.status === "submitted",
+        ).length;
         const docsScore = (finalDocs / totalDocs) * 50;
 
         const profileScores = dossier.profileSnapshot?.readinessScores;
-        const profileAvg = profileScores 
-          ? (profileScores.logistic + profileScores.narrative + profileScores.performance + profileScores.psychological) / 4 
+        const profileAvg = profileScores
+          ? (profileScores.logistic +
+              profileScores.narrative +
+              profileScores.performance +
+              profileScores.psychological) /
+            4
           : 0;
-        
-        let overall = Math.round(docsScore + ((profileAvg || 20) * 0.5));
+
+        let overall = Math.round(docsScore + (profileAvg || 20) * 0.5);
         if (overall > 100) overall = 100;
         if (overall <= 0 && docs.length > 0) overall = 10; // baseline if there are docs
 
@@ -658,10 +960,13 @@ export const useDossierStore = create<DossierState>()(
           risks: [],
         };
 
-        docs.forEach(doc => {
+        docs.forEach((doc) => {
           readiness.perDocument[doc.id] = {
             documentId: doc.id,
-            score: doc.status === "final" || doc.status === "submitted" ? 100 : doc.completionPercentage || 0,
+            score:
+              doc.status === "final" || doc.status === "submitted"
+                ? 100
+                : doc.completionPercentage || 0,
             status: doc.status,
             completeness: doc.completionPercentage || 0,
             quality: doc.metrics?.competitivenessScore || 0,
@@ -675,7 +980,10 @@ export const useDossierStore = create<DossierState>()(
         return readiness;
       },
 
-      updateReadiness: async (dossierId: string, readiness: Partial<ReadinessEvaluation>) => {
+      updateReadiness: async (
+        dossierId: string,
+        readiness: Partial<ReadinessEvaluation>,
+      ) => {
         await get().updateDossier(dossierId, {
           readiness: {
             ...get().getDossierById(dossierId)?.readiness,
@@ -695,13 +1003,13 @@ export const useDossierStore = create<DossierState>()(
           const { data } = await dossiersApi.list({ limit: 50 });
           const items = Array.isArray(data) ? data : [];
           const mapped = items.map((raw) =>
-            mapBackendDossier(raw as Record<string, unknown>)
+            mapBackendDossier(raw as Record<string, unknown>),
           );
 
           // Merge: keep local-only drafts, replace the rest from server
           set((state) => {
             const localOnly = state.dossiers.filter((d) =>
-              d.id.startsWith("local-")
+              d.id.startsWith("local-"),
             );
             return { dossiers: [...mapped, ...localOnly], syncing: false };
           });
@@ -716,9 +1024,17 @@ export const useDossierStore = create<DossierState>()(
         try {
           const { data } = await dossiersApi.get(id);
           const updated = mapBackendDossier(data as Record<string, unknown>);
-          set((state) => ({
-            dossiers: state.dossiers.map((d) => (d.id === id ? updated : d)),
-          }));
+          set((state) => {
+            const existingIndex = state.dossiers.findIndex((d) => d.id === id);
+
+            if (existingIndex === -1) {
+              return { dossiers: [...state.dossiers, updated] };
+            }
+
+            return {
+              dossiers: state.dossiers.map((d) => (d.id === id ? updated : d)),
+            };
+          });
         } catch {
           // silent
         }
@@ -742,6 +1058,6 @@ export const useDossierStore = create<DossierState>()(
         dossiers: state.dossiers,
         currentDossierId: state.currentDossierId,
       }),
-    }
-  )
+    },
+  ),
 );
