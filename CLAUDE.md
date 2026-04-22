@@ -230,4 +230,37 @@ column, `db.refresh(new_user)` still crashed because PostgreSQL couldn't find `b
 
 ---
 
-**For full navigation and detailed documentation, see `START_HERE.md` and the wiki.**
+## 📁 Root Structure (for future auditors)
+
+```
+olcan-compass/
+├── apps/                    # Applications
+│   ├── app-compass-v2.5/     # Main frontend (Next.js) ✅ ACTIVE
+│   ├── api-core-v2.5/       # Backend API (FastAPI) ✅ ACTIVE
+│   ├── site-marketing-v2.5/  # Marketing site ✅ ACTIVE
+│   ├── app-compass-v2/      # 🔒 Frozen v2 (read-only)
+│   └── api-core-v2/         # 🔒 Frozen v2 (read-only)
+├── packages/               # Shared packages
+│   ├── ui-components/     # Design system
+│   └── shared-auth/     # Auth service
+├── wiki/                 # 📚 Source of Truth
+├── CLAUDE.md            # This file
+├── README.md           # Quick reference
+├── docker-compose*.yml  # Docker configs
+├── render.yaml        # Render deploy config
+├── vercel.json      # Vercel config
+└── package.json   # Root workspace
+```
+
+### ⚠️ DO NOT MODIFY
+- `apps/app-compass-v2/` - Frozen v2 (read-only)
+- `apps/api-core-v2/` - Frozen v2 (read-only)  
+- `_GRAVEYARD/` - Historical archives
+
+### 🚀 Current Production
+- Frontend: `https://compass.olcan.com.br` (Vercel)
+- Backend: `https://olcan-compass-api.onrender.com` (Render)
+
+---
+
+**For full navigation, see `START_HERE.md` and the wiki.**
