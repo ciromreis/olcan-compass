@@ -34,7 +34,7 @@ router = APIRouter(prefix="/routes", tags=["Route Engine"])
 
 # --- Dossier Export (MUST be before /{route_id}) ---
 
-@router.get("/dossier-export", tags=["Dossier"])
+@router.get("/dossier", name="dossier_export", tags=["Dossier"])
 async def export_dossier_html(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -59,7 +59,7 @@ async def export_dossier_html(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/dossier-payload", tags=["Dossier"])
+@router.get("/dossier-data", name="dossier_payload", tags=["Dossier"])
 async def get_dossier_payload(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
