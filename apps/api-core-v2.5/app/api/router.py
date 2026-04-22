@@ -41,8 +41,8 @@ from app.api.routes.questions import router as questions_router
 from app.api.routes.notifications import router as notifications_router
 from app.api.routes.gamification import router as gamification_router
 
-# Dossier export (mounted at root to avoid route collision)
-from app.api.routes.dossier import router as dossier_router
+# Dossier export now in auth.py only (DO NOT mount duplicate)
+# from app.api.routes.dossier import router as dossier_router
 
 # V1 aggregate router — provides /v1/companions, /v1/documents, /v1/leaderboard, etc.
 # These are the endpoints the frontend actually calls (forgeApi, auraApi).
@@ -98,8 +98,7 @@ def _mount_all_routes(router: APIRouter) -> None:
     router.include_router(notifications_router, tags=["Notifications"])
     router.include_router(gamification_router, tags=["Gamification"])
 
-    # Dossier export (at root level to avoid collision)
-    router.include_router(dossier_router, tags=["Dossier"])
+    # Dossier export is in auth.py only
 
 
 # Keep /api/* for current frontend and /api/v1/* for backward compatibility.

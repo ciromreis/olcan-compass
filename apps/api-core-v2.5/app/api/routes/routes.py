@@ -32,47 +32,6 @@ from app.schemas.route import (
 router = APIRouter(prefix="/routes", tags=["Route Engine"])
 
 
-# --- Dossier Export (MUST be before /{route_id}) ---
-
-@router.get("/dossier", name="dossier_export", tags=["Dossier"])
-async def export_dossier_html(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """Export Master Strategic Dossier as HTML."""
-    from fastapi.responses import StreamingResponse
-    from app.services.dossier_orchestrator import get_master_dossier_for_user
-    from app.utils.pdf_renderer import generate_dossier_pdf
-    
-    try:
-        payload = await get_master_dossier_for_user(current_user.id)
-        html_bytes = await generate_dossier_pdf(payload)
-        
-        filename = f"olcan_dossier_{payload.metadata.user_name.replace(' ', '_')}_{payload.metadata.generated_at.strftime('%Y%m%d')}.html"
-        
-        return StreamingResponse(
-            iter([html_bytes]),
-            media_type="text/html",
-            headers={"Content-Disposition": f"attachment; filename={filename}"}
-        )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.get("/dossier-data", name="dossier_payload", tags=["Dossier"])
-async def get_dossier_payload(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """Get raw dossier payload as JSON."""
-    from app.services.dossier_orchestrator import get_master_dossier_for_user
-    
-    try:
-        return await get_master_dossier_for_user(current_user.id)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
 # --- Template Endpoints ---
 
 @router.get("/templates", response_model=AvailableTemplatesResponse)
