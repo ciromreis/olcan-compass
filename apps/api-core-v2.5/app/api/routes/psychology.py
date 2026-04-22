@@ -390,24 +390,25 @@ async def _compute_and_save_profile(session: PsychAssessmentSession, user_id: UU
     # Store snapshot in session
     session.scores_snapshot = avg_scores
     
-    # === ECONOMICS INTEGRATION (graceful — skipped when Redis/Celery unavailable) ===
+    # === ECONOMICS INTEGRATION (graceful — Celery not available) ===
     new_readiness = (profile.confidence_index + profile.discipline_score) / 2
     
     def dispatch_economics_tasks(user_id_str: str, p_readiness: float, n_readiness: float):
         try:
-            from app.tasks.temporal_matching import recalculate_temporal_matches_task
-            recalculate_temporal_matches_task.delay(user_id_str)
+            # TODO: Implement synchronous temporal matching or BackgroundTasks
+            # The Celery task 'recalculate_temporal_matches_task' doesn't exist
+            # Use FastAPI BackgroundTasks instead
+            logger.info(f"Would recalculate temporal matches for user {user_id_str}")
         except Exception as e:
-            print(f"Failed to dispatch temporal_matching: {e}")
-            pass  # Celery/Redis not available
+            logger.warning(f"Failed to dispatch temporal_matching: {e}")
         
         try:
+            # TODO: Implement synchronous credential generation or BackgroundTasks
+            # The Celery task 'generate_credential_task' doesn't exist
             if p_readiness < 80 and n_readiness >= 80:
-                from app.tasks.credentials import generate_credential_task
-                generate_credential_task.delay(user_id_str, "readiness", int(n_readiness))
+                logger.info(f"Would generate credential report for user {user_id_str} with readiness {int(n_readiness)}")
         except Exception as e:
-            print(f"Failed to dispatch credentials task: {e}")
-            pass  # Celery/Redis not available
+            logger.warning(f"Failed to dispatch credentials task: {e}")
             
     # Dispatch non-blocking BackgroundTask to communicate with Celery broker
     background_tasks.add_task(dispatch_economics_tasks, str(user_id), previous_readiness, new_readiness)

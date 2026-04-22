@@ -3,9 +3,9 @@ title: Agent Knowledge Handbook
 type: drawer
 layer: 0
 status: active
-last_seen: 2026-04-21
-valid_from: 2026-04-21
-valid_until: 2026-07-21
+last_seen: 2026-04-22
+valid_from: 2026-04-22
+valid_until: 2026-07-22
 backlinks:
   - Verdade_do_Produto
   - Radiografia_do_Produto
@@ -13,32 +13,71 @@ backlinks:
   - Padroes_de_Codigo
   - Backend_API_Audit_v2_5
   - INFRAESTRUTURA_OVERVIEW
+  - Repositorio_Organizacao_v2_5
+  - Diagnostico_Topologia_Backend
+  - Modelo_Core_Routes_Sprints_Tasks
 ---
 
-# Agent Knowledge Handbook (2026-04-21)
+# Agent Knowledge Handbook (2026-04-22)
 
 **Purpose**: Single-source onboarding for any LLM or human agent. Read this first, then drill down into linked docs only when needed.
 
 ---
 
-## � AUTH FIX — Root Cause Found, Awaiting Deploy
+## ✅ AUTH FIX — RESOLVED (2026-04-22)
 
-**Root cause**: The `User` ORM model declared `bio` and `preferences` columns that were
-**never created by any Alembic migration**. After migration 0026 fixed `username`,
-`db.refresh(new_user)` still crashed on the next missing column.
+**Root cause**: The `User` ORM model declared `username`, `bio`, `preferences` and other columns that were **never created by Alembic migrations**. Every authenticated endpoint crashed.
 
-**Fix applied**:
-- Migration `0027_ensure_all_user_columns` — defensively adds ALL missing User columns with `IF NOT EXISTS`
+**Fix applied** (deployed in PR #40):
+- Migration `0026_add_users_username` — adds username column with backfill from email
+- Migration `0027_ensure_all_user_columns` — defensively adds ALL missing User columns with `IF NOT EXISTS` guards
 - Migration `0028_seed_psychology_questions` — seeds 12 OIOS quiz questions
-- Removed dead Supabase code from middleware.ts
-- Unmounted P3 enhanced_forge from v1 router
-- Deleted confusion vector `main_real.py`
-- Added `/api/db-diagnostic` endpoint for remote column inspection
+- `user.py:30` — username now nullable=True
+- `auth.py:155-167` — register auto-generates unique username
 
-**After deploy**:
-1. `GET /api/migrate-db-render?secret_key=olcan2026omega` — force-apply migrations
-2. `GET /api/db-diagnostic?secret_key=olcan2026omega` — verify all columns exist
-3. Test: `curl -X POST https://api.olcan.com.br/api/auth/register -H "Content-Type: application/json" -d '{"email":"test-$(date +%s)@example.com","password":"TestPass123!","full_name":"Test"}'`
+**Trigger migrations remotely**:
+```bash
+curl "https://olcan-compass-api.onrender.com/api/migrate-db-render?secret_key=olcan2026omega"
+curl "https://olcan-compass-api.onrender.com/api/db-diagnostic?secret_key=olcan2026omega"
+```
+
+**Verification**: Test `POST /api/auth/register` with a new email.
+
+---
+
+## 🚨 CRITICAL BUGS — DO NOT IGNORE (2026-04-22)
+
+### 🔴 EXPORT STUB — PDF/DOCX are plain text
+
+**Location**: `app/services/export_service.py:388-413`
+
+The `_generate_pdf_document()` and `_generate_docx_document()` methods return **plain text encoded as bytes**, NOT real PDF/DOCX files. Users download files that can't be opened properly.
+
+**Current workaround**: Use frontend `window.print()` in `PDFExporter.tsx` instead of backend export.
+
+**Planned fix**: Implement proper PDF generation via Playwright + Jinja2 (see `Modelo_Core_Routes_Sprints_Tasks`).
+
+### 🔴 IMPORT CIRCULAR — tasks.py imports from route handler
+
+**Location**: `app/api/routes/tasks.py:185`
+
+```python
+# WRONG — imports from a route file, not a service!
+from app.api.v1.companions import _calculate_level_from_xp
+```
+
+Same anti-pattern in `app/services/quest_service.py:411`.
+
+**Correct import**: Use `from app.services.xp_calculator import XPCalculator`
+
+### ⚠️ BROKEN CELERY IMPORTS
+
+| File | Line | Import |
+|------|------|--------|
+| `psychology.py` | 398 | `recalculate_temporal_matches_task` (doesn't exist) |
+| `marketplace.py` | 601 | `create_escrow_task` (doesn't exist) |
+
+These calls fail silently or cause 500 errors.
 
 ---
 

@@ -598,17 +598,12 @@ async def create_booking(
 
     if is_performance_bound:
         try:
-            from app.tasks.escrow import create_escrow_task
-            create_escrow_task.delay(
-                str(booking.id),
-                float(price_agreed * Decimal("0.30")),
-                {
-                    "type": "readiness_improvement",
-                    "min_improvement": 10
-                }
-            )
-        except Exception:
-            pass
+            # TODO: Implement synchronous escrow or BackgroundTasks
+            # The Celery task 'create_escrow_task' doesn't exist
+            # Use FastAPI BackgroundTasks or webhook-based workflow
+            logger.info(f"Would create escrow for booking {booking.id} with 30% of {price_agreed}")
+        except Exception as e:
+            logger.warning(f"Failed to create escrow: {e}")
 
     result = {
         "booking_id": str(booking.id),

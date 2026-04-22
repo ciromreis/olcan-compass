@@ -408,10 +408,11 @@ class QuestService:
                     companion.xp += xp_awarded
                     
                     # Recalculate level
-                    from app.api.v1.companions import _calculate_level_from_xp, _xp_to_next_level, _determine_stage
-                    new_level = _calculate_level_from_xp(companion.xp)
+                    from app.services.xp_calculator import XPCalculator
+                    from app.api.v1.companions import _determine_stage
+                    new_level = XPCalculator.calculate_level_from_xp(companion.xp)
                     companion.level = new_level
-                    companion.xp_to_next = _xp_to_next_level(new_level)
+                    companion.xp_to_next = XPCalculator.get_xp_to_next_level(companion.xp)
                     companion.evolution_stage = _determine_stage(companion.xp, new_level)
             except Exception as aura_error:
                 logger.warning(f"Failed to update aura XP for quest reward: {str(aura_error)}")

@@ -12,6 +12,7 @@ import {
   ArrowRight,
   Zap,
   CheckCircle,
+  FileText,
 } from "lucide-react";
 import { MetadataSidebar, type MetadataSection } from "@/components/layout/MetadataSidebar";
 import { Progress } from "@/components/ui";
@@ -181,6 +182,45 @@ export function RouteMetadataSidebar({
               </Link>
             </div>
           )}
+
+          {/* Master Dossier Export CTA */}
+          <div className="rounded-2xl border border-navy-900 bg-navy-900 p-4">
+            <div className="mb-2 flex items-center gap-2">
+              <FileText className="h-4 w-4 text-accent-400" />
+              <p className="text-xs font-semibold uppercase tracking-wider text-accent-400">
+                Plano Estratégico
+              </p>
+            </div>
+            <p className="mb-3 text-xs text-slate-300">
+              Exporte seu dossier completo com perfil, rota e documentos em PDF.
+            </p>
+            <button
+              onClick={async () => {
+                try {
+                  const response = await fetch(
+                    `${process.env.NEXT_PUBLIC_API_URL || ''}/api/v1/dossier/export`,
+                    { credentials: 'include' }
+                  );
+                  if (!response.ok) throw new Error('Export failed');
+                  
+                  const blob = await response.blob();
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `olcan_dossier_${route.country.toLowerCase()}_${new Date().toISOString().split('T')[0]}.pdf`;
+                  document.body.appendChild(a);
+                  a.click();
+                  window.URL.revokeObjectURL(url);
+                  document.body.removeChild(a);
+                } catch (err) {
+                  console.error('Dossier export failed:', err);
+                }
+              }}
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent-400 px-4 py-2.5 text-sm font-semibold text-navy-900 transition-colors hover:bg-accent-500"
+            >
+              <FileText className="h-4 w-4" /> Exportar PDF
+            </button>
+          </div>
 
           {/* Quick Stats */}
           <div className="rounded-2xl border border-white/60 bg-white/50 p-4 backdrop-blur-sm">
