@@ -32,6 +32,47 @@ from app.schemas.route import (
 router = APIRouter(prefix="/routes", tags=["Route Engine"])
 
 
+# --- Dossier Export (MUST be before /{route_id}) ---
+
+@router.get("/dossier-export", tags=["Dossier"])
+async def export_dossier_html(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Export Master Strategic Dossier as HTML."""
+    from fastapi.responses import StreamingResponse
+    from app.services.dossier_orchestrator import get_master_dossier_for_user
+    from app.utils.pdf_renderer import generate_dossier_pdf
+    
+    try:
+        payload = await get_master_dossier_for_user(current_user.id)
+        html_bytes = await generate_dossier_pdf(payload)
+        
+        filename = f"olcan_dossier_{payload.metadata.user_name.replace(' ', '_')}_{payload.metadata.generated_at.strftime('%Y%m%d')}.html"
+        
+        return StreamingResponse(
+            iter([html_bytes]),
+            media_type="text/html",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/dossier-payload", tags=["Dossier"])
+async def get_dossier_payload(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Get raw dossier payload as JSON."""
+    from app.services.dossier_orchestrator import get_master_dossier_for_user
+    
+    try:
+        return await get_master_dossier_for_user(current_user.id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # --- Template Endpoints ---
 
 @router.get("/templates", response_model=AvailableTemplatesResponse)
@@ -471,60 +512,4 @@ async def _update_route_progress(route_id: UUID, db: AsyncSession):
     result = await db.execute(
         select(Route).where(Route.id == route_id)
     )
-    route = result.scalar_one_or_none()
-    
-    # ============================================================
-# Master Dossier Export
-# ============================================================
-
-@router.get("/dossier-export", tags=["Dossier"])
-async def export_dossier_html(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """Export Master Strategic Dossier as HTML.
-    
-    Requires authentication. Returns HTML that can be saved as PDF.
-    """
-    from uuid import UUID
-    from fastapi.responses import StreamingResponse
-    from app.services.dossier_orchestrator import get_master_dossier_for_user
-    from app.utils.pdf_renderer import generate_dossier_pdf
-    
-    try:
-        # Check if user has a route
-        result = await db.execute(
-            select(Route).where(Route.user_id == current_user.id)
-        )
-        user_route = result.scalars().first()
-        
-        # Build dossier payload
-        user_uuid = current_user.id
-        payload = await get_master_dossier_for_user(user_uuid)
-        html_bytes = await generate_dossier_pdf(payload)
-        
-        filename = f"olcan_dossier_{payload.metadata.user_name.replace(' ', '_')}_{payload.metadata.generated_at.strftime('%Y%m%d')}.html"
-        
-        return StreamingResponse(
-            iter([html_bytes]),
-            media_type="text/html",
-            headers={"Content-Disposition": f"attachment; filename={filename}"}
-        )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to generate: {str(e)}")
-
-
-@router.get("/dossier-payload", tags=["Dossier"])
-async def get_dossier_payload(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """Get raw dossier payload as JSON."""
-    from uuid import UUID
-    from app.services.dossier_orchestrator import get_master_dossier_for_user, MasterDossierPayload
-    
-    try:
-        user_uuid = current_user.id
-        return await get_master_dossier_for_user(user_uuid)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+route = result.scalar_one_or_none()
