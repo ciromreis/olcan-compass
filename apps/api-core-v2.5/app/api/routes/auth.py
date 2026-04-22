@@ -367,6 +367,54 @@ async def get_me(
     return await _build_user_profile_response(current_user, db, include_telemetry=include_telemetry)
 
 
+@router.get("/me/dossier", name="user_dossier")
+async def export_user_dossier(
+    current_user: User = Depends(get_current_user),
+):
+    """Export Master Strategic Dossier as HTML.
+    
+    User can open in browser and Save as PDF.
+    """
+    from uuid import UUID
+    from fastapi.responses import StreamingResponse
+    from app.services.dossier_orchestrator import get_master_dossier_for_user
+    from app.utils.pdf_renderer import generate_dossier_pdf
+    
+    try:
+        user_uuid = UUID(current_user.id)
+        payload = await get_master_dossier_for_user(user_uuid)
+        html_bytes = await generate_dossier_pdf(payload)
+        
+        filename = f"olcan_dossier_{payload.metadata.user_name.replace(' ', '_')}_{payload.metadata.generated_at.strftime('%Y%m%d')}.html"
+        
+        return StreamingResponse(
+            iter([html_bytes]),
+            media_type="text/html",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/me/dossier-payload", name="user_dossier_payload")
+async def get_user_dossier_payload(
+    current_user: User = Depends(get_current_user),
+):
+    """Get raw dossier payload as JSON."""
+    from uuid import UUID
+    from app.services.dossier_orchestrator import get_master_dossier_for_user
+    
+    try:
+        user_uuid = UUID(current_user.id)
+        return await get_master_dossier_for_user(user_uuid)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.put("/me", response_model=UserProfileResponse)
 async def update_me(
     payload: UpdateProfileRequest,

@@ -198,7 +198,7 @@ export function RouteMetadataSidebar({
               onClick={async () => {
                 try {
                   const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || ''}/api/routes/dossier`,
+                    `${process.env.NEXT_PUBLIC_API_URL || ''}/api/auth/me/dossier`,
                     { credentials: 'include' }
                   );
                   if (!response.ok) throw new Error('Export failed');
