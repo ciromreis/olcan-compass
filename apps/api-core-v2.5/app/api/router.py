@@ -41,8 +41,8 @@ from app.api.routes.questions import router as questions_router
 from app.api.routes.notifications import router as notifications_router
 from app.api.routes.gamification import router as gamification_router
 
-# Master Dossier Export
-from app.api.routes.dossier_export import router as dossier_export_router
+# Master Dossier Export (temporarily mounted via quest.py for reliability)
+# from app.api.routes.dossier_export import router as dossier_export_router
 
 # V1 aggregate router — provides /v1/companions, /v1/documents, /v1/leaderboard, etc.
 # These are the endpoints the frontend actually calls (forgeApi, auraApi).
@@ -98,8 +98,7 @@ def _mount_all_routes(router: APIRouter) -> None:
     router.include_router(notifications_router, tags=["Notifications"])
     router.include_router(gamification_router, tags=["Gamification"])
 
-    # Master Dossier Export
-    router.include_router(dossier_export_router, tags=["Master Dossier"])
+    # Master Dossier Export now via quest.py endpoint
 
 
 # Keep /api/* for current frontend and /api/v1/* for backward compatibility.

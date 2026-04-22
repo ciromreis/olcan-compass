@@ -2,6 +2,7 @@
 
 Endpoints for quest management and progress tracking.
 Integrates with QuestService for business logic.
+Also includes Master Dossier export for convenience.
 """
 
 from typing import List, Optional, Dict, Any
@@ -10,11 +11,12 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from pydantic import BaseModel, Field
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_
 from sqlalchemy.orm import selectinload
 
-from app.core.auth import get_current_user
+from app.core.auth import get_current_user, get_current_user_id
 from app.db.session import get_db
 from app.db.models import User
 from app.db.models.quest import (
@@ -22,11 +24,59 @@ from app.db.models.quest import (
     QuestType, QuestStatus, QuestCategory
 )
 from app.services.quest_service import QuestService
+from app.services.dossier_orchestrator import get_master_dossier_for_user, MasterDossierPayload
+from app.utils.pdf_renderer import generate_dossier_pdf
 import logging
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/quests", tags=["Quests"])
+
+
+# ============================================================
+# Master Dossier Export Endpoint (convenience mount)
+# ============================================================
+
+@router.get("/dossier-export", name="master_dossier_export")
+async def export_master_dossier(
+    user_id: str = Depends(get_current_user_id)
+):
+    """Export Master Strategic Dossier.
+    
+    Returns HTML that can be saved as PDF.
+    """
+    from uuid import UUID
+    try:
+        user_uuid = UUID(user_id)
+        payload = await get_master_dossier_for_user(user_uuid)
+        html_bytes = await generate_dossier_pdf(payload)
+        
+        filename = f"olcan_dossier_{payload.metadata.user_name.replace(' ', '_')}_{payload.metadata.generated_at.strftime('%Y%m%d')}.html"
+        
+        return StreamingResponse(
+            iter([html_bytes]),
+            media_type="text/html",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate: {str(e)}")
+
+
+@router.get("/dossier-payload", name="master_dossier_payload")
+async def get_dossier_payload(
+    user_id: str = Depends(get_current_user_id)
+) -> MasterDossierPayload:
+    """Get raw dossier payload."""
+    from uuid import UUID
+    try:
+        user_uuid = UUID(user_id)
+        return await get_master_dossier_for_user(user_uuid)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # ---------------------------------------------------------------------------
