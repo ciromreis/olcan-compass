@@ -75,26 +75,21 @@ curl "https://olcan-compass-api.onrender.com/api/db-diagnostic?secret_key=olcan2
 
 ---
 
-### ✅ RESOLVIDO: Export de Dossier — HTML (2026-04-22)
+### 🔴 PENDENTE: Dossier Export requer deploy manual no Render (2026-04-22)
 
-**Contexto original**: O `export_service.py` tinha stub que retornava texto plano como "PDF".
+**Contexto**: Código implementado mas Render não está fazendo deploy automaticamente.
 
-**Solução implementada**:
-- Novo `dossier_orchestrator.py` — agrega perfil, rota, tasks, docs
-- Novo `pdf_renderer.py` — gera HTML com template Jinja2 (sem deps de sistema)
-- Novo endpoint `/api/v1/dossier/export` — retorna HTML que navegador converte para PDF
-- Botão "Exportar PDF" adicionado em `RouteMetadataSidebar.tsx`
+**Implementado**:
+- `app/services/dossier_orchestrator.py` — agrega perfil, rota, tasks, docs
+- `app/utils/pdf_renderer.py` — gera HTML com template Jinja2
+- `app/api/routes/auth.py` — endpoints `/auth/me/dossier` e `/auth/me/dossier-payload`
+- Botão "Exportar Dossier" adicionado em sidebar
 
-** free tier compatible**: Retorna HTML em vez de PDF (weasyprint precisa de libs de sistema). O usuário pode usar "Save as PDF" no browser.
+**Problema**: O endpoint deveria estar em `/api/auth/me/dossier` mas não aparece no OpenAPI do production. Render não está fazendo deploy das últimas mudanças.
 
-**Status**: ✅ IMPLEMENTADO — aguardando deploy em produção
+**Solução**: Trigger manual de deploy no Render dashboard.
 
-**Verificação**:
-```bash
-# Baixar dossier:
-curl -H "Authorization: Bearer <token>" "https://olcan-compass-api.onrender.com/api/v1/dossier/export"
-# Retorna HTML para salvar como PDF
-```
+**Status**: 🔴 IMPLEMENTADO — AGUARDANDO DEPLOY MANUAL
 
 ---
 
