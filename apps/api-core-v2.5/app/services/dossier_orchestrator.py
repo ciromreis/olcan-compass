@@ -16,8 +16,8 @@ from pydantic import BaseModel
 
 from app.db.session import get_db
 from app.db.models.user import User
-from app.db.models.route import Route, Milestone
-from app.db.models.sprint import Sprint
+from app.db.models.route import Route, RouteMilestone, DynamicMilestone
+from app.db.models.sprint import SprintTask
 from app.db.models.task import Task, TaskStatus
 from app.db.models.document import Document
 from app.db.models.dossier import Dossier
