@@ -207,7 +207,7 @@ export function RouteMetadataSidebar({
                   const url = window.URL.createObjectURL(blob);
                   const a = document.createElement('a');
                   a.href = url;
-                  a.download = `olcan_dossier_${route.country.toLowerCase()}_${new Date().toISOString().split('T')[0]}.pdf`;
+                  a.download = `olcan_dossier_${route.country.toLowerCase()}_${new Date().toISOString().split('T')[0]}.html`;
                   document.body.appendChild(a);
                   a.click();
                   window.URL.revokeObjectURL(url);
@@ -218,7 +218,7 @@ export function RouteMetadataSidebar({
               }}
               className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent-400 px-4 py-2.5 text-sm font-semibold text-navy-900 transition-colors hover:bg-accent-500"
             >
-              <FileText className="h-4 w-4" /> Exportar PDF
+              <FileText className="h-4 w-4" /> Exportar Dossier
             </button>
           </div>
 
