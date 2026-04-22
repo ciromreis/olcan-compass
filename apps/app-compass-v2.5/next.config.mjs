@@ -3,11 +3,13 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+const IS_VERCEL = Boolean(process.env.VERCEL);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   distDir: ".next",
-  // Standalone output for Docker production builds (ignored by Vercel)
-  output: "standalone",
+  // Use standalone only for Docker/Render — Vercel needs default output
+  ...(IS_VERCEL ? {} : { output: "standalone" }),
   transpilePackages: ["styled-jsx"],
   allowedDevOrigins: ["127.0.0.1", "localhost"],
   experimental: {
@@ -16,10 +18,8 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/:path*',
-        headers: [
-          { key: 'X-DNS-Prefetch-Control', value: 'on' },
-        ],
+        source: "/:path*",
+        headers: [{ key: "X-DNS-Prefetch-Control", value: "on" }],
       },
     ];
   },
@@ -27,7 +27,7 @@ const nextConfig = {
     // Ignore canvas for pdfjs-dist
     config.resolve.alias.canvas = false;
     config.resolve.alias.encoding = false;
-    
+
     // Ignore node-specific modules in client bundle
     if (!isServer) {
       config.resolve.fallback = {
@@ -38,7 +38,7 @@ const nextConfig = {
         canvas: false,
       };
     }
-    
+
     return config;
   },
 };
