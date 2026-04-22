@@ -18,7 +18,7 @@ from app.core.auth import get_current_user_id
 from app.services.dossier_orchestrator import get_master_dossier_for_user, MasterDossierPayload
 from app.utils.pdf_renderer import generate_dossier_pdf
 
-router = APIRouter(prefix="/api/v1/dossier", tags=["Dossier"])
+router = APIRouter(prefix="/dossier", tags=["Dossier"])
 
 
 @router.get("/export", name="export_dossier_html")
