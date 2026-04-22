@@ -508,8 +508,15 @@ async def _update_route_progress(route_id: UUID, db: AsyncSession):
     )
     total = result.scalar() or 0
     
-    # Update route
-    result = await db.execute(
-        select(Route).where(Route.id == route_id)
-    )
-route = result.scalar_one_or_none()
+    if total > 0:
+        percentage = int((completed / total) * 100)
+        result = await db.execute(
+            select(Route).where(Route.id == route_id)
+        )
+        route = result.scalar_one_or_none()
+        if route:
+            route.milestones_completed = completed
+            route.completion_percentage = percentage
+            if percentage == 100:
+                route.status = RouteStatus.COMPLETED
+            await db.commit()
