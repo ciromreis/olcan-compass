@@ -23,10 +23,8 @@ redis==5.2.1
 # Redis async for caching
 redis[asyncio]==5.2.1
 
-# PDF Generation
-playwright==1.50.1
+# Document Generation (HTML - free tier compatible)
 jinja2==3.1.5
-weasyprint==62.3
 
 # Rate limiting
 slowapi==0.1.9

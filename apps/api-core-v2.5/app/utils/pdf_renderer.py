@@ -1,14 +1,15 @@
-"""PDF Renderer for Master Dossier using WeasyPrint + Jinja2.
+"""HTML Renderer for Master Dossier.
 
-This renderer creates pixel-perfect PDF documents matching the Olcan
-'Clinical Boutique' aesthetic.
+This renderer creates HTML documents that browsers can save as PDF.
+Works on Render free tier without system dependencies.
+
+IMPLEMENTED: 2026-04-22 (free tier compatible)
 """
 
 import io
 from datetime import datetime, timezone
 from typing import Optional
 from jinja2 import Environment, select_autoescape
-from weasyprint import HTML, CSS
 
 from app.services.dossier_orchestrator import MasterDossierPayload
 
@@ -397,11 +398,14 @@ DOSSIER_TEMPLATE = """
 
 
 # ============================================================
-# PDF Renderer
+# HTML Renderer
 # ============================================================
 
-class DossierPdfRenderer:
-    """Renders Master Dossier as PDF using WeasyPrint."""
+class DossierHtmlRenderer:
+    """Renders Master Dossier as HTML (browsers can save as PDF).
+    
+    Free tier compatible - no system dependencies required.
+    """
     
     def __init__(self):
         self.env = Environment(
@@ -409,30 +413,18 @@ class DossierPdfRenderer:
         )
     
     async def render(self, payload: MasterDossierPayload) -> bytes:
-        """Render payload as PDF bytes."""
+        """Render payload as HTML bytes."""
         
-        # Simple template rendering with inline template
         template = self.env.from_string(DOSSIER_TEMPLATE)
         html_content = template.render(payload=payload)
         
-        # Generate PDF using WeasyPrint
-        pdf_buffer = io.BytesIO()
-        html_doc = HTML(string=html_content)
-        html_doc.write_pdf(
-            pdf_buffer,
-            stylesheets=[CSS(string="""
-                @page {
-                    size: A4;
-                    margin: 15mm;
-                }
-            """)]
-        )
-        
-        pdf_buffer.seek(0)
-        return pdf_buffer.getvalue()
+        return html_content.encode('utf-8')
 
 
 async def generate_dossier_pdf(payload: MasterDossierPayload) -> bytes:
-    """Render Master Dossier as PDF."""
-    renderer = DossierPdfRenderer()
+    """Render Master Dossier as HTML (browser-renderable).
+    
+    Returns HTML that can be saved as PDF in any browser.
+    """
+    renderer = DossierHtmlRenderer()
     return await renderer.render(payload)

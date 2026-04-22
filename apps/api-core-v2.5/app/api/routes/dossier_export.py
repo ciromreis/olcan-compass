@@ -1,10 +1,13 @@
 """Master Strategic Dossier Export API.
 
-This endpoint generates a unified PDF that combines:
+This endpoint generates a unified HTML document that combines:
 - User's psychological profile (OIOS archetype, readiness)
 - Active route with milestones
 - Pending tasks
 - Created documents (CVs, essays, etc.)
+
+IMPLEMENTED: 2026-04-22
+STATUS: Free tier compatible (returns HTML, browsers save as PDF)
 """
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -18,11 +21,11 @@ from app.utils.pdf_renderer import generate_dossier_pdf
 router = APIRouter(prefix="/api/v1/dossier", tags=["Dossier"])
 
 
-@router.get("/export", name="export_dossier_pdf")
-async def export_master_dossier_pdf(
+@router.get("/export", name="export_dossier_html")
+async def export_master_dossier_html(
     user_id: str = Depends(get_current_user_id)
 ):
-    """Export Master Strategic Dossier as PDF.
+    """Export Master Strategic Dossier as HTML.
     
     This aggregates:
     - Identity & Readiness (OIOS profile)
@@ -30,7 +33,7 @@ async def export_master_dossier_pdf(
     - Upcoming Tasks
     - Execution Artifacts (documents)
     
-    Returns a PDF file with the Olcan 'Clinical Boutique' aesthetic.
+    Returns an HTML file. Use browser "Save as PDF" to generate PDF.
     """
     try:
         user_uuid = UUID(user_id)
@@ -38,15 +41,15 @@ async def export_master_dossier_pdf(
         # 1. Build the Master Dossier Payload
         payload = await get_master_dossier_for_user(user_uuid)
         
-        # 2. Render as PDF
-        pdf_bytes = await generate_dossier_pdf(payload)
+        # 2. Render as HTML
+        html_bytes = await generate_dossier_pdf(payload)
         
         # 3. Return as streaming response
-        filename = f"olcan_dossier_{payload.metadata.user_name.replace(' ', '_')}_{payload.metadata.generated_at.strftime('%Y%m%d')}.pdf"
+        filename = f"olcan_dossier_{payload.metadata.user_name.replace(' ', '_')}_{payload.metadata.generated_at.strftime('%Y%m%d')}.html"
         
         return StreamingResponse(
-            iter([pdf_bytes]),
-            media_type="application/pdf",
+            iter([html_bytes]),
+            media_type="text/html",
             headers={
                 "Content-Disposition": f"attachment; filename={filename}"
             }
@@ -55,7 +58,7 @@ async def export_master_dossier_pdf(
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to generate PDF: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate HTML: {str(e)}")
 
 
 @router.get("/payload", name="get_dossier_payload")
