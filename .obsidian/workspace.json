@@ -11,14 +11,10 @@
             "id": "f69c93e32d4fcc05",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "wiki/00_SOVEREIGN/MemPalace_Migration_Spec.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "MemPalace_Migration_Spec"
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Visualização em gráfico"
             }
           }
         ]
@@ -185,6 +181,10 @@
   },
   "active": "f69c93e32d4fcc05",
   "lastOpenFiles": [
+    "apps/site-marketing-v2.5/node_modules/graphql-http/README.md",
+    "wiki/00_SOVEREIGN/Olcan_Master_PRD_v2_5.md",
+    "wiki/02_Arquitetura_Compass/Arquitetura_v2_5_Compass.md",
+    "wiki/00_SOVEREIGN/MemPalace_Migration_Spec.md",
     "node_modules/eslint-plugin-react/README.md",
     "wiki/00_SOVEREIGN/Grafo_de_Conhecimento_Olcan.md",
     "wiki/00_SOVEREIGN/Agent_Knowledge_Handbook.md",
@@ -202,7 +202,6 @@
     "wiki/00_Onboarding_Inicio/Checklist_Seguranca_Compass.md",
     "wiki/00_Onboarding_Inicio/Checklist_Producao_Marketing.md",
     "wiki/_templates/nota.md",
-    "wiki/02_Arquitetura_Compass/Arquitetura_v2_5_Compass.md",
     "node_modules/ms/license.md",
     "apps/app-compass-v2.5/src/components/ui/Breadcrumbs.tsx",
     "apps/app-compass-v2.5/SESSION_HANDOFF_2026_04_17.md",
@@ -213,9 +212,6 @@
     "wiki/00_Onboarding_Inicio/Plano_GoLive_v2_5_Abril_2026.md",
     "CLAUDE.md",
     "START_HERE.md",
-    "wiki/02_Arquitetura_Compass/Guia_de_Operacoes_Database.md",
-    "wiki/02_Arquitetura_Compass/Guia_Tecnico_CRM_Integration.md",
-    "wiki/01_Visao_Estrategica/Verdade_Final_v2_5.md",
     "apps/app-compass-v2.5/src/app/api/dossier/export/route.ts",
     "apps/app-compass-v2.5/src/app/api/dossier/export",
     "apps/app-compass-v2.5/src/app/api/dossier",

@@ -10,8 +10,7 @@ import { canCreateForgeDocument, maxForgeDocuments } from "@/lib/entitlements";
 import { FileUpload } from "@/components/forge/FileUpload";
 
 const DOC_TYPES: { id: DocType; icon: typeof FileText; label: string; description: string; category: string }[] = [
-  { id: "cv", icon: Briefcase, label: "Currículo / CV", description: "CV formatado para padrões internacionais", category: "employment" },
-  { id: "resume", icon: Briefcase, label: "Resume", description: "Resume estilo americano para aplicações corporativas", category: "employment" },
+  { id: "cv", icon: Briefcase, label: "Currículo / Resume", description: "CV ou Resume formatado para padrões internacionais", category: "employment" },
   { id: "motivation_letter", icon: FileEdit, label: "Carta de Motivação", description: "Carta de motivação para programas acadêmicos", category: "education" },
   { id: "cover_letter", icon: FileEdit, label: "Carta de Apresentação", description: "Cover letter para vagas corporativas", category: "employment" },
   { id: "statement_of_purpose", icon: GraduationCap, label: "Statement of Purpose", description: "Essay formal para universidades US/UK", category: "education" },

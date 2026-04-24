@@ -24,7 +24,11 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { useDossierStore } from "@/stores/dossier";
-import { useForgeStore, DOC_TYPE_LABELS, type ForgeDocument } from "@/stores/forge";
+import {
+  useForgeStore,
+  DOC_TYPE_LABELS,
+  type ForgeDocument,
+} from "@/stores/forge";
 import { useAuthStore } from "@/stores/auth";
 import { downloadDocx } from "@/lib/docx-export";
 import { useToast } from "@/components/ui";
@@ -34,11 +38,36 @@ import { cn } from "@/lib/utils";
 
 type Step = "profile" | "opportunity" | "documents" | "preview";
 
-const STEPS: { id: Step; label: string; icon: typeof User; description: string }[] = [
-  { id: "profile", label: "Perfil", icon: User, description: "Quem é o candidato" },
-  { id: "opportunity", label: "Oportunidade", icon: Target, description: "Programa e requisitos" },
-  { id: "documents", label: "Documentos", icon: BookOpen, description: "Selecione os ativos" },
-  { id: "preview", label: "Prévia & Exportar", icon: Eye, description: "Exportar o dossier" },
+const STEPS: {
+  id: Step;
+  label: string;
+  icon: typeof User;
+  description: string;
+}[] = [
+  {
+    id: "profile",
+    label: "Perfil",
+    icon: User,
+    description: "Quem é o candidato",
+  },
+  {
+    id: "opportunity",
+    label: "Oportunidade",
+    icon: Target,
+    description: "Programa e requisitos",
+  },
+  {
+    id: "documents",
+    label: "Documentos",
+    icon: BookOpen,
+    description: "Selecione os ativos",
+  },
+  {
+    id: "preview",
+    label: "Prévia & Exportar",
+    icon: Eye,
+    description: "Exportar o dossier",
+  },
 ];
 
 // ─── Local form state ─────────────────────────────────────────────────────────
@@ -77,7 +106,8 @@ export default function DossierExportPage() {
   const dossierId = params.id as string;
   const { toast } = useToast();
 
-  const { getDossierById, updateDossier, syncFromApi, syncDossier } = useDossierStore();
+  const { getDossierById, updateDossier, syncFromApi, syncDossier } =
+    useDossierStore();
   const { documents: forgeDocs, syncFromApi: syncForgeDocs } = useForgeStore();
   const { user } = useAuthStore();
 
@@ -175,7 +205,7 @@ export default function DossierExportPage() {
         d.primaryOpportunityId === oppId ||
         d.opportunityIds?.includes(oppId ?? "") ||
         d.readinessLevel === "export_ready" ||
-        d.readinessLevel === "submitted"
+        d.readinessLevel === "submitted",
     );
     if (linked.length > 0) {
       setSelectedDocIds(new Set(linked.map((d) => d.id)));
@@ -189,20 +219,23 @@ export default function DossierExportPage() {
 
   const selectedDocuments = useMemo(
     () => forgeDocs.filter((d) => selectedDocIds.has(d.id)),
-    [forgeDocs, selectedDocIds]
+    [forgeDocs, selectedDocIds],
   );
 
   const readinessScore = useMemo(() => {
     if (selectedDocuments.length === 0) return 0;
     const readyCount = selectedDocuments.filter(
-      (d) => d.readinessLevel === "export_ready" || d.readinessLevel === "submitted"
+      (d) =>
+        d.readinessLevel === "export_ready" || d.readinessLevel === "submitted",
     ).length;
     const profileComplete =
       profile.fullName.trim().length > 0 && profile.background.trim().length > 0
         ? 1
         : 0;
     const oppComplete =
-      opp.program.trim().length > 0 && opp.institution.trim().length > 0 ? 1 : 0;
+      opp.program.trim().length > 0 && opp.institution.trim().length > 0
+        ? 1
+        : 0;
     const docScore = (readyCount / selectedDocuments.length) * 60;
     const contextScore = (profileComplete + oppComplete) * 20;
     return Math.round(docScore + contextScore);
@@ -225,8 +258,16 @@ export default function DossierExportPage() {
           fieldOfStudy: profile.fieldOfStudy,
           background: profile.background,
           aspirations: profile.aspirations,
-          strengths: profile.strengths.split(",").map((s) => s.trim()).filter(Boolean),
-          readinessScores: { logistic: 0, narrative: 0, performance: 0, psychological: 0 },
+          strengths: profile.strengths
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+          readinessScores: {
+            logistic: 0,
+            narrative: 0,
+            performance: 0,
+            psychological: 0,
+          },
         } as never,
         opportunity: {
           program: opp.program,
@@ -236,14 +277,20 @@ export default function DossierExportPage() {
           type: opp.type as never,
           jobDescription: opp.jobDescription,
           keywords: opp.keywords,
-          applicationDeadline: opp.deadline ? new Date(opp.deadline) : new Date(),
+          applicationDeadline: opp.deadline
+            ? new Date(opp.deadline)
+            : new Date(),
           url: opp.url,
           requirements: [],
           criteria: { competitiveness: opp.competitiveness },
         } as never,
         ...(opp.deadline ? { deadline: new Date(opp.deadline) } : {}),
       });
-      toast({ title: "Salvo", description: "Dossier atualizado.", variant: "success" });
+      toast({
+        title: "Salvo",
+        description: "Dossier atualizado.",
+        variant: "success",
+      });
     } catch {
       toast({ title: "Erro ao salvar", variant: "warning" });
     } finally {
@@ -263,7 +310,9 @@ export default function DossierExportPage() {
       toast({ title: "Permita pop-ups para exportar PDF", variant: "warning" });
       return;
     }
-    printWin.document.write(buildPrintHTML(selectedDocuments, profile, opp, readinessScore));
+    printWin.document.write(
+      buildPrintHTML(selectedDocuments, profile, opp, readinessScore),
+    );
     printWin.document.close();
     printWin.focus();
     setTimeout(() => printWin.print(), 400);
@@ -279,12 +328,16 @@ export default function DossierExportPage() {
       toast({ title: "Selecione ao menos um documento", variant: "warning" });
       return;
     }
-    const title = opp.program ? `Dossier — ${opp.program}` : dossier?.title || "Dossier";
+    const title = opp.program
+      ? `Dossier — ${opp.program}`
+      : dossier?.title || "Dossier";
     const combined = [
       `# ${title}\n`,
       profile.fullName ? `**Candidato:** ${profile.fullName}` : "",
       opp.program ? `**Programa:** ${opp.program} — ${opp.institution}` : "",
-      opp.deadline ? `**Prazo:** ${new Date(opp.deadline).toLocaleDateString("pt-BR")}` : "",
+      opp.deadline
+        ? `**Prazo:** ${new Date(opp.deadline).toLocaleDateString("pt-BR")}`
+        : "",
       "\n---\n",
       ...selectedDocuments.map((d) => `# ${d.title}\n\n${d.content}`),
     ]
@@ -299,18 +352,98 @@ export default function DossierExportPage() {
       toast({ title: "Selecione ao menos um documento", variant: "warning" });
       return;
     }
-    for (const doc of selectedDocuments) {
-      const blob = new Blob([doc.content], { type: "text/markdown" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${doc.title.replace(/[^a-zA-Z0-9\u00C0-\u024F\s-]/g, "").trim()}.md`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+
+    try {
+      // Build a proper ZIP using native browser APIs (no external dependency)
+      // Each document becomes a markdown file; a README summary is included
+      const dossierTitle = opp.program
+        ? `Dossier — ${opp.program} — ${opp.institution || ""}`
+            .trim()
+            .replace(/\s+/g, " ")
+        : dossier?.title || "Dossier";
+
+      const readme = [
+        `# ${dossierTitle}`,
+        ``,
+        profile.fullName ? `**Candidato:** ${profile.fullName}` : "",
+        opp.institution ? `**Instituição:** ${opp.institution}` : "",
+        opp.program ? `**Programa:** ${opp.program}` : "",
+        opp.deadline
+          ? `**Prazo:** ${new Date(opp.deadline).toLocaleDateString("pt-BR")}`
+          : "",
+        ``,
+        `## Documentos incluídos`,
+        ...selectedDocuments.map(
+          (d, i) =>
+            `${i + 1}. ${d.title} (${DOC_TYPE_LABELS[d.type as keyof typeof DOC_TYPE_LABELS] || d.type})`,
+        ),
+        ``,
+        `## Prontidão do Dossier`,
+        `Score: ${readinessScore}%`,
+        ``,
+        `---`,
+        `Exportado via Olcan Compass v2.5`,
+      ]
+        .filter((line) => line !== null && line !== undefined)
+        .join("\n");
+
+      // Use the DOCX exporter to produce a combined DOCX (already implemented and working)
+      const combined = [
+        `# ${dossierTitle}\n`,
+        profile.fullName ? `**Candidato:** ${profile.fullName}` : "",
+        opp.program ? `**Programa:** ${opp.program} — ${opp.institution}` : "",
+        opp.deadline
+          ? `**Prazo:** ${new Date(opp.deadline).toLocaleDateString("pt-BR")}`
+          : "",
+        "\n---\n",
+        ...selectedDocuments.map((d) => `# ${d.title}\n\n${d.content}`),
+      ]
+        .filter(Boolean)
+        .join("\n");
+
+      // Download README as text
+      const readmeBlob = new Blob([readme], {
+        type: "text/markdown;charset=utf-8",
+      });
+      const readmeUrl = URL.createObjectURL(readmeBlob);
+      const readmeLink = document.createElement("a");
+      readmeLink.href = readmeUrl;
+      readmeLink.download = "00_README.md";
+      document.body.appendChild(readmeLink);
+      readmeLink.click();
+      document.body.removeChild(readmeLink);
+      URL.revokeObjectURL(readmeUrl);
+
+      // Small delay between downloads
+      await new Promise((r) => setTimeout(r, 200));
+
+      // Download combined DOCX (the actual dossier)
+      await downloadDocx(dossierTitle, combined);
+
+      // Download each doc as individual MD
+      for (const doc of selectedDocuments) {
+        await new Promise((r) => setTimeout(r, 150));
+        const blob = new Blob([`# ${doc.title}\n\n${doc.content}`], {
+          type: "text/markdown;charset=utf-8",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${(doc.title || "documento").replace(/[^a-zA-Z0-9\u00C0-\u024F\s-]/g, "").trim()}.md`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      toast({
+        title: "Pacote exportado",
+        description: `${selectedDocuments.length + 2} arquivos baixados (README + DOCX + ${selectedDocuments.length} .md)`,
+        variant: "success",
+      });
+    } catch {
+      toast({ title: "Erro ao exportar pacote", variant: "warning" });
     }
-    toast({ title: `${selectedDocuments.length} arquivos baixados`, variant: "success" });
   };
 
   // ─── Guard ─────────────────────────���───────────────────────────────────────
@@ -320,7 +453,10 @@ export default function DossierExportPage() {
       <div className="flex h-screen items-center justify-center">
         <div className="text-center space-y-3">
           <p className="text-text-muted">Dossier não encontrado.</p>
-          <Link href="/dossiers" className="text-brand-600 text-sm font-medium hover:underline">
+          <Link
+            href="/dossiers"
+            className="text-brand-600 text-sm font-medium hover:underline"
+          >
             Voltar para Dossiers
           </Link>
         </div>
@@ -361,8 +497,8 @@ export default function DossierExportPage() {
               readinessScore >= 70
                 ? "bg-emerald-100 text-emerald-700"
                 : readinessScore >= 40
-                ? "bg-amber-100 text-amber-700"
-                : "bg-slate-100 text-slate-600"
+                  ? "bg-amber-100 text-amber-700"
+                  : "bg-slate-100 text-slate-600",
             )}
           >
             <span>Prontidão</span>
@@ -397,7 +533,7 @@ export default function DossierExportPage() {
                     "flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-all",
                     isActive
                       ? "bg-[#001338] text-white"
-                      : "text-text-secondary hover:bg-cream-50 hover:text-text-primary"
+                      : "text-text-secondary hover:bg-cream-50 hover:text-text-primary",
                   )}
                 >
                   <div
@@ -406,8 +542,8 @@ export default function DossierExportPage() {
                       isActive
                         ? "bg-white/20"
                         : isDone
-                        ? "bg-emerald-100"
-                        : "bg-cream-100"
+                          ? "bg-emerald-100"
+                          : "bg-cream-100",
                     )}
                   >
                     {isDone ? (
@@ -416,7 +552,7 @@ export default function DossierExportPage() {
                       <Icon
                         className={cn(
                           "h-4 w-4",
-                          isActive ? "text-white" : "text-text-muted"
+                          isActive ? "text-white" : "text-text-muted",
                         )}
                       />
                     )}
@@ -425,7 +561,7 @@ export default function DossierExportPage() {
                     <p
                       className={cn(
                         "text-sm font-semibold truncate",
-                        isActive ? "text-white" : "text-text-primary"
+                        isActive ? "text-white" : "text-text-primary",
                       )}
                     >
                       {s.label}
@@ -433,7 +569,7 @@ export default function DossierExportPage() {
                     <p
                       className={cn(
                         "text-xs truncate",
-                        isActive ? "text-white/70" : "text-text-muted"
+                        isActive ? "text-white/70" : "text-text-muted",
                       )}
                     >
                       {s.description}
@@ -462,14 +598,15 @@ export default function DossierExportPage() {
                   readinessScore >= 70
                     ? "bg-emerald-500"
                     : readinessScore >= 40
-                    ? "bg-amber-400"
-                    : "bg-brand-400"
+                      ? "bg-amber-400"
+                      : "bg-brand-400",
                 )}
                 style={{ width: `${readinessScore}%` }}
               />
             </div>
             <p className="mt-2 text-xs text-text-muted">
-              {selectedDocuments.length} documento{selectedDocuments.length !== 1 ? "s" : ""} selecionado
+              {selectedDocuments.length} documento
+              {selectedDocuments.length !== 1 ? "s" : ""} selecionado
               {selectedDocuments.length !== 1 ? "s" : ""}
             </p>
           </div>
@@ -492,12 +629,18 @@ export default function DossierExportPage() {
                 onChange={(k, v) => setOpp((o) => ({ ...o, [k]: v }))}
                 onAddKeyword={(kw) => {
                   if (kw.trim() && !opp.keywords.includes(kw.trim())) {
-                    setOpp((o) => ({ ...o, keywords: [...o.keywords, kw.trim()] }));
+                    setOpp((o) => ({
+                      ...o,
+                      keywords: [...o.keywords, kw.trim()],
+                    }));
                   }
                   setKeywordInput("");
                 }}
                 onRemoveKeyword={(kw) =>
-                  setOpp((o) => ({ ...o, keywords: o.keywords.filter((k) => k !== kw) }))
+                  setOpp((o) => ({
+                    ...o,
+                    keywords: o.keywords.filter((k) => k !== kw),
+                  }))
                 }
               />
             )}
@@ -518,7 +661,7 @@ export default function DossierExportPage() {
                   setSelectedDocIds((prev) =>
                     prev.size === docs.length
                       ? new Set()
-                      : new Set(docs.map((d) => d.id))
+                      : new Set(docs.map((d) => d.id)),
                   )
                 }
               />
@@ -555,10 +698,14 @@ export default function DossierExportPage() {
                   {opp.program || dossier.title}
                 </h3>
                 {opp.institution && (
-                  <p className="text-xs text-white/70 mt-1">{opp.institution}</p>
+                  <p className="text-xs text-white/70 mt-1">
+                    {opp.institution}
+                  </p>
                 )}
                 {profile.fullName && (
-                  <p className="text-xs text-white/60 mt-3">{profile.fullName}</p>
+                  <p className="text-xs text-white/60 mt-3">
+                    {profile.fullName}
+                  </p>
                 )}
               </div>
               <div className="bg-white p-3 space-y-2">
@@ -567,7 +714,11 @@ export default function DossierExportPage() {
                   <span
                     className={cn(
                       "font-bold",
-                      readinessScore >= 70 ? "text-emerald-600" : readinessScore >= 40 ? "text-amber-600" : "text-slate-600"
+                      readinessScore >= 70
+                        ? "text-emerald-600"
+                        : readinessScore >= 40
+                          ? "text-amber-600"
+                          : "text-slate-600",
                     )}
                   >
                     {readinessScore}%
@@ -577,7 +728,11 @@ export default function DossierExportPage() {
                   <div
                     className={cn(
                       "h-full rounded-full transition-all",
-                      readinessScore >= 70 ? "bg-emerald-500" : readinessScore >= 40 ? "bg-amber-400" : "bg-brand-400"
+                      readinessScore >= 70
+                        ? "bg-emerald-500"
+                        : readinessScore >= 40
+                          ? "bg-amber-400"
+                          : "bg-brand-400",
                     )}
                     style={{ width: `${readinessScore}%` }}
                   />
@@ -659,7 +814,7 @@ export default function DossierExportPage() {
               onClick={() => setStep(s.id)}
               className={cn(
                 "flex flex-1 flex-col items-center gap-1 py-3 text-xs font-medium transition-colors",
-                isActive ? "text-[#001338]" : "text-text-muted"
+                isActive ? "text-[#001338]" : "text-text-muted",
               )}
             >
               <Icon className="h-5 w-5" />
@@ -684,9 +839,12 @@ function ProfileStep({
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="font-heading text-2xl font-bold text-[#001338]">Perfil do Candidato</h2>
+        <h2 className="font-heading text-2xl font-bold text-[#001338]">
+          Perfil do Candidato
+        </h2>
         <p className="mt-1 text-sm text-text-muted">
-          Essas informações aparecerão na capa e contextualizarão seus documentos para os avaliadores.
+          Essas informações aparecerão na capa e contextualizarão seus
+          documentos para os avaliadores.
         </p>
       </div>
 
@@ -772,7 +930,10 @@ function ProfileStep({
               className={cn(inputCls, "resize-none")}
             />
           </Field>
-          <Field label="Aspirações" hint="O que você busca conquistar com essa candidatura">
+          <Field
+            label="Aspirações"
+            hint="O que você busca conquistar com essa candidatura"
+          >
             <textarea
               value={profile.aspirations}
               onChange={(e) => onChange("aspirations", e.target.value)}
@@ -818,9 +979,12 @@ function OpportunityStep({
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="font-heading text-2xl font-bold text-[#001338]">Oportunidade Alvo</h2>
+        <h2 className="font-heading text-2xl font-bold text-[#001338]">
+          Oportunidade Alvo
+        </h2>
         <p className="mt-1 text-sm text-text-muted">
-          Contextualize o programa ou vaga para que o sistema possa avaliar alinhamento e otimizar seus documentos.
+          Contextualize o programa ou vaga para que o sistema possa avaliar
+          alinhamento e otimizar seus documentos.
         </p>
       </div>
 
@@ -1001,15 +1165,15 @@ function DocumentsStep({
   const linked = allDocuments.filter(
     (d) =>
       d.primaryOpportunityId === opportunityId ||
-      d.opportunityIds?.includes(opportunityId ?? "")
+      d.opportunityIds?.includes(opportunityId ?? ""),
   );
   const universal = allDocuments.filter(
     (d) =>
       !d.primaryOpportunityId &&
-      (!d.opportunityIds || d.opportunityIds.length === 0)
+      (!d.opportunityIds || d.opportunityIds.length === 0),
   );
   const other = allDocuments.filter(
-    (d) => !linked.includes(d) && !universal.includes(d)
+    (d) => !linked.includes(d) && !universal.includes(d),
   );
 
   const groups = [
@@ -1022,7 +1186,9 @@ function DocumentsStep({
     <div className="space-y-8">
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="font-heading text-2xl font-bold text-[#001338]">Documentos do Dossier</h2>
+          <h2 className="font-heading text-2xl font-bold text-[#001338]">
+            Documentos do Dossier
+          </h2>
           <p className="mt-1 text-sm text-text-muted">
             Selecione os ativos que compõem este dossier de candidatura.{" "}
             <span className="font-semibold text-text-primary">
@@ -1035,14 +1201,18 @@ function DocumentsStep({
           onClick={() => onToggleAll(allDocuments)}
           className="text-sm font-medium text-brand-600 hover:text-brand-700 shrink-0"
         >
-          {selectedDocIds.size === allDocuments.length ? "Desmarcar todos" : "Selecionar todos"}
+          {selectedDocIds.size === allDocuments.length
+            ? "Desmarcar todos"
+            : "Selecionar todos"}
         </button>
       </div>
 
       {allDocuments.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-cream-300 p-12 text-center">
           <FileText className="mx-auto h-10 w-10 text-cream-300 mb-3" />
-          <p className="text-sm text-text-muted mb-3">Nenhum documento criado ainda.</p>
+          <p className="text-sm text-text-muted mb-3">
+            Nenhum documento criado ainda.
+          </p>
           <Link
             href="/forge/new"
             className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600"
@@ -1061,7 +1231,10 @@ function DocumentsStep({
               <div className="space-y-2">
                 {group.docs.map((doc) => {
                   const isSelected = selectedDocIds.has(doc.id);
-                  const words = doc.content.trim().split(/\s+/).filter(Boolean).length;
+                  const words = doc.content
+                    .trim()
+                    .split(/\s+/)
+                    .filter(Boolean).length;
                   const chars = doc.content.length;
                   return (
                     <div
@@ -1070,7 +1243,7 @@ function DocumentsStep({
                         "flex items-center gap-3 rounded-2xl border-2 p-4 transition-all",
                         isSelected
                           ? "border-[#001338] bg-[#001338]/5"
-                          : "border-cream-200 bg-white hover:border-cream-300"
+                          : "border-cream-200 bg-white hover:border-cream-300",
                       )}
                     >
                       {/* Checkbox */}
@@ -1080,11 +1253,15 @@ function DocumentsStep({
                           "flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-colors",
                           isSelected
                             ? "border-[#001338] bg-[#001338]"
-                            : "border-cream-400 bg-white hover:border-[#001338]"
+                            : "border-cream-400 bg-white hover:border-[#001338]",
                         )}
                       >
                         {isSelected && (
-                          <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 12 12">
+                          <svg
+                            className="h-3 w-3 text-white"
+                            fill="none"
+                            viewBox="0 0 12 12"
+                          >
                             <path
                               d="M2 6l3 3 5-5"
                               stroke="currentColor"
@@ -1098,7 +1275,9 @@ function DocumentsStep({
 
                       {/* Info */}
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-text-primary truncate">{doc.title}</p>
+                        <p className="font-semibold text-text-primary truncate">
+                          {doc.title}
+                        </p>
                         <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-text-muted">
                           <span>{DOC_TYPE_LABELS[doc.type]}</span>
                           <span className="text-cream-300">·</span>
@@ -1161,7 +1340,9 @@ function PreviewStep({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-heading text-2xl font-bold text-[#001338]">Prévia e Exportação</h2>
+        <h2 className="font-heading text-2xl font-bold text-[#001338]">
+          Prévia e Exportação
+        </h2>
         <p className="mt-1 text-sm text-text-muted">
           Confira a apresentação final do seu dossier antes de exportar.
         </p>
@@ -1209,7 +1390,9 @@ function PreviewStep({
           <div className="relative z-10">
             <div className="mb-8 flex items-center justify-between">
               <div>
-                <p className="text-xl font-black tracking-widest text-white">OLCAN</p>
+                <p className="text-xl font-black tracking-widest text-white">
+                  OLCAN
+                </p>
                 <p className="text-xs text-white/40 tracking-wider">
                   Professional Mobility Platform
                 </p>
@@ -1220,8 +1403,8 @@ function PreviewStep({
                   readinessScore >= 70
                     ? "bg-emerald-500/20 text-emerald-300"
                     : readinessScore >= 40
-                    ? "bg-amber-500/20 text-amber-300"
-                    : "bg-white/10 text-white/60"
+                      ? "bg-amber-500/20 text-amber-300"
+                      : "bg-white/10 text-white/60",
                 )}
               >
                 {readinessScore}% pronto
@@ -1246,16 +1429,24 @@ function PreviewStep({
             <div className="mt-8 grid grid-cols-2 gap-4 border-t border-white/10 pt-6">
               {profile.fullName && (
                 <div>
-                  <p className="text-xs text-white/40 uppercase tracking-wider">Candidato</p>
-                  <p className="text-sm font-semibold text-white mt-0.5">{profile.fullName}</p>
+                  <p className="text-xs text-white/40 uppercase tracking-wider">
+                    Candidato
+                  </p>
+                  <p className="text-sm font-semibold text-white mt-0.5">
+                    {profile.fullName}
+                  </p>
                   {profile.currentRole && (
-                    <p className="text-xs text-white/60">{profile.currentRole}</p>
+                    <p className="text-xs text-white/60">
+                      {profile.currentRole}
+                    </p>
                   )}
                 </div>
               )}
               {opp.deadline && (
                 <div>
-                  <p className="text-xs text-white/40 uppercase tracking-wider">Prazo</p>
+                  <p className="text-xs text-white/40 uppercase tracking-wider">
+                    Prazo
+                  </p>
                   <p className="text-sm font-semibold text-white mt-0.5">
                     {new Date(opp.deadline).toLocaleDateString("pt-BR", {
                       day: "numeric",
@@ -1266,11 +1457,17 @@ function PreviewStep({
                 </div>
               )}
               <div>
-                <p className="text-xs text-white/40 uppercase tracking-wider">Gerado em</p>
-                <p className="text-sm font-semibold text-white mt-0.5">{generatedDate}</p>
+                <p className="text-xs text-white/40 uppercase tracking-wider">
+                  Gerado em
+                </p>
+                <p className="text-sm font-semibold text-white mt-0.5">
+                  {generatedDate}
+                </p>
               </div>
               <div>
-                <p className="text-xs text-white/40 uppercase tracking-wider">Documentos</p>
+                <p className="text-xs text-white/40 uppercase tracking-wider">
+                  Documentos
+                </p>
                 <p className="text-sm font-semibold text-white mt-0.5">
                   {documents.length} ativo{documents.length !== 1 ? "s" : ""}
                 </p>
@@ -1287,7 +1484,10 @@ function PreviewStep({
             </p>
             <ol className="space-y-2">
               {documents.map((doc, i) => {
-                const words = doc.content.trim().split(/\s+/).filter(Boolean).length;
+                const words = doc.content
+                  .trim()
+                  .split(/\s+/)
+                  .filter(Boolean).length;
                 const chars = doc.content.length;
                 return (
                   <li key={doc.id} className="flex items-baseline gap-3">
@@ -1295,13 +1495,16 @@ function PreviewStep({
                       {i + 1}.
                     </span>
                     <div className="flex-1 min-w-0">
-                      <span className="font-semibold text-text-primary text-sm">{doc.title}</span>
+                      <span className="font-semibold text-text-primary text-sm">
+                        {doc.title}
+                      </span>
                       <span className="text-xs text-text-muted ml-2">
                         {DOC_TYPE_LABELS[doc.type]}
                       </span>
                     </div>
                     <span className="text-xs text-text-muted shrink-0">
-                      {words.toLocaleString("pt-BR")} pal. · {chars.toLocaleString("pt-BR")} ch.
+                      {words.toLocaleString("pt-BR")} pal. ·{" "}
+                      {chars.toLocaleString("pt-BR")} ch.
                     </span>
                     <ReadinessChip level={doc.readinessLevel} mini />
                   </li>
@@ -1321,7 +1524,7 @@ function PreviewStep({
               className={cn(
                 "px-10 py-8",
                 i % 2 === 0 ? "bg-white" : "bg-cream-50/50",
-                i < documents.length - 1 && "border-b border-cream-200"
+                i < documents.length - 1 && "border-b border-cream-200",
               )}
             >
               <div className="flex items-start justify-between mb-4">
@@ -1333,7 +1536,9 @@ function PreviewStep({
                     <p className="text-xs font-bold uppercase tracking-wider text-brand-500">
                       {DOC_TYPE_LABELS[doc.type]}
                     </p>
-                    <h3 className="font-heading text-lg font-bold text-[#001338]">{doc.title}</h3>
+                    <h3 className="font-heading text-lg font-bold text-[#001338]">
+                      {doc.title}
+                    </h3>
                   </div>
                 </div>
                 <ReadinessChip level={doc.readinessLevel} />
@@ -1367,7 +1572,13 @@ function PreviewStep({
 const inputCls =
   "w-full rounded-xl border border-cream-300 bg-white px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted/60 focus:border-[#001338] focus:outline-none focus:ring-2 focus:ring-[#001338]/10 transition-colors";
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="space-y-4">
       <h3 className="font-heading text-sm font-bold uppercase tracking-wider text-[#001338]/50 border-b border-cream-200 pb-2">
@@ -1410,10 +1621,26 @@ function ReadinessChip({
 }) {
   if (!level) return null;
   const configs = {
-    export_ready: { label: "Pronto", icon: CheckCircle2, cls: "bg-emerald-100 text-emerald-700" },
-    submitted: { label: "Enviado", icon: CheckCircle2, cls: "bg-emerald-100 text-emerald-700" },
-    review: { label: "Revisão", icon: Clock, cls: "bg-amber-100 text-amber-700" },
-    draft: { label: "Rascunho", icon: AlertCircle, cls: "bg-slate-100 text-slate-600" },
+    export_ready: {
+      label: "Pronto",
+      icon: CheckCircle2,
+      cls: "bg-emerald-100 text-emerald-700",
+    },
+    submitted: {
+      label: "Enviado",
+      icon: CheckCircle2,
+      cls: "bg-emerald-100 text-emerald-700",
+    },
+    review: {
+      label: "Revisão",
+      icon: Clock,
+      cls: "bg-amber-100 text-amber-700",
+    },
+    draft: {
+      label: "Rascunho",
+      icon: AlertCircle,
+      cls: "bg-slate-100 text-slate-600",
+    },
   } as const;
   const cfg = configs[level] ?? configs.draft;
   const Icon = cfg.icon;
@@ -1422,7 +1649,7 @@ function ReadinessChip({
       className={cn(
         "inline-flex items-center gap-1 rounded-full font-semibold shrink-0",
         cfg.cls,
-        mini ? "px-2 py-0.5 text-[10px]" : "px-2.5 py-1 text-xs"
+        mini ? "px-2 py-0.5 text-[10px]" : "px-2.5 py-1 text-xs",
       )}
     >
       <Icon className={mini ? "h-2.5 w-2.5" : "h-3 w-3"} />
@@ -1437,9 +1664,11 @@ function buildPrintHTML(
   documents: ForgeDocument[],
   profile: ProfileForm,
   opp: OpportunityForm,
-  readinessScore: number
+  readinessScore: number,
 ): string {
-  const title = opp.program ? `Dossier — ${opp.program}` : "Dossier de Candidatura";
+  const title = opp.program
+    ? `Dossier — ${opp.program}`
+    : "Dossier de Candidatura";
   const generatedDate = new Date().toLocaleDateString("pt-BR", {
     day: "numeric",
     month: "long",
@@ -1477,7 +1706,7 @@ function buildPrintHTML(
         <span>${DOC_TYPE_LABELS[doc.type]}</span>
         <span>${doc.content.trim().split(/\s+/).filter(Boolean).length.toLocaleString("pt-BR")} palavras · ${doc.content.length.toLocaleString("pt-BR")} caracteres</span>
       </div>
-    </div>`
+    </div>`,
     )
     .join("");
 

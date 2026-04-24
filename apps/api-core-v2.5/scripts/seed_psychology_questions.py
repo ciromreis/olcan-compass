@@ -26,7 +26,9 @@ from app.db.models.psychology import PsychQuestion, PsychQuestionType, PsychCate
 def _scale_options(labels: list[str]) -> list[dict]:
     """Build 5-point Likert options from a list of 5 label strings."""
     assert len(labels) == 5
-    return [{"value": str(i + 1), "label": labels[i], "score": float(i + 1)} for i in range(5)]
+    # Assuming labels are in Portuguese, use same for all languages for now
+    # In a real implementation, these would be translated
+    return [{"value": str(i + 1), "label_en": labels[i], "label_pt": labels[i], "label_es": labels[i], "score": float(i + 1)} for i in range(5)]
 
 
 QUESTIONS = [

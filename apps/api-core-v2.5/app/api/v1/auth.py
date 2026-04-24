@@ -3,7 +3,7 @@ Authentication endpoints for Olcan Compass v2.5
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import timedelta
 
@@ -21,31 +21,11 @@ from app.services.auth_service import (
 from app.schemas.user import UserCreate, UserResponse, Token, LoginRequest
 from app.models import User
 
+# Re-export the canonical get_current_user from core.auth which correctly
+# handles UUID-based JWTs.  The old v1 version tried int(uuid) → ValueError.
+from app.core.auth import get_current_user  # noqa: F401
+
 router = APIRouter(tags=["authentication"])
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
-
-
-async def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    db: AsyncSession = Depends(get_db)
-) -> User:
-    """Get current authenticated user"""
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    
-    token_data = decode_token(token)
-    if token_data is None or token_data.user_id is None:
-        raise credentials_exception
-    
-    user = await get_user_by_username(db, username=token_data.username)
-    if user is None:
-        raise credentials_exception
-    
-    return user
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)

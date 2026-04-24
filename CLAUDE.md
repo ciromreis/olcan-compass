@@ -100,6 +100,8 @@ This file provides quick reference for development commands and project structur
 - Architecture: [[wiki/02_Arquitetura_Compass/Arquitetura_v2_5_Compass.md]]
 - API Audit: [[wiki/02_Arquitetura_Compass/Backend_API_Audit_v2_5.md]]
 - I/O Issues: [[wiki/02_Arquitetura_Compass/SPEC_IO_System_v2_5.md]]
+- **Dossier System Spec:** [[wiki/02_Arquitetura_Compass/SPEC_Dossier_System_v2_5.md]] — readiness algo + export pipeline contract
+- **Dossier Overhaul Plan:** [[wiki/00_Onboarding_Inicio/Dossier_Overhaul_Execution_Plan.md]] — EC-1 through EC-6 cards for smaller-model execution
 - Product: [[wiki/03_Produto_Forge/PRD_Master_Ethereal_Glass.md]]
 - Standards: [[wiki/00_Onboarding_Inicio/Padroes_de_Codigo.md]]
 - Roadmap: [[wiki/01_Visao_Estrategica/Roadmap_Implementacao_v2_5.md]]

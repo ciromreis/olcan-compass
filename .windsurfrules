@@ -1,36 +1,20 @@
-# Olcan Compass — Windsurf/Cascade Rules
-# Last updated: 2026-04-21
+# Olcan Compass — Windsurf Rules
 
-## Entry Point
-Read `CLAUDE.md` in the repo root FIRST. It is the navigation guide to the entire project.
-Then read `wiki/00_SOVEREIGN/Agent_Knowledge_Handbook.md` for current state, known bugs, store inventory, and API map.
+## Project Navigation
 
-## Documentation Methodology
-This project uses a **MemPalace + Karpathy** wiki methodology. All canonical knowledge lives in `wiki/`.
-Do NOT trust documentation outside of `wiki/` and `CLAUDE.md` — scattered config files (`.kiro/`, old README files, session handoffs) may be outdated.
+This is the **Compass product project**. For marketing automation, see:
 
-## Source of Truth Hierarchy
-1. `CLAUDE.md` (root) — quick reference, deployment state, navigation
-2. `wiki/00_SOVEREIGN/Agent_Knowledge_Handbook.md` — current stats, bugs, stores, API map, rules
-3. `wiki/00_SOVEREIGN/Verdade_do_Produto.md` — honest product truth (no inflation)
-4. `wiki/02_Arquitetura_Compass/` — technical architecture and API audit
-5. `wiki/05_Infraestrutura/` — deployment runbooks
+**`../olcan-marketing-nexus/`** — Marketing & Narrative Wing
 
-## Critical Rules
-- DO NOT modify `apps/app-compass-v2/` or `apps/api-core-v2/` (frozen v2 production)
-- DO NOT create new Zustand stores — consolidate existing ones
-- DO NOT build gamification, social, or P3 features before core value works
-- DO NOT skip `npm run type-check` before commits
-- DO NOT trust `.kiro/specs/` — those specs are outdated and contradict current priorities
-- Always use "Olcan Compass" (not "Compass" or "Olcan" alone) in first mention
+This project contains the main Compass product:
+- `apps/app-compass-v2.5/` — Frontend app
+- `apps/api-core-v2.5/` — Backend API
+- `apps/site-marketing-v2.5/` — Marketing website
 
-## Active Blocker (2026-04-21)
-Auth register/login returns HTTP 500 in production. This blocks ALL authenticated features.
-See `wiki/00_SOVEREIGN/Agent_Knowledge_Handbook.md` for debug steps.
+## Development
 
-## Priority Order
-1. P0: Fix auth 500 blocker
-2. P1: OIOS quiz (needs DB seeding)
-3. P1: Forge credit paywall (needs Stripe keys)
-4. P2: E2E testing
-5. P3: Social/gamification (AFTER revenue works)
+See `CLAUDE.md` for full navigation and project state.
+
+---
+
+*High-Fidelity Recombination — Clean, Modular, Sovereign*

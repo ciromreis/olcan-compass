@@ -30,6 +30,7 @@ class DossierTaskBase(BaseModel):
     title: str = Field(..., max_length=255)
     description: Optional[str] = None
     type: str = "generic"
+    readiness_domain: Optional[str] = "logistical"  # academic, financial, logistical, risk
     status: DossierTaskStatus = DossierTaskStatus.TODO
     priority: str = "medium"
     due_date: Optional[datetime] = None
@@ -42,6 +43,7 @@ class DossierTaskUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     type: Optional[str] = None
+    readiness_domain: Optional[str] = None
     status: Optional[DossierTaskStatus] = None
     priority: Optional[str] = None
     due_date: Optional[datetime] = None

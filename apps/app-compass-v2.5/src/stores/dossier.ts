@@ -13,6 +13,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { dossiersApi } from "@/lib/api";
+import { computeReadiness } from "@/lib/dossier-readiness";
+import { generateDefaultTasks } from "@/lib/dossier-task-generator";
 import type {
   Dossier,
   DossierDocument,
@@ -24,6 +26,7 @@ import type {
   ProfileSnapshot,
   OpportunityContext,
   ReadinessEvaluation,
+  ReadinessDomain,
 } from "@/types/dossier-system";
 
 // ─── Backend ↔ Frontend mappers ───────────────────────────────────────────────
@@ -87,6 +90,7 @@ function mapBackendDossier(raw: Record<string, unknown>): Dossier {
       ? new Date(String(task.completed_at))
       : undefined,
     relatedDocumentId: task.document_id ? String(task.document_id) : undefined,
+    readinessDomain: (task.readiness_domain as ReadinessDomain) || undefined,
   }));
 
   const mappedDocuments: DossierDocument[] = rawDocuments.map((doc) => {
@@ -152,6 +156,7 @@ function mapBackendDossier(raw: Record<string, unknown>): Dossier {
         : new Date(),
     } as unknown as OpportunityContext,
     documents: mappedDocuments,
+    tasks: mappedTasks.filter((t) => !t.relatedDocumentId),
     preparation: {
       interviews: [],
       events: [],
@@ -571,6 +576,14 @@ export const useDossierStore = create<DossierState>()(
               profileSnapshot: data.profileSnapshot || ({} as ProfileSnapshot),
               opportunity: data.opportunity || ({} as OpportunityContext),
               documents: [],
+              tasks: data.opportunity
+                ? generateDefaultTasks({
+                    opportunity: data.opportunity,
+                    profileSnapshot: data.profileSnapshot || null,
+                    dossierId: id,
+                    deadline: data.deadline || null,
+                  })
+                : [],
               preparation: {
                 interviews: [],
                 events: [],
@@ -931,28 +944,32 @@ export const useDossierStore = create<DossierState>()(
         if (!dossier) throw new Error("Dossier not found");
 
         const docs = dossier.documents || [];
-        const totalDocs = Math.max(docs.length, 1);
-        const finalDocs = docs.filter(
-          (d) => d.status === "final" || d.status === "submitted",
-        ).length;
-        const docsScore = (finalDocs / totalDocs) * 50;
+        const allTasks: Task[] = [
+          ...(docs.flatMap((d) => d.tasks || []) as Task[]),
+          ...(dossier.tasks || []),
+        ];
 
-        const profileScores = dossier.profileSnapshot?.readinessScores;
-        const profileAvg = profileScores
-          ? (profileScores.logistic +
-              profileScores.narrative +
-              profileScores.performance +
-              profileScores.psychological) /
-            4
-          : 0;
-
-        let overall = Math.round(docsScore + (profileAvg || 20) * 0.5);
-        if (overall > 100) overall = 100;
-        if (overall <= 0 && docs.length > 0) overall = 10; // baseline if there are docs
+        // Single source of truth: unified 40/30/20/10 algorithm.
+        const breakdown = computeReadiness({
+          documents: docs.map((d) => ({
+            status: d.status,
+            completionPercentage: d.completionPercentage,
+            metrics: {
+              atsScore: d.metrics?.atsScore,
+              competitivenessScore: d.metrics?.competitivenessScore,
+              alignmentScore: d.metrics?.alignmentScore,
+            },
+          })),
+          tasks: allTasks.map((t) => ({ status: t.status })),
+          profileScores: dossier.profileSnapshot?.readinessScores ?? null,
+          deadline: dossier.deadline ?? null,
+          dossierStatus: dossier.status,
+        });
 
         const readiness: ReadinessEvaluation = {
-          overall,
-          lastEvaluated: new Date(),
+          overall: breakdown.overall,
+          lastEvaluated: new Date(breakdown.computedAt),
+          breakdown,
           perDocument: {},
           gaps: [],
           recommendations: [],

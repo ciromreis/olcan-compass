@@ -142,6 +142,7 @@ class DossierTask(Base):
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     type: Mapped[str] = mapped_column(String(50), default="generic")  # writing, research, review, polish
+    readiness_domain: Mapped[Optional[str]] = mapped_column(String(32), nullable=True, default="logistical")  # academic, financial, logistical, risk
     
     # Status and priority
     status: Mapped[DossierTaskStatus] = mapped_column(

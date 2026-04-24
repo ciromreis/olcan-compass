@@ -11,13 +11,14 @@ import { type NextRequest, NextResponse } from "next/server";
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
   const hostname = request.headers.get("host") || "";
-  
+
   // Custom subdomain detection logic
   // Localhost: admin.localhost:3000 -> admin
   // Production: admin.olcan.com.br -> admin
-  const isLocalhost = hostname.includes("localhost") || hostname.includes("127.0.0.1");
+  const isLocalhost =
+    hostname.includes("localhost") || hostname.includes("127.0.0.1");
   const hostParts = hostname.split(".");
-  
+
   let subdomain = "";
   if (isLocalhost) {
     if (hostParts.length > 1) subdomain = hostParts[0];
@@ -51,7 +52,7 @@ export async function middleware(request: NextRequest) {
 
   // Security Hardening
   addSecurityHeaders(response);
-  
+
   return response;
 }
 
@@ -62,16 +63,16 @@ function addSecurityHeaders(response: NextResponse) {
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-XSS-Protection", "1; mode=block");
-  
+
   if (process.env.NODE_ENV === "production") {
     response.headers.set(
       "Strict-Transport-Security",
-      "max-age=31536000; includeSubDomains; preload"
+      "max-age=31536000; includeSubDomains; preload",
     );
   }
-  
+
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-  
+
   // Refined CSP for production
   response.headers.set(
     "Content-Security-Policy",
@@ -81,14 +82,14 @@ function addSecurityHeaders(response: NextResponse) {
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' blob: data: https: https://*.googleusercontent.com",
       "font-src 'self' data: https://fonts.gstatic.com",
-      "connect-src 'self' https://*.sentry.io https://api.olcan.com.br https://olcan-compass-api.onrender.com",
+      "connect-src 'self' https://*.sentry.io https://olcan-compass-api.onrender.com",
       "frame-ancestors 'none'",
-    ].join("; ")
+    ].join("; "),
   );
-  
+
   response.headers.set(
     "Permissions-Policy",
-    "camera=(), microphone=(), geolocation=(), payment=(self)"
+    "camera=(), microphone=(), geolocation=(), payment=(self)",
   );
 }
 

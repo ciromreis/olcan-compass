@@ -2,9 +2,7 @@ import type { Config } from "tailwindcss";
 import tokens from "./tokens.json";
 
 const config: Config = {
-  content: [
-    "./src/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
+  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
       colors: {
@@ -17,13 +15,32 @@ const config: Config = {
 
         // v2 component palette (Button, Badge, Input, etc.)
         brand: tokens.colors.brand,
-        
+
+        // Legacy component palette tokens (used in older components)
+        cream: {
+          "50": "#FEFDFB",
+          "100": "#FBF9F5",
+          "200": "#F5F0E8",
+          "300": "#EDE6D7",
+          "400": "#E3D9C4",
+          "500": "#D5C9AF",
+        },
+        clay: {
+          "50": "#FAF4F1",
+          "100": "#F3E3DC",
+          "200": "#E5C3B6",
+          "300": "#D49F8E",
+          "400": "#C07B67",
+          "500": "#A85847",
+          "600": "#8C3E32",
+        },
+
         // Semantic
         success: tokens.colors.semantic.success,
         warning: tokens.colors.semantic.warning,
         error: tokens.colors.semantic.error,
         info: tokens.colors.semantic.info,
-        
+
         surface: {
           bg: tokens.colors.surface.background,
           card: tokens.colors.surface.card,
@@ -119,7 +136,8 @@ const config: Config = {
       backgroundImage: {
         "gradient-premium": "linear-gradient(135deg, #0A0A0B 0%, #1A1A1F 100%)",
         "gradient-steel": "linear-gradient(135deg, #64748B 0%, #334155 100%)",
-        "gradient-glass": "linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)",
+        "gradient-glass":
+          "linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)",
         "noise-texture":
           "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E\")",
       },

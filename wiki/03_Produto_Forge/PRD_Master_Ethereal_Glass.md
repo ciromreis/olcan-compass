@@ -3,11 +3,12 @@ title: PRD Master Ethereal Glass
 type: drawer
 layer: 3
 status: active
-last_seen: 2026-04-17
+last_seen: 2026-04-23
 backlinks:
   - PRD_Geral_Olcan
   - Guia_Mestre_Design_System_Master
   - Verdade_do_Produto
+  - Design_System_Central
 ---
 
 # PRD Master: Ethereal Glass (Visão de Produto)
@@ -18,7 +19,21 @@ backlinks:
 **Camada (Layer)**: Produto / Design
 **Tags**: #prd #etherealglass #design #mobile #ux #vision
 **Criado**: 15/04/2026
-**Atualizado**: 17/04/2026
+**Atualizado**: 23/04/2026
+
+---
+
+## ⚠️ STATUS: Visão Aspiracional — NÃO Implementado
+
+**IMPORTANTE**: Este documento descreve a VISÃO FUTURA do design system. As características abaixo são aspiracionais e NÃO estão implementadas no código atual.
+
+**Para a implementação ATUAL, consultar**: [[wiki/03_Produto_Forge/Design_System_Central]]
+
+As diferenças principais:
+- Ethereal Glass usa cores Dark/Midnight como background
+- Produção usa Light theme (#F8FAFC)
+- Fire Accent (#FF844B) NÃO implementada em Tailwind
+- Glows de Ambiente NÃO implementados
 
 ---
 
@@ -63,3 +78,13 @@ O sistema é dividido em rotas de jornada que espelham o progresso do usuário:
 ## 🔗 Referências Relacionadas
 - [[03_Produto_Forge/Catalogo_de_Rotas_UI.md]]
 - [[02_Arquitetura_Compass/Guia_Mestre_Design_System_Master.md]]
+- [[wiki/03_Produto_Forge/Design_System_Central]] — **IMPLEMENTAÇÃO ATUAL**
+
+---
+
+## Ligações
+- [[Design_System_Central]] ← Implementação atual (definitiva)
+- [[Biblioteca_de_Componentes_UI_MVP]] ← Lista componentes
+- [[Guia_de_Design_Visual_Liquid_Glass]] ← Guia de implementação
+- [[Guia_Mestre_Design_System_Master]] ← Filosofia sistema
+- [[Verdade_do_Produto]] ← Estado atual

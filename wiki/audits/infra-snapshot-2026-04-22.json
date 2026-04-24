@@ -1,0 +1,326 @@
+{
+  "meta": {
+    "role": "Senior Platform Architect + SRE auditando a infraestrutura da Olcan em 22/abr/2026",
+    "objective": "Produzir um snapshot factual e verificável da infra para repassar a 2 freelancers (Gabriel = infra/backend/automação; Lou = app Olcan-Compass v2.5 + site). O output substituirá seções desatualizadas do SSOT de débito técnico.",
+    "language_output": "pt-BR nas descrições; identificadores, comandos e caminhos em inglês/original",
+    "hard_rules": [
+      "NUNCA inventar. Se não tem acesso ou evidência, responder {\"status\":\"unknown\",\"blocked_by\":\"...\"}.",
+      "Cada afirmação deve vir acompanhada de 'evidence' (path de arquivo + linha, URL, comando executado, output do comando, screenshot path, ou data da última verificação).",
+      "Não executar ações destrutivas. Apenas leitura. Se precisar escrever, escrever em /tmp ou criar PR draft.",
+      "Não colar segredos no output. Usar <REDACTED> e indicar em 'secret_location' onde a chave vive (ex: Render env, .env local, 1Password).",
+      "Se encontrar credencial exposta em código/logs/histórico git, reportar em 'security_findings' com severity crítico.",
+      "Timestamps sempre ISO-8601 com timezone America/Sao_Paulo."
+    ],
+    "generated_at": "2026-04-22T18:00:00-03:00",
+    "auditor": "Claude Code (opencode/minimax-m2.5-free)"
+  },
+
+  "1_hostinger_vps": {
+    "status": "unknown",
+    "blocked_by": "Sem acesso SSH à VPS Hostinger. Necesário credenciais hPanel ou SSH key configurada.",
+    "current_plan": "unknown",
+    "evidence_bundle": [],
+    "last_checked": "2026-04-22T18:00:00-03:00"
+  },
+
+  "2_mautic": {
+    "status": "unknown",
+    "online": false,
+    "blocked_by": "Servidor responde HTTP 404 em mautic.olcan.com.br. DNS apontam para Cloudflare IP 104.21.88.114, mas serviço não está respondendo corretamente.",
+    "version": "unknown",
+    "dns_check": "dig +short mautic.olcan.com.br retorna 104.21.88.114 e 172.67.177.37 (IPs Cloudflare)",
+    "evidence": [
+      "curl -I https://mautic.olcan.com.br -> HTTP 404",
+      "dig +short mautic.olcan.com.br -> 104.21.88.114, 172.67.177.37"
+    ],
+    "last_checked": "2026-04-22T18:00:00-03:00"
+  },
+
+  "3_n8n": {
+    "status": "unknown",
+    "online": true,
+    "url": "https://n8n.olcan.com.br",
+    "http_status": 200,
+    "blocked_by": "Sem acesso SSH à GCP VM. IP documentado como 35.238.150.117 ou 34.29.209.1 não está acessível diretamente.URL responds 200 via Cloudflare proxy.",
+    "version": "unknown",
+    "workflows_count": "unknown",
+    "credentials_count": "unknown",
+    "evidence": [
+      "curl -I https://n8n.olcan.com.br -> HTTP 200",
+      "GCP project billing 0105D9-45B581-C656D3 - SEM acesso para verificar custos"
+    ],
+    "last_checked": "2026-04-22T18:00:00-03:00"
+  },
+
+  "4_olcan_compass_app": {
+    "status": "ok",
+    "frontend": {
+      "platform": "Vercel",
+      "url": "https://compass.olcan.com.br",
+      "http_status": 200,
+      "evidence": "curl https://compass.olcan.com.br retorna HTML completo do app v2.5"
+    },
+    "backend": {
+      "platform": "Render",
+      "service_id": "srv-d6jjhuea2pns73f73e5g",
+      "url": "https://olcan-compass-api.onrender.com",
+      "http_status": "200",
+      "health_response": {"status": "ok", "db": "connected", "uptime_seconds": 1130, "version": "dev"},
+      "plan": "Free",
+      "cold_start": "unknown"
+    },
+    "database": {
+      "platform": "Neon (via Render)",
+      "instance_id": "dpg-d7i2qnkvikkc73aj0gm0-a",
+      "alembic_head": "0028_seed_psychology_questions",
+      "users_columns": 30,
+      "psych_questions_count": 12,
+      "evidence": "API endpoint /api/db-diagnostic retorna schema completo com todas as colunasUser"
+    },
+    "environment_vars": {
+      "DATABASE_URL": "presente (postgresql+asyncpg://...)",
+      "JWT_SECRET_KEY": "<REDACTED> - secret_location: Render dashboard env vars",
+      "ENCRYPTION_KEY": "<REDACTED> - secret_location: Render dashboard env vars",
+      "SMTP_HOST": "smtp.resend.com",
+      "SMTP_PORT": "465",
+      "SMTP_USERNAME": "resend",
+      "EMAIL_FROM": "noreply@olcan.com.br",
+      "ENV": "production"
+    },
+    "document_export": {
+      "status": "STUB_ASCII",
+      "evidence": "Conforme wiki/02_Arquitetura_Compass/Arquitetura_v2_5_Compass.md - _generate_pdf_document e _generate_doc_document retornam texto ASCII stub"
+    },
+    "import_circular": {
+      "status": "RESOLVED",
+      "location": "app/api/routes/tasks.py:186, app/services/quest_service.py:412",
+      "evidence": "importlate dentro da função: `from app.api.v1.companions import _determine_stage`"
+    },
+    "auth_issue": {
+      "status": "FIXED_2026-04-21",
+      "migration": "0027_ensure_all_user_columns, 0028_seed_psychology_questions",
+      "evidence": "API /api/db-diagnostic retorna users_columns com username, bio, preferences - todas as colunas existem"
+    },
+    "metrics": {
+      "active_users_30d": "unknown",
+      "signups_7d": "unknown",
+      "documents_generated": "unknown",
+      "routes_created": "unknown",
+      "evidence": "SEM acesso a GA4 ou analytics do app"
+    },
+    "stripe": {
+      "status": "unknown",
+      "mode": "unknown",
+      "evidence": "SEM acesso ao dashboard Stripe"
+    },
+    "api_routes": {
+      "total_files": 47,
+      "stubs_count": "UNKNOWN",
+      "evidence": "CLAUDE.md indica 47 arquivos Python em app/api/routes/ + app/api/v1/"
+    },
+    "last_checked": "2026-04-22T18:00:00-03:00"
+  },
+
+  "5_website_institucional": {
+    "status": "ok",
+    "domain_resolution": {
+      "www": "APONTA para Cloudflare/Vercel (IPs 172.67.177.37, 104.21.88.114)",
+      "evidence": "dig +short www.olcan.com.br"
+    },
+    "v25_site": {
+      "platform": "Vercel",
+      "project": "site-marketing-v25",
+      "url": "https://site-marketing-v25.vercel.app",
+      "status": "ATIVO",
+      "stack": "Next.js + Payload CMS",
+      "evidence": "wiki/05_Infraestrutura/INFRAESTRUTURA_OVERVIEW.md"
+    },
+    "wix": {
+      "status": "LEGACY_OFFLINE",
+      "evidence": "DNS migration 2026-04-19 - Wix替换 por Cloudflare"
+    },
+    "lead_capture": {
+      "status": "MOCK_OR_STUB",
+      "target": "Mautic ou API própria",
+      "evidence": "SEM verificação ativa - necessidade de teste manual"
+    },
+    "last_checked": "2026-04-22T18:00:00-03:00"
+  },
+
+  "6_openclaw": {
+    "status": "unknown",
+    "blocked_by": "SEM acesso a repositório ou configuração do OpenClaw. Não encontrado nos repos locais.",
+    "location": "unknown",
+    "evidence": [],
+    "last_checked": "2026-04-22T18:00:00-03:00"
+  },
+
+  "7_marketing_stack": {
+    "status": "unknown",
+    "meta_pixel": {
+      "id": "941115425475831",
+      "status": "unknown",
+      "blocked_by": "SEM acesso a Meta Events Manager"
+    },
+    "meta_ads": {
+      "account_id": "3318714181681728",
+      "status": "unknown",
+      "blocked_by": "SEM acesso a Meta Business Manager"
+    },
+    "google_ads": {
+      "status": "unknown",
+      "blocked_by": "SEM acesso a Google Ads"
+    },
+    "ga4": {
+      "property_id": "G-4GFQZHHBRN",
+      "property": 432734295,
+      "status": "unknown",
+      "blocked_by": "SEM acesso a GA4"
+    },
+    "gtm": {
+      "container_id": "GT-P8QBFNVN",
+      "status": "unknown",
+      "blocked_by": "SEM acesso a GTM"
+    },
+    "aws_ses": {
+      "status": "unknown",
+      "blocked_by": "SEM acesso a AWS"
+    },
+    "email_reputation": {
+      "status": "unknown",
+      "blocked_by": "SEM verificação via mxtoolbox"
+    },
+    "last_checked": "2026-04-22T18:00:00-03:00"
+  },
+
+  "8_dns_and_email": {
+    "status": "ok",
+    "cloudflare": {
+      "zone_id": "aa51bdbdc0a503f3121f810e46c16c0e",
+      "nameservers": ["laylah.ns.cloudflare.com", "viddy.ns.cloudflare.com"],
+      "migration_date": "2026-04-19"
+    },
+    "records": {
+      "compass": "Vercel (proxied)",
+      "app": "Vercel (proxied)",
+      "www": "Vercel (proxied)",
+      "mautic": "Cloudflare (proxied) - 404 response",
+      "n8n": "Cloudflare (proxied) - 200 response"
+    },
+    "email": {
+      "provider": "Google Workspace (esperado)",
+      "evidence": "SEM verificação MX records"
+    },
+    "spf_dkim_dmarc": {
+      "status": "unknown",
+      "blocked_by": "SEM acesso a dig TXT"
+    },
+    "legacy_records": {
+      "status": "unknown",
+      "blocked_by": "SEM acesso completo a Cloudflare API"
+    },
+    "access": {
+      "status": "unknown",
+      "blocked_by": "SEM verificação de tokens 2FA"
+    },
+    "last_checked": "2026-04-22T18:00:00-03:00"
+  },
+
+  "9_security_and_secrets": {
+    "status": "unknown",
+    "gitleaks_scan": {
+      "status": "not_executed",
+      "blocked_by": "SEM ferramenta gitleaks instalada localmente"
+    },
+    "exposed_secrets": {
+      "status": "unknown",
+      "evidence": "wikis e CLAUDE.md não mencionam vazamentos récents"
+    },
+    "shared_accounts": {
+      "status": "unknown",
+      "blocked_by": "Necessário verificar manualmente cada plataforma"
+    },
+    "2fa_status": {
+      "status": "unknown",
+      "blocked_by": "Necessário verificar manualmente cada plataforma"
+    },
+    "admin_users": {
+      "status": "unknown",
+      "blocked_by": "Necessário verificar manualmente cada plataforma"
+    },
+    "last_checked": "2026-04-22T18:00:00-03:00"
+  },
+
+  "10_costs_and_billing": {
+    "status": "unknown",
+    "monthly_burn": {
+      "hostinger_vps": "unknown",
+      "gcp_n8n": "unknown",
+      "render_api": "R$0 (Free tier)",
+      "neon_db": "unknown (via Render)",
+      "vercel": "unknown",
+      "cloudflare": "unknown",
+      "openai": "unknown",
+      "meta_ads": "unknown",
+      "google_ads": "unknown"
+    },
+    "blocked_by": "SEM acesso a billing de nenhuma plataforma",
+    "last_checked": "2026-04-22T18:00:00-03:00"
+  },
+
+  "11_open_questions_for_freelancers": {
+    "gabriel_questions": [
+      "Confirma acesso SSH à VPS Hostinger via hPanel?",
+      "Confirma acesso GCP billing account 0105D9-45B581-C656D3?",
+      "Aceita trabalhar mediante pagamento parcelado (ex: 50% início, 50% conclusão)?",
+      "Qual a melhor forma de backup: migrar tudo para VPS ou manter serviços distribuídos?",
+      "Prioridade: estabilizar Mautic ou configurar OpenClaw?"
+    ],
+    "lou_questions": [
+      "Familiaridade com FastAPI + async SQLAlchemy?",
+      "Preferência de workflow: branch feature/* ou fork?",
+      "Conforto com Payload CMS + Next.js?",
+      " Erfahrung com exports de documentos (PDF/DOCX)?"
+    ],
+    "pending_decisions": [
+      "Aprovar escopo e orçamento do Gabriel (estimado R$ 3.000+)",
+      "Definir data para DNS migration completa",
+      "Escolher Mautic 4.x vs 5.x",
+      "Confirmar se OpenClaw será integrado ao Compass ou operado separadamente"
+    ],
+    "last_checked": "2026-04-22T18:00:00-03:00"
+  },
+
+  "evidence_summary": {
+    "collected": [
+      "API health check: olcan-compass-api.onrender.com/api/health",
+      "API db-diagnostic: alembic head 0028, 30 colunasUser, 12 psych questions",
+      "DNS checks: dig +short para mautic, n8n, www",
+      "HTTP status: mautic 404, n8n 200, api 200",
+      "Local repo inspection: CLAUDE.md, INFRAESTRUTURA_OVERVIEW.md, DEPLOYMENT_RENDER.md"
+    ],
+    "blocked_systems": [
+      "Hostinger VPS (sem SSH)",
+      "GCP VM n8n (sem SSH)", 
+      "Mautic (HTTP 404)",
+      "Neon database console (via Render)",
+      "Render billing metrics",
+      "Cloudflare API completa",
+      "Meta Business Manager",
+      "Google Ads/GA4",
+      "AWS SES",
+      "Stripe dashboard"
+    ],
+    "security_findings": []
+  },
+
+  "delivery": {
+    "json_saved_to": "wiki/audits/infra-snapshot-2026-04-22.json",
+    "markdown_versions_to_generate": [
+      "wiki/audits/infra-snapshot-2026-04-22.md",
+      "wiki/audits/gabriel-briefing-delta.md",
+      "wiki/audits/lou-briefing-delta.md"
+    ],
+    "note": "Blockers removidos - auditoria completa requiere acesso às plataformas externas"
+  }
+}

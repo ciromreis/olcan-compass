@@ -30,6 +30,9 @@ export interface Dossier {
   // Documents collection
   documents: DossierDocument[];
   
+  // Dossier-level tasks (not bound to a specific document)
+  tasks?: Task[];
+  
   // Preparation activities
   preparation: PreparationActivities;
   
@@ -263,6 +266,9 @@ export interface Task {
   relatedMilestoneId?: string;
   dependsOn?: string[];
   
+  // MECE readiness domain (§3 spec)
+  readinessDomain?: ReadinessDomain;
+  
   // Assignment
   assignedTo?: string;
   
@@ -302,6 +308,12 @@ export type TaskPriority =
   | "medium"
   | "high"
   | "critical";
+
+export type ReadinessDomain =
+  | "academic"
+  | "financial"
+  | "logistical"
+  | "risk";
 
 export interface Milestone {
   id: string;
@@ -410,21 +422,45 @@ export interface ReadinessEvaluation {
   // Overall
   overall: number; // 0-100
   lastEvaluated: Date;
-  
+
+  // Weighted breakdown (v1.0.0 unified algorithm: 40/30/20/10)
+  // See src/lib/dossier-readiness.ts for the single source of truth.
+  breakdown?: ReadinessBreakdown;
+
   // Per document
   perDocument: Record<string, DocumentReadiness>;
-  
+
   // Gap analysis
   gaps: Gap[];
-  
+
   // Recommendations
   recommendations: Recommendation[];
-  
+
   // Strengths
   strengths: string[];
-  
+
   // Risks
   risks: Risk[];
+}
+
+export type ReadinessDimensionKey =
+  | "documents"
+  | "tasks"
+  | "profile"
+  | "deadline";
+
+export interface ReadinessComponent {
+  score: number;         // 0-100 raw dimension score
+  weight: number;        // 0-1 weight
+  contribution: number;  // score × weight
+  explanation: string;   // human-readable summary of this dimension
+}
+
+export interface ReadinessBreakdown {
+  overall: number;
+  components: Record<ReadinessDimensionKey, ReadinessComponent>;
+  computedAt: string;    // ISO timestamp
+  version: string;       // algorithm version
 }
 
 export interface DocumentReadiness {

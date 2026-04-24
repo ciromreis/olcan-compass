@@ -2,25 +2,36 @@
 Dossier API endpoints (v2.5)
 """
 
+import uuid
 from datetime import datetime, timezone
 from typing import List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status, Query
 from sqlalchemy import select, func, desc
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.core.database import get_db
 from app.api.v1.auth import get_current_user
 from app.models import User
 from app.db.models.dossier import (
-    Dossier, 
-    DossierDocument, 
-    DossierTask, 
-    DossierStatus, 
-    DossierDocumentStatus, 
+    Dossier,
+    DossierDocument,
+    DossierTask,
+    DossierStatus,
+    DossierDocumentStatus,
     DossierTaskStatus
 )
+from app.models.enhanced_forge import (
+    ExportJob,
+    ExportType,
+    ExportFormat,
+    ExportStatus,
+)
+from app.services.dossier_readiness import compute_readiness
+from app.services.dossier_task_generator import generate_default_tasks
+from app.services.export_service import ExportService
 from app.schemas.dossier import (
     DossierCreate, 
     DossierUpdate, 
@@ -60,12 +71,29 @@ async def create_dossier(
     )
     
     db.add(dossier)
+    await db.flush()  # Get dossier.id before creating tasks
+    
+    # EC-1: Seed MECE tasks when opportunity_context is present
+    if request.opportunity_context:
+        seed_tasks = generate_default_tasks(
+            dossier_id=dossier.id,
+            opportunity_context=request.opportunity_context,
+            deadline=request.deadline,
+        )
+        for task in seed_tasks:
+            db.add(task)
+    
     await db.commit()
     await db.refresh(dossier)
     
-    # Reload with relationships
+    # Reload with relationships (selectinload for async safety)
     result = await db.execute(
-        select(Dossier).where(Dossier.id == dossier.id).outerjoin(Dossier.documents).outerjoin(Dossier.tasks)
+        select(Dossier)
+        .where(Dossier.id == dossier.id)
+        .options(
+            selectinload(Dossier.documents),
+            selectinload(Dossier.tasks),
+        )
     )
     return result.unique().scalar_one()
 
@@ -278,6 +306,7 @@ async def add_task_to_dossier(
         title=request.title,
         description=request.description,
         type=request.type,
+        readiness_domain=request.readiness_domain,
         status=request.status,
         priority=request.priority,
         due_date=request.due_date
@@ -333,82 +362,150 @@ async def evaluate_dossier_readiness(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    """Calculate and update dossier readiness score"""
+    """Calculate and update dossier readiness score.
+
+    Uses the unified 40/30/20/10 algorithm in
+    app.services.dossier_readiness (mirrored on the frontend in
+    src/lib/dossier-readiness.ts).
+    """
+    # Eager-load documents + tasks — async SQLAlchemy cannot lazy-load.
     result = await db.execute(
-        select(Dossier).where(
+        select(Dossier)
+        .where(
             Dossier.id == dossier_id,
-            Dossier.user_id == current_user.id
+            Dossier.user_id == current_user.id,
+        )
+        .options(
+            selectinload(Dossier.documents),
+            selectinload(Dossier.tasks),
         )
     )
     dossier = result.unique().scalar_one_or_none()
-    
+
     if not dossier:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Dossier not found")
-    
-    # Simple evaluation logic for now
-    # Readiness = (Average Document Completion * 0.7) + (Tasks Progress * 0.3)
-    
-    # 1. Documents progress
-    doc_count = len(dossier.documents)
-    if doc_count > 0:
-        avg_doc_completion = sum(d.completion_percentage for d in dossier.documents) / doc_count
-    else:
-        avg_doc_completion = 0
-        
-    # 2. Tasks progress
-    task_count = len(dossier.tasks)
-    if task_count > 0:
-        done_tasks = sum(1 for t in dossier.tasks if t.status == DossierTaskStatus.DONE)
-        task_progress = (done_tasks / task_count) * 100
-    else:
-        task_progress = 100 # No tasks means no blockers
-        
-    # Final score
-    final_score = (avg_doc_completion * 0.7) + (task_progress * 0.3)
-    dossier.current_readiness = round(final_score, 2)
-    
-    # Update readiness_evaluation metadata
-    eval_data = dossier.readiness_evaluation or {}
-    eval_data.update({
-        "last_evaluation": datetime.now(timezone.utc).isoformat(),
-        "avg_doc_completion": avg_doc_completion,
-        "task_progress": task_progress,
-        "document_count": doc_count,
-        "task_count": task_count,
-        "done_tasks": sum(1 for t in dossier.tasks if t.status == DossierTaskStatus.DONE) if task_count > 0 else 0
-    })
-    dossier.readiness_evaluation = eval_data
-    
+
+    # Shape dossier state into the algorithm's plain-dict contract.
+    docs_input = [
+        {
+            "status": d.status.value if hasattr(d.status, "value") else d.status,
+            "completion_percentage": d.completion_percentage,
+            "metrics": d.metrics or {},
+        }
+        for d in dossier.documents
+    ]
+    tasks_input = [
+        {"status": t.status.value if hasattr(t.status, "value") else t.status}
+        for t in dossier.tasks
+    ]
+    profile_scores = None
+    snap = dossier.profile_snapshot or {}
+    if isinstance(snap, dict):
+        profile_scores = snap.get("readinessScores") or snap.get("readiness_scores")
+
+    status_value = dossier.status.value if hasattr(dossier.status, "value") else dossier.status
+
+    breakdown = compute_readiness(
+        documents=docs_input,
+        tasks=tasks_input,
+        profile_scores=profile_scores,
+        deadline=dossier.deadline,
+        dossier_status=status_value,
+    )
+
+    dossier.current_readiness = breakdown["overall"]
+    dossier.readiness_evaluation = {
+        **(dossier.readiness_evaluation or {}),
+        "last_evaluation": breakdown["computed_at"],
+        "breakdown": breakdown,
+    }
+
     await db.commit()
     await db.refresh(dossier)
-    
+
     return dossier
 
 
 # --- Dossier Export ---
+#
+# Export flow (see wiki/02_Arquitetura_Compass/SPEC_Dossier_System_v2_5.md):
+#   1. POST /{id}/export         → create ExportJob, enqueue background task
+#   2. GET  /{id}/export/{job}   → poll job status + download_url
+#   3. GET  /{id}/export/{job}/download → stream file bytes
+#
+# The heavy PDF/DOCX rendering lives in services/export_service.py. The
+# current ExportService._generate_pdf_document / _generate_docx_document are
+# placeholders — real WeasyPrint/python-docx rendering is tracked in the
+# execution plan at wiki/08_Operations/Dossier_Overhaul_Execution_Plan.md.
 
-@router.post("/{dossier_id}/export", response_model=dict)
+
+_SUPPORTED_EXPORT_FORMATS = {
+    "pdf": ExportFormat.PDF,
+    "docx": ExportFormat.DOCX,
+    "zip": ExportFormat.ZIP,
+    "html": ExportFormat.HTML,
+    "markdown": ExportFormat.MARKDOWN,
+}
+
+
+async def _run_export_job(job_id: uuid.UUID, db_session_factory):
+    """BackgroundTasks wrapper — runs the export in its own DB session."""
+    async with db_session_factory() as session:
+        service = ExportService(session)
+        await service.process_export_job(job_id)
+
+
+@router.post("/{dossier_id}/export", response_model=dict, status_code=status.HTTP_202_ACCEPTED)
 async def create_dossier_export(
     dossier_id: UUID,
-    format: str = Query("pdf", description="Export format (pdf or zip)"),
+    background_tasks: BackgroundTasks,
+    format: str = Query("pdf", description="Export format: pdf, docx, zip, html, markdown"),
+    branding_enabled: bool = Query(True, description="Apply Olcan Liquid Glass branding"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
-    """Start a background job to export the dossier"""
+    """Queue a background ExportJob for this dossier and return the job id."""
+    fmt = _SUPPORTED_EXPORT_FORMATS.get(format.lower())
+    if fmt is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Unsupported format '{format}'. Allowed: {sorted(_SUPPORTED_EXPORT_FORMATS)}",
+        )
+
     # Verify ownership
-    result = await db.execute(select(Dossier).where(Dossier.id == dossier_id, Dossier.user_id == current_user.id))
+    result = await db.execute(
+        select(Dossier).where(
+            Dossier.id == dossier_id,
+            Dossier.user_id == current_user.id,
+        )
+    )
     dossier = result.scalar_one_or_none()
-    
     if not dossier:
-        raise HTTPException(status_code=404, detail="Dossier not found")
-        
-    # In a real implementation, this would create an ExportJob and trigger a background task
-    # For now, we'll return a mock response indicating success
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Dossier not found")
+
+    job = ExportJob(
+        id=uuid.uuid4(),
+        user_id=current_user.id,
+        export_type=ExportType.DOSSIER,
+        format=fmt,
+        branding_enabled=branding_enabled,
+        status=ExportStatus.QUEUED,
+        export_options={"dossier_id": str(dossier_id)},
+        progress_percentage=0,
+    )
+    db.add(job)
+    await db.commit()
+    await db.refresh(job)
+
+    # Schedule in background. ExportService opens its own session.
+    from app.core.database import AsyncSessionLocal  # local import avoids cycles
+    background_tasks.add_task(_run_export_job, job.id, AsyncSessionLocal)
+
     return {
-        "job_id": str(uuid.uuid4()),
-        "status": "processing",
-        "format": format,
-        "message": "Export job started"
+        "job_id": str(job.id),
+        "status": job.status.value,
+        "format": job.format.value,
+        "progress_percentage": job.progress_percentage,
     }
 
 
@@ -416,14 +513,36 @@ async def create_dossier_export(
 async def get_export_status(
     dossier_id: UUID,
     job_id: UUID,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
-    """Check the status of an export job"""
-    # Mock response
+    """Return live status of an ExportJob (polled by the frontend)."""
+    result = await db.execute(
+        select(ExportJob).where(
+            ExportJob.id == job_id,
+            ExportJob.user_id == current_user.id,
+        )
+    )
+    job = result.scalar_one_or_none()
+    if not job:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Export job not found")
+
+    # Ensure the job is for this dossier
+    opts = job.export_options or {}
+    if str(opts.get("dossier_id")) != str(dossier_id):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Export job not found")
+
+    download_url = None
+    if job.status == ExportStatus.COMPLETED:
+        download_url = f"/api/v1/dossiers/{dossier_id}/export/{job_id}/download"
+
     return {
-        "job_id": str(job_id),
-        "status": "completed",
-        "download_url": f"/api/v1/dossiers/{dossier_id}/export/{job_id}/download"
+        "job_id": str(job.id),
+        "status": job.status.value,
+        "format": job.format.value,
+        "progress_percentage": job.progress_percentage,
+        "error_message": job.error_message,
+        "download_url": download_url,
     }
 
 
@@ -431,8 +550,42 @@ async def get_export_status(
 async def download_dossier_export(
     dossier_id: UUID,
     job_id: UUID,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
-    """Download the exported dossier file"""
-    # Mock implementation
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Export file not ready yet")
+    """Stream the generated export file once the job is complete."""
+    from pathlib import Path
+    from fastapi.responses import FileResponse
+
+    result = await db.execute(
+        select(ExportJob).where(
+            ExportJob.id == job_id,
+            ExportJob.user_id == current_user.id,
+        )
+    )
+    job = result.scalar_one_or_none()
+    if not job:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Export job not found")
+
+    opts = job.export_options or {}
+    if str(opts.get("dossier_id")) != str(dossier_id):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Export job not found")
+
+    if job.status != ExportStatus.COMPLETED:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Export not ready (status={job.status.value})",
+        )
+
+    if not job.file_path:
+        raise HTTPException(status_code=status.HTTP_410_GONE, detail="Export file missing")
+
+    file_path = Path(job.file_path)
+    if not file_path.exists():
+        raise HTTPException(status_code=status.HTTP_410_GONE, detail="Export file expired")
+
+    job.downloaded_at = datetime.now(timezone.utc)
+    await db.commit()
+
+    filename = f"dossier_{dossier_id}.{job.format.value}"
+    return FileResponse(path=str(file_path), filename=filename)
