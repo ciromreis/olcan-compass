@@ -103,9 +103,22 @@
 
 | Campo | Valor |
 |-------|-------|
-| Plataforma | N8N self-hosted |
+| Plataforma | N8N self-hosted (Docker + Traefik) |
 | URL | `n8n.olcan.com.br` |
-| IP | `35.238.150.117` (GCP) |
+| IP atual | `35.238.150.117` (GCP `e2-micro` — em uso) |
+| Host futuro | Hostinger VPS 4 (4 vCPU / 16 GB) — migração planejada |
+| Compose | `infra/vps/docker-compose.yml` (topologia consolidada Traefik + n8n + Twenty) |
+| Runbook | `infra/vps/README.md` (deploy + migração com preservação de N8N_ENCRYPTION_KEY) |
+
+### 8b. CRM / Twenty (planejado, ainda não em produção)
+
+| Campo | Valor |
+|-------|-------|
+| Plataforma | Twenty CRM self-hosted (Docker + Traefik) |
+| URL | `crm.olcan.com.br` |
+| Host alvo | Mesmo VPS Hostinger do n8n (mesma rede `edge`, mesma Traefik) |
+| Status | Compose pronto em `infra/vps/`, aguarda provisionamento do VPS |
+| Integração | API Compass via `TWENTY_BASE_URL` + `TWENTY_API_KEY` (env em Render) |
 
 ### 9. AI / Simulation
 

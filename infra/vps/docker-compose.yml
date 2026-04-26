@@ -1,0 +1,200 @@
+name: olcan-edge
+
+# Olcan Edge VPS — single-host topology
+# ─────────────────────────────────────────────────────────────────────────
+# One Traefik handles TLS for every public service. Add services by
+# attaching them to the `edge` network and giving them Traefik labels.
+#
+# Current services:
+#   - traefik         — reverse proxy + Let's Encrypt
+#   - n8n             — automation brain  (n8n.olcan.com.br)
+#   - n8n-postgres    — n8n database
+#   - twenty          — CRM              (crm.olcan.com.br)
+#   - twenty-postgres — Twenty database
+#   - twenty-redis    — Twenty cache / queues
+#
+# Future slots: Mautic, Plausible, Umami, etc.
+#
+# Designed for Hostinger VPS 4 (4 vCPU / 16 GB / 200 GB) — comfortable.
+# Will also run on any 2 GB+ Linux box at low traffic.
+
+services:
+  # ─── Edge router ────────────────────────────────────────────────────
+  traefik:
+    image: traefik:v3.0
+    container_name: olcan-traefik
+    restart: unless-stopped
+    command:
+      - --api.dashboard=false
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=edge
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge=true
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL}
+      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_data:/letsencrypt
+    networks:
+      - edge
+
+  # ─── n8n ────────────────────────────────────────────────────────────
+  n8n-postgres:
+    image: postgres:16-alpine
+    container_name: olcan-n8n-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${N8N_DB_USER:-n8n}
+      POSTGRES_PASSWORD: ${N8N_DB_PASSWORD}
+      POSTGRES_DB: ${N8N_DB_NAME:-n8n}
+    volumes:
+      - n8n_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${N8N_DB_USER:-n8n} -d ${N8N_DB_NAME:-n8n}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - edge
+
+  n8n:
+    image: n8nio/n8n:${N8N_TAG:-1.123.5}
+    container_name: olcan-n8n
+    restart: unless-stopped
+    environment:
+      N8N_HOST: n8n.olcan.com.br
+      N8N_PORT: 5678
+      N8N_PROTOCOL: https
+      NODE_ENV: production
+      WEBHOOK_URL: https://n8n.olcan.com.br/
+      GENERIC_TIMEZONE: America/Sao_Paulo
+      N8N_SECURE_COOKIE: "true"
+      N8N_LISTEN_ADDRESS: 0.0.0.0
+      N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "false"
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+      N8N_GIT_NODE_DISABLE_BARE_REPOS: "true"
+      N8N_PROXY_HOPS: 1
+      # CRITICAL: must match the encryption key from the source VM, otherwise
+      # all encrypted credentials in n8n become unreadable. Pull from .env.
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: n8n-postgres
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: ${N8N_DB_NAME:-n8n}
+      DB_POSTGRESDB_USER: ${N8N_DB_USER:-n8n}
+      DB_POSTGRESDB_PASSWORD: ${N8N_DB_PASSWORD}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      n8n-postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - |
+          fetch('http://127.0.0.1:5678/healthz').then(r => { if (!r.ok) process.exit(1); }).catch(() => process.exit(1))
+      interval: 60s
+      timeout: 10s
+      retries: 3
+    networks:
+      - edge
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.n8n.rule: Host(`n8n.olcan.com.br`)
+      traefik.http.routers.n8n.entrypoints: websecure
+      traefik.http.routers.n8n.tls.certresolver: letsencrypt
+      traefik.http.services.n8n.loadbalancer.server.port: "5678"
+
+  # ─── Twenty CRM ─────────────────────────────────────────────────────
+  twenty-postgres:
+    image: postgres:16-alpine
+    container_name: olcan-twenty-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${TWENTY_DB_USER:-twenty}
+      POSTGRES_PASSWORD: ${TWENTY_DB_PASSWORD}
+      POSTGRES_DB: ${TWENTY_DB_NAME:-twenty}
+    volumes:
+      - twenty_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${TWENTY_DB_USER:-twenty} -d ${TWENTY_DB_NAME:-twenty}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - edge
+
+  twenty-redis:
+    image: redis:7-alpine
+    container_name: olcan-twenty-redis
+    restart: unless-stopped
+    volumes:
+      - twenty_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - edge
+
+  twenty:
+    image: twentycrm/twenty:${TWENTY_TAG:-v0.32.0}
+    container_name: olcan-twenty
+    restart: unless-stopped
+    environment:
+      NODE_PORT: 3000
+      SERVER_URL: https://crm.olcan.com.br
+      # CRITICAL: rotating APP_SECRET invalidates every existing session and
+      # workspace JWT. Treat this like a database password.
+      APP_SECRET: ${TWENTY_APP_SECRET}
+      PG_DATABASE_URL: postgres://${TWENTY_DB_USER:-twenty}:${TWENTY_DB_PASSWORD}@twenty-postgres:5432/${TWENTY_DB_NAME:-twenty}
+      REDIS_URL: redis://twenty-redis:6379
+      STORAGE_TYPE: local
+      DISABLE_DB_MIGRATIONS: "false"
+      DISABLE_CRON_JOBS_REGISTRATION: "false"
+      SIGN_IN_PREFILLED: "false"
+    volumes:
+      - twenty_server_data:/app/packages/twenty-server/.local-storage
+    depends_on:
+      twenty-postgres:
+        condition: service_healthy
+      twenty-redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:3000/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    networks:
+      - edge
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.twenty.rule: Host(`crm.olcan.com.br`)
+      traefik.http.routers.twenty.entrypoints: websecure
+      traefik.http.routers.twenty.tls.certresolver: letsencrypt
+      traefik.http.services.twenty.loadbalancer.server.port: "3000"
+
+volumes:
+  traefik_data:
+  n8n_data:
+  n8n_postgres_data:
+  twenty_postgres_data:
+  twenty_redis_data:
+  twenty_server_data:
+
+networks:
+  edge:
+    name: edge
+    driver: bridge
