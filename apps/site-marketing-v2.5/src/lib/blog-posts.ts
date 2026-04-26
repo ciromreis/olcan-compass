@@ -1,17 +1,8 @@
 /**
  * Local Blog Post Store
  * ─────────────────────
- * This file holds blog posts authored directly in the codebase.
- * These are the posts migrated from Wix or written natively here.
- *
- * When migrating to WordPress:
- * 1. Replace `getLocalPosts()` with `getWordPressPosts()` from `@/lib/wordpress`
- * 2. Keep the same `LocalPost` interface — the blog pages will work unchanged
- * 3. The `/api/blog` route already supports a `?source=wordpress` param
- *
- * Wix Migration:
- * - Export your Wix blog posts as JSON or copy content manually below
- * - Each post needs: slug, title, description, content (HTML or MDX), date
+ * Blog posts authored directly in the codebase. Posts can also flow in
+ * from Payload CMS via `lib/cms.ts`; this file is the static fallback.
  */
 
 export interface LocalPost {

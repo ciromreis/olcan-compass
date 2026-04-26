@@ -24,7 +24,7 @@ const PRODUCT_IMAGE_MAP: Record<string, string> = {
   "mentorias-olcan": "/images/ciro-mentoria-lse.jpg",
 };
 
-function getProductImage(handle: string, thumbnail?: string, images?: string[]): string | undefined {
+function getProductImage(handle: string, thumbnail?: string | null, images?: string[]): string | undefined {
   if (thumbnail) return thumbnail;
   if (images && images[0]) return images[0];
   return PRODUCT_IMAGE_MAP[handle] || undefined;
