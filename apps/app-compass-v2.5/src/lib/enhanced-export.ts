@@ -9,6 +9,7 @@
  */
 
 import { type ForgeDocument, DOC_TYPE_LABELS } from "@/stores/forge";
+import { API_ENDPOINTS } from "@/lib/api-endpoints";
 import { type UserApplication } from "@/stores/applications";
 import { downloadDocx } from "./docx-export";
 
@@ -96,7 +97,7 @@ CRONOGRAMA DE CANDIDATURA
 
 ================================================================================
 Documento gerado pelo Olcan Compass - Narrative Forge
-Para modifications, accesse: https://app.olcan.com.br/forge
+Para modifications, accesse: ${API_ENDPOINTS.app.base}/forge
 ================================================================================
 `);
   }

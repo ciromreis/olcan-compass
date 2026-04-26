@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://olcan-compass-api.onrender.com";
+import { API_ROUTES } from "@/lib/api-endpoints";
 
 export async function POST(request: Request) {
   try {
@@ -20,7 +19,7 @@ export async function POST(request: Request) {
     const token = cookieStore.get("olcan_access_token")?.value;
 
     // Proxy to the backend commerce checkout endpoint
-    const backendRes = await fetch(`${API_BASE}/api/commerce/me/checkout-intents`, {
+    const backendRes = await fetch(API_ROUTES.commerce.checkoutIntents, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

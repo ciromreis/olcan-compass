@@ -25,7 +25,7 @@ import {
 import { GlassButton, GlassCard } from '@/components/ui'
 import { useCommerceStore } from '@/stores/canonicalMarketplaceEconomyStore'
 import { useAuthStore } from '@/stores/auth'
-import { getStorefrontCatalogUrl } from '@/lib/storefront-links'
+import { API_ENDPOINTS } from "@/lib/api-endpoints";
 import Image from 'next/image'
 
 function formatBRL(value: number) {
@@ -330,7 +330,7 @@ export default function ProductDetailPage() {
                   {!isStartingCheckout && <ArrowRight className="h-4 w-4" />}
                 </button>
                 <a
-                  href={currentProduct.catalog_url || getStorefrontCatalogUrl()}
+                  href={currentProduct.catalog_url || API_ENDPOINTS.marketplace.base}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-silver-200 bg-white px-5 py-4 text-base font-semibold text-foreground transition-colors hover:bg-silver-50"

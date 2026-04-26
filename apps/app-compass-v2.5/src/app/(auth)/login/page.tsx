@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useAuthStore } from "@/stores/auth";
+import { API_ENDPOINTS } from "@/lib/api-endpoints";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function LoginPage() {
       const redirect = new URLSearchParams(window.location.search).get("redirect");
 
       // Allow cross-origin redirects ONLY to trusted *.olcan.com.br subdomains
-      const TRUSTED_ORIGINS = ["olcan.com.br"];
+      const TRUSTED_ORIGINS = [new URL(API_ENDPOINTS.app.base).hostname];
       let destination = "/dashboard";
 
       if (redirect) {

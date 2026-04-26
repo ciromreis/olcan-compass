@@ -15,6 +15,7 @@ import {
   FileText,
 } from "lucide-react";
 import { MetadataSidebar, type MetadataSection } from "@/components/layout/MetadataSidebar";
+import { API_ENDPOINTS } from "@/lib/api-endpoints";
 import { Progress } from "@/components/ui";
 import type { UserRoute, Milestone } from "@/stores/routes";
 
@@ -198,7 +199,7 @@ export function RouteMetadataSidebar({
               onClick={async () => {
                 try {
                   const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || ''}/api/auth/me/dossier`,
+                    `${API_ENDPOINTS.api.base}/api/auth/me/dossier`,
                     { credentials: 'include' }
                   );
                   if (!response.ok) throw new Error('Export failed');

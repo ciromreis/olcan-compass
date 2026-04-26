@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { API_ENDPOINTS } from "@/lib/api-endpoints";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -1560,7 +1561,7 @@ function PreviewStep({
         {/* Footer */}
         <div className="bg-[#001338] px-10 py-4 flex items-center justify-between">
           <p className="text-xs text-white/60">Gerado pelo Olcan Compass</p>
-          <p className="text-xs text-white/40">olcan.com.br</p>
+          <p className="text-xs text-white/40">${API_ENDPOINTS.app.base.replace('https://', '')}</p>
         </div>
       </div>
     </div>
@@ -1795,7 +1796,7 @@ ${docSections}
 
 <div class="footer">
   <span class="footer-left">Gerado pelo Olcan Compass</span>
-  <span class="footer-right">olcan.com.br · ${generatedDate}</span>
+  <span class="footer-right">${API_ENDPOINTS.app.base.replace('https://', '')} · ${generatedDate}</span>
 </div>
 
 </body>

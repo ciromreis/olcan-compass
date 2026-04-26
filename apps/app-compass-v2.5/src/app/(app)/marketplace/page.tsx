@@ -28,7 +28,7 @@ import {
   useCommerceStore,
   useMarketplaceStore as useEconomyStore,
 } from "@/stores/canonicalMarketplaceEconomyStore";
-import { getStorefrontCatalogUrl } from "@/lib/storefront-links";
+import { API_ENDPOINTS } from "@/lib/api-endpoints";
 
 // New Components
 import { EconomyHUD } from "@/components/marketplace/EconomyHUD";
@@ -216,7 +216,7 @@ export default function MarketplacePage() {
               </p>
             </div>
             <a
-              href={getStorefrontCatalogUrl()}
+              href={API_ENDPOINTS.marketplace.base}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center justify-center gap-2 rounded-xl border border-brand-200 bg-white px-4 py-2 text-body-sm font-semibold text-brand-500 transition-colors hover:border-brand-300 hover:bg-brand-50"

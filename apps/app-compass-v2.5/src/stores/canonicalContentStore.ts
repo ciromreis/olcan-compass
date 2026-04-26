@@ -51,8 +51,7 @@ interface NexusContentStore {
   }) => Promise<void>;
 }
 
-// Fallback to localhost if deployed environment variables are not set
-const ZENITH_API_URL = process.env.NEXT_PUBLIC_ZENITH_API_URL || "http://localhost:3001/api";
+import { API_ENDPOINTS } from "@/lib/api-endpoints";
 
 export const useCanonicalContentStore = create<NexusContentStore>((set, get) => ({
   chronicles: [],
@@ -61,9 +60,10 @@ export const useCanonicalContentStore = create<NexusContentStore>((set, get) => 
   error: null,
 
   fetchFeedChronicles: async () => {
+    const zenithApi = API_ENDPOINTS.zenith.base;
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch(`${ZENITH_API_URL}/chronicles?where[isAppFeed][equals]=true&where[status][equals]=published&sort=-published_at`);
+      const response = await fetch(`${zenithApi}/chronicles?where[isAppFeed][equals]=true&where[status][equals]=published&sort=-published_at`);
       if (!response.ok) throw new Error("Failed to fetch chronicles");
       const data = await response.json();
       set({ chronicles: data.docs || [], isLoading: false });
@@ -73,9 +73,10 @@ export const useCanonicalContentStore = create<NexusContentStore>((set, get) => 
   },
 
   fetchCommunityFeed: async () => {
+    const zenithApi = API_ENDPOINTS.zenith.base;
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch(`${ZENITH_API_URL}/community-items?where[status][equals]=published&sort=-createdAt`);
+      const response = await fetch(`${zenithApi}/community-items?where[status][equals]=published&sort=-createdAt`);
       if (!response.ok) throw new Error("Failed to fetch community items");
       const data = await response.json();
       set({ communityItems: data.docs || [], isLoading: false });
@@ -85,9 +86,10 @@ export const useCanonicalContentStore = create<NexusContentStore>((set, get) => 
   },
 
   postToNexus: async (payload) => {
+    const zenithApi = API_ENDPOINTS.zenith.base;
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch(`${ZENITH_API_URL}/community-items`, {
+      const response = await fetch(`${zenithApi}/community-items`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...payload, status: "published" }),

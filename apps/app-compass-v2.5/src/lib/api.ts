@@ -25,7 +25,7 @@ function stripVersionedApiSuffix(value: string) {
 
 export function resolveApiOrigin() {
   const configured =
-    process.env.NEXT_PUBLIC_API_URL || "https://olcan-compass-api.onrender.com";
+    process.env.NEXT_PUBLIC_API_URL || "https://api.olcan.com.br";
   const normalized = stripTrailingSlash(configured);
   return stripApiSuffix(stripVersionedApiSuffix(normalized));
 }
@@ -40,7 +40,7 @@ export function resolveApiBaseUrl() {
  */
 export function resolveApiV1BaseUrl(): string {
   const raw = stripTrailingSlash(
-    process.env.NEXT_PUBLIC_API_URL || "https://olcan-compass-api.onrender.com",
+    process.env.NEXT_PUBLIC_API_URL || "https://api.olcan.com.br",
   );
   if (/\/api\/v1(\/|$)/.test(raw)) {
     return raw;

@@ -82,7 +82,7 @@ function addSecurityHeaders(response: NextResponse) {
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' blob: data: https: https://*.googleusercontent.com",
       "font-src 'self' data: https://fonts.gstatic.com",
-      "connect-src 'self' https://*.sentry.io https://olcan-compass-api.onrender.com",
+      "connect-src 'self' https://*.sentry.io https://api.olcan.com.br wss://api.olcan.com.br",
       "frame-ancestors 'none'",
     ].join("; "),
   );
