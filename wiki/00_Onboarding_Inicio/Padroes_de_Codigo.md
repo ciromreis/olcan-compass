@@ -31,6 +31,7 @@ Padrões de Código são os "Blocos de Construção do Breakthrough". No BMAD, a
 2. **Uma Responsabilidade**: Um arquivo, um componente/módulo. Separation of Concerns (Apresentação/Lógica/Dados).
 3. **CSS Vanilla/Premium**: Foco em flexibilidade e controle visual. Uso extensivo de variáveis (tokens) do design system.
 4. **Documentação obrigatória**: Toda função de lógica de negócio deve ter JSDoc descritivo.
+5. **URLs de Serviço Centralizadas**: **Proibido** hardcode de subdomínios ou variáveis de ambiente fragmentadas em stores, componentes ou rotas de API. Todos os URLs de serviço do ecossistema Olcan (`compass`, `marketplace`, `api`, `zenith`, etc.) devem ser centralizados em `lib/api-endpoints.ts`. Duplicação de constantes como `NEXT_PUBLIC_STOREFRONT_URL` ou `NEXT_PUBLIC_CMS_URL` em múltiplos lugares é uma violação desta regra.
 
 ### Naming Conventions
 - **Componentes**: PascalCase (`GlassButton.tsx`).

@@ -27,9 +27,14 @@ Os nameservers foram atualizados no GoDaddy apontando para a Cloudflare em 2026-
 | A | `olcan.com.br` | `76.76.21.21` | — | Vercel (raiz) |
 | MX | `olcan.com.br` | `mx1.hostinger.com.br` | `5` | Email principal (Hostinger) |
 | CNAME | `www` | `cname.vercel-dns.com` | — | Site marketing |
-| CNAME | `compass` | `cname.vercel-dns.com` | — | App Compass |
-| CNAME | `app` | `cname.vercel-dns.com` | — | App alias |
-| A | `n8n` | `35.238.150.117` | — | N8N (GCP) |
+| CNAME | `compass` | `cname.vercel-dns.com` | — | App Compass (Core OS) |
+| CNAME | `app` | `cname.vercel-dns.com` | — | App alias (Core OS) |
+| CNAME | `marketplace` | `cname.vercel-dns.com` | — | Services Layer (MedusaJS) |
+| CNAME | `admin` | `cname.vercel-dns.com` | — | Operator Portal — Admin |
+| CNAME | `vendors` | `cname.vercel-dns.com` | — | Operator Portal — Vendors |
+| CNAME | `staff` | `cname.vercel-dns.com` | — | Operator Portal — Staff (Twenty CRM) |
+| CNAME | `zenith` | `cname.vercel-dns.com` | — | Discovery Layer (Zenith Microservice) |
+| A | `n8n` | `35.238.150.117` | — | Automation Brain (GCP VM) |
 | TXT | `resend._domainkey` | `p=MIGfMA0GCSqGSIb3D...` | — | DKIM Resend |
 | MX | `send` | `feedback-smtp.sa-east-1.amazonses.com` | `10` | Bounce/feedback Resend |
 | TXT | `send` | `v=spf1 include:amazonses.com ~all` | — | SPF para envio Resend |

@@ -106,13 +106,13 @@ This file provides quick reference for development commands and project structur
 - Standards: [[wiki/00_Onboarding_Inicio/Padroes_de_Codigo.md]]
 - Roadmap: [[wiki/01_Visao_Estrategica/Roadmap_Implementacao_v2_5.md]]
 
-## Deployment State (atualizado 2026-04-21)
+## Deployment State (atualizado 2026-04-26)
 
-> **API em produção no Render.** Leia [[wiki/05_Infraestrutura/INFRAESTRUTURA_OVERVIEW.md]] para o mapa completo.
+> **API em produção no Render.** URL canônica: `api.olcan.com.br`. Leia [[wiki/05_Infraestrutura/INFRAESTRUTURA_OVERVIEW.md]] para o mapa completo.
 
 | Componente | Plataforma | URL / ID |
 |------------|-----------|--------|
-| API Core v2.5 | Render (Docker, Free) | `https://olcan-compass-api.onrender.com` |
+| API Core v2.5 | Render (Docker, Free) | `https://api.olcan.com.br` (canonical) / `https://olcan-compass-api.onrender.com` (Render alias) |
 | Render Service ID | — | `srv-d6jjhuea2pns73f73e5g` |
 | PostgreSQL | Render | `dpg-d7i2qnkvikkc73aj0gm0-a` |
 | App Compass | Vercel | `compass.olcan.com.br` |
@@ -180,16 +180,19 @@ column, `db.refresh(new_user)` still crashed because PostgreSQL couldn't find `b
 - Branching: `feature/`, `fix/`, `refactor/`
 - Policy: No TODOs in production. All code must pass linting.
 
-## Current Code Stats (2026-04-21)
+## Current Code Stats (2026-04-26)
 
 | Metric | Value |
 |--------|-------|
-| Frontend stores | 26 (Zustand) |
+| Frontend stores | 26 (Zustand — 2 over ≤24 constraint, tracked) |
 | Frontend pages | 169 (Next.js) |
 | Backend API routes (files) | 47 Python files in `app/api/routes/` + `app/api/v1/` |
+| New CRM admin endpoints | `GET /admin/crm/health`, `GET /admin/crm/users` (added 2026-04-26) |
 | Alembic migrations | 33 files (head: `0028_seed_psychology_questions`) |
 | Build status | ✅ Passes (zero errors, ~49 unused-import warnings) |
-| Auth status | � Fix deployed (0027+0028) — awaiting migration trigger |
+| Auth status | ✅ FastAPI JWT only — Supabase fully removed |
+| URL centralization | ✅ Complete — `lib/api-endpoints.ts` is single source of truth |
+| CRM sync flags | ⚠️ All OFF by default — enable via env vars when revenue-stable |
 
 ## 🚫 What NOT to Read (Token Optimization)
 
@@ -261,7 +264,9 @@ olcan-compass/
 
 ### 🚀 Current Production
 - Frontend: `https://compass.olcan.com.br` (Vercel)
-- Backend: `https://olcan-compass-api.onrender.com` (Render)
+- Backend: `https://api.olcan.com.br` → `https://olcan-compass-api.onrender.com` (Render, via DNS)
+- Marketing: `https://www.olcan.com.br` (Vercel + Payload CMS)
+- Automation: `https://n8n.olcan.com.br` (GCP VM — `35.238.150.117`)
 
 ---
 

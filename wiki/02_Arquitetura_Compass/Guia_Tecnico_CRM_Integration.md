@@ -20,14 +20,37 @@ backlinks:
 
 ---
 
+## ⚠️ Disambiguação Crítica: Twenty CRM vs. Mautic
+
+**Este é o erro conceitual mais comum. Leia antes de qualquer implementação.**
+
+| Dimensão | Twenty CRM | Mautic |
+|---|---|---|
+| **Propósito** | Operações internas de staff e vendas | Automação de marketing e nutrição de leads |
+| **Usuários** | Time interno Olcan (vendas, CS, gestão) | Usuários externos (leads, prospects, clientes) |
+| **Domínio** | `staff.olcan.com.br` (portal interno) | `mautic.olcan.com.br` |
+| **Casos de uso** | Pipelines de vendas, notas de conta, gestão de parceiros | Sequências de email, lead scoring, tags de atribuição, campanhas |
+| **Substitui o outro?** | **NÃO** | **NÃO** |
+
+**Twenty CRM não é um substituto do Mautic.** São ferramentas complementares com audiências e objetivos distintos. A confusão entre elas resulta em features desativadas sem motivo e arquitetura inconsistente.
+
+**Variáveis de ambiente obrigatórias para Twenty:**
+```env
+TWENTY_BASE_URL=https://twenty.olcan.com.br
+TWENTY_API_KEY=<api_key>
+```
+**Status de ativação:** Manter `FEATURE_CRM_SYNC_QUEUE_ENABLED=false` até o core atingir estabilidade de receita. Não ativar prematuramente.
+
+---
+
 ## 🏗️ Arquitetura de Sincronização
 
 O sistema foi desenhado para manter o **Compass App v2.5** como a fonte da verdade para autenticação, enquanto delega a gestão de relacionamento e marketing para ferramentas especializadas.
 
 ### Componentes:
-- **Compass API (v2.5)**: Orquestrador central.
-- **Twenty CRM**: Control plane para o staff (pipelines, notas, gestão de usuários).
-- **Mautic**: Automação de leads, tags de atribuição e campanhas de email.
+- **Compass API (v2.5)**: Orquestrador central. Todo fluxo passa por aqui — nenhum CRM fala diretamente com o app.
+- **Twenty CRM**: Control plane para o staff (pipelines de vendas, notas, gestão de parceiros e equipes).
+- **Mautic**: Automação de leads externos, tags de atribuição e campanhas de email de marketing.
 
 ---
 
