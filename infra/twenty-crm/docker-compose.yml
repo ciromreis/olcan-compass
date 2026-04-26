@@ -1,0 +1,95 @@
+name: olcan-twenty
+
+# Twenty CRM stack — runs on the GCP VM next to n8n.
+#
+# Wires into the existing Traefik instance (container name n8n-traefik) by
+# joining the n8n_network bridge. Twenty itself does NOT publish ports;
+# Traefik routes  https://crm.olcan.com.br -> twenty:3000 over the shared
+# network and terminates TLS via Let's Encrypt.
+#
+# Deploy from /opt/twenty-crm on the VM:
+#   docker compose --env-file .env up -d
+#
+# Required env vars (see .env.example):
+#   APP_SECRET, PG_DATABASE_PASSWORD, SERVER_URL
+
+services:
+  twenty:
+    image: twentycrm/twenty:${TAG:-v0.32.0}
+    container_name: olcan_twenty_server
+    restart: unless-stopped
+    environment:
+      NODE_PORT: 3000
+      PG_DATABASE_URL: postgres://${PG_DATABASE_USER:-twenty}:${PG_DATABASE_PASSWORD}@twenty-db:5432/${PG_DATABASE_NAME:-twenty}
+      REDIS_URL: redis://twenty-redis:6379
+      SERVER_URL: ${SERVER_URL}
+      APP_SECRET: ${APP_SECRET}
+      STORAGE_TYPE: local
+      DISABLE_DB_MIGRATIONS: "false"
+      DISABLE_CRON_JOBS_REGISTRATION: "false"
+      SIGN_IN_PREFILLED: "false"
+    volumes:
+      - twenty_server_local_data:/app/packages/twenty-server/.local-storage
+    depends_on:
+      twenty-db:
+        condition: service_healthy
+      twenty-redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:3000/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - n8n_network
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=n8n_network
+      - traefik.http.routers.twenty.rule=Host(`crm.olcan.com.br`)
+      - traefik.http.routers.twenty.entrypoints=websecure
+      - traefik.http.routers.twenty.tls.certresolver=letsencrypt
+      - traefik.http.services.twenty.loadbalancer.server.port=3000
+
+  twenty-db:
+    image: postgres:16-alpine
+    container_name: olcan_twenty_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${PG_DATABASE_NAME:-twenty}
+      POSTGRES_USER: ${PG_DATABASE_USER:-twenty}
+      POSTGRES_PASSWORD: ${PG_DATABASE_PASSWORD}
+    volumes:
+      - twenty_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_DATABASE_USER:-twenty} -h localhost -d ${PG_DATABASE_NAME:-twenty}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - n8n_network
+
+  twenty-redis:
+    image: redis:7-alpine
+    container_name: olcan_twenty_redis
+    restart: unless-stopped
+    volumes:
+      - twenty_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - n8n_network
+
+volumes:
+  twenty_server_local_data:
+  twenty_db_data:
+  twenty_redis_data:
+
+# Twenty joins the network created by n8n's compose stack so Traefik can
+# discover it. The network is declared external here.
+networks:
+  n8n_network:
+    external: true
