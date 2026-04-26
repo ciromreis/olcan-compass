@@ -14,38 +14,33 @@ import { Replies } from '@/collections/Replies'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+const allowedOrigins = (
+  process.env.PAYLOAD_CORS_ORIGINS ||
+  [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "https://olcan.com.br",
+    "https://www.olcan.com.br",
+    "https://compass.olcan.com.br",
+    "https://app.olcan.com.br",
+    "https://marketplace.olcan.com.br",
+    "https://admin.olcan.com.br",
+    "https://vendors.olcan.com.br",
+    "https://staff.olcan.com.br",
+    "https://zenith.olcan.com.br",
+  ].join(",")
+).split(",").map((s) => s.trim()).filter(Boolean);
+
 export default buildConfig({
   admin: {
     user: Users.slug,
     meta: {
       titleSuffix: ' | Olcan OS',
     },
-    // Theming overrides according to the task specs
-    // Clinical Boutique / Liquid-Glass aesthetic injected via CSS later
     theme: 'dark',
   },
-  cors: [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'https://olcan.com.br',
-    'https://www.olcan.com.br',
-    'https://app.olcan.com.br',
-    'https://compass.olcan.com.br',
-    'https://site.olcan.com.br',
-    'https://nexus.olcan.com.br',
-    'https://zenith.olcan.com.br'
-  ],
-  csrf: [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'https://olcan.com.br',
-    'https://www.olcan.com.br',
-    'https://app.olcan.com.br',
-    'https://compass.olcan.com.br',
-    'https://site.olcan.com.br',
-    'https://nexus.olcan.com.br',
-    'https://zenith.olcan.com.br'
-  ],
+  cors: allowedOrigins,
+  csrf: allowedOrigins,
   collections: [Users, Chronicles, Pages, Archetypes, CommunityItems, Replies],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || 'fallback-secret-for-development-olcan',

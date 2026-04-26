@@ -3,9 +3,10 @@ import Script from 'next/script';
 import "./globals.css";
 import { AnalyticsProvider } from '@/components/providers/AnalyticsProvider';
 import { CookieConsent } from '@/components/CookieConsent';
+import { API_ENDPOINTS } from '@/lib/api-endpoints';
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.olcan.com.br"),
+  metadataBase: new URL(API_ENDPOINTS.site.base),
   title: {
     default: "Olcan | Capacitação Internacional",
     template: "%s | Olcan",
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    url: "https://www.olcan.com.br",
+    url: API_ENDPOINTS.site.base,
     siteName: "Olcan",
     title: "Olcan | Capacitação Internacional",
     description:

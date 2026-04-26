@@ -1,5 +1,7 @@
-const CMS_BASE_URL =
-  process.env.NEXT_PUBLIC_CMS_URL || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3001";
+import { API_ENDPOINTS } from "@/lib/api-endpoints";
+
+// CMS is served from the marketing site itself (Payload CMS)
+const CMS_BASE_URL = API_ENDPOINTS.site.base;
 
 export interface CMSChronicle {
   id: string;

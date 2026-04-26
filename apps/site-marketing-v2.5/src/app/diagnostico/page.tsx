@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowLeft, Sparkles, Share2, Compass, ArrowRight } from "lucide-react";
 import EnhancedNavbar from "@/components/layout/EnhancedNavbar";
 import EnhancedFooter from "@/components/layout/EnhancedFooter";
+import { API_ENDPOINTS } from "@/lib/api-endpoints";
 
 const questions = [
   {
@@ -209,7 +210,7 @@ export default function DiagnosticoPage() {
 
                   <div className="flex flex-col sm:flex-row gap-6 w-full max-w-lg">
                     <Link 
-                      href={`https://compass.olcan.com.br/register?archetype=${archetype.title}`} 
+                      href={`${API_ENDPOINTS.app.base}/register?archetype=${archetype.title}`} 
                       className="btn-primary flex-1 py-5 text-lg group"
                     >
                       <Sparkles className="w-5 h-5" />

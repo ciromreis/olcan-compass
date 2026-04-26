@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next'
+import { API_ENDPOINTS } from '@/lib/api-endpoints'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://www.olcan.com.br'
+  const baseUrl = API_ENDPOINTS.site.base
   const marketplaceHandles = [
     'curso-cidadao-mundo',
     'kit-application',
