@@ -17,9 +17,16 @@ class Settings(BaseSettings):
     cors_allow_origins: str = (
         "http://localhost:3000,"
         "http://localhost:3001,"
+        "https://olcan.com.br,"
+        "https://www.olcan.com.br,"
         "https://compass.olcan.com.br,"
         "https://app.olcan.com.br,"
-        "https://olcan-compass-web.vercel.app"
+        "https://marketplace.olcan.com.br,"
+        "https://admin.olcan.com.br,"
+        "https://vendors.olcan.com.br,"
+        "https://staff.olcan.com.br,"
+        "https://zenith.olcan.com.br,"
+        "https://mautic.olcan.com.br"
     )
 
     # Database

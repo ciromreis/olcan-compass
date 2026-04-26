@@ -12,10 +12,10 @@ and/or queued jobs later.
 
 from __future__ import annotations
 
+import base64
 import hmac
 import hashlib
 from typing import Any
-from urllib.parse import urlencode
 
 import httpx
 
@@ -110,13 +110,20 @@ class MauticClient:
         return bool(self.base_url and self.api_key)
 
     def _client(self) -> httpx.AsyncClient:
-        # Mautic typically uses Basic Auth or OAuth2
-        # For simplicity, we assume API key is passed as a header or query param
-        # Adjust authentication method based on your Mautic setup
+        # Auth format detection:
+        # - If MAUTIC_API_KEY contains a colon (e.g. "username:password") → HTTP Basic Auth
+        # - Otherwise → OAuth2 Bearer token
+        # Most self-hosted Mautic instances use Basic Auth with an API user.
+        if ":" in self.api_key:
+            encoded = base64.b64encode(self.api_key.encode()).decode()
+            auth_header = f"Basic {encoded}"
+        else:
+            auth_header = f"Bearer {self.api_key}"
+
         return httpx.AsyncClient(
             base_url=self.base_url,
             headers={
-                "Authorization": f"Bearer {self.api_key}",
+                "Authorization": auth_header,
                 "Content-Type": "application/json",
                 "Accept": "application/json",
             },

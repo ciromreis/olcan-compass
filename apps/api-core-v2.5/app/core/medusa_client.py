@@ -3,7 +3,6 @@ MedusaJS Client for Olcan Compass
 Async wrapper around MedusaJS Store API
 """
 
-import os
 from typing import Optional, Dict, List, Any
 import httpx
 from app.core.config import settings
@@ -13,7 +12,10 @@ class MedusaClient:
     """Async client for MedusaJS e-commerce backend"""
 
     def __init__(self, base_url: Optional[str] = None):
-        self.base_url = base_url or os.getenv("MEDUSA_URL", "http://localhost:9000")
+        # Reads MARKETPLACE_ENGINE_URL env var via the unified settings object.
+        # Do NOT use os.getenv("MEDUSA_URL") — that env var is not defined in
+        # .env.example and bypasses the settings validation layer.
+        self.base_url = base_url or settings.marketplace_engine_url
         self.client = httpx.AsyncClient(timeout=30.0)
 
     async def close(self):
