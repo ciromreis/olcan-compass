@@ -144,6 +144,7 @@ column, `db.refresh(new_user)` still crashed because PostgreSQL couldn't find `b
 - `GET /api/migrate-db-render?secret_key=olcan2026omega` — roda migrations remotamente sem redeploy
 - `GET /api/seed-db-render?secret_key=olcan2026omega` — roda seed scripts remotamente
 - `GET /api/db-diagnostic?secret_key=olcan2026omega` — inspects users table columns + alembic version + quiz count
+- **Vercel + pnpm workspace**: nunca rodar `npm install` em `apps/*/` sem isolar `node_modules`. O lockfile gerado captura symlinks `pnpm` (`"link": true` para `../../node_modules/.pnpm/...`) que quebram em clone limpo. Bug 2026-04-21→27: 5 dias de deploys falhando. Fix em `wiki/05_Infraestrutura/DEPLOYMENT_VERCEL.md`.
 
 **Infra runbooks:** `wiki/05_Infraestrutura/`
 
