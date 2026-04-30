@@ -1,7 +1,28 @@
 # Deployment — Vercel (Frontend)
 
-> **Última atualização:** 2026-04-27
-> **Status:** ✅ deploys passando após o fix de `package-lock.json`
+> **Última atualização:** 2026-04-30
+> **Status:** ✅ deploys passando após o fix de `package-lock.json` (commit `1cb422d`, 2026-04-27)
+
+---
+
+## 🚨 REGRA #1 — NUNCA rodar `npm install` em `apps/*` (workspace pnpm)
+
+Este repo é um **workspace pnpm** (`pnpm-lock.yaml` na raiz, `packageManager: pnpm@10.15.1`).
+Rodar `npm install` (ou `npm ci`) dentro de qualquer `apps/<nome>/` corrompe o
+`package-lock.json` daquele app com symlinks pnpm (`"link": true`,
+`"resolved": "../../node_modules/.pnpm/..."`) que **não resolvem em clone limpo**
+da Vercel → `node_modules/next` vira symlink quebrado → build falha em todo
+push por dias enquanto o site continua servindo o último build verde.
+
+**Se precisar regenerar um lockfile**, use a receita isolada da seção GOTCHA
+abaixo (copiar o `package.json` para um diretório temporário, rodar lá, copiar
+de volta).
+
+**Para dev local**, sempre use `pnpm install` na raiz do monorepo. Nunca rode
+`npm install` em `apps/*`.
+
+> Esta regra existe por causa do incidente 2026-04-21 → 2026-04-26 (5 dias de
+> deploys falhando, ~16 emails de erro). Detalhes na seção GOTCHA.
 
 ---
 
@@ -17,13 +38,11 @@ Dois projetos Vercel ativos servem o tráfego de frontend da Olcan:
 > ⚠️ **O nome do projeto `web-v2` é histórico** — ele serve a **v2.5**.
 > Não confiar no nome; checar `rootDirectory`.
 
-### Projetos órfãos (não servir tráfego)
-
-| Projeto                | Status          | Ação recomendada       |
-| ---------------------- | --------------- | ---------------------- |
-| `app-compass-v2.5`     | 0 deploys       | Deletar (placeholder)  |
-| `web`                  | última v1, 60d  | Manter (histórico) ou  |
-|                        |                 | deletar se for ruído   |
+> **2026-04-30:** projetos órfãos `app-compass-v2.5` (Vercel placeholder) e
+> `web` (Vercel v1 legacy) foram **deletados** para evitar ruído de notificação
+> e confusão futura. Junto com eles foi removido o serviço Render orfão
+> `srv-d6irljdm5p6s73avbfd0` (`olcan-compass`, rootDir `apps/api` — caminho
+> inexistente, suspenso desde 2026-03-03). A infra ativa está acima.
 
 ---
 

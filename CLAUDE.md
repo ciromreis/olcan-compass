@@ -106,7 +106,43 @@ This file provides quick reference for development commands and project structur
 - Standards: [[wiki/00_Onboarding_Inicio/Padroes_de_Codigo.md]]
 - Roadmap: [[wiki/01_Visao_Estrategica/Roadmap_Implementacao_v2_5.md]]
 
-## Deployment State (atualizado 2026-04-26)
+## 🚫 Critical Workspace Rules (read before running any command)
+
+**Rule #1 — pnpm only for installs.** This repo is a **pnpm workspace**
+(`pnpm-lock.yaml` at the root, `packageManager: pnpm@10.15.1`).
+
+- ✅ DO: `pnpm install` from the monorepo root.
+- ✅ DO: `npm run <script>` / `pnpm <script>` inside an `apps/*` dir to run
+  local scripts (dev/build/lint/test). These don't touch the lockfile.
+- ❌ NEVER: `npm install` or `npm ci` inside `apps/*` or `packages/*`. It
+  generates a `package-lock.json` that captures pnpm symlinks
+  (`"link": true`, `"resolved": "../../node_modules/.pnpm/..."`) which
+  resolve fine locally but **break in every fresh clone** — Vercel can't
+  find Next.js, build fails, every push fails for days while the site
+  keeps serving the last green build (silent failure).
+- 🛠 If you must regenerate a `package-lock.json`, follow the isolated
+  temp-dir recipe in [[wiki/05_Infraestrutura/DEPLOYMENT_VERCEL.md]] under
+  the `GOTCHA crítico` section. Never run `npm install` directly in the app.
+
+This rule exists because of the **2026-04-21 → 2026-04-26 incident**:
+5 days of failed Vercel deploys and ~16 failure emails. Fix shipped in
+commit `1cb422d` ("fix(app-compass): regenerate package-lock.json without
+pnpm symlinks"). Don't reintroduce it.
+
+**Rule #2 — only the projects below serve traffic.** All other Vercel /
+Render entries that mention this repo are **deleted as of 2026-04-30**:
+
+- Vercel `app-compass-v2.5` (placeholder) — deleted
+- Vercel `web` (v1 legacy) — deleted
+- Render `srv-d6irljdm5p6s73avbfd0` (`olcan-compass`, rootDir `apps/api`,
+  suspended) — deleted
+
+If you see a deploy failure email referencing one of those, it's a stale
+notification; nothing to act on.
+
+---
+
+## Deployment State (atualizado 2026-04-30)
 
 > **API em produção no Render.** URL canônica: `api.olcan.com.br`. Leia [[wiki/05_Infraestrutura/INFRAESTRUTURA_OVERVIEW.md]] para o mapa completo.
 
